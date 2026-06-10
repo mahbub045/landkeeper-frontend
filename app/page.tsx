@@ -1,3 +1,6 @@
+'use client';
+import { Button } from '@/components/ui/button';
+import { signOut } from 'next-auth/react';
 import Image from "next/image";
 
 export default function Home() {
@@ -34,7 +37,12 @@ export default function Home() {
             center.
           </p>
         </div>
-        
+        <Button 
+        variant="outline"
+        onClick={() => {
+          signOut({ callbackUrl: "/auth/login" });
+        }}
+        >Logout</Button>
       </main>
     </div>
   );
