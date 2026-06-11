@@ -1,5 +1,6 @@
 import ReduxProvider from '@/components/providers/ReduxProvider';
 import NextAuthProvider from '@/components/providers/SessionProvider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -29,14 +30,22 @@ export default function RootLayout({
     <html
       lang='en'
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body suppressHydrationWarning className='min-h-full flex flex-col'>
-        <NextAuthProvider>
-          <ReduxProvider>
-            {children}
-            <Toaster />
-          </ReduxProvider>
-        </NextAuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextAuthProvider>
+            <ReduxProvider>
+              {children}
+              <Toaster />
+            </ReduxProvider>
+          </NextAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
