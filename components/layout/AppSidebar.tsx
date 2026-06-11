@@ -50,7 +50,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
           asChild
           isActive={isNavActive(pathname, item.href)}
           tooltip={item.label}
-          className="h-9 rounded-lg text-white/90 hover:bg-white/5 hover:text-white data-active:bg-[#2563eb] data-active:text-white data-active:shadow-none"
+          className="h-9 rounded-lg text-white/90 hover:bg-white/5 hover:text-white data-active:bg-primary data-active:text-white data-active:shadow-none"
         >
           <Link href={item.href}>
             <item.icon />
@@ -82,7 +82,7 @@ export default function AppSidebar() {
     >
       <SidebarHeader className="gap-3 px-4 py-4 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#2563eb] text-white">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
             <Building2 className="size-4" />
           </div>
           <span className="truncate text-base font-bold group-data-[collapsible=icon]:hidden">
@@ -117,7 +117,7 @@ export default function AppSidebar() {
       <SidebarFooter className="p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2">
         <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
           <Avatar size="sm">
-            <AvatarFallback className="bg-linear-to-br from-[#3b82f6] to-[#8b5cf6] text-xs font-semibold text-white">
+            <AvatarFallback className="bg-linear-to-br from-primary to-secondary text-xs font-semibold text-white">
               {getInitials(user?.name, user?.email)}
             </AvatarFallback>
           </Avatar>

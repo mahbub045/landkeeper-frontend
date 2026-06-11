@@ -13,8 +13,8 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, LogOut, Moon, Sun, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import { Input } from "../ui/input";
-import { useTheme } from 'next-themes';
 
 function getInitials(name?: string | null, email?: string | null) {
   if (name) {
@@ -47,17 +47,17 @@ export default function AppNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
-           {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="dark:shadow-gray-600"
-            >
-              <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-              <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="dark:shadow-gray-600"
+          >
+            <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+            <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
 
           <Button variant="ghost" size="icon-sm" aria-label="Notifications">
             <Bell className="size-4" />
@@ -70,7 +70,7 @@ export default function AppNavbar() {
                 className="relative size-8 rounded-full p-0"
               >
                 <Avatar size="sm">
-                  <AvatarFallback className="bg-green-900 text-xs text-white">
+                  <AvatarFallback className="bg-primary text-xs text-white">
                     {getInitials(user?.name, user?.email)}
                   </AvatarFallback>
                 </Avatar>
@@ -86,7 +86,7 @@ export default function AppNavbar() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem className="cursor-pointer">
                 <User className="size-4" />
                 Profile
               </DropdownMenuItem>
@@ -94,6 +94,7 @@ export default function AppNavbar() {
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                className="cursor-pointer"
               >
                 <LogOut className="size-4" />
                 Sign out

@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Loader2, MapPin } from 'lucide-react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2, MapPin } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +21,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    const result = await signIn('credentials', {
+    const result = await signIn("credentials", {
       email,
       password,
       redirect: false,
@@ -30,153 +30,153 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (result?.error) {
-      toast.error('Invalid email or password. Please try again.');
+      toast.error("Invalid email or password. Please try again.");
     } else {
-      toast.success('You have successfully logged in.');
-      router.push('/');
+      toast.success("You have successfully logged in.");
+      router.push("/");
     }
   };
 
   return (
-    <div className='min-h-screen flex'>
+    <div className="flex min-h-screen">
       {/* Left Panel */}
-      <div className='hidden lg:flex lg:w-1/2 bg-green-900 flex-col justify-between p-12 relative overflow-hidden'>
+      <div className="bg-primary relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2">
         {/* Background pattern */}
-        <div className='absolute inset-0 opacity-10'>
+        <div className="absolute inset-0 opacity-10">
           <div
-            className='absolute top-0 left-0 w-full h-full'
+            className="absolute top-0 left-0 h-full w-full"
             style={{
               backgroundImage: `radial-gradient(circle at 25px 25px, white 2px, transparent 0)`,
-              backgroundSize: '50px 50px',
+              backgroundSize: "50px 50px",
             }}
           />
         </div>
 
         {/* Logo */}
-        <div className='relative flex items-center gap-3'>
-          <div className='w-10 h-10 bg-white rounded-xl flex items-center justify-center'>
-            <MapPin className='w-5 h-5 text-green-900' />
+        <div className="relative flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
+            <MapPin className="text-secondary h-5 w-5" />
           </div>
-          <span className='text-white text-xl font-semibold tracking-tight'>
+          <span className="text-xl font-semibold tracking-tight text-white">
             Landkeeper
           </span>
         </div>
 
         {/* Center content */}
-        <div className='relative'>
-          <h1 className='text-4xl font-bold text-white leading-tight mb-4'>
+        <div className="relative">
+          <h1 className="mb-4 text-4xl leading-tight font-bold text-white">
             Manage your land,
             <br />
-            <span className='text-green-300'>effortlessly.</span>
+            <span className="text-secondary">effortlessly.</span>
           </h1>
-          <p className='text-green-200 text-lg leading-relaxed max-w-sm'>
+          <p className="text-secondary max-w-sm text-lg leading-relaxed">
             Track parcels, monitor applications, and stay on top of every land
             management task — all in one place.
           </p>
 
           {/* Stats */}
-          <div className='mt-10 grid grid-cols-2 gap-6'>
+          <div className="mt-10 grid grid-cols-2 gap-6">
             {[
-              { value: '12,400+', label: 'Land parcels tracked' },
-              { value: '98%', label: 'Uptime guarantee' },
-              { value: '340+', label: 'Organisations' },
-              { value: '24/7', label: 'Support available' },
+              { value: "12,400+", label: "Land parcels tracked" },
+              { value: "98%", label: "Uptime guarantee" },
+              { value: "340+", label: "Organisations" },
+              { value: "24/7", label: "Support available" },
             ].map((stat) => (
               <div key={stat.label}>
-                <p className='text-white text-2xl font-bold'>{stat.value}</p>
-                <p className='text-green-300 text-sm mt-1'>{stat.label}</p>
+                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                <p className="text-secondary mt-1 text-sm">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer quote */}
-        <div className='relative border-l-2 border-green-500 pl-4'>
-          <p className='text-green-200 text-sm italic'>
+        <div className="border-secondary relative border-l-2 pl-4">
+          <p className="text-secondary text-sm italic">
             Landkeeper transformed how we handle our portfolio of 2,000+
             parcels.
           </p>
-          <p className='text-green-400 text-xs mt-2'>
+          <p className="mt-2 text-xs text-white">
             — Director, National Land Authority
           </p>
         </div>
       </div>
 
       {/* Right Panel — Login Form */}
-      <div className='w-full lg:w-1/2 flex items-center justify-center p-8 bg-white'>
-        <div className='w-full max-w-md'>
+      <div className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2">
+        <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className='flex items-center gap-2 mb-10 lg:hidden'>
-            <div className='w-8 h-8 bg-green-900 rounded-lg flex items-center justify-center'>
-              <MapPin className='w-4 h-4 text-white' />
+          <div className="mb-10 flex items-center gap-2 lg:hidden">
+            <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded-lg">
+              <MapPin className="h-4 w-4 text-white" />
             </div>
-            <span className='text-green-900 text-lg font-semibold'>
+            <span className="text-primary text-3xl font-semibold">
               Landkeeper
             </span>
           </div>
 
-          <div className='mb-8'>
-            <h2 className='text-2xl font-bold text-gray-900'>Sign in</h2>
-            <p className='text-gray-500 mt-1 text-sm'>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Sign in</h2>
+            <p className="mt-1 text-sm text-gray-500">
               Enter your credentials to access your account
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className='space-y-5'>
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
-            <div className='space-y-1.5'>
+            <div className="space-y-1.5">
               <Label
-                htmlFor='email'
-                className='text-sm font-medium text-gray-700'
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
               >
                 Email address
               </Label>
               <Input
-                id='email'
-                type='email'
-                placeholder='you@organisation.com'
+                id="email"
+                type="email"
+                placeholder="you@organisation.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className='h-11 border-gray-200 focus:border-green-600 focus:ring-green-600'
+                className="h-11 border-gray-200 focus:border-green-600 focus:ring-green-600"
               />
             </div>
 
             {/* Password */}
-            <div className='space-y-1.5'>
-              <div className='flex items-center justify-between'>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
                 <Label
-                  htmlFor='password'
-                  className='text-sm font-medium text-gray-700'
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
                 >
                   Password
                 </Label>
                 <a
-                  href='/auth/forgot-password'
-                  className='text-xs text-green-700 hover:text-green-900 font-medium'
+                  href="/auth/forgot-password"
+                  className="text-primary/80 hover:text-primary text-xs font-medium"
                 >
                   Forgot password?
                 </a>
               </div>
-              <div className='relative'>
+              <div className="relative">
                 <Input
-                  id='password'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='Enter your password'
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className='h-11 border-gray-200 focus:border-green-600 focus:ring-green-600 pr-10'
+                  className="focus:border-primary focus:ring-primary h-11 border-gray-200 pr-10"
                 />
                 <button
-                  type='button'
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
-                    <EyeOff className='w-4 h-4' />
+                    <EyeOff className="h-4 w-4" />
                   ) : (
-                    <Eye className='w-4 h-4' />
+                    <Eye className="h-4 w-4" />
                   )}
                 </button>
               </div>
@@ -184,32 +184,32 @@ export default function LoginPage() {
 
             {/* Submit */}
             <Button
-              type='submit'
+              type="submit"
               disabled={isLoading}
-              className='w-full h-11 bg-green-900 hover:bg-green-800 text-white font-medium mt-2'
+              className="bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...
                 </>
               ) : (
-                'Sign in'
+                "Sign in"
               )}
             </Button>
           </form>
 
-          <p className='text-center text-sm text-gray-500 mt-6'>
-            Don&apos;t have an account?{' '}
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Don&apos;t have an account?{" "}
             <a
-              href='/auth/register'
-              className='text-green-700 hover:text-green-900 font-medium'
+              href="/auth/register"
+              className="text-primary/80 hover:text-primary font-medium"
             >
               Contact your administrator
             </a>
           </p>
 
-          <p className='text-center text-xs text-gray-400 mt-8'>
+          <p className="mt-8 text-center text-xs text-gray-400">
             © {new Date().getFullYear()} Landkeeper. All rights reserved.
           </p>
         </div>
