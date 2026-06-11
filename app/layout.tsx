@@ -1,3 +1,4 @@
+import ReduxProvider from '@/components/providers/ReduxProvider';
 import NextAuthProvider from '@/components/providers/SessionProvider';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
@@ -31,8 +32,10 @@ export default function RootLayout({
     >
       <body suppressHydrationWarning className='min-h-full flex flex-col'>
         <NextAuthProvider>
-          {children}
-          <Toaster />
+          <ReduxProvider>
+            {children}
+            <Toaster />
+          </ReduxProvider>
         </NextAuthProvider>
       </body>
     </html>
