@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, LogOut, Moon, Sun, User } from "lucide-react";
+import { Bell, LogOut, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { Input } from "../ui/input";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 function getInitials(name?: string | null, email?: string | null) {
   if (name) {
@@ -48,18 +49,14 @@ export default function AppNavbar() {
 
         <div className="flex items-center gap-2">
           {/* Theme Toggle */}
+          <ThemeToggle />
+
           <Button
             variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="dark:shadow-gray-600"
+            size="icon-sm"
+            aria-label="Notifications"
+            className="border border-gray-200 dark:border-gray-700"
           >
-            <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-            <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-
-          <Button variant="ghost" size="icon-sm" aria-label="Notifications">
             <Bell className="size-4" />
           </Button>
 
