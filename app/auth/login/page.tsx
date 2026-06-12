@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Eye, EyeOff, Loader2, MapPin } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -39,8 +40,13 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
+      {/* Theme Toggle Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Left Panel */}
-      <div className="bg-primary relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2">
+      <div className="bg-primary dark:bg-primary/60 relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div
@@ -57,7 +63,7 @@ export default function LoginPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
             <MapPin className="text-secondary h-5 w-5" />
           </div>
-          <span className="text-xl font-semibold tracking-tight text-white">
+          <span className="text-xl font-semibold tracking-tight text-white dark:text-green-50">
             Landkeeper
           </span>
         </div>
@@ -103,21 +109,23 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel — Login Form */}
-      <div className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2">
+      <div className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-10 flex items-center gap-2 lg:hidden">
-            <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded-lg">
+            <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded-lg dark:bg-green-700">
               <MapPin className="h-4 w-4 text-white" />
             </div>
-            <span className="text-primary text-3xl font-semibold">
+            <span className="text-primary text-3xl font-semibold dark:text-green-400">
               Landkeeper
             </span>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Sign in</h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
+              Sign in
+            </h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Enter your credentials to access your account
             </p>
           </div>
@@ -127,7 +135,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <Label
                 htmlFor="email"
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 Email address
               </Label>
@@ -138,7 +146,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11 border-gray-200 focus:border-green-600 focus:ring-green-600"
+                className="h-11 border-gray-200 focus:border-green-600 focus:ring-green-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500"
               />
             </div>
 
@@ -147,7 +155,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <Label
                   htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   Password
                 </Label>
@@ -166,12 +174,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="focus:border-primary focus:ring-primary h-11 border-gray-200 pr-10"
+                  className="focus:border-primary focus:ring-primary h-11 border-gray-200 pr-10 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -199,7 +207,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-500">
+          <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
             Don&apos;t have an account?{" "}
             <a
               href="/auth/register"
@@ -209,7 +217,7 @@ export default function LoginPage() {
             </a>
           </p>
 
-          <p className="mt-8 text-center text-xs text-gray-400">
+          <p className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
             © {new Date().getFullYear()} Landkeeper. All rights reserved.
           </p>
         </div>
