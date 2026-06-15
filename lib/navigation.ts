@@ -70,14 +70,3 @@ export function getDashboardPath(role: UserRole | undefined): string {
   };
   return role ? paths[role] : "/auth/login";
 }
-
-export function getRoleDisplayName(role: UserRole | undefined): string {
-  const names: Record<UserRole, string> = {
-    ADMIN: "Administrator",
-    LANDLORD: "Landlord",
-    MORTGAGE_ADVISER: "Mortgage Adviser",
-    ACCOUNTANT: "Accountant",
-    LETTING_AGENT: "Letting Agent",
-  };
-  return role ? names[role] : "User";
-}

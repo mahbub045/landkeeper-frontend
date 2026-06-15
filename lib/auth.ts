@@ -45,19 +45,19 @@ export const authOptions: NextAuthOptions = {
           },
           {
             id: "2",
-            name: "Super Admin",
-            email: "super@test.com",
-            password: "super123",
+            name: "Landlord User",
+            email: "landlord@test.com",
+            password: "landlord123",
             role: "LANDLORD",
-            accessToken: "test-token-super",
+            accessToken: "test-token-landlord",
           },
           {
             id: "3",
-            name: "Test User",
-            email: "user@test.com",
-            password: "user123",
+            name: "Mortgage Adviser",
+            email: "mortgage@test.com",
+            password: "mortgage123",
             role: "MORTGAGE_ADVISER",
-            accessToken: "test-token-user",
+            accessToken: "test-token-mortgage",
           },
         ];
 

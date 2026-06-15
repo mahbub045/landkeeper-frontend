@@ -1,20 +1,28 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import type { UserRole } from "@/types/next-auth";
+import { useSession } from "next-auth/react";
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  ADMIN: 3,
+  ADMIN: 1,
   LANDLORD: 2,
-  TENANT: 1,
+  MORTGAGE_ADVISER: 3,
+  ACCOUNTANT: 4,
+  LETTING_AGENT: 5,
 };
 
-function hasPermission(userRole: UserRole | undefined, requiredRoles: UserRole[]): boolean {
+function hasPermission(
+  userRole: UserRole | undefined,
+  requiredRoles: UserRole[],
+): boolean {
   if (!userRole) return false;
   return requiredRoles.includes(userRole);
 }
 
-function hasHigherOrEqualRole(userRole: UserRole | undefined, requiredRole: UserRole): boolean {
+function hasHigherOrEqualRole(
+  userRole: UserRole | undefined,
+  requiredRole: UserRole,
+): boolean {
   if (!userRole) return false;
   return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[requiredRole];
 }

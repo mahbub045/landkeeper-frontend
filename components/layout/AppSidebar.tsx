@@ -16,10 +16,11 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { buildItems, getRoleDisplayName, type NavItem } from "@/lib/navigation";
+import { buildItems, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/next-auth";
-import { Building2 } from "lucide-react";
+import formatChoiceFieldValue from "@/utils/formatters";
+import { Building2, LoaderPinwheel } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,16 +71,23 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
   const userRole = user?.role as UserRole | undefined;
   const navItems = buildItems({ role: userRole });
 
+  if (status === "loading") {
+    return (
+      <Sidebar collapsible="icon">
+        <div className="flex h-full items-center justify-center">
+          <LoaderPinwheel className="animate-spin" />
+        </div>
+      </Sidebar>
+    );
+  }
+
   return (
-    <Sidebar
-      collapsible="icon"
-      // className="**:data-[sidebar=sidebar]:border-[#1a2744] **:data-[sidebar=sidebar]:bg-[#0b1426] **:data-[sidebar=sidebar]:text-white"
-    >
+    <Sidebar collapsible="icon">
       <SidebarHeader className="gap-3 px-4 py-4 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center">
           <div className="bg-primary flex size-8 shrink-0 items-center justify-center rounded-lg text-white">
@@ -122,11 +130,11 @@ export default function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="truncate text-sm font-semibold text-white">
+            <p className="truncate text-sm font-semibold">
               {user?.name ?? "User"}
             </p>
-            <p className="truncate text-xs text-white/50">
-              {getRoleDisplayName(userRole)}
+            <p className="truncate text-xs">
+              {formatChoiceFieldValue(userRole)}
             </p>
           </div>
         </div>

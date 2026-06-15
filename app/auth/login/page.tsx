@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Eye, EyeOff, Loader2, MapPin } from "lucide-react";
+import { Eye, EyeOff, LoaderPinwheel, MapPin } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -196,7 +196,7 @@ export default function LoginPage() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <LoaderPinwheel className="h-4 w-4 animate-spin" />
                   Signing in...
                 </>
               ) : (
