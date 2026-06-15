@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/sidebar";
 import { buildItems, getRoleDisplayName, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import type { UserRole } from "@/types/next-auth";
 import { Building2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { UserRole } from "@/types/next-auth";
 
 function getInitials(name?: string | null, email?: string | null) {
   if (name) {
@@ -47,23 +47,23 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
       {items.map((item) => (
         <SidebarMenuItem key={item.href}>
           <SidebarMenuButton
-          asChild
-          isActive={isNavActive(pathname, item.href)}
-          tooltip={item.label}
-          className="h-9 rounded-lg text-white/90 hover:bg-white/5 hover:text-white data-active:bg-primary data-active:text-white data-active:shadow-none"
-        >
-          <Link href={item.href}>
-            <item.icon />
-            <span>{item.label}</span>
-          </Link>
-        </SidebarMenuButton>
-        {item.badge ? (
-          <SidebarMenuBadge className="bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white">
-            {item.badge}
-          </SidebarMenuBadge>
-        ) : null}
-      </SidebarMenuItem>
-    ))}
+            asChild
+            isActive={isNavActive(pathname, item.href)}
+            tooltip={item.label}
+            className="data-active:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none"
+          >
+            <Link href={item.href}>
+              <item.icon />
+              <span>{item.label}</span>
+            </Link>
+          </SidebarMenuButton>
+          {item.badge ? (
+            <SidebarMenuBadge className="bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white!">
+              {item.badge}
+            </SidebarMenuBadge>
+          ) : null}
+        </SidebarMenuItem>
+      ))}
     </SidebarMenu>
   );
 }
@@ -78,11 +78,11 @@ export default function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="**:data-[sidebar=sidebar]:border-[#1a2744] **:data-[sidebar=sidebar]:bg-[#0b1426] **:data-[sidebar=sidebar]:text-white"
+      // className="**:data-[sidebar=sidebar]:border-[#1a2744] **:data-[sidebar=sidebar]:bg-[#0b1426] **:data-[sidebar=sidebar]:text-white"
     >
       <SidebarHeader className="gap-3 px-4 py-4 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+          <div className="bg-primary flex size-8 shrink-0 items-center justify-center rounded-lg text-white">
             <Building2 className="size-4" />
           </div>
           <span className="truncate text-base font-bold group-data-[collapsible=icon]:hidden">
@@ -99,11 +99,11 @@ export default function AppSidebar() {
         </span>
       </SidebarHeader>
 
-      <SidebarSeparator className="mx-0 h-px! bg-[#1a2744]!" />
+      <SidebarSeparator className="mx-0 h-px!" />
 
       <SidebarContent className="gap-1 px-2 py-2">
         <SidebarGroup className="p-0">
-          <SidebarGroupLabel className="px-3 text-[11px] font-semibold tracking-wider text-white/40 uppercase">
+          <SidebarGroupLabel className="px-3 text-[11px] font-semibold tracking-wider uppercase">
             Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -112,12 +112,12 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarSeparator className="mx-0 h-px! bg-[#1a2744]!" />
+      <SidebarSeparator className="mx-0 h-px!" />
 
       <SidebarFooter className="p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2">
         <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
           <Avatar size="sm">
-            <AvatarFallback className="bg-linear-to-br from-primary to-secondary text-xs font-semibold text-white">
+            <AvatarFallback className="from-primary to-secondary bg-linear-to-br text-xs font-semibold text-white">
               {getInitials(user?.name, user?.email)}
             </AvatarFallback>
           </Avatar>
