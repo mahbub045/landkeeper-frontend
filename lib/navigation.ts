@@ -26,6 +26,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: "/client/landlord/dashboard",
         icon: LayoutDashboard,
       },
+      {
+        label: "Tenants",
+        href: "/client/landlord/tenants",
+        icon: LayoutDashboard,
+      },
     ];
   }
 
