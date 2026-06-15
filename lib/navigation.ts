@@ -60,6 +60,16 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
 
   return [];
 };
+export function getDashboardPath(role: UserRole | undefined): string {
+  const paths: Record<UserRole, string> = {
+    ADMIN: "/admin/dashboard",
+    LANDLORD: "/client/landlord/dashboard",
+    MORTGAGE_ADVISER: "/client/mortgage-adviser/dashboard",
+    ACCOUNTANT: "/client/accountant/dashboard",
+    LETTING_AGENT: "/client/letting-agent/dashboard",
+  };
+  return role ? paths[role] : "/auth/login";
+}
 
 export function getRoleDisplayName(role: UserRole | undefined): string {
   const names: Record<UserRole, string> = {
