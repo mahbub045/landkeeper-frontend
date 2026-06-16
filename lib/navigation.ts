@@ -1,5 +1,5 @@
 import type { UserRole } from "@/types/next-auth";
-import { LayoutDashboard, type LucideIcon } from "lucide-react";
+import { ChartNoAxesCombined, Files, FileText, House, Landmark, LayoutDashboard, Settings, ShieldUser, UserKey, UsersRound, type LucideIcon } from "lucide-react";
 
 export type NavItem = {
   label: string;
@@ -27,9 +27,49 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: LayoutDashboard,
       },
       {
+        label: "Properties",
+        href: "/client/landlord/properties",
+        icon: House,
+      },
+      {
+        label: "Mortgages",
+        href: "/client/landlord/mortgages",
+        icon: Landmark,
+      },
+      {
         label: "Tenants",
         href: "/client/landlord/tenants",
-        icon: LayoutDashboard,
+        icon: UsersRound,
+      },
+      {
+        label: "Compliance",
+        href: "/client/landlord/compliance",
+        icon: ShieldUser,
+      },
+      {
+        label: "Documents",
+        href: "/client/landlord/documents",
+        icon: Files,
+      },
+      {
+        label: "Finance",
+        href: "/client/landlord/finance",
+        icon: ChartNoAxesCombined,
+      },
+      {
+        label: "Reports",
+        href: "/client/landlord/reports",
+        icon: FileText,
+      },
+      {
+        label: "Team Access",
+        href: "/client/landlord/team-access",
+        icon: UserKey,
+      },
+      {
+        label: "Settings",
+        href: "/client/landlord/settings",
+        icon:  Settings,
       },
     ];
   }
