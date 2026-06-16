@@ -69,7 +69,7 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
       {
         label: "Settings",
         href: "/client/landlord/settings",
-        icon: Settings,
+        icon:  Settings,
       },
     ];
   }
