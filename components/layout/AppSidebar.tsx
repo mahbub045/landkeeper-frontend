@@ -20,8 +20,10 @@ import { buildItems, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import type { UserRole } from "@/types/next-auth";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { Building2, LoaderPinwheel } from "lucide-react";
+import { LoaderPinwheel } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -75,6 +77,12 @@ export default function AppSidebar() {
   const user = session?.user;
   const userRole = user?.role as UserRole | undefined;
   const navItems = buildItems({ role: userRole });
+  const { resolvedTheme } = useTheme();
+
+  const logoSrc =
+    resolvedTheme === "dark"
+      ? "/images/logo-white.png"
+      : "/images/logo-black.png";
 
   if (status === "loading") {
     return (
@@ -90,12 +98,13 @@ export default function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="gap-3 px-4 py-4 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center">
-          <div className="bg-primary flex size-8 shrink-0 items-center justify-center rounded-lg text-white">
-            <Building2 className="size-4" />
-          </div>
-          <span className="truncate text-base font-bold group-data-[collapsible=icon]:hidden">
-            Landkeeper
-          </span>
+          <Image
+            src={logoSrc}
+            alt="Landkeeper"
+            width={400}
+            height={100}
+            className="h-12 w-44 rounded-xl"
+          />
         </div>
         <span
           className={cn(

@@ -4,19 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Eye, EyeOff, LoaderPinwheel, MapPin } from "lucide-react";
+import { Eye, EyeOff, LoaderPinwheel } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { resolvedTheme } = useTheme();
+
+  const logoSrc =
+    resolvedTheme === "dark"
+      ? "/images/logo-white.png"
+      : "/images/logo-black.png";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,14 +65,15 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Logo */}
+        {/* Logo large screen */}
         <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
-            <MapPin className="text-secondary h-5 w-5" />
-          </div>
-          <span className="text-xl font-semibold tracking-tight text-white dark:text-green-50">
-            Landkeeper
-          </span>
+          <Image
+            src="/images/logo-white.png"
+            alt="Landkeeper"
+            width={400}
+            height={100}
+            className="h-12 w-40 rounded-xl"
+          />
         </div>
 
         {/* Center content */}
@@ -112,13 +120,14 @@ export default function LoginPage() {
       <div className="flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="mb-10 flex items-center gap-2 lg:hidden">
-            <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded-lg dark:bg-green-700">
-              <MapPin className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-primary text-3xl font-semibold dark:text-green-400">
-              Landkeeper
-            </span>
+          <div className="mb-2 flex items-center justify-center gap-2 lg:hidden">
+            <Image
+              src={logoSrc}
+              alt="Landkeeper"
+              width={400}
+              height={150}
+              className="h-12 w-40 rounded-xl"
+            />
           </div>
 
           <div className="mb-8">
