@@ -18,12 +18,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, theme } = useTheme();
 
-  const logoSrc =
-    resolvedTheme === "dark"
-      ? "/images/logo-white.png"
-      : "/images/logo-black.png";
+  // Wait for theme to be available after hydration
+  const isDark = theme === "dark" || resolvedTheme === "dark";
+  const logoSrc = isDark ? "/images/logo-white.png" : "/images/logo-black.png";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,6 +126,7 @@ export default function LoginPage() {
               width={400}
               height={150}
               className="h-12 w-40 rounded-xl"
+              suppressHydrationWarning
             />
           </div>
 
