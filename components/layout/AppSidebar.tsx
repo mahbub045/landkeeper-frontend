@@ -53,7 +53,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
             asChild
             isActive={isNavActive(pathname, item.href)}
             tooltip={item.label}
-            className="data-active:bg-primary/90 data-active:hover:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none"
+            className="data-active:bg-primary/90 data-active:hover:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none data-active:hover:text-white"
           >
             <Link href={item.href}>
               <item.icon />
