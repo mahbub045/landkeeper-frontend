@@ -96,8 +96,8 @@ export default function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="gap-3 px-4 py-4 group-data-[collapsible=icon]:px-2">
-        <div className="flex items-center gap-2.5 group-data-[collapsible=icon]:justify-center">
+      <SidebarHeader className="gap-0 px-4 py-4 group-data-[collapsible=icon]:px-2">
+        <div className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <Image
             src={logoSrc}
             alt="Landkeeper"
