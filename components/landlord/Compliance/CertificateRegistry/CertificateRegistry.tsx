@@ -1,7 +1,12 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { CertificateRegistryProps, CertStatus } from '@/types/landlord/Compliance/ComplianceTypes';
+import { Table } from "@/components/ui/table";
+import {
+  CertStatus,
+  CertificateRegistryProps,
+} from "@/types/landlord/Compliance/ComplianceTypes";
 
 import { Download, Pencil } from "lucide-react";
 
@@ -51,7 +56,7 @@ export default function CertificateRegistry({
       </CardHeader>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <Table className="w-full">
           <thead>
             <tr className="border-b border-gray-100 dark:border-gray-700/50">
               {TABLE_COLUMNS.map((col) => (
@@ -95,18 +100,18 @@ export default function CertificateRegistry({
 
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button className="rounded-lg border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                    <Button variant="outline">
                       <Download className="size-4" />
-                    </button>
-                    <button className="rounded-lg border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                    </Button>
+                    <Button variant="outline">
                       <Pencil className="size-4" />
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     </Card>
   );
