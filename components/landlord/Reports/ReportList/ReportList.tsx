@@ -21,7 +21,7 @@ function ReportCard({ report }: { report: Report }) {
 
 const ReportList: React.FC = () => {
   return (
-    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
       {reports.map((report) => (
         <ReportCard key={report.id} report={report} />
       ))}

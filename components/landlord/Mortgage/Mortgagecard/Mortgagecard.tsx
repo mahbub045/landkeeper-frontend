@@ -9,7 +9,7 @@ import { Calculator, FileText, TriangleAlert } from 'lucide-react';
 
 const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
   return (
-    <div className='space-y-5 rounded-2xl bg-[#0f172a] p-6 text-white'>
+    <div className='space-y-5 rounded-2xl p-6 shadow-lg'>
       {/* Top row: property + lender name + rate */}
       <div className='flex items-start justify-between'>
         <div>
@@ -68,11 +68,11 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
 
       {/* Action buttons */}
       <div className='flex items-center gap-3'>
-        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20'>
+        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20'>
           <FileText className='size-4' />
           View Documents
         </button>
-        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20'>
+        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20'>
           <Calculator className='size-4' />
           Remortgage Calculator
         </button>
