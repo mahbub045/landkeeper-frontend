@@ -6,11 +6,9 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-export default function MainBodyShell({
+const MainBodyShell: React.FC<{ children: React.ReactNode }> = ({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}) => {
   return (
     <SidebarProvider>
       <TooltipProvider>
@@ -23,4 +21,6 @@ export default function MainBodyShell({
       </TooltipProvider>
     </SidebarProvider>
   );
-}
+};
+
+export default MainBodyShell;
