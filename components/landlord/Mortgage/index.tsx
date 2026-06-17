@@ -1,30 +1,33 @@
-"use client";
+'use client';
 
-import { Plus } from "lucide-react";
-import MortgageList from "./Mortgagelist/Mortgagelist";
-import SummaryCards from "./Summarycards/Summarycards";
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import MortgageList from './Mortgagelist/Mortgagelist';
+import SummaryCards from './Summarycards/Summarycards';
 
-export default function MortgageContainer() {
+const MortgageContainer: React.FC = () => {
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className='flex items-start justify-between'>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
             Mortgages
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className='text-sm text-gray-500 dark:text-gray-400'>
             Track and manage your property financing
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700">
-          <Plus className="size-4" />
+        <Button>
+          <Plus />
           Add Mortgage
-        </button>
+        </Button>
       </div>
 
       <SummaryCards />
       <MortgageList />
     </div>
   );
-}
+};
+
+export default MortgageContainer;

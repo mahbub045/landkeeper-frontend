@@ -5,9 +5,9 @@ import { portfolioData } from '@/data/landlord/dashboard/DashboardData';
 import { PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-export default function PortfolioDistribution() {
+const PortfolioDistribution: React.FC = () => {
   return (
-    <Card className='rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm'>
+    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='pb-2'>
         <div className='flex items-center gap-2'>
           <PieChartIcon className='size-4 text-indigo-500' />
@@ -37,18 +37,22 @@ export default function PortfolioDistribution() {
           </PieChart>
         </ResponsiveContainer>
         {/* Legend */}
-        <div className='flex items-center gap-6 mt-2'>
+        <div className='mt-2 flex items-center gap-6'>
           {portfolioData.map((entry) => (
             <div key={entry.name} className='flex items-center gap-1.5'>
               <span
                 className='inline-block size-3 rounded-sm'
                 style={{ backgroundColor: entry.color }}
               />
-              <span className='text-xs text-gray-600 dark:text-gray-400'>{entry.name}</span>
+              <span className='text-xs text-gray-600 dark:text-gray-400'>
+                {entry.name}
+              </span>
             </div>
           ))}
         </div>
       </CardContent>
     </Card>
   );
-}
+};
+
+export default PortfolioDistribution;

@@ -5,7 +5,15 @@ import { incomeExpensesData } from '@/data/landlord/dashboard/DashboardData';
 import { BarChart2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 const formatYAxis = (value: number) => `£${(value / 1000).toFixed(0)}k`;
 
@@ -19,7 +27,7 @@ function useResolvedTheme() {
   return isMounted ? resolvedTheme : 'light';
 }
 
-export default function IncomeExpensesChart() {
+const IncomeExpensesChart: React.FC = () => {
   const resolvedTheme = useResolvedTheme();
   const isDark = resolvedTheme === 'dark';
 
@@ -28,7 +36,7 @@ export default function IncomeExpensesChart() {
   const legendColor = isDark ? '#9ca3af' : '#6b7280';
 
   return (
-    <Card className='rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm'>
+    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
           <BarChart2 className='size-4 text-blue-500' />
@@ -36,7 +44,7 @@ export default function IncomeExpensesChart() {
             Income vs Expenses
           </CardTitle>
         </div>
-        <div className='flex items-center gap-1 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
+        <div className='flex cursor-pointer items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700/50'>
           Last 6 Months
           <span className='ml-1 text-gray-400 dark:text-gray-500'>▾</span>
         </div>
@@ -61,13 +69,29 @@ export default function IncomeExpensesChart() {
             <Legend
               iconType='square'
               iconSize={12}
-              wrapperStyle={{ paddingTop: 16, fontSize: 13, color: legendColor }}
+              wrapperStyle={{
+                paddingTop: 16,
+                fontSize: 13,
+                color: legendColor,
+              }}
             />
-            <Bar dataKey='income' name='Income' fill='#22c55e' radius={[3, 3, 0, 0]} />
-            <Bar dataKey='expenses' name='Expenses' fill='#ef4444' radius={[3, 3, 0, 0]} />
+            <Bar
+              dataKey='income'
+              name='Income'
+              fill='#22c55e'
+              radius={[3, 3, 0, 0]}
+            />
+            <Bar
+              dataKey='expenses'
+              name='Expenses'
+              fill='#ef4444'
+              radius={[3, 3, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
   );
-}
+};
+
+export default IncomeExpensesChart;

@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { activities } from '@/data/landlord/dashboard/DashboardData';
 import { Activity } from 'lucide-react';
 
-export default function RecentActivity() {
+const RecentActivity: React.FC = () => {
   return (
-    <Card className='rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm'>
+    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='pb-3'>
         <div className='flex items-center gap-2'>
           <Activity className='size-4 text-teal-500' />
@@ -15,27 +15,32 @@ export default function RecentActivity() {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className='px-4 pb-4 space-y-0'>
+      <CardContent className='space-y-0 px-4 pb-4'>
         {activities.map((activity) => {
           const Icon = activity.icon;
           return (
-            <div key={activity.id} className='flex items-start gap-3 py-3 relative'>
+            <div
+              key={activity.id}
+              className='relative flex items-start gap-3 py-3'
+            >
               {/* Left accent bar */}
               <div
-                className={`absolute left-0 top-3 bottom-3 w-0.5 rounded-full ${activity.accentColor}`}
+                className={`absolute top-3 bottom-3 left-0 w-0.5 rounded-full ${activity.accentColor}`}
               />
-              <div className={`ml-3 p-2 rounded-full ${activity.iconBg} shrink-0`}>
+              <div
+                className={`ml-3 rounded-full p-2 ${activity.iconBg} shrink-0`}
+              >
                 <Icon className={`size-4 ${activity.iconColor}`} />
               </div>
-              <div className='flex-1 min-w-0'>
+              <div className='min-w-0 flex-1'>
                 <p className={`text-sm font-semibold ${activity.titleColor}`}>
                   {activity.title}
                 </p>
-                <p className='text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate'>
+                <p className='mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400'>
                   {activity.subtitle}
                 </p>
               </div>
-              <p className='text-xs text-gray-400 dark:text-gray-500 shrink-0'>
+              <p className='shrink-0 text-xs text-gray-400 dark:text-gray-500'>
                 {activity.time}
               </p>
             </div>
@@ -44,4 +49,6 @@ export default function RecentActivity() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default RecentActivity;

@@ -2,35 +2,45 @@
 
 import { usageStats } from '@/data/landlord/settings/SettingsData';
 
-
-
-export default function SubscriptionSettings() {
+const SubscriptionSettings: React.FC = () => {
   return (
-    <div className='bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-6 shadow-sm space-y-6'>
-      <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>Subscription</h2>
+    <div className='space-y-6 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700/50 dark:bg-gray-800/50'>
+      <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
+        Subscription
+      </h2>
 
       {/* Plan banner */}
-      <div className='flex items-center justify-between bg-gray-900 dark:bg-gray-950 rounded-2xl px-6 py-5'>
+      <div className='flex items-center justify-between rounded-2xl bg-gray-900 px-6 py-5 dark:bg-gray-950'>
         <div>
           <p className='text-lg font-bold text-white'>Premium Plan</p>
-          <p className='text-sm text-gray-300 mt-0.5'>£24.99/month · Unlimited properties</p>
-          <p className='text-xs text-gray-400 mt-1'>Next billing: 15 June 2026</p>
+          <p className='mt-0.5 text-sm text-gray-300'>
+            £24.99/month · Unlimited properties
+          </p>
+          <p className='mt-1 text-xs text-gray-400'>
+            Next billing: 15 June 2026
+          </p>
         </div>
-        <button className='bg-white hover:bg-gray-100 text-gray-900 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors'>
+        <button className='rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100'>
           Manage Plan
         </button>
       </div>
 
       {/* Usage */}
       <div className='space-y-4'>
-        <p className='text-sm font-semibold text-gray-900 dark:text-white'>Usage</p>
+        <p className='text-sm font-semibold text-gray-900 dark:text-white'>
+          Usage
+        </p>
         {usageStats.map((stat) => (
           <div key={stat.label} className='space-y-1.5'>
             <div className='flex items-center justify-between'>
-              <span className='text-sm text-gray-600 dark:text-gray-400'>{stat.label}</span>
-              <span className='text-sm font-semibold text-gray-900 dark:text-white'>{stat.value}</span>
+              <span className='text-sm text-gray-600 dark:text-gray-400'>
+                {stat.label}
+              </span>
+              <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                {stat.value}
+              </span>
             </div>
-            <div className='h-2 w-full rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden'>
+            <div className='h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700'>
               <div
                 className='h-full rounded-full bg-blue-600'
                 style={{ width: `${stat.percent}%` }}
@@ -41,4 +51,6 @@ export default function SubscriptionSettings() {
       </div>
     </div>
   );
-}
+};
+
+export default SubscriptionSettings;

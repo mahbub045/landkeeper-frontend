@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { alerts } from '@/data/landlord/dashboard/DashboardData';
 import { Bell } from 'lucide-react';
 
-export default function AlertsReminders() {
+const AlertsReminders: React.FC = () => {
   return (
-    <Card className='rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm'>
+    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='pb-3'>
         <div className='flex items-center gap-2'>
           <Bell className='size-4 text-amber-500' />
@@ -15,7 +15,7 @@ export default function AlertsReminders() {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className='px-4 pb-4 space-y-0'>
+      <CardContent className='space-y-0 px-4 pb-4'>
         {alerts.map((alert, idx) => {
           const Icon = alert.icon;
           return (
@@ -27,14 +27,14 @@ export default function AlertsReminders() {
                   : ''
               }`}
             >
-              <div className={`p-2 rounded-full ${alert.iconBg} shrink-0`}>
+              <div className={`rounded-full p-2 ${alert.iconBg} shrink-0`}>
                 <Icon className={`size-4 ${alert.iconColor}`} />
               </div>
               <div>
                 <p className='text-sm font-semibold text-gray-800 dark:text-gray-100'>
                   {alert.title}
                 </p>
-                <p className='text-xs text-gray-500 dark:text-gray-400 mt-0.5'>
+                <p className='mt-0.5 text-xs text-gray-500 dark:text-gray-400'>
                   {alert.subtitle}
                 </p>
               </div>
@@ -44,4 +44,6 @@ export default function AlertsReminders() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export default AlertsReminders;
