@@ -68,7 +68,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
             <div className='flex shrink-0 items-center gap-2'>
               <Button
-                size='icon'
                 variant='outline'
                 aria-label='Download'
                 className='size-8'
@@ -77,7 +76,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
               </Button>
 
               <Button
-                size='icon'
                 variant='outline'
                 aria-label='Share'
                 className='size-8'
@@ -86,7 +84,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
               </Button>
 
               <Button
-                size='icon'
                 variant='outline'
                 aria-label='Delete'
                 className='text-danger hover:bg-danger/10 hover:text-danger size-8'

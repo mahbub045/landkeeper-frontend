@@ -55,10 +55,10 @@ const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
       </TableCell>
       <TableCell>
         <div className='flex justify-center items-center gap-2'>
-          <Button variant='outline' size='icon' className='size-8 rounded-lg'>
+          <Button variant='outline' className='size-8 rounded-lg'>
             <Eye className='size-4' />
           </Button>
-          <Button variant='outline' size='icon' className='size-8 rounded-lg'>
+          <Button variant='outline' className='size-8 rounded-lg'>
             <Mail className='size-4' />
           </Button>
         </div>

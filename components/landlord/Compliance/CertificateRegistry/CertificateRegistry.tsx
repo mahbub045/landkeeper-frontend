@@ -91,14 +91,12 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
                     <div className='flex justify-center items-center gap-2'>
                       <Button
                         variant='outline'
-                        size='icon'
                         className='size-8 rounded-lg'
                       >
                         <Download className='size-4' />
                       </Button>
                       <Button
                         variant='outline'
-                        size='icon'
                         className='size-8 rounded-lg'
                       >
                         <Pencil className='size-4' />
