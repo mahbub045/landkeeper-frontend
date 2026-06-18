@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
-  if (role === "ADMIN") return path.startsWith("/admin/");
+  if (role === "SUPER_ADMIN") return path.startsWith("/super-admin/");
   return path.startsWith("/client/");
 }
 
@@ -44,5 +44,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/", "/admin/:path*", "/client/:path*"],
+  matcher: ["/", "/super-admin/:path*", "/client/:path*"],
 };

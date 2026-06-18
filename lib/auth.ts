@@ -1,6 +1,6 @@
-import type { UserRole } from "@/types/next-auth";
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import type { UserRole } from '@/types/next-auth';
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 interface TestUser {
   id: string;
@@ -14,10 +14,10 @@ interface TestUser {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         // call your API here
@@ -36,28 +36,20 @@ export const authOptions: NextAuthOptions = {
         // ✅ TEST CREDENTIALS — remove before production
         const testUsers: TestUser[] = [
           {
-            id: "1",
-            name: "Admin User",
-            email: "rahat@admin.com",
-            password: "admin",
-            role: "ADMIN",
-            accessToken: "test-token-admin",
+            id: '1',
+            name: 'Admin User',
+            email: 'rahat@admin.com',
+            password: 'admin',
+            role: 'ADMIN',
+            accessToken: 'test-token-admin',
           },
           {
-            id: "2",
-            name: "Landlord User",
-            email: "landlord@test.com",
-            password: "landlord123",
-            role: "LANDLORD",
-            accessToken: "test-token-landlord",
-          },
-          {
-            id: "3",
-            name: "Mortgage Adviser",
-            email: "mortgage@test.com",
-            password: "mortgage123",
-            role: "MORTGAGE_ADVISER",
-            accessToken: "test-token-mortgage",
+            id: '2',
+            name: 'Landlord User',
+            email: 'landlord@test.com',
+            password: 'landlord123',
+            role: 'LANDLORD',
+            accessToken: 'test-token-landlord',
           },
         ];
 
@@ -101,11 +93,11 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "/auth/login", // ← your custom login page
+    signIn: '/auth/login', // ← your custom login page
   },
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
 
   secret: process.env.NEXTAUTH_SECRET,
