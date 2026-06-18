@@ -8,53 +8,75 @@ import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
+
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const { resolvedTheme, theme } = useTheme();
+
+  const { theme, resolvedTheme } = useTheme();
 
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
   const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
 
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
 
-    if (result?.error) {
-      toast.error('Invalid email or password. Please try again.');
-    } else {
-      toast.success('You have successfully logged in.');
-      router.push('/');
+      // Replace with your signup API call
+      /*
+      const response = await registerUser({
+        name: fullName,
+        email,
+        password,
+      });
+      */
+
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success('Account created successfully');
+
+      router.push('/auth/login');
+    } catch (error) {
+      toast.error('Failed to create account');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignup = async () => {
     setIsGoogleLoading(true);
-    await signIn('google', { callbackUrl: '/' });
-    // No need to setIsGoogleLoading(false) — page will redirect on success
-    // but reset on failure just in case
+
+    await signIn('google', {
+      callbackUrl: '/',
+    });
+
     setIsGoogleLoading(false);
   };
 
   return (
     <div className='flex min-h-screen'>
-      {/* Theme Toggle Button */}
+      {/* Theme Toggle */}
       <div className='fixed top-4 right-4 z-50'>
         <ThemeToggle />
       </div>
@@ -65,13 +87,14 @@ export default function LoginPage() {
           <div
             className='absolute top-0 left-0 h-full w-full'
             style={{
-              backgroundImage: `radial-gradient(circle at 25px 25px, white 2px, transparent 0)`,
+              backgroundImage:
+                'radial-gradient(circle at 25px 25px, white 2px, transparent 0)',
               backgroundSize: '50px 50px',
             }}
           />
         </div>
 
-        <div className='relative flex items-center gap-3'>
+        <div className='relative'>
           <Image
             src='/images/logo-white.png'
             alt='Landkeeper'
@@ -83,25 +106,38 @@ export default function LoginPage() {
 
         <div className='relative'>
           <h1 className='mb-4 text-4xl leading-tight font-bold text-white'>
-            Manage your land,
+            Start managing your land,
             <br />
-            <span className='text-secondary'>effortlessly.</span>
+            <span className='text-secondary'>with confidence.</span>
           </h1>
+
           <p className='text-secondary max-w-sm text-lg leading-relaxed'>
-            Track parcels, monitor applications, and stay on top of every land
-            management task — all in one place.
+            Create your account and gain access to powerful land management
+            tools designed for modern organizations.
           </p>
 
           <div className='mt-10 grid grid-cols-2 gap-6'>
             {[
-              { value: '12,400+', label: 'Land parcels tracked' },
-              { value: '98%', label: 'Uptime guarantee' },
-              { value: '340+', label: 'Organisations' },
-              { value: '24/7', label: 'Support available' },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className='text-2xl font-bold text-white'>{stat.value}</p>
-                <p className='text-secondary mt-1 text-sm'>{stat.label}</p>
+              {
+                value: '12,400+',
+                label: 'Land parcels tracked',
+              },
+              {
+                value: '340+',
+                label: 'Organisations',
+              },
+              {
+                value: '98%',
+                label: 'Customer satisfaction',
+              },
+              {
+                value: '24/7',
+                label: 'Support available',
+              },
+            ].map((item) => (
+              <div key={item.label}>
+                <p className='text-2xl font-bold text-white'>{item.value}</p>
+                <p className='text-secondary mt-1 text-sm'>{item.label}</p>
               </div>
             ))}
           </div>
@@ -109,46 +145,43 @@ export default function LoginPage() {
 
         <div className='border-secondary relative border-l-2 pl-4'>
           <p className='text-secondary text-sm italic'>
-            Landkeeper transformed how we handle our portfolio of 2,000+
-            parcels.
-          </p>
-          <p className='mt-2 text-xs text-white'>
-            — Director, National Land Authority
+            Join hundreds of organisations already using Landkeeper to manage
+            their land portfolios efficiently.
           </p>
         </div>
       </div>
 
-      {/* Right Panel — Login Form */}
+      {/* Right Panel */}
       <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
         <div className='w-full max-w-md'>
-          {/* Mobile logo */}
-          <div className='mb-2 flex items-center justify-center gap-2 lg:hidden'>
+          {/* Mobile Logo */}
+          <div className='mb-2 flex justify-center lg:hidden'>
             <Image
               src={logoSrc}
               alt='Landkeeper'
               width={400}
               height={150}
               className='h-12 w-40 rounded-xl'
-              suppressHydrationWarning
             />
           </div>
 
           <div className='mb-8'>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>
-              Sign in
+              Create Account
             </h2>
+
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
-              Enter your credentials to access your account
+              Create your account to get started
             </p>
           </div>
 
-          {/* Google Sign-In */}
+          {/* Google Signup */}
           <Button
             type='button'
             variant='outline'
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignup}
             disabled={isGoogleLoading || isLoading}
-            className='mb-6 h-11 w-full font-medium'
+            className='mb-6 h-11 w-full'
           >
             {isGoogleLoading ? (
               <LoaderPinwheel className='h-4 w-4 animate-spin' />
@@ -172,69 +205,58 @@ export default function LoginPage() {
                 />
               </svg>
             )}
-            {isGoogleLoading ? 'Signing in...' : 'Continue with Google'}
+
+            {isGoogleLoading ? 'Creating Account...' : 'Continue with Google'}
           </Button>
 
-          {/* Divider */}
           <div className='relative mb-6'>
             <div className='absolute inset-0 flex items-center'>
               <div className='w-full border-t border-gray-200 dark:border-gray-700' />
             </div>
+
             <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-gray-400 dark:bg-gray-900 dark:text-gray-500'>
-                or sign in with email
+              <span className='bg-white px-2 text-gray-400 dark:bg-gray-900'>
+                or continue with email
               </span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className='space-y-5'>
-            {/* Email */}
-            <div className='space-y-1.5'>
-              <Label
-                htmlFor='email'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300'
-              >
-                Email address
-              </Label>
+            <div>
+              <Label>Full Name</Label>
               <Input
-                id='email'
-                type='email'
-                placeholder='you@organisation.com'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder='John Doe'
                 required
               />
             </div>
 
-            {/* Password */}
-            <div className='space-y-1.5'>
-              <div className='flex items-center justify-between'>
-                <Label
-                  htmlFor='password'
-                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
-                >
-                  Password
-                </Label>
-                <a
-                  href='/auth/forgot-password'
-                  className='text-primary/80 hover:text-primary text-xs font-medium'
-                >
-                  Forgot password?
-                </a>
-              </div>
+            <div>
+              <Label>Email Address</Label>
+              <Input
+                type='email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder='you@example.com'
+                required
+              />
+            </div>
+
+            <div>
+              <Label>Password</Label>
               <div className='relative'>
                 <Input
-                  id='password'
                   type={showPassword ? 'text' : 'password'}
-                  placeholder='Enter your password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+                  className='absolute top-1/2 right-3 -translate-y-1/2'
                 >
                   {showPassword ? (
                     <EyeOff className='h-4 w-4' />
@@ -245,34 +267,54 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Submit */}
+            <div>
+              <Label>Confirm Password</Label>
+              <div className='relative'>
+                <Input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+
+                <button
+                  type='button'
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className='absolute top-1/2 right-3 -translate-y-1/2'
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className='h-4 w-4' />
+                  ) : (
+                    <Eye className='h-4 w-4' />
+                  )}
+                </button>
+              </div>
+            </div>
+
             <Button
               type='submit'
               disabled={isLoading || isGoogleLoading}
-              className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
+              className='bg-primary hover:bg-primary/80 h-11 w-full text-white'
             >
               {isLoading ? (
                 <>
                   <LoaderPinwheel className='h-4 w-4 animate-spin' />
-                  Signing in...
+                  Creating Account...
                 </>
               ) : (
-                'Sign in'
+                'Create Account'
               )}
             </Button>
           </form>
 
           <p className='mt-6 text-center text-sm text-gray-500 dark:text-gray-400'>
-            Don&apos;t have an account?{' '}
-            <a
-              href='/auth/signup'
-              className='text-primary/80 hover:text-primary font-medium'
-            >
-              Sign up
-            </a>
+            Already have an account?{' '}
+            <Link href='/auth/login' className='text-primary font-medium'>
+              Sign in
+            </Link>
           </p>
 
-          <p className='mt-8 text-center text-xs text-gray-400 dark:text-gray-500'>
+          <p className='mt-8 text-center text-xs text-gray-400'>
             © {new Date().getFullYear()} Landkeeper. All rights reserved.
           </p>
         </div>
