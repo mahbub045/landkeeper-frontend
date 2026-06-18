@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -17,6 +18,9 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
   return (
     <div className='bg-background relative flex min-h-screen items-center justify-center overflow-hidden px-6'>
+      <div className='fixed top-4 right-4 z-50'>
+        <ThemeToggle />
+      </div>
       {/* Background Pattern */}{' '}
       <div className='absolute inset-0 opacity-5'>
         <div

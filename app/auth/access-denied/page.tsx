@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Home, LogOut, ShieldAlert } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
@@ -31,6 +32,9 @@ export default function AccessDeniedPage() {
       <div className='bg-primary/10 absolute right-20 bottom-20 h-72 w-72 rounded-full blur-3xl' />
       <div className='relative w-full max-w-lg'>
         <div className='bg-card/80 rounded-3xl border p-10 text-center shadow-xl backdrop-blur'>
+          <div className='fixed top-4 right-4 z-50'>
+            <ThemeToggle />
+          </div>
           {/* Icon */}
           <div className='mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-red-500/10'>
             <ShieldAlert className='h-12 w-12 text-red-500' />
