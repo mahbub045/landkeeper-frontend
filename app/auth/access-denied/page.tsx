@@ -62,13 +62,13 @@ export default function AccessDeniedPage() {
             <Button
               onClick={handleLogout}
               variant='destructive'
-              className='min-w-[150px]'
+              className='min-w-37.5'
             >
               <LogOut />
               Logout
             </Button>
 
-            <Button asChild variant='outline' className='min-w-[150px]'>
+            <Button asChild variant='outline' className='min-w-37.5'>
               <Link href='/'>
                 <Home />
                 Dashboard
