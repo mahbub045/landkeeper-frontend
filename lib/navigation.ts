@@ -1,8 +1,8 @@
 import type { UserRole } from '@/types/next-auth';
 import {
   ChartNoAxesCombined,
-  Files,
   FileText,
+  Files,
   House,
   Landmark,
   LayoutDashboard,
@@ -118,5 +118,5 @@ export function getDashboardPath(role: UserRole | undefined): string {
     ADMIN: '/client/admin/dashboard',
     LETTING_AGENT: '/client/letting-agent/dashboard',
   };
-  return role ? paths[role] : '/auth/login';
+  return role && paths[role] ? paths[role] : '/auth/access-denied';
 }

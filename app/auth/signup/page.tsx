@@ -1,5 +1,6 @@
 'use client';
 
+import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -82,74 +83,7 @@ export default function SignupPage() {
       </div>
 
       {/* Left Panel */}
-      <div className='bg-primary dark:bg-primary/60 relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2'>
-        <div className='absolute inset-0 opacity-10'>
-          <div
-            className='absolute top-0 left-0 h-full w-full'
-            style={{
-              backgroundImage:
-                'radial-gradient(circle at 25px 25px, white 2px, transparent 0)',
-              backgroundSize: '50px 50px',
-            }}
-          />
-        </div>
-
-        <div className='relative'>
-          <Image
-            src='/images/logo-white.png'
-            alt='Landkeeper'
-            width={400}
-            height={100}
-            className='h-12 w-40 rounded-xl'
-          />
-        </div>
-
-        <div className='relative'>
-          <h1 className='mb-4 text-4xl leading-tight font-bold text-white'>
-            Start managing your land,
-            <br />
-            <span className='text-secondary'>with confidence.</span>
-          </h1>
-
-          <p className='text-secondary max-w-sm text-lg leading-relaxed'>
-            Create your account and gain access to powerful land management
-            tools designed for modern organizations.
-          </p>
-
-          <div className='mt-10 grid grid-cols-2 gap-6'>
-            {[
-              {
-                value: '12,400+',
-                label: 'Land parcels tracked',
-              },
-              {
-                value: '340+',
-                label: 'Organisations',
-              },
-              {
-                value: '98%',
-                label: 'Customer satisfaction',
-              },
-              {
-                value: '24/7',
-                label: 'Support available',
-              },
-            ].map((item) => (
-              <div key={item.label}>
-                <p className='text-2xl font-bold text-white'>{item.value}</p>
-                <p className='text-secondary mt-1 text-sm'>{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className='border-secondary relative border-l-2 pl-4'>
-          <p className='text-secondary text-sm italic'>
-            Join hundreds of organisations already using Landkeeper to manage
-            their land portfolios efficiently.
-          </p>
-        </div>
-      </div>
+      <AuthPageLeftPanel />
 
       {/* Right Panel */}
       <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>

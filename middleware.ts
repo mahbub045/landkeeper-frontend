@@ -14,7 +14,7 @@ function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   };
 
   const allowedPath = rolePathMap[role];
-  return path.startsWith(allowedPath);
+  return allowedPath ? path.startsWith(allowedPath) : false;
 }
 
 export default withAuth(
@@ -28,7 +28,7 @@ export default withAuth(
 
     const userRole = token.role as UserRole | undefined;
 
-    // Redirect root to appropriate dashboard
+    // Redirect root to appropriate dashboard or access denied if invalid role
     if (path === '/' || path === '') {
       return NextResponse.redirect(
         new URL(getDashboardPath(userRole), req.url),
@@ -37,9 +37,7 @@ export default withAuth(
 
     // Check if accessing wrong path
     if (!hasAccessToPath(userRole, path)) {
-      return NextResponse.redirect(
-        new URL(getDashboardPath(userRole), req.url),
-      );
+      return NextResponse.redirect(new URL('/auth/access-denied', req.url));
     }
 
     return NextResponse.next();
