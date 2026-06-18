@@ -12,17 +12,15 @@ function SummaryCard({
   iconColor,
 }: SummaryStat) {
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border rounded-2xl shadow-sm'>
       <CardContent className='px-6 py-3'>
         <div
-          className={`h-12 w-12 rounded-xl ${iconBg} mb-4 flex items-center justify-center`}
+          className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${iconBg}`}
         >
           <Icon className={`size-6 ${iconColor}`} />
         </div>
-        <p className='text-2xl font-bold text-gray-900 dark:text-white'>
-          {value}
-        </p>
-        <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>{label}</p>
+        <p className='text-foreground text-2xl font-bold'>{value}</p>
+        <p className='text-muted-foreground mt-1 text-sm'>{label}</p>
       </CardContent>
     </Card>
   );

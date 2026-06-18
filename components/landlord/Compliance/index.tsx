@@ -10,6 +10,7 @@ import { Plus } from 'lucide-react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceScore from './ComplianceScore/ComplianceScore';
 import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
+
 const COMPLIANCE_SCORE = 87;
 
 const CompliancePageContainer: React.FC = () => {
@@ -18,13 +19,12 @@ const CompliancePageContainer: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='flex items-start justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Compliance &amp; Certifications
           </h1>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>
+          <p className='text-muted-foreground text-sm'>
             Track certificates and regulatory requirements
           </p>
         </div>
@@ -34,7 +34,6 @@ const CompliancePageContainer: React.FC = () => {
         </Button>
       </div>
 
-      {/* Top two cards */}
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
         <ComplianceScore
           percent={COMPLIANCE_SCORE}
@@ -45,7 +44,6 @@ const CompliancePageContainer: React.FC = () => {
         <UpcomingExpirations items={upcomingExpirations} />
       </div>
 
-      {/* Certificate Registry */}
       <CertificateRegistry certificates={certificates} />
     </div>
   );

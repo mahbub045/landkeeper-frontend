@@ -7,24 +7,20 @@ import Members from './Members/Members';
 const TeamAccessContainer: React.FC = () => {
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='flex items-start justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Team Access
           </h1>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>
+          <p className='text-muted-foreground text-sm'>
             Manage professional access to your portfolio
           </p>
         </div>
-
         <Button>
           <UserPlus />
           Invite User
         </Button>
       </div>
-
-      {/* MemberList */}
       <Members />
     </div>
   );

@@ -39,7 +39,7 @@ const IncomeExpensesChart: React.FC = () => {
     <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
-          <BarChart2 className='size-4 text-blue-500' />
+          <BarChart2 className='size-4 text-primary' />
           <CardTitle className='text-base font-semibold text-gray-800 dark:text-gray-100'>
             Income vs Expenses
           </CardTitle>

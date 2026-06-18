@@ -11,10 +11,10 @@ const FinanceContainer: React.FC = () => {
     <div className='space-y-6'>
       <div className='flex items-start justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Financial Tracking
           </h1>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>
+          <p className='text-muted-foreground text-sm'>
             Income, expenses and tax preparation
           </p>
         </div>

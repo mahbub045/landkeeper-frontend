@@ -1,13 +1,20 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import {
   CertStatus,
   CertificateRegistryProps,
 } from '@/types/landlord/Compliance/ComplianceTypes';
-
 import { Download, Pencil } from 'lucide-react';
 
 const TABLE_COLUMNS = [
@@ -19,98 +26,89 @@ const TABLE_COLUMNS = [
   'Actions',
 ];
 
-function StatusBadge({ status }: { status: CertStatus }) {
-  if (status === 'Valid') {
-    return (
-      <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'>
-        <span className='inline-block size-1.5 rounded-full bg-emerald-500' />
-        Valid
-      </span>
-    );
-  }
-  if (status === 'Expired') {
-    return (
-      <span className='inline-flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600 dark:bg-red-900/30 dark:text-red-400'>
-        <span className='inline-block size-1.5 rounded-full bg-red-500' />
-        Expired
-      </span>
-    );
-  }
-  return (
-    <span className='inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'>
-      <span className='inline-block size-1.5 rounded-full bg-amber-500' />
-      Expiring Soon
-    </span>
-  );
-}
+const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
+  Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
+  Expired: { color: 'bg-danger/10 text-danger', dot: 'bg-danger' },
+  'Expiring Soon': { color: 'bg-warning/10 text-warning', dot: 'bg-warning' },
+};
 
 const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
   certificates,
 }) => {
   return (
-    <Card className='overflow-hidden rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
-      <CardHeader className='border-b border-gray-100 pb-3 dark:border-gray-700/50'>
-        <CardTitle className='text-base font-semibold text-gray-900 dark:text-white'>
+    <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
+      <CardHeader className='border-border border-b pb-3'>
+        <CardTitle className='text-foreground text-base font-semibold'>
           Certificate Registry
         </CardTitle>
       </CardHeader>
 
       <div className='overflow-x-auto'>
-        <Table className='w-full'>
-          <thead>
-            <tr className='border-b border-gray-100 dark:border-gray-700/50'>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {TABLE_COLUMNS.map((col) => (
-                <th
+                <TableHead
                   key={col}
-                  className='px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400'
+                  className='px-6 text-xs text-center font-semibold tracking-wider uppercase'
                 >
                   {col}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody className='divide-y divide-gray-100 dark:divide-gray-700/50'>
-            {certificates.map((cert) => (
-              <tr
-                key={cert.id}
-                className='transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40'
-              >
-                <td className='px-6 py-4 text-sm text-gray-700 dark:text-gray-300'>
-                  {cert.property}
-                </td>
-
-                <td className='px-6 py-4 text-sm text-gray-700 dark:text-gray-300'>
-                  <span className='flex items-center gap-2'>
-                    <span className='text-blue-500'>✳</span>
-                    {cert.type}
-                  </span>
-                </td>
-
-                <td className='px-6 py-4 text-sm text-gray-700 dark:text-gray-300'>
-                  {cert.issueDate}
-                </td>
-
-                <td className='px-6 py-4 text-sm text-gray-700 dark:text-gray-300'>
-                  {cert.expiryDate}
-                </td>
-
-                <td className='px-6 py-4'>
-                  <StatusBadge status={cert.status} />
-                </td>
-
-                <td className='px-6 py-4'>
-                  <div className='flex items-center gap-2'>
-                    <Button variant='outline'>
-                      <Download className='size-4' />
-                    </Button>
-                    <Button variant='outline'>
-                      <Pencil className='size-4' />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {certificates.map((cert) => {
+              const { color, dot } = statusConfig[cert.status];
+              return (
+                <TableRow key={cert.id} className='text-center'>
+                  <TableCell className='text-muted-foreground px-6 text-sm'>
+                    {cert.property}
+                  </TableCell>
+                  <TableCell className='text-muted-foreground px-6 text-sm'>
+                    <span className='flex justify-center items-center gap-2'>
+                      <span className='text-primary'>✳</span>
+                      {cert.type}
+                    </span>
+                  </TableCell>
+                  <TableCell className='text-muted-foreground px-6 text-sm'>
+                    {cert.issueDate}
+                  </TableCell>
+                  <TableCell className='text-muted-foreground px-6 text-sm'>
+                    {cert.expiryDate}
+                  </TableCell>
+                  <TableCell className='px-6'>
+                    <Badge
+                      className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
+                    >
+                      <span
+                        className={`inline-block size-1.5 rounded-full ${dot}`}
+                      />
+                      {cert.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className='px-6'>
+                    <div className='flex justify-center items-center gap-2'>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        className='size-8 rounded-lg'
+                      >
+                        <Download className='size-4' />
+                      </Button>
+                      <Button
+                        variant='outline'
+                        size='icon'
+                        className='size-8 rounded-lg'
+                      >
+                        <Pencil className='size-4' />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
         </Table>
       </div>
     </Card>

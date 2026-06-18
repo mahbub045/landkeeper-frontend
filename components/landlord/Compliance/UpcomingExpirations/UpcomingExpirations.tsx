@@ -5,9 +5,9 @@ import { UpcomingExpirationsProps } from '@/types/landlord/Compliance/Compliance
 
 const UpcomingExpirations: React.FC<UpcomingExpirationsProps> = ({ items }) => {
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border rounded-2xl shadow-sm'>
       <CardHeader className='pb-3'>
-        <CardTitle className='text-base font-semibold text-gray-900 dark:text-white'>
+        <CardTitle className='text-foreground text-base font-semibold'>
           Upcoming Expirations
         </CardTitle>
       </CardHeader>
@@ -17,20 +17,16 @@ const UpcomingExpirations: React.FC<UpcomingExpirationsProps> = ({ items }) => {
           return (
             <div
               key={item.id}
-              className={`flex items-start gap-3 py-4 ${
-                idx < items.length - 1
-                  ? 'border-b border-gray-100 dark:border-gray-700/50'
-                  : ''
-              }`}
+              className={`flex items-start gap-3 py-4 ${idx < items.length - 1 ? 'border-border border-b' : ''}`}
             >
-              <div className={`rounded-full p-2.5 ${item.iconBg} shrink-0`}>
+              <div className={`shrink-0 rounded-full p-2.5 ${item.iconBg}`}>
                 <Icon className={`size-4 ${item.iconColor}`} />
               </div>
               <div>
-                <p className='text-sm font-semibold text-gray-800 dark:text-gray-100'>
+                <p className='text-foreground text-sm font-semibold'>
                   {item.title}
                 </p>
-                <p className='mt-0.5 text-xs text-gray-500 dark:text-gray-400'>
+                <p className='text-muted-foreground mt-0.5 text-xs'>
                   {item.subtitle}
                 </p>
               </div>

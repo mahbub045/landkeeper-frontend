@@ -12,7 +12,6 @@ function DonutChart({ percent }: { percent: number }) {
 
   return (
     <svg viewBox='0 0 200 200' className='h-44 w-44'>
-      {/* Track */}
       <circle
         cx={cx}
         cy={cy}
@@ -20,9 +19,8 @@ function DonutChart({ percent }: { percent: number }) {
         fill='none'
         stroke='currentColor'
         strokeWidth='14'
-        className='text-gray-200 dark:text-gray-700'
+        className='text-muted'
       />
-      {/* Fill */}
       <circle
         cx={cx}
         cy={cy}
@@ -34,13 +32,12 @@ function DonutChart({ percent }: { percent: number }) {
         strokeDasharray={`${filled} ${circumference}`}
         transform={`rotate(-90 ${cx} ${cy})`}
       />
-      {/* Label */}
       <text
         x={cx}
         y={cy - 8}
         textAnchor='middle'
         dominantBaseline='middle'
-        className='fill-gray-900 dark:fill-white'
+        className='fill-foreground'
         style={{ fontSize: 28, fontWeight: 700 }}
       >
         {percent}%
@@ -50,7 +47,7 @@ function DonutChart({ percent }: { percent: number }) {
         y={cy + 18}
         textAnchor='middle'
         dominantBaseline='middle'
-        className='fill-gray-500 dark:fill-gray-400'
+        className='fill-muted-foreground'
         style={{ fontSize: 13 }}
       >
         Compliant
@@ -66,16 +63,16 @@ const ComplianceScore: React.FC<ComplianceScoreProps> = ({
   breakdown,
 }) => {
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border rounded-2xl shadow-sm'>
       <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold text-gray-900 dark:text-white'>
+        <CardTitle className='text-foreground text-base font-semibold'>
           Compliance Score
         </CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col items-center gap-4 pb-6'>
         <DonutChart percent={percent} />
 
-        <p className='text-sm text-gray-500 dark:text-gray-400'>
+        <p className='text-muted-foreground text-sm'>
           {validCount} of {totalCount} properties have valid certificates
         </p>
 
@@ -83,16 +80,16 @@ const ComplianceScore: React.FC<ComplianceScoreProps> = ({
           {breakdown.map((item) => (
             <div key={item.label}>
               <div className='mb-1.5 flex items-center justify-between'>
-                <span className='text-sm text-gray-700 dark:text-gray-300'>
+                <span className='text-muted-foreground text-sm'>
                   {item.label}
                 </span>
-                <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                <span className='text-foreground text-sm font-semibold'>
                   {item.current}/{item.total}
                 </span>
               </div>
-              <div className='h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700'>
+              <div className='bg-muted h-2.5 w-full rounded-full'>
                 <div
-                  className={`h-2.5 rounded-full ${item.color} transition-all`}
+                  className={`h-2.5 rounded-full transition-all ${item.color}`}
                   style={{ width: `${(item.current / item.total) * 100}%` }}
                 />
               </div>

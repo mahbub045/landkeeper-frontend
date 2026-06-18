@@ -16,8 +16,8 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
   if (properties.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-20 text-center'>
-        <Home className='mb-3 size-10 text-gray-300 dark:text-gray-600' />
-        <p className='text-sm font-medium text-gray-500 dark:text-gray-400'>
+        <Home className='text-muted mb-3 size-10' />
+        <p className='text-muted-foreground text-sm font-medium'>
           No properties found for &quot;{activeFilter}&quot;
         </p>
       </div>

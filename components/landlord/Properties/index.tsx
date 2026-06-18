@@ -18,13 +18,12 @@ const PropertiesContainer: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='flex items-start justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
+          <h1 className='text-2xl font-bold tracking-tight text-foreground'>
             Properties
           </h1>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>
+          <p className='text-sm text-muted-foreground'>
             Manage your property portfolio
           </p>
         </div>
