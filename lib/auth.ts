@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         // call your API here
-        // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
         //   method: "POST",
         //   body: JSON.stringify(credentials),
         //   headers: { "Content-Type": "application/json" },
@@ -93,7 +93,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: '/auth/login', // ← your custom login page
+    signIn: '/auth/signin', // ← your custom login page
   },
 
   session: {

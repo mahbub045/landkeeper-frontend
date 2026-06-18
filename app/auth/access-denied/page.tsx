@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function AccessDeniedPage() {
   const handleLogout = async () => {
     await signOut({
-      callbackUrl: '/auth/login',
+      callbackUrl: '/auth/signin',
       redirect: true,
     });
   };

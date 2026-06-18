@@ -11,7 +11,7 @@ export default async function MainBodyLayout({
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect('/auth/login');
+    redirect('/auth/signin');
   }
 
   return <MainBodyShell>{children}</MainBodyShell>;

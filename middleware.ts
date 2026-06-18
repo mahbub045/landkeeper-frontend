@@ -23,7 +23,7 @@ export default withAuth(
     const path = req.nextUrl.pathname;
 
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
 
     const userRole = token.role as UserRole | undefined;
@@ -44,7 +44,7 @@ export default withAuth(
   },
   {
     pages: {
-      signIn: '/auth/login',
+      signIn: '/auth/signin',
     },
   },
 );

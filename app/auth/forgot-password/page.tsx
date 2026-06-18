@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
               >
                 Send to another email
               </Button>
-              <Link href='/auth/login' className='block text-center'>
+              <Link href='/auth/signin' className='block text-center'>
                 <Button
                   type='button'
                   className='bg-primary hover:bg-primary/80 h-11 w-full text-white'
@@ -135,7 +135,7 @@ export default function ForgotPasswordPage() {
           <p className='mt-6 text-center text-sm text-gray-500 dark:text-gray-400'>
             Remember your password?{' '}
             <Link
-              href='/auth/login'
+              href='/auth/signin'
               className='text-primary/80 hover:text-primary font-medium'
             >
               Sign in

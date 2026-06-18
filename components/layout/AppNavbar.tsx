@@ -127,7 +127,7 @@ const AppNavbar: React.FC = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant='destructive'
-                  onClick={() => signOut({ callbackUrl: '/auth/login' })}
+                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
                   className='cursor-pointer'
                 >
                   <LogOut className='size-4' />

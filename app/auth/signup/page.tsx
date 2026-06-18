@@ -57,7 +57,7 @@ export default function SignupPage() {
 
       toast.success('Account created successfully');
 
-      router.push('/auth/login');
+      router.push('/auth/signin');
     } catch (error) {
       toast.error('Failed to create account');
     } finally {
@@ -244,7 +244,7 @@ export default function SignupPage() {
 
           <p className='mt-6 text-center text-sm text-gray-500 dark:text-gray-400'>
             Already have an account?{' '}
-            <Link href='/auth/login' className='text-primary font-medium'>
+            <Link href='/auth/signin' className='text-primary font-medium'>
               Sign in
             </Link>
           </p>
