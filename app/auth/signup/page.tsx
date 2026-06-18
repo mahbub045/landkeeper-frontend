@@ -225,6 +225,7 @@ export default function SignupPage() {
             <div>
               <Label>Full Name</Label>
               <Input
+                type='text'
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder='John Doe'
