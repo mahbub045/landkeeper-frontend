@@ -213,8 +213,8 @@ const AppSidebar: React.FC = () => {
 
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
         <div className='flex items-center gap-3 group-data-[collapsible=icon]:justify-center'>
-          <Avatar size='sm'>
-            <AvatarFallback className='from-primary to-secondary bg-linear-to-br text-xs font-semibold text-white'>
+          <Avatar size='lg'>
+            <AvatarFallback className='bg-primary text-xs font-semibold text-white'>
               {getInitials(user?.name, user?.email)}
             </AvatarFallback>
           </Avatar>
