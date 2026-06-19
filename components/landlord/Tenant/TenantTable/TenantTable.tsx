@@ -40,10 +40,10 @@ const TenantTable: React.FC<TenantTableProps> = ({
             placeholder='Search tenants...'
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className='w-56 rounded-xl'
+            className='h-9! w-56 rounded-xl'
           />
-          <Button variant='outline' size='icon' className='rounded-xl'>
-            <Download className='size-4' />
+          <Button variant='outline' size='lg' className='rounded-lg'>
+            <Download />
           </Button>
         </div>
       </div>
@@ -55,7 +55,7 @@ const TenantTable: React.FC<TenantTableProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-xs text-center font-semibold tracking-wider uppercase'
+                  className='px-6 text-center text-xs font-semibold tracking-wider uppercase'
                 >
                   {col}
                 </TableHead>

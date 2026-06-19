@@ -50,7 +50,7 @@ const DocumentsContainer: React.FC = () => {
         </div>
 
         <Button>
-          <Upload className='size-4' />
+          <Upload />
           Upload Document
         </Button>
       </div>

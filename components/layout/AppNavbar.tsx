@@ -83,7 +83,7 @@ const AppNavbar: React.FC = () => {
               className='border border-gray-200 sm:hidden dark:border-gray-700'
               onClick={() => setSearchOpen(true)}
             >
-              <Search className='size-4' />
+              <Search />
             </Button>
 
             <ThemeToggle />
@@ -94,14 +94,16 @@ const AppNavbar: React.FC = () => {
               aria-label='Notifications'
               className='border border-gray-200 dark:border-gray-700'
             >
-              <Bell className='size-4' />
+              <Bell />
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant='ghost'
-                  className='relative size-8 rounded-full p-0'
+                  size='icon-sm'
+                  aria-label='User menu'
+                  className='relative rounded-full p-0'
                 >
                   <Avatar size='sm'>
                     <AvatarFallback className='bg-primary text-xs text-white'>

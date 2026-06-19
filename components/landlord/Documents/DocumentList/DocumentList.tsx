@@ -67,28 +67,21 @@ const DocumentList: React.FC<DocumentListProps> = ({
             </div>
 
             <div className='flex shrink-0 items-center gap-2'>
-              <Button
-                variant='outline'
-                aria-label='Download'
-                className='size-8'
-              >
-                <Download className='size-3.5' />
+              <Button variant='outline' size='icon' aria-label='Download'>
+                <Download />
+              </Button>
+
+              <Button variant='outline' size='icon' aria-label='Share'>
+                <Share2 />
               </Button>
 
               <Button
                 variant='outline'
-                aria-label='Share'
-                className='size-8'
-              >
-                <Share2 className='size-3.5' />
-              </Button>
-
-              <Button
-                variant='outline'
+                size='icon'
                 aria-label='Delete'
-                className='text-danger hover:bg-danger/10 hover:text-danger size-8'
+                className='text-danger hover:bg-danger/10 hover:text-danger'
               >
-                <Trash2 className='size-3.5' />
+                <Trash2 />
               </Button>
             </div>
           </CardContent>

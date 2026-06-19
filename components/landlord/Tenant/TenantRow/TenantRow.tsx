@@ -16,7 +16,7 @@ const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
   return (
     <TableRow className='text-center'>
       <TableCell>
-        <div className='flex justify-center items-center gap-3'>
+        <div className='flex items-center justify-center gap-3'>
           <div
             className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(idx)}`}
           >
@@ -54,12 +54,12 @@ const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
         </Badge>
       </TableCell>
       <TableCell>
-        <div className='flex justify-center items-center gap-2'>
-          <Button variant='outline' className='size-8 rounded-lg'>
-            <Eye className='size-4' />
+        <div className='flex items-center justify-center gap-2'>
+          <Button variant='outline' size='icon' className='rounded-lg'>
+            <Eye />
           </Button>
-          <Button variant='outline' className='size-8 rounded-lg'>
-            <Mail className='size-4' />
+          <Button variant='outline' size='icon' className='rounded-lg'>
+            <Mail />
           </Button>
         </div>
       </TableCell>

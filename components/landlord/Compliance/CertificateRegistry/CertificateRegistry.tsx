@@ -50,7 +50,7 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-xs text-center font-semibold tracking-wider uppercase'
+                  className='px-6 text-center text-xs font-semibold tracking-wider uppercase'
                 >
                   {col}
                 </TableHead>
@@ -66,7 +66,7 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
                     {cert.property}
                   </TableCell>
                   <TableCell className='text-muted-foreground px-6 text-sm'>
-                    <span className='flex justify-center items-center gap-2'>
+                    <span className='flex items-center justify-center gap-2'>
                       <span className='text-primary'>✳</span>
                       {cert.type}
                     </span>
@@ -88,18 +88,20 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
                     </Badge>
                   </TableCell>
                   <TableCell className='px-6'>
-                    <div className='flex justify-center items-center gap-2'>
+                    <div className='flex items-center justify-center gap-2'>
                       <Button
                         variant='outline'
-                        className='size-8 rounded-lg'
+                        size='icon'
+                        className='rounded-lg'
                       >
-                        <Download className='size-4' />
+                        <Download />
                       </Button>
                       <Button
                         variant='outline'
-                        className='size-8 rounded-lg'
+                        size='icon'
+                        className='rounded-lg'
                       >
-                        <Pencil className='size-4' />
+                        <Pencil />
                       </Button>
                     </div>
                   </TableCell>
