@@ -1,5 +1,5 @@
-import TenantsContainer from "@/components/landlord/Tenant";
+import TenantsContainer from '@/components/landlord/Tenant';
 
-export default function page() {
+export default function TenantsPage() {
   return <TenantsContainer />;
 }

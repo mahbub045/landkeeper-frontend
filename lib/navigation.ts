@@ -10,14 +10,16 @@ import {
   ShieldUser,
   UserKey,
   UsersRound,
+  Wrench,
   type LucideIcon,
 } from 'lucide-react';
 
 export type NavItem = {
   label: string;
-  href: string;
+  href?: string;
   icon: LucideIcon;
   badge?: number;
+  children?: NavItem[];
 };
 
 interface BuildItemsOptions {
@@ -73,19 +75,25 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ChartNoAxesCombined,
       },
       {
-        label: 'Reports',
-        href: '/client/landlord/reports',
-        icon: FileText,
-      },
-      {
-        label: 'Team Access',
-        href: '/client/landlord/team-access',
-        icon: UserKey,
-      },
-      {
-        label: 'Settings',
-        href: '/client/landlord/settings',
-        icon: Settings,
+        label: 'Tools',
+        icon: Wrench,
+        children: [
+          {
+            label: 'Reports',
+            href: '/client/landlord/tools/reports',
+            icon: FileText,
+          },
+          {
+            label: 'Team Access',
+            href: '/client/landlord/tools/team-access',
+            icon: UserKey,
+          },
+          {
+            label: 'Settings',
+            href: '/client/landlord/tools/settings',
+            icon: Settings,
+          },
+        ],
       },
     ];
   }

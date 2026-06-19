@@ -1,17 +1,19 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { reports } from '@/data/landlord/reports/ReportsData';
-import { Report } from '@/types/landlord/Reports/ReportsType';
+import { reports } from '@/data/landlord/tools/reports/ReportsData';
+import { Report } from '@/types/landlord/Tools/Reports/ReportsType';
 
 function ReportCard({ report }: { report: Report }) {
   return (
-    <Card className='cursor-pointer border-border shadow-sm transition-all hover:shadow-md'>
+    <Card className='border-border cursor-pointer shadow-sm transition-all hover:shadow-md'>
       <CardContent className='flex flex-col items-center justify-center gap-4 p-8 text-center'>
         {report.icon}
         <div>
-          <p className='text-base font-bold text-foreground'>{report.title}</p>
-          <p className='mt-1 text-sm text-muted-foreground'>{report.description}</p>
+          <p className='text-foreground text-base font-bold'>{report.title}</p>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            {report.description}
+          </p>
         </div>
       </CardContent>
     </Card>

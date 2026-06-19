@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { TeamMember } from '@/types/landlord/TeamAccess/TeamAccessTypes';
+import { TeamMember } from '@/types/landlord/Tools/TeamAccess/TeamAccessTypes';
 import { getInitials } from '@/utils/formatters';
 import { Key, Pencil, Trash2 } from 'lucide-react';
 

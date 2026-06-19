@@ -2,8 +2,8 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { defaultNotifications } from '@/data/landlord/settings/SettingsData';
-import { NotificationSetting } from '@/types/landlord/Settings/SettingsTypes';
+import { defaultNotifications } from '@/data/landlord/tools/settings/SettingsData';
+import { NotificationSetting } from '@/types/landlord/Tools/Settings/SettingsTypes';
 import { useState } from 'react';
 
 const NotificationSettings: React.FC = () => {
@@ -13,25 +13,29 @@ const NotificationSettings: React.FC = () => {
   return (
     <Card className='pt-0'>
       <CardContent className='p-6'>
-        <h2 className='mb-5 text-sm font-semibold text-foreground'>
+        <h2 className='text-foreground mb-5 text-sm font-semibold'>
           Notifications
         </h2>
-        <div className='divide-y divide-border'>
+        <div className='divide-border divide-y'>
           {notifications.map((n) => (
             <div
               key={n.id}
               className='flex items-center justify-between py-4 first:pt-0 last:pb-0'
             >
               <div>
-                <p className='text-sm font-bold text-foreground'>{n.title}</p>
-                <p className='mt-0.5 text-xs text-muted-foreground'>{n.description}</p>
+                <p className='text-foreground text-sm font-bold'>{n.title}</p>
+                <p className='text-muted-foreground mt-0.5 text-xs'>
+                  {n.description}
+                </p>
               </div>
               <Switch
                 checked={n.enabled}
                 onCheckedChange={() =>
                   setNotifications((prev) =>
                     prev.map((item) =>
-                      item.id === n.id ? { ...item, enabled: !item.enabled } : item,
+                      item.id === n.id
+                        ? { ...item, enabled: !item.enabled }
+                        : item,
                     ),
                   )
                 }

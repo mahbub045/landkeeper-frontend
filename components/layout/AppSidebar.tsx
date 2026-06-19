@@ -13,6 +13,9 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
@@ -20,12 +23,13 @@ import { buildItems, type NavItem } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import type { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue from '@/utils/formatters';
-import { LoaderPinwheel } from 'lucide-react';
+import { ChevronRight, LoaderPinwheel } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 
 function getInitials(name?: string | null, email?: string | null) {
   if (name) {
@@ -45,28 +49,103 @@ function isNavActive(pathname: string, href: string) {
 }
 
 function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
+  const [openItems, setOpenItems] = React.useState<Set<string>>(new Set());
+
+  const toggleOpen = (label: string) => {
+    setOpenItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
+  };
+
+  const isParentActive = (item: NavItem): boolean => {
+    if (Array.isArray(item.children)) {
+      return item.children.some(
+        (child) => child.href && isNavActive(pathname, child.href),
+      );
+    }
+    return item.href ? isNavActive(pathname, item.href) : false;
+  };
+
   return (
     <SidebarMenu>
-      {items.map((item) => (
-        <SidebarMenuItem key={item.href}>
-          <SidebarMenuButton
-            asChild
-            isActive={isNavActive(pathname, item.href)}
-            tooltip={item.label}
-            className='data-active:bg-primary/90 data-active:hover:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none data-active:hover:text-white'
-          >
-            <Link href={item.href}>
-              <item.icon />
-              <span>{item.label}</span>
-            </Link>
-          </SidebarMenuButton>
-          {item.badge ? (
-            <SidebarMenuBadge className='bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white!'>
-              {item.badge}
-            </SidebarMenuBadge>
-          ) : null}
-        </SidebarMenuItem>
-      ))}
+      {items.map((item, index) => {
+        const key = item.href || `${item.label}-${index}`;
+        const hasChildren =
+          Array.isArray(item.children) && item.children.length > 0;
+        const isActive = isParentActive(item);
+
+        return (
+          <SidebarMenuItem key={key}>
+            {hasChildren ? (
+              <>
+                <SidebarMenuButton
+                  onClick={() => toggleOpen(item.label)}
+                  isActive={isActive}
+                  tooltip={item.label}
+                  className='data-active:bg-primary/90 data-active:hover:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none data-active:hover:text-white'
+                >
+                  <item.icon />
+                  <span>{item.label}</span>
+                  <ChevronRight
+                    className={cn(
+                      'ml-auto transition-transform',
+                      openItems.has(item.label) && 'rotate-90',
+                    )}
+                  />
+                </SidebarMenuButton>
+                {openItems.has(item.label) && (
+                  <SidebarMenuSub>
+                    {item.children!.map((child) => (
+                      <SidebarMenuSubItem key={child.href || child.label}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={
+                            child.href
+                              ? isNavActive(pathname, child.href)
+                              : false
+                          }
+                        >
+                          <Link href={child.href || '#'}>
+                            <child.icon />
+                            <span>{child.label}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                )}
+              </>
+            ) : (
+              item.href && (
+                <>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isNavActive(pathname, item.href)}
+                    tooltip={item.label}
+                    className='data-active:bg-primary/90 data-active:hover:bg-primary h-9 rounded-lg data-active:text-white data-active:shadow-none data-active:hover:text-white'
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  {item.badge ? (
+                    <SidebarMenuBadge className='bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white!'>
+                      {item.badge}
+                    </SidebarMenuBadge>
+                  ) : null}
+                </>
+              )
+            )}
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }

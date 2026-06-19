@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { members } from '@/data/landlord/teamAccess/TeamAccessData';
+import { members } from '@/data/landlord/tools/teamAccess/TeamAccessData';
 import MemberList from '../MemberList/MemberList';
 
 const Members: React.FC = () => {

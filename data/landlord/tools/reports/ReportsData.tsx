@@ -1,5 +1,12 @@
-import { Report } from '@/types/landlord/Reports/ReportsType';
-import { Building2, Calculator, FileText, Landmark, LineChart, ShieldCheck } from 'lucide-react';
+import { Report } from '@/types/landlord/Tools/Reports/ReportsType';
+import {
+  Building2,
+  Calculator,
+  FileText,
+  Landmark,
+  LineChart,
+  ShieldCheck,
+} from 'lucide-react';
 
 export const reports: Report[] = [
   {
