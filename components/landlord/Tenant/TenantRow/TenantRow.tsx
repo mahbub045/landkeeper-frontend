@@ -1,11 +1,14 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getInitials } from '@/data/landlord/teamAccess/TeamAccessData';
-import { avatarColor } from '@/data/landlord/tenant/TenantData';
+import { avatarColors } from '@/data/landlord/tenant/TenantData';
 import { Tenant } from '@/types/landlord/Tenant/TenantTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, getInitials } from '@/utils/formatters';
 import { Eye, Mail } from 'lucide-react';
+
+function avatarColor(idx: number) {
+  return avatarColors[idx % avatarColors.length];
+}
 
 const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
   tenant,

@@ -59,13 +59,3 @@ export const properties: Property[] = [
   },
 ];
 
-export const filterTabs: FilterTab[] = ['All', 'Residential', 'HMO', 'Commercial', 'Occupied', 'Vacant'];
-
-// ── Filter logic ─────────────────────────────────────────────────────────────
-
-export function filterProperties(list: Property[], tab: FilterTab): Property[] {
-  if (tab === 'All') return list;
-  if (tab === 'Occupied') return list.filter((p) => p.status === 'Occupied');
-  if (tab === 'Vacant') return list.filter((p) => p.status === 'Vacant');
-  return list.filter((p) => p.type === tab.toLowerCase());
-}

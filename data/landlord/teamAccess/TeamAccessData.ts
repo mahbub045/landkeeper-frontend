@@ -26,10 +26,3 @@ export const members: TeamMember[] = [
     status: "Pending",
   },
 ];
-
-export function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("");
-}

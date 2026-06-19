@@ -63,16 +63,6 @@ export const tenants: Tenant[] = [
   },
 ];
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-export function getInitials(name: string) {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 export const avatarColors = [
   'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400',
@@ -83,6 +73,3 @@ export const avatarColors = [
   'bg-teal-100 text-teal-600 dark:bg-teal-900/40 dark:text-teal-400',
 ];
 
-export function avatarColor(idx: number) {
-  return avatarColors[idx % avatarColors.length];
-}
