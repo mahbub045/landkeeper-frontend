@@ -43,34 +43,6 @@ const PropertiesContainer: React.FC = () => {
           <Plus />
           Add Property
         </Button>
-        <Button variant='outline'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='secondary'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='ghost'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='destructive'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='success'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='warning'>
-          <Plus />
-          Add Property
-        </Button>
-        <Button variant='danger'>
-          <Plus />
-          Add Property
-        </Button>
       </div>
 
       <PropertyFilter
