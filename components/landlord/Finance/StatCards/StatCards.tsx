@@ -1,5 +1,6 @@
 'use client';
 
+import { getCurrencySign } from '@/utils/formatters';
 import { Calculator, Percent, TrendingDown, TrendingUp } from 'lucide-react';
 
 function StatCard({
@@ -36,7 +37,8 @@ const StatCards: React.FC = () => {
         icon={
           <TrendingUp className='size-5 text-emerald-600 dark:text-emerald-400' />
         }
-        value='£51,000'
+        // value='£51,000'
+        value={`${getCurrencySign()}51,000`}
         label='YTD Income'
       />
       <StatCard
@@ -44,7 +46,7 @@ const StatCards: React.FC = () => {
         icon={
           <TrendingDown className='size-5 text-red-500 dark:text-red-400' />
         }
-        value='£18,450'
+        value={`${getCurrencySign()}18,450`}
         label='YTD Expenses'
       />
       <StatCard
@@ -52,7 +54,7 @@ const StatCards: React.FC = () => {
         icon={
           <Calculator className='size-5 text-blue-600 dark:text-blue-400' />
         }
-        value='£32,550'
+        value={`${getCurrencySign()}32,550`}
         label='Net Profit'
       />
       <StatCard

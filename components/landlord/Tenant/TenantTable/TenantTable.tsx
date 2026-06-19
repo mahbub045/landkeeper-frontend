@@ -1,6 +1,16 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { TenantTableProps } from '@/types/landlord/Tenant/TenantTypes';
 import { Download } from 'lucide-react';
 import TenantRow from '../TenantRow/TenantRow';
@@ -21,59 +31,54 @@ const TenantTable: React.FC<TenantTableProps> = ({
   onSearchChange,
 }) => {
   return (
-    <Card className='overflow-hidden rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
-      {/* Card header */}
-      <div className='flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-700/50'>
-        <h2 className='text-base font-semibold text-gray-900 dark:text-white'>
-          All Tenants
-        </h2>
+    <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
+      <div className='border-border flex items-center justify-between border-b px-6 py-4'>
+        <h2 className='text-foreground text-base font-semibold'>All Tenants</h2>
         <div className='flex items-center gap-2'>
-          <div className='relative flex items-center'>
-            <input
-              type='text'
-              placeholder='Search tenants...'
-              value={search}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className='w-56 rounded-xl border border-gray-200 bg-white py-2 pr-4 pl-10 text-sm text-gray-700 transition-colors placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder:text-gray-500'
-            />
-          </div>
-          <button className='rounded-xl border border-gray-200 p-2 text-gray-500 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700/50'>
+          <Input
+            type='text'
+            placeholder='Search tenants...'
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className='w-56 rounded-xl'
+          />
+          <Button variant='outline' size='icon' className='rounded-xl'>
             <Download className='size-4' />
-          </button>
+          </Button>
         </div>
       </div>
 
-      {/* Table */}
       <div className='overflow-x-auto'>
-        <table className='w-full'>
-          <thead>
-            <tr className='border-b border-gray-100 dark:border-gray-700/50'>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {TABLE_COLUMNS.map((col) => (
-                <th
+                <TableHead
                   key={col}
-                  className='px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400'
+                  className='px-6 text-xs text-center font-semibold tracking-wider uppercase'
                 >
                   {col}
-                </th>
+                </TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody className='divide-y divide-gray-100 dark:divide-gray-700/50'>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {tenants.length > 0 ? (
               tenants.map((tenant, idx) => (
                 <TenantRow key={tenant.id} tenant={tenant} idx={idx} />
               ))
             ) : (
-              <tr>
-                <td colSpan={7} className='px-6 py-16 text-center'>
-                  <p className='text-sm text-gray-500 dark:text-gray-400'>
-                    No tenants found for &quot;{search}&quot;
-                  </p>
-                </td>
-              </tr>
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className='text-muted-foreground py-16 text-center text-sm'
+                >
+                  No tenants found for &quot;{search}&quot;
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </Card>
   );

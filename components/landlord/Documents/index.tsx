@@ -1,17 +1,22 @@
 'use client';
 
+import { Upload } from 'lucide-react';
+import { useMemo, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+
 import {
   documents,
   filterTabs,
   tabCategoryMap,
 } from '@/data/landlord/documents/DocumentsData';
+
 import {
   FilterTab,
   PropertyDocument,
 } from '@/types/landlord/Documents/DocumentTypes';
-import { Upload } from 'lucide-react';
-import { useState } from 'react';
+
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
 
@@ -20,31 +25,37 @@ function filterDocuments(
   tab: FilterTab,
 ): PropertyDocument[] {
   if (tab === 'All') return list;
-  return list.filter((d) => tabCategoryMap[tab].includes(d.category));
+
+  return list.filter((doc) => tabCategoryMap[tab].includes(doc.category));
 }
 
 const DocumentsContainer: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
-  const filtered = filterDocuments(documents, activeFilter);
+
+  const filteredDocuments = useMemo(
+    () => filterDocuments(documents, activeFilter),
+    [activeFilter],
+  );
 
   return (
     <div className='space-y-6'>
       {/* Header */}
-      <div className='flex items-start justify-between'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div>
-          <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-            Documents
-          </h1>
-          <p className='text-sm text-gray-500 dark:text-gray-400'>
+          <h1 className='text-foreground text-2xl font-bold'>Documents</h1>
+
+          <p className='text-muted-foreground mt-1 text-sm'>
             Manage all property-related documents
           </p>
         </div>
+
         <Button>
-          <Upload />
+          <Upload className='size-4' />
           Upload Document
         </Button>
       </div>
 
+      {/* Filters */}
       <DocumentFilter
         filterTabs={filterTabs}
         activeFilter={activeFilter}
@@ -52,17 +63,24 @@ const DocumentsContainer: React.FC = () => {
       />
 
       {/* Document Library */}
-      <div className='overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-700/50 dark:bg-gray-800/30'>
-        <div className='flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-700/50'>
-          <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
+      <Card className='overflow-hidden'>
+        <CardHeader className='flex flex-row items-center justify-between border-b'>
+          <h2 className='text-foreground text-sm font-semibold'>
             Document Library
           </h2>
-          <span className='text-sm text-gray-400 dark:text-gray-500'>
-            {filtered.length} documents
+
+          <span className='text-muted-foreground text-sm'>
+            {filteredDocuments.length} documents
           </span>
-        </div>
-        <DocumentList documents={filtered} activeFilter={activeFilter} />
-      </div>
+        </CardHeader>
+
+        <CardContent className='p-0'>
+          <DocumentList
+            documents={filteredDocuments}
+            activeFilter={activeFilter}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 };

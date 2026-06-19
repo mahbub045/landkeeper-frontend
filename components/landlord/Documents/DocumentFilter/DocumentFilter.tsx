@@ -1,5 +1,7 @@
 'use client';
 
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+
 import { FilterTab } from '@/types/landlord/Documents/DocumentTypes';
 
 interface DocumentFilterProps {
@@ -14,21 +16,24 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({
   onFilterChange,
 }) => {
   return (
-    <div className='flex flex-wrap items-center gap-2'>
+    <ToggleGroup
+      type='single'
+      value={activeFilter}
+      onValueChange={(value) => {
+        if (value) onFilterChange(value as FilterTab);
+      }}
+      className='flex flex-wrap justify-start gap-2'
+    >
       {filterTabs.map((tab) => (
-        <button
+        <ToggleGroupItem
           key={tab}
-          onClick={() => onFilterChange(tab)}
-          className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-            activeFilter === tab
-              ? 'border-blue-600 bg-blue-600 text-white'
-              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:bg-transparent dark:text-gray-300 dark:hover:border-gray-400'
-          }`}
+          value={tab}
+          className='data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium'
         >
           {tab}
-        </button>
+        </ToggleGroupItem>
       ))}
-    </div>
+    </ToggleGroup>
   );
 };
 

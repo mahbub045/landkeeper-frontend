@@ -1,5 +1,8 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   formatCurrency,
   formatTerm,
@@ -9,75 +12,82 @@ import { Calculator, FileText, TriangleAlert } from 'lucide-react';
 
 const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
   return (
-    <div className='space-y-5 rounded-2xl p-6 shadow-lg'>
-      {/* Top row: property + lender name + rate */}
-      <div className='flex items-start justify-between'>
-        <div>
-          <p className='text-sm text-gray-400'>{mortgage.property}</p>
-          <div className='mt-1 flex flex-wrap items-center gap-3'>
-            <h2 className='text-xl font-bold'>
-              {mortgage.lender} – {mortgage.type}
-            </h2>
-            {mortgage.renewalDue && (
-              <span className='flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400'>
-                <TriangleAlert className='size-3.5' />
-                Renewal Due
-              </span>
-            )}
+    <Card className='shadow-lg'>
+      <CardContent className='space-y-5 p-6'>
+        {/* Top row: property + lender name + rate */}
+        <div className='flex items-start justify-between'>
+          <div>
+            <p className='text-muted-foreground text-sm'>{mortgage.property}</p>
+            <div className='mt-1 flex flex-wrap items-center gap-3'>
+              <h2 className='text-xl font-bold'>
+                {mortgage.lender} – {mortgage.type}
+              </h2>
+              {mortgage.renewalDue && (
+                <Badge
+                  variant='outline'
+                  className='border-danger/40 bg-danger/15 text-danger flex items-center gap-1.5'
+                >
+                  <TriangleAlert className='size-3.5' />
+                  Renewal Due
+                </Badge>
+              )}
+            </div>
+          </div>
+          <div className='shrink-0 text-right'>
+            <p className='text-muted-foreground text-xs'>Rate</p>
+            <p className='text-2xl font-bold'>{mortgage.interestRate}%</p>
           </div>
         </div>
-        <div className='shrink-0 text-right'>
-          <p className='text-xs text-gray-400'>Rate</p>
-          <p className='text-2xl font-bold'>{mortgage.interestRate}%</p>
-        </div>
-      </div>
 
-      {/* Outstanding balance */}
-      <div>
-        <p className='text-3xl font-bold'>
-          {formatCurrency(mortgage.outstandingBalance)}
-        </p>
-        <p className='mt-1 text-sm text-gray-400'>Outstanding Balance</p>
-      </div>
-
-      <div className='border-t border-white/10' />
-
-      {/* Three stats */}
-      <div className='grid grid-cols-3 gap-4'>
+        {/* Outstanding balance */}
         <div>
-          <p className='text-xs text-gray-400'>Original Loan</p>
-          <p className='mt-1 text-base font-semibold'>
-            {formatCurrency(mortgage.originalLoan)}
+          <p className='text-3xl font-bold'>
+            {formatCurrency(mortgage.outstandingBalance)}
+          </p>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            Outstanding Balance
           </p>
         </div>
-        <div>
-          <p className='text-xs text-gray-400'>Monthly Payment</p>
-          <p className='mt-1 text-base font-semibold'>
-            {formatCurrency(mortgage.monthlyPayment)}
-          </p>
-        </div>
-        <div>
-          <p className='text-xs text-gray-400'>Term Remaining</p>
-          <p className='mt-1 text-base font-semibold'>
-            {formatTerm(mortgage.termRemainingMonths)}
-          </p>
-        </div>
-      </div>
 
-      <div className='border-t border-white/10' />
+        <div className='border-border border-t' />
 
-      {/* Action buttons */}
-      <div className='flex items-center gap-3'>
-        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20'>
-          <FileText className='size-4' />
-          View Documents
-        </button>
-        <button className='flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20'>
-          <Calculator className='size-4' />
-          Remortgage Calculator
-        </button>
-      </div>
-    </div>
+        {/* Three stats */}
+        <div className='grid grid-cols-3 gap-4'>
+          <div>
+            <p className='text-muted-foreground text-xs'>Original Loan</p>
+            <p className='mt-1 text-base font-semibold'>
+              {formatCurrency(mortgage.originalLoan)}
+            </p>
+          </div>
+          <div>
+            <p className='text-muted-foreground text-xs'>Monthly Payment</p>
+            <p className='mt-1 text-base font-semibold'>
+              {formatCurrency(mortgage.monthlyPayment)}
+            </p>
+          </div>
+          <div>
+            <p className='text-muted-foreground text-xs'>Term Remaining</p>
+            <p className='mt-1 text-base font-semibold'>
+              {formatTerm(mortgage.termRemainingMonths)}
+            </p>
+          </div>
+        </div>
+
+        <div className='border-border border-t' />
+
+        {/* Action buttons */}
+        <div className='flex items-center gap-3'>
+          <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
+            <FileText className='size-4' />
+            View Documents
+          </Button>
+          <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
+            <Calculator className='size-4' />
+            Remortgage Calculator
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
