@@ -9,21 +9,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/80 cursor-pointer',
+        default: 'bg-primary/95 text-primary-foreground hover:bg-primary cursor-pointer',
         outline:
           'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 cursor-pointer',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground cursor-pointer',
+          'bg-secondary/95 text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground cursor-pointer',
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 cursor-pointer',
         destructive:
           'bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40 cursor-pointer',
         link: 'text-primary underline-offset-4 hover:underline cursor-pointer',
         success:
-          'bg-success text-success-foreground shadow-xs hover:bg-success/90 cursor-pointer',
+          'bg-success/95 text-success-foreground shadow-xs hover:bg-success cursor-pointer',
         warning:
-          'bg-warning text-warning-foreground shadow-xs hover:bg-warning/90 cursor-pointer',
-        danger: 'bg-danger text-danger-foreground shadow-xs hover:bg-danger/90 cursor-pointer',
+          'bg-warning/95 text-warning-foreground shadow-xs hover:bg-warning cursor-pointer',
+        danger: 'bg-danger/95 text-danger-foreground shadow-xs hover:bg-danger cursor-pointer',
       },
       size: {
         default:
