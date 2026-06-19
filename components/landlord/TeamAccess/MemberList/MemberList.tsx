@@ -3,8 +3,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { getInitials } from '@/data/landlord/teamAccess/TeamAccessData';
 import { TeamMember } from '@/types/landlord/TeamAccess/TeamAccessTypes';
+import { getInitials } from '@/utils/formatters';
 import { Key, Pencil, Trash2 } from 'lucide-react';
 
 const MemberList: React.FC<{ member: TeamMember }> = ({ member }) => {

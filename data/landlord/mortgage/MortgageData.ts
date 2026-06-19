@@ -83,13 +83,3 @@ export const summaryStats: SummaryStat[] = [
     iconColor: 'text-amber-500',
   },
 ];
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-export function formatCurrency(value: number): string {
-  return `£${value.toLocaleString('en-GB')}`;
-}
-
-export function formatTerm(months: number): string {
-  return months === 0 ? '0 months' : `${months} month${months !== 1 ? 's' : ''}`;
-}

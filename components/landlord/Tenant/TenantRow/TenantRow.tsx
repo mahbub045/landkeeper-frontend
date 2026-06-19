@@ -1,11 +1,14 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getInitials } from '@/data/landlord/teamAccess/TeamAccessData';
-import { avatarColor } from '@/data/landlord/tenant/TenantData';
+import { avatarColors } from '@/data/landlord/tenant/TenantData';
 import { Tenant } from '@/types/landlord/Tenant/TenantTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, getInitials } from '@/utils/formatters';
 import { Eye, Mail } from 'lucide-react';
+
+function avatarColor(idx: number) {
+  return avatarColors[idx % avatarColors.length];
+}
 
 const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
   tenant,
@@ -16,7 +19,7 @@ const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
   return (
     <TableRow className='text-center'>
       <TableCell>
-        <div className='flex justify-center items-center gap-3'>
+        <div className='flex items-center justify-center gap-3'>
           <div
             className={`flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(idx)}`}
           >
@@ -54,7 +57,7 @@ const TenantRow: React.FC<{ tenant: Tenant; idx: number }> = ({
         </Badge>
       </TableCell>
       <TableCell>
-        <div className='flex justify-center items-center gap-2'>
+        <div className='flex items-center justify-center gap-2'>
           <Button variant='outline' className='size-8 rounded-lg'>
             <Eye className='size-4' />
           </Button>

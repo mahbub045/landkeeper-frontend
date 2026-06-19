@@ -3,11 +3,8 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  formatCurrency,
-  formatTerm,
-} from '@/data/landlord/mortgage/MortgageData';
 import { MortgageCardProps } from '@/types/landlord/Mortgage/MortgageTypes';
+import { formatTerm, getCurrencySign } from '@/utils/formatters';
 import { Calculator, FileText, TriangleAlert } from 'lucide-react';
 
 const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
@@ -42,7 +39,8 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
         {/* Outstanding balance */}
         <div>
           <p className='text-3xl font-bold'>
-            {formatCurrency(mortgage.outstandingBalance)}
+            {getCurrencySign()}
+            {mortgage.outstandingBalance.toLocaleString('en-GB')}
           </p>
           <p className='text-muted-foreground mt-1 text-sm'>
             Outstanding Balance
@@ -56,13 +54,15 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
           <div>
             <p className='text-muted-foreground text-xs'>Original Loan</p>
             <p className='mt-1 text-base font-semibold'>
-              {formatCurrency(mortgage.originalLoan)}
+              {getCurrencySign()}
+              {mortgage.originalLoan}
             </p>
           </div>
           <div>
             <p className='text-muted-foreground text-xs'>Monthly Payment</p>
             <p className='mt-1 text-base font-semibold'>
-              {formatCurrency(mortgage.monthlyPayment)}
+              {getCurrencySign()}
+              {mortgage.monthlyPayment}
             </p>
           </div>
           <div>
