@@ -48,7 +48,7 @@ const AppNavbar: React.FC = () => {
           <Input
             type='text'
             autoFocus
-            className='flex-1'
+            className='h-9! flex-1'
             placeholder='Search properties, tenants, or documents...'
           />
           <Button
@@ -66,7 +66,7 @@ const AppNavbar: React.FC = () => {
           <div className='hidden sm:block'>
             <Input
               type='text'
-              className='min-w-sm'
+              className='h-9! min-w-sm'
               placeholder='Search properties, tenants, or documents...'
             />
           </div>
