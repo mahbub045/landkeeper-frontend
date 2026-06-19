@@ -66,6 +66,7 @@ export default function SetPasswordPage() {
               height={150}
               className='h-12 w-40 rounded-xl'
               suppressHydrationWarning
+              loading='eager'
             />
           </div>
 

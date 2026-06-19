@@ -96,6 +96,7 @@ export default function SignupPage() {
               width={400}
               height={150}
               className='h-12 w-40 rounded-xl'
+              loading='eager'
             />
           </div>
 

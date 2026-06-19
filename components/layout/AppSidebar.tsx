@@ -183,6 +183,7 @@ const AppSidebar: React.FC = () => {
             width={400}
             height={100}
             className='h-12 w-44 rounded-xl'
+            loading='eager'
           />
         </div>
         <span
