@@ -110,9 +110,16 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                               ? isNavActive(pathname, child.href)
                               : false
                           }
+                          className='data-active:bg-primary/95 data-active:hover:bg-primary rounded-lg data-active:text-white data-active:shadow-none data-active:hover:text-white'
                         >
                           <Link href={child.href || '#'}>
-                            <child.icon />
+                            <child.icon
+                              className={cn(
+                                'h-4 w-4',
+                                isNavActive(pathname, child.href || '') &&
+                                  'text-white!',
+                              )}
+                            />
                             <span>{child.label}</span>
                           </Link>
                         </SidebarMenuSubButton>
