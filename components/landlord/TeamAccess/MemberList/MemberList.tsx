@@ -45,15 +45,18 @@ const MemberList: React.FC<{ member: TeamMember }> = ({ member }) => {
           <Button
             aria-label='Edit'
             variant='outline'
-            className='size-9 rounded-xl'
+            size='icon'
+            className='rounded-lg'
           >
-            <Pencil className='size-3.5' />
+            <Pencil />
           </Button>
           <Button
             aria-label='Remove'
-            className='bg-danger hover:bg-danger/90 size-9 rounded-xl text-white'
+            variant='danger'
+            size='icon'
+            className='rounded-lg'
           >
-            <Trash2 className='size-3.5' />
+            <Trash2 />
           </Button>
         </div>
       </CardContent>

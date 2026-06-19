@@ -78,11 +78,11 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
         {/* Action buttons */}
         <div className='flex items-center gap-3'>
           <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
-            <FileText className='size-4' />
+            <FileText />
             View Documents
           </Button>
           <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
-            <Calculator className='size-4' />
+            <Calculator />
             Remortgage Calculator
           </Button>
         </div>
