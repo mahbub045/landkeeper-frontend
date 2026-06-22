@@ -12,7 +12,16 @@ const MemberList: React.FC<{ member: TeamMember }> = ({ member }) => {
 
   return (
     <Card>
-      <CardContent className='flex items-center gap-4 px-4 py-4'>
+      <CardContent className='relative flex items-center gap-4 px-4 py-4'>
+        <Badge
+          className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${isActive ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
+        >
+          <span
+            className={`inline-block size-1.5 rounded-full ${isActive ? 'bg-success' : 'bg-warning'}`}
+          />
+          {member.status}
+        </Badge>
+
         {/* Avatar */}
         <div className='bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full'>
           <span className='text-primary text-sm font-bold'>
@@ -34,14 +43,6 @@ const MemberList: React.FC<{ member: TeamMember }> = ({ member }) => {
 
         {/* Actions */}
         <div className='flex shrink-0 items-center gap-2'>
-          <Badge
-            className={`gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-inherit ${isActive ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
-          >
-            <span
-              className={`inline-block size-1.5 rounded-full ${isActive ? 'bg-success' : 'bg-warning'}`}
-            />
-            {member.status}
-          </Badge>
           <Button
             aria-label='Edit'
             variant='outline'
