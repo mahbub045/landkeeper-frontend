@@ -14,6 +14,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Bell, LogOut, Search, User, X } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
@@ -122,10 +123,12 @@ const AppNavbar: React.FC = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className='cursor-pointer'>
-                  <User className='size-4' />
-                  Profile
-                </DropdownMenuItem>
+                <Link href='/client/profile-settings' passHref>
+                  <DropdownMenuItem className='cursor-pointer'>
+                    <User className='size-4' />
+                    Profile Settings
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant='destructive'
