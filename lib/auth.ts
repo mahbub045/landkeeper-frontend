@@ -1,15 +1,5 @@
-import type { UserRole } from '@/types/next-auth';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-
-interface TestUser {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  accessToken: string;
-}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,54 +11,20 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         // call your API here
-        // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
-        //   method: "POST",
-        //   body: JSON.stringify(credentials),
-        //   headers: { "Content-Type": "application/json" },
-        // })
-
-        // const user = await res.json()
-
-        // if (res.ok && user) {
-        //   return user
-        // }
-
-        // ✅ TEST CREDENTIALS — remove before production
-        const testUsers: TestUser[] = [
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
           {
-            id: '1',
-            name: 'Admin User',
-            email: 'rahat@admin.com',
-            password: 'admin',
-            role: 'ADMIN',
-            accessToken: 'test-token-admin',
+            method: 'POST',
+            body: JSON.stringify(credentials),
+            headers: { 'Content-Type': 'application/json' },
           },
-          {
-            id: '2',
-            name: 'Landlord User',
-            email: 'landlord@test.com',
-            password: 'landlord123',
-            role: 'LANDLORD',
-            accessToken: 'test-token-landlord',
-          },
-        ];
-
-        const user = testUsers.find(
-          (u) =>
-            u.email === credentials?.email &&
-            u.password === credentials?.password,
         );
 
-        if (user) {
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            accessToken: user.accessToken,
-          };
+        const user = await res.json();
+
+        if (res.ok && user) {
+          return user;
         }
-        // ✅ TEST CREDENTIALS — remove before production end
 
         return null;
       },
