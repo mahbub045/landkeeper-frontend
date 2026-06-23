@@ -8,9 +8,9 @@ import {
 } from '@/types/client/Landlord/Properties/PropertyTypes';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
-import AddPropertyModal from './Dialogs/AddPropertyModal';
 
 const PropertiesContainer: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
@@ -63,7 +63,7 @@ const PropertiesContainer: React.FC = () => {
 
       <PropertyGrid properties={filtered} activeFilter={activeFilter} />
 
-      <AddPropertyModal
+      <AddPropertyDialog
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={handleSuccess}

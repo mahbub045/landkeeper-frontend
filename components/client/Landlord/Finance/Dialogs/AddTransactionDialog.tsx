@@ -48,7 +48,7 @@ function validate(
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
+const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -299,4 +299,4 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   );
 };
 
-export default AddTransactionModal;
+export default AddTransactionDialog;

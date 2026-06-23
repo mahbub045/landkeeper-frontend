@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import MortgageList from './MortgageList/MortgageList';
 import SummaryCards from './SummaryCards/SummaryCards';
-import AddMortgageModal from './Dialogs/AddMortgageModal';
+import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 
 const MortgageContainer: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,7 +30,7 @@ const MortgageContainer: React.FC = () => {
       <SummaryCards />
       <MortgageList />
 
-      <AddMortgageModal
+      <AddMortgageDialog
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={() => {

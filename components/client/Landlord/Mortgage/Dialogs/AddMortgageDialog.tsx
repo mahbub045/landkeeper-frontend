@@ -24,7 +24,7 @@ import {
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-const AddMortgageModal: React.FC<AddMortgageModalProps> = ({
+const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -348,4 +348,4 @@ const AddMortgageModal: React.FC<AddMortgageModalProps> = ({
   );
 };
 
-export default AddMortgageModal;
+export default AddMortgageDialog;

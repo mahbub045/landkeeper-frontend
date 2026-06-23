@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import InviteTeamMemberModal from './Dialogs/InviteTeamMemberModal';
 import Members from './Members/Members';
+import InviteTeamMemberDialog from './Dialogs/InviteTeamMemberModal';
 
 const TeamAccessContainer: React.FC = () => {
   const [inviteOpen, setInviteOpen] = useState(false); // ← new
@@ -28,7 +28,7 @@ const TeamAccessContainer: React.FC = () => {
       <Members />
 
       {/* Invite Team Member modal */}
-      <InviteTeamMemberModal
+      <InviteTeamMemberDialog
         open={inviteOpen}
         onClose={() => setInviteOpen(false)}
         onSuccess={() => {

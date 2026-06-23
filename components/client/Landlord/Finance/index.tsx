@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import AddTransactionDialog from './Dialogs/AddTransactionDialog';
 import MonthlyChart from './MonthlyChart/MonthlyChart';
 import RecentTransactions from './RecentTransactions/RecentTransactions';
 import StatCards from './StatCards/StatCards';
-import AddTransactionModal from './Dialogs/AddTransactionmodal';
 
 const FinanceContainer: React.FC = () => {
   const [addTransactionOpen, setAddTransactionOpen] = useState(false); // ← new
@@ -36,7 +36,7 @@ const FinanceContainer: React.FC = () => {
       </div>
 
       {/* Add Transaction modal */}
-      <AddTransactionModal
+      <AddTransactionDialog
         open={addTransactionOpen}
         onClose={() => setAddTransactionOpen(false)}
         onSuccess={() => {

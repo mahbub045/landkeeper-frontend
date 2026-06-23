@@ -34,7 +34,7 @@ import { useCallback, useRef, useState } from 'react';
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
+const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -230,7 +230,7 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
   );
 };
 
-export default AddPropertyModal;
+export default AddPropertyDialog;
 
 // ── Details Tab ───────────────────────────────────────────────────────────────
 

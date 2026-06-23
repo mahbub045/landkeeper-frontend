@@ -27,7 +27,7 @@ import {
 import { CloudUpload, Loader2 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
-const AddCertificateModal: React.FC<AddCertificateModalProps> = ({
+const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -276,4 +276,4 @@ const AddCertificateModal: React.FC<AddCertificateModalProps> = ({
   );
 };
 
-export default AddCertificateModal;
+export default AddCertificateDialog;

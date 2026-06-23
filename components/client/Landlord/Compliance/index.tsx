@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceScore from './ComplianceScore/ComplianceScore';
-import AddCertificateModal from './Dialogs/AddCertificatemodal';
+import AddCertificateDialog from './Dialogs/AddCertificateDialog';
 import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
 
 const COMPLIANCE_SCORE = 87;
@@ -50,7 +50,7 @@ const CompliancePageContainer: React.FC = () => {
 
       <CertificateRegistry certificates={certificates} />
 
-      <AddCertificateModal
+      <AddCertificateDialog
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={() => {

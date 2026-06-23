@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { tenants } from '@/data/client/Landlord/tenant/TenantData';
 import { Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import AddTenantDialog from './Dialogs/AddTenantDialog';
 import TenantTable from './TenantTable/TenantTable';
-import AddTenantModal from './Dialogs/AddTenantModal';
 
 const TenantsContainer: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -45,7 +45,7 @@ const TenantsContainer: React.FC = () => {
         onSearchChange={setSearch}
       />
 
-      <AddTenantModal
+      <AddTenantDialog
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSuccess={() => {

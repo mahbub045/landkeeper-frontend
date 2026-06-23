@@ -18,7 +18,7 @@ import {
 } from '@/types/client/Landlord/Documents/DocumentTypes';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
-import AddDocumentModal from './Dialogs/AddDocumentModal';
+import AddDocumentDialog from './Dialogs/AddDocumentDialog';
  
 function filterDocuments(
   list: PropertyDocument[],
@@ -84,7 +84,7 @@ const DocumentsContainer: React.FC = () => {
       </Card>
  
       {/* Upload modal */}
-      <AddDocumentModal
+      <AddDocumentDialog
         open={uploadOpen}
         onClose={() => setUploadOpen(false)}
         onSuccess={() => {

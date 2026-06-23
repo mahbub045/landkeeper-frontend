@@ -39,7 +39,7 @@ const EMPTY_FORM: TenantForm = {
   notes: '',
 };
 
-const AddTenantModal: React.FC<AddTenantModalProps> = ({
+const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -336,4 +336,4 @@ const AddTenantModal: React.FC<AddTenantModalProps> = ({
   );
 };
 
-export default AddTenantModal;
+export default AddTenantDialog;

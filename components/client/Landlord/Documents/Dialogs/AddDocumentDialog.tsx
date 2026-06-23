@@ -46,7 +46,7 @@ function validate(
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-const AddDocumentModal: React.FC<UploadDocumentModalProps> = ({
+const AddDocumentDialog: React.FC<UploadDocumentModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -298,4 +298,4 @@ const AddDocumentModal: React.FC<UploadDocumentModalProps> = ({
   );
 };
 
-export default AddDocumentModal;
+export default AddDocumentDialog;

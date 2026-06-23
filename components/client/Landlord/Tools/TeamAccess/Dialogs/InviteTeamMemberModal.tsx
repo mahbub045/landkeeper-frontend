@@ -48,7 +48,7 @@ function validate(form: InviteTeamMemberForm): Record<string, string> {
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
-const InviteTeamMemberModal: React.FC<InviteTeamMemberModalProps> = ({
+const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
   open,
   onClose,
   onSuccess,
@@ -226,4 +226,4 @@ const InviteTeamMemberModal: React.FC<InviteTeamMemberModalProps> = ({
   );
 };
 
-export default InviteTeamMemberModal;
+export default InviteTeamMemberDialog;
