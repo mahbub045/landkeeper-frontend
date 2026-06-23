@@ -216,7 +216,7 @@ const AppSidebar: React.FC = () => {
               alt='User profile picture'
             />
             <AvatarFallback className='bg-primary text-xs font-semibold text-white'>
-              {getInitials(profileData?.first_name)}
+              {getInitials(profileData?.first_name) ?? 'U'}
             </AvatarFallback>
           </Avatar>
           <div className='min-w-0 group-data-[collapsible=icon]:hidden'>

@@ -101,7 +101,7 @@ const AppNavbar: React.FC = () => {
                       alt='User profile picture'
                     />
                     <AvatarFallback className='bg-primary text-xs text-white'>
-                      {getInitials(profileData?.first_name)}
+                      {getInitials(profileData?.first_name) ?? 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

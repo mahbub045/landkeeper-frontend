@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getInitials } from '@/utils/formatters';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Camera, Lock, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
@@ -14,6 +15,7 @@ const ProfileSettings: React.FC = () => {
   const [email, setEmail] = useState('john.davidson@email.com');
   const [phone, setPhone] = useState('+44 7700 900123');
   const [company, setCompany] = useState('Davidson Property Holdings Ltd');
+  const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
 
   return (
     <Card className='pt-0'>
@@ -28,18 +30,26 @@ const ProfileSettings: React.FC = () => {
           <div className='relative'>
             <Avatar size='default' className='size-16'>
               <AvatarImage
-                src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop'
+                src={profileData?.profile_image ?? undefined}
                 alt='Profile'
               />
-              <AvatarFallback>{getInitials(fullName)}</AvatarFallback>
+              <AvatarFallback>
+                {getInitials(profileData?.first_name) ?? 'U'}
+              </AvatarFallback>
             </Avatar>
             <button className='bg-primary text-primary-foreground absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full'>
               <Camera className='size-4' />
             </button>
           </div>
           <div className='flex-1'>
-            <h3 className='text-lg font-semibold'>{fullName}</h3>
-            <p className='text-muted-foreground text-sm'>{email}</p>
+            <h3 className='text-lg font-semibold'>
+              {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
+              {profileData?.first_name} {profileData?.middle_name}{' '}
+              {profileData?.last_name}
+            </h3>
+            <p className='text-muted-foreground text-sm'>
+              {profileData?.email}
+            </p>
           </div>
         </div>
 

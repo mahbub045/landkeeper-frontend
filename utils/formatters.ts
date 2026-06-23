@@ -93,9 +93,9 @@ export function formatTerm(months: number): string {
     : `${months} month${months !== 1 ? 's' : ''}`;
 }
 
-export function getInitials(first_name: string) {
+export function getInitials(first_name: string | null | undefined) {
   return first_name
-    .split(' ')
+    ?.split(' ')
     .map((n) => n[0])
     .join('')
     .toUpperCase()
