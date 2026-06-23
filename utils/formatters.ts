@@ -93,8 +93,8 @@ export function formatTerm(months: number): string {
     : `${months} month${months !== 1 ? 's' : ''}`;
 }
 
-export function getInitials(name: string) {
-  return name
+export function getInitials(first_name: string) {
+  return first_name
     .split(' ')
     .map((n) => n[0])
     .join('')

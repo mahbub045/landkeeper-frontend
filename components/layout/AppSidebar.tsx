@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -21,8 +21,9 @@ import {
 } from '@/components/ui/sidebar';
 import { buildItems, type NavItem } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
-import type { UserRole } from '@/types/next-auth';
-import formatChoiceFieldValue from '@/utils/formatters';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import { UserRole } from '@/types/next-auth';
+import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { ChevronRight, LoaderPinwheel } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
@@ -30,19 +31,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-
-function getInitials(name?: string | null, email?: string | null) {
-  if (name) {
-    return name
-      .split(' ')
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
-  return email?.slice(0, 2).toUpperCase() ?? 'LK';
-}
 
 function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -165,12 +153,14 @@ const AppSidebar: React.FC = () => {
   const navItems = buildItems({ role: userRole });
   const { resolvedTheme } = useTheme();
 
+  const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+
   const logoSrc =
     resolvedTheme === 'dark'
       ? '/images/logo-white.png'
       : '/images/logo-black.png';
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
       <Sidebar collapsible='icon'>
         <div className='flex h-full items-center justify-center'>
@@ -221,13 +211,19 @@ const AppSidebar: React.FC = () => {
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
         <div className='flex items-center gap-3 group-data-[collapsible=icon]:justify-center'>
           <Avatar size='lg'>
+            <AvatarImage
+              src={profileData?.profile_image ?? undefined}
+              alt='User profile picture'
+            />
             <AvatarFallback className='bg-primary text-xs font-semibold text-white'>
-              {getInitials(user?.name, user?.email)}
+              {getInitials(profileData?.first_name)}
             </AvatarFallback>
           </Avatar>
           <div className='min-w-0 group-data-[collapsible=icon]:hidden'>
             <p className='truncate text-sm font-semibold'>
-              {user?.name ?? 'User'}
+              {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
+              {profileData?.first_name} {profileData?.middle_name}{' '}
+              {profileData?.last_name}
             </p>
             <p className='truncate text-xs'>
               {formatChoiceFieldValue(userRole)}

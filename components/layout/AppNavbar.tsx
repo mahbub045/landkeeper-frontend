@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,32 +11,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Bell, LogOut, Search, User, X } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
 
-function getInitials(name?: string | null, email?: string | null) {
-  if (name) {
-    return name
-      .split(' ')
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
-  return email?.slice(0, 2).toUpperCase() ?? 'LK';
-}
-
 const AppNavbar: React.FC = () => {
-  const { data: session } = useSession();
-  const user = session?.user;
   const { theme, setTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
 
   return (
     <header className='bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b px-4 backdrop-blur'>
@@ -107,8 +96,12 @@ const AppNavbar: React.FC = () => {
                   className='relative rounded-full p-0'
                 >
                   <Avatar size='sm'>
+                    <AvatarImage
+                      src={profileData?.profile_image ?? undefined}
+                      alt='User profile picture'
+                    />
                     <AvatarFallback className='bg-primary text-xs text-white'>
-                      {getInitials(user?.name, user?.email)}
+                      {getInitials(profileData?.first_name)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -116,9 +109,13 @@ const AppNavbar: React.FC = () => {
               <DropdownMenuContent align='end' className='w-56'>
                 <DropdownMenuLabel>
                   <div className='flex flex-col gap-1'>
-                    <span className='font-medium'>{user?.name ?? 'User'}</span>
+                    <span className='font-medium'>
+                      {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
+                      {profileData?.first_name} {profileData?.middle_name}{' '}
+                      {profileData?.last_name}
+                    </span>
                     <span className='text-muted-foreground text-xs font-normal'>
-                      {user?.email}
+                      {profileData?.email}
                     </span>
                   </div>
                 </DropdownMenuLabel>

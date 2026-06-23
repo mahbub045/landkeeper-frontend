@@ -10,9 +10,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // call your API here
+        // Step 1: Login → get tokens only
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
           {
             method: 'POST',
             body: JSON.stringify(credentials),
@@ -20,36 +20,65 @@ export const authOptions: NextAuthOptions = {
           },
         );
 
-        const user = await res.json();
+        if (!res.ok) return null;
 
-        if (res.ok && user) {
-          return user;
-        }
+        const { access, refresh } = await res.json();
 
-        return null;
+        if (!access) return null;
+
+        // Step 2: Fetch user profile using the access token
+        const profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${access}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (!profileRes.ok) return null;
+
+        const profile = await profileRes.json();
+
+        // Return merged object — NextAuth stores whatever you return here
+        return {
+          id: profile.id,
+          email: profile.email,
+          role: profile.role,
+          accessToken: access,
+          refreshToken: refresh,
+        };
       },
     }),
   ],
 
   callbacks: {
     async jwt({ token, user }) {
+      // `user` is only present on the very first sign-in
       if (user) {
         token.id = user.id;
-        token.accessToken = user.accessToken;
+        token.email = user.email;
         token.role = user.role;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
       }
       return token;
     },
+
     async session({ session, token }) {
       session.user.id = token.id;
-      session.user.accessToken = token.accessToken;
+      session.user.email = token.email || '';
       session.user.role = token.role;
+      session.user.accessToken = token.accessToken;
+      session.user.refreshToken = token.refreshToken;
       return session;
     },
   },
 
   pages: {
-    signIn: '/auth/signin', // ← your custom login page
+    signIn: '/auth/signin',
   },
 
   session: {

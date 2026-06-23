@@ -5,6 +5,6 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
   }),
-  tagTypes: ['SignUp'],
+  tagTypes: ['Signup'],
   endpoints: () => ({}),
 });
