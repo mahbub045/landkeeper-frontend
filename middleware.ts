@@ -3,8 +3,19 @@ import type { UserRole } from '@/types/next-auth';
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
+const SHARED_CLIENT_PATHS = [
+  '/client/profile-settings',
+  '/client/notifications',
+  // add other shared paths here
+];
+
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
+
+   // Allow shared paths for all authenticated users
+  if (SHARED_CLIENT_PATHS.some(p => path.startsWith(p))) {
+    return true;
+  }
 
   const rolePathMap: Record<UserRole, string> = {
     SUPER_ADMIN: '/super-admin/',

@@ -1,0 +1,64 @@
+import { Property } from '@/types/client/Landlord/Properties/PropertyTypes';
+
+export const properties: Property[] = [
+  {
+    id: 1,
+    name: '14 Oak Street',
+    address: '14 Oak Street, London',
+    image:
+      'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80',
+    status: 'Occupied',
+    type: 'residential',
+    bedrooms: 3,
+    bathrooms: 2,
+    rentPerMonth: 850,
+  },
+  {
+    id: 2,
+    name: '42 Maple Avenue',
+    address: '42 Maple Avenue, Manchester',
+    image:
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+    status: 'Occupied',
+    type: 'hmo',
+    bedrooms: 5,
+    bathrooms: 3,
+    rentPerMonth: 1200,
+  },
+  {
+    id: 3,
+    name: '8 Pine Road',
+    address: '8 Pine Road, Birmingham',
+    image:
+      'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80',
+    status: 'Occupied',
+    type: 'residential',
+    bedrooms: 2,
+    bathrooms: 1,
+    rentPerMonth: 750,
+  },
+  {
+    id: 4,
+    name: '23 Elm Drive',
+    address: '23 Elm Drive, Bristol',
+    image:
+      'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80',
+    status: 'Occupied',
+    type: 'commercial',
+    bedrooms: 0,
+    bathrooms: 2,
+    rentPerMonth: 1500,
+  },
+  {
+    id: 5,
+    name: '7 Cedar Lane',
+    address: '7 Cedar Lane, Leeds',
+    image:
+      'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80',
+    status: 'Vacant',
+    type: 'residential',
+    bedrooms: 2,
+    bathrooms: 1,
+    rentPerMonth: null,
+  },
+];

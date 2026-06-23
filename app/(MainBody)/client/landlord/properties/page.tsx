@@ -1,4 +1,4 @@
-import PropertiesContainer from "@/components/landlord/Properties";
+import PropertiesContainer from '@/components/client/Landlord/Properties';
 
 export default function PropertiesPage() {
   return <PropertiesContainer />;
