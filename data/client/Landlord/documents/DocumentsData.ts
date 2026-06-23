@@ -108,3 +108,18 @@ export const documents: PropertyDocument[] = [
     sizeMB: 0.9,
   },
 ];
+
+export const properties = [
+  { id: 'oak-street', name: '14 Oak Street' },
+  { id: 'maple-avenue', name: '22 Maple Avenue' },
+  { id: 'birch-court', name: '7 Birch Court' },
+];
+
+export const documentCategories = [
+  'Mortgage Documents',
+  'Tenancy Agreements',
+  'Insurance',
+  'Invoices & Receipts',
+  'Compliance Certificates',
+  'Other',
+];

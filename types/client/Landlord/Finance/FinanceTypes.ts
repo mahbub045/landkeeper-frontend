@@ -19,3 +19,19 @@ export interface TooltipProps {
   payload?: { value: number }[];
   label?: string;
 }
+
+export interface TransactionForm {
+  type: 'Income' | 'Expense';
+  propertyId: string;
+  category: string;
+  amount: string;
+  date: string;
+  description: string;
+}
+
+export interface AddTransactionModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  properties?: { id: string; name: string }[];
+}

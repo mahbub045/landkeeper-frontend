@@ -1,5 +1,6 @@
 import {
   Certificate,
+  CertificateForm,
   ComplianceBreakdownItem,
   Expiration,
 } from '@/types/client/Landlord/Compliance/ComplianceTypes';
@@ -104,3 +105,23 @@ export const complianceBreakdown: ComplianceBreakdownItem[] = [
   { label: 'EPC', current: 5, total: 5, color: 'bg-emerald-500' },
   { label: 'Electrical', current: 5, total: 5, color: 'bg-emerald-500' },
 ];
+
+export const CERTIFICATE_TYPES = [
+  'Gas Safety Certificate',
+  'Electrical Installation Condition Report (EICR)',
+  'Energy Performance Certificate (EPC)',
+  'Fire Risk Assessment',
+  'PAT Testing',
+  'Asbestos Survey',
+  'Legionella Risk Assessment',
+  'Other',
+];
+
+export const EMPTY_FORM: CertificateForm = {
+  propertyId: '',
+  certificateType: 'Gas Safety Certificate',
+  issueDate: '',
+  expiryDate: '',
+  certificateNumber: '',
+  issuedBy: '',
+};

@@ -10,9 +10,12 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
+import AddPropertyModal from './Dialogs/AddPropertyModal';
 
 const PropertiesContainer: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
+  const [modalOpen, setModalOpen] = useState(false);
+
   const filtered = filterProperties(properties, activeFilter);
   const filterTabs: FilterTab[] = [
     'All',
@@ -23,12 +26,16 @@ const PropertiesContainer: React.FC = () => {
     'Vacant',
   ];
 
-  // ── Filter logic ─────────────────────────────────────────────────────────────
   function filterProperties(list: Property[], tab: FilterTab): Property[] {
     if (tab === 'All') return list;
     if (tab === 'Occupied') return list.filter((p) => p.status === 'Occupied');
     if (tab === 'Vacant') return list.filter((p) => p.status === 'Vacant');
     return list.filter((p) => p.type === tab.toLowerCase());
+  }
+
+  function handleSuccess() {
+    // TODO: refetch / invalidate property list
+    console.log('Property added successfully');
   }
 
   return (
@@ -42,7 +49,7 @@ const PropertiesContainer: React.FC = () => {
             Manage your property portfolio
           </p>
         </div>
-        <Button variant='default'>
+        <Button variant='default' onClick={() => setModalOpen(true)}>
           <Plus />
           Add Property
         </Button>
@@ -55,6 +62,12 @@ const PropertiesContainer: React.FC = () => {
       />
 
       <PropertyGrid properties={filtered} activeFilter={activeFilter} />
+
+      <AddPropertyModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleSuccess}
+      />
     </div>
   );
 };

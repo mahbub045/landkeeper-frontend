@@ -1,4 +1,4 @@
-import { TeamMember } from '@/types/client/Landlord/Tools/TeamAccess/TeamAccessTypes';
+import { AccessLevelKey, InviteTeamMemberForm, TeamMember } from '@/types/client/Landlord/Tools/TeamAccess/TeamAccessTypes';
 
 export const members: TeamMember[] = [
   {
@@ -26,3 +26,40 @@ export const members: TeamMember[] = [
     status: 'Pending',
   },
 ];
+
+
+export const ROLES = [
+  'Property Manager',
+  'Accountant',
+  'Letting Agent',
+  'Solicitor',
+  'Mortgage Adviser',
+];
+
+export const ACCESS_LEVEL_OPTIONS: { key: AccessLevelKey; label: string }[] = [
+  { key: 'allProperties', label: 'All Properties' },
+  { key: 'financialRecords', label: 'Financial Records' },
+  { key: 'documents', label: 'Documents' },
+  { key: 'complianceData', label: 'Compliance Data' },
+];
+
+export const ACCESS_DURATIONS = [
+  'Until revoked',
+  '30 days',
+  '90 days',
+  '6 months',
+  '1 year',
+];
+
+export const EMPTY_FORM: InviteTeamMemberForm = {
+  email: '',
+  role: 'Mortgage Adviser',
+  accessLevel: {
+    allProperties: true,
+    financialRecords: true,
+    documents: true,
+    complianceData: false,
+  },
+  accessDuration: 'Until revoked',
+  message: '',
+};

@@ -5,9 +5,11 @@ import { tenants } from '@/data/client/Landlord/tenant/TenantData';
 import { Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import TenantTable from './TenantTable/TenantTable';
+import AddTenantModal from './Dialogs/AddTenantModal';
 
 const TenantsContainer: React.FC = () => {
   const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -31,15 +33,26 @@ const TenantsContainer: React.FC = () => {
             Manage tenant information and tenancies
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus />
           Add Tenant
         </Button>
       </div>
+
       <TenantTable
         tenants={filtered}
         search={search}
         onSearchChange={setSearch}
+      />
+
+      <AddTenantModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={() => {
+          setModalOpen(false);
+          // refetch / invalidate RTK cache here
+        }}
+        properties={[]} // pass your properties array here
       />
     </div>
   );

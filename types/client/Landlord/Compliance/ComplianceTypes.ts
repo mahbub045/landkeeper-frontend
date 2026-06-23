@@ -39,3 +39,19 @@ export interface CertificateRegistryProps {
 export interface UpcomingExpirationsProps {
   items: Expiration[];
 }
+
+export interface CertificateForm {
+  propertyId: string;
+  certificateType: string;
+  issueDate: string;
+  expiryDate: string;
+  certificateNumber: string;
+  issuedBy: string;
+}
+
+export interface AddCertificateModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  properties?: { id: string; name: string }[];
+}

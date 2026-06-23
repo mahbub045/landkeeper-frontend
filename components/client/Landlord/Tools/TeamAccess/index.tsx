@@ -2,9 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
+import { useState } from 'react';
+import InviteTeamMemberModal from './Dialogs/InviteTeamMemberModal';
 import Members from './Members/Members';
 
 const TeamAccessContainer: React.FC = () => {
+  const [inviteOpen, setInviteOpen] = useState(false); // ← new
+
   return (
     <div className='space-y-6'>
       <div className='flex items-start justify-between'>
@@ -16,12 +20,21 @@ const TeamAccessContainer: React.FC = () => {
             Manage professional access to your portfolio
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setInviteOpen(true)}>
           <UserPlus />
           Invite User
         </Button>
       </div>
       <Members />
+
+      {/* Invite Team Member modal */}
+      <InviteTeamMemberModal
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        onSuccess={() => {
+          // refetch / revalidate Members list here once the API call is wired up
+        }}
+      />
     </div>
   );
 };
