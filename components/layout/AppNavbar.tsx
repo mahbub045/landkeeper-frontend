@@ -13,7 +13,7 @@ import {
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Bell, LogOut, Search, User, X } from 'lucide-react';
+import { Bell, LoaderPinwheel, LogOut, Search, User, X } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
@@ -96,13 +96,21 @@ const AppNavbar: React.FC = () => {
                   className='relative rounded-full p-0'
                 >
                   <Avatar size='sm'>
-                    <AvatarImage
-                      src={profileData?.profile_image ?? undefined}
-                      alt='User profile picture'
-                    />
-                    <AvatarFallback className='bg-primary text-xs text-white'>
-                      {getInitials(profileData?.first_name) ?? 'U'}
-                    </AvatarFallback>
+                    {isLoading ? (
+                      <AvatarFallback className='bg-muted flex items-center justify-center'>
+                        <LoaderPinwheel className='text-primary size-3 animate-spin' />
+                      </AvatarFallback>
+                    ) : (
+                      <>
+                        <AvatarImage
+                          src={profileData?.profile_image ?? undefined}
+                          alt='User profile picture'
+                        />
+                        <AvatarFallback className='bg-primary text-xs text-white'>
+                          {getInitials(profileData?.first_name) ?? 'U'}
+                        </AvatarFallback>
+                      </>
+                    )}
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>

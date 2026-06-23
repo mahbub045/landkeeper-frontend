@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -148,20 +148,20 @@
 }
 
 /* Auto-style all form inputs, selects, and textareas */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="tel"],
-input[type="url"],
-input[type="search"],
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"],
-input[type="color"],
-input[type="file"],
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'],
+input[type='month'],
+input[type='week'],
+input[type='color'],
+input[type='file'],
 select,
 textarea {
   @apply focus:ring-primary/70 h-10 w-full rounded-md border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 shadow-inner transition-shadow focus:ring-1 focus:outline-none dark:border-white/12 dark:bg-white/6 dark:text-white dark:placeholder-white/60;

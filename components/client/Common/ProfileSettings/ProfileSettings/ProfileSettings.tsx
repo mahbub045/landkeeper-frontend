@@ -5,17 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  useEditProfileInfoMutation,
+  useGetProfileInfoQuery,
+} from '@/store/api/endpoints/profile-settings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Camera, Lock, Pencil } from 'lucide-react';
-import { useState } from 'react';
 
 const ProfileSettings: React.FC = () => {
-  const [fullName, setFullName] = useState('John Davidson');
-  const [email, setEmail] = useState('john.davidson@email.com');
-  const [phone, setPhone] = useState('+44 7700 900123');
-  const [company, setCompany] = useState('Davidson Property Holdings Ltd');
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+  const [editProfileInfo, { isLoading: isEditing }] =
+    useEditProfileInfoMutation();
 
   return (
     <Card className='pt-0'>
@@ -54,22 +61,60 @@ const ProfileSettings: React.FC = () => {
         </div>
 
         <div className='space-y-4'>
-          {[
-            { label: 'Full Name', value: fullName, onChange: setFullName },
-            { label: 'Email', value: email, onChange: setEmail, type: 'email' },
-            { label: 'Phone', value: phone, onChange: setPhone, type: 'tel' },
-            { label: 'Company Name', value: company, onChange: setCompany },
-          ].map(({ label, value, onChange, type = 'text' }) => (
-            <div key={label} className='space-y-1.5'>
-              <Label className='text-sm font-semibold'>{label}</Label>
-              <Input
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className='rounded-xl'
-              />
+          <form>
+            <div className='grid grid-cols-2 items-center gap-4'>
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='title'>Title</Label>
+                <Select
+                  defaultValue={profileData?.title ?? ''}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger id='title'>
+                    <SelectValue placeholder='Select title' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='MR'>Mr</SelectItem>
+                    <SelectItem value='MS'>Ms</SelectItem>
+                    <SelectItem value='MRS'>Mrs</SelectItem>
+                    <SelectItem value='MISS'>Miss</SelectItem>
+                    <SelectItem value='DR'>Dr</SelectItem>
+                    <SelectItem value='PROFESSOR'>Professor</SelectItem>
+                    <SelectItem value='DOCTOR '>Doctor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='first_name'>First Name</Label>
+                <Input
+                  type='text'
+                  id='first_name'
+                  defaultValue={profileData?.first_name ?? ''}
+                  placeholder='First Name'
+                  disabled={isLoading}
+                />
+              </div>
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='middle_name'>Middle Name</Label>
+                <Input
+                  type='text'
+                  id='middle_name'
+                  defaultValue={profileData?.middle_name ?? ''}
+                  placeholder='Middle Name'
+                  disabled={isLoading}
+                />
+              </div>
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='last_name'>Last Name</Label>
+                <Input
+                  type='text'
+                  id='last_name'
+                  defaultValue={profileData?.last_name ?? ''}
+                  placeholder='Last Name'
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-          ))}
+          </form>
         </div>
 
         <div className='flex gap-3'>
