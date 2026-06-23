@@ -1,20 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-
 import {
   certificates,
   complianceBreakdown,
   upcomingExpirations,
 } from '@/data/client/Landlord/compliance/ComplianceData';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceScore from './ComplianceScore/ComplianceScore';
+import AddCertificateDialog from './Dialogs/AddCertificateDialog';
 import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
 
 const COMPLIANCE_SCORE = 87;
 
 const CompliancePageContainer: React.FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const validCount = certificates.filter((c) => c.status === 'Valid').length;
   const totalCount = certificates.length;
 
@@ -29,7 +32,7 @@ const CompliancePageContainer: React.FC = () => {
             Track certificates and regulatory requirements
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus />
           Add Certificate
         </Button>
@@ -46,6 +49,16 @@ const CompliancePageContainer: React.FC = () => {
       </div>
 
       <CertificateRegistry certificates={certificates} />
+
+      <AddCertificateDialog
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={() => {
+          setModalOpen(false);
+          // refetch / invalidate RTK cache here
+        }}
+        properties={[]} // pass your properties array here
+      />
     </div>
   );
 };

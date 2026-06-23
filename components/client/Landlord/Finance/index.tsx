@@ -2,11 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
+import AddTransactionDialog from './Dialogs/AddTransactionDialog';
 import MonthlyChart from './MonthlyChart/MonthlyChart';
 import RecentTransactions from './RecentTransactions/RecentTransactions';
 import StatCards from './StatCards/StatCards';
 
 const FinanceContainer: React.FC = () => {
+  const [addTransactionOpen, setAddTransactionOpen] = useState(false); // ← new
+
   return (
     <div className='space-y-6'>
       <div className='flex items-start justify-between'>
@@ -18,7 +22,7 @@ const FinanceContainer: React.FC = () => {
             Income, expenses and tax preparation
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setAddTransactionOpen(true)}>
           <Plus />
           Add Transaction
         </Button>
@@ -30,6 +34,15 @@ const FinanceContainer: React.FC = () => {
         <MonthlyChart />
         <RecentTransactions />
       </div>
+
+      {/* Add Transaction modal */}
+      <AddTransactionDialog
+        open={addTransactionOpen}
+        onClose={() => setAddTransactionOpen(false)}
+        onSuccess={() => {
+          // refetch / revalidate transactions, stat cards, chart, etc. here
+        }}
+      />
     </div>
   );
 };

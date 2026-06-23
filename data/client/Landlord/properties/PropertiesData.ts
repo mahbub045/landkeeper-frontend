@@ -1,4 +1,4 @@
-import { Property } from '@/types/client/Landlord/Properties/PropertyTypes';
+import { Property, Tab } from '@/types/client/Landlord/Properties/PropertyTypes';
 
 export const properties: Property[] = [
   {
@@ -62,3 +62,28 @@ export const properties: Property[] = [
     rentPerMonth: null,
   },
 ];
+
+export const TABS: Tab[] = ['Details', 'Mortgage', 'Documents'];
+
+export const TAB_PRIORITY: Tab[] = ['Details', 'Mortgage', 'Documents'];
+
+export const FIELD_TAB_MAP: Record<string, Tab> = {
+  name: 'Details',
+  type: 'Details',
+  status: 'Details',
+  address: 'Details',
+  purchasePrice: 'Details',
+  currentValue: 'Details',
+  purchaseDate: 'Details',
+  bedrooms: 'Details',
+  bathrooms: 'Details',
+  notes: 'Details',
+  lenderName: 'Mortgage',
+  productType: 'Mortgage',
+  interestRate: 'Mortgage',
+  monthlyPayment: 'Mortgage',
+  outstandingBalance: 'Mortgage',
+  startDate: 'Mortgage',
+  endDate: 'Mortgage',
+  documents: 'Documents',
+};

@@ -1,5 +1,6 @@
 import {
   Transaction,
+  TransactionForm,
   TxCategory,
 } from '@/types/client/Landlord/Finance/FinanceTypes';
 
@@ -96,4 +97,27 @@ export const categoryStyles: Record<TxCategory, string> = {
     'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
   'Management Fee':
     'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+};
+
+export const TRANSACTION_CATEGORIES = [
+  'Rental Income',
+  'Late Fees',
+  'Deposit',
+  'Maintenance & Repairs',
+  'Mortgage Payment',
+  'Insurance',
+  'Property Management',
+  'Utilities',
+  'Council Tax',
+  'Legal & Professional Fees',
+  'Other',
+];
+
+export const EMPTY_FORM: TransactionForm = {
+  type: 'Income',
+  propertyId: '',
+  category: 'Rental Income',
+  amount: '',
+  date: '',
+  description: '',
 };

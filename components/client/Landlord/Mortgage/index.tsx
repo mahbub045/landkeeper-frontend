@@ -2,10 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 import MortgageList from './MortgageList/MortgageList';
 import SummaryCards from './SummaryCards/SummaryCards';
+import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 
 const MortgageContainer: React.FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <div className='space-y-6'>
       <div className='flex items-start justify-between'>
@@ -17,7 +21,7 @@ const MortgageContainer: React.FC = () => {
             Track and manage your property financing
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus />
           Add Mortgage
         </Button>
@@ -25,6 +29,16 @@ const MortgageContainer: React.FC = () => {
 
       <SummaryCards />
       <MortgageList />
+
+      <AddMortgageDialog
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={() => {
+          setModalOpen(false);
+          // refetch / invalidate RTK cache here
+        }}
+        properties={[]} // pass your properties array here
+      />
     </div>
   );
 };

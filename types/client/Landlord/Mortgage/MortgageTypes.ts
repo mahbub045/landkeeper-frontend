@@ -22,3 +22,25 @@ export interface SummaryStat {
 export interface MortgageCardProps {
   mortgage: Mortgage;
 }
+
+export interface MortgageForm {
+  propertyId: string;
+  lenderName: string;
+  productType: string;
+  interestRate: string;
+  loanAmount: string;
+  outstandingBalance: string;
+  monthlyPayment: string;
+  termYears: string;
+  startDate: string;
+  endDate: string;
+  brokerNotes: string;
+}
+
+export interface AddMortgageModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  // Pass your properties list here so the dropdown can be populated
+  properties?: { id: string; name: string }[];
+}
