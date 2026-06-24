@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useSetPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
+import { SetPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
 import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
@@ -13,15 +14,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-
-interface SetPasswordApiError {
-  data: {
-    new_password?: string | string[];
-    confirm_password?: string | string[];
-    detail?: string;
-    message?: string;
-  };
-}
 
 export default function SetPasswordPage() {
   const router = useRouter();

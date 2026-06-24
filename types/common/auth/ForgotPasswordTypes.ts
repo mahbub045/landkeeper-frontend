@@ -5,3 +5,11 @@ export interface ForgotPasswordApiError {
     message?: string;
   };
 }
+export interface SetPasswordApiError {
+  data: {
+    new_password?: string | string[];
+    confirm_password?: string | string[];
+    detail?: string;
+    message?: string;
+  };
+}
