@@ -1,5 +1,7 @@
-import { NotificationSetting, UsageStat } from '@/types/client/Common/ProfileSettings/SettingsTypes';
-
+import {
+  NotificationSetting,
+  UsageStat,
+} from '@/types/common/ProfileSettings/SettingsTypes';
 
 export const defaultNotifications: NotificationSetting[] = [
   {

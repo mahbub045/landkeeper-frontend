@@ -1,5 +1,5 @@
-import SuperAdminProfileContainer from '@/components/super-admin/Profile';
+import ProfileSettingsContainer from '@/components/common/ProfileSettings';
 
 export default function SuperAdminProfilePage() {
-  return <SuperAdminProfileContainer />;
+  return <ProfileSettingsContainer />;
 }

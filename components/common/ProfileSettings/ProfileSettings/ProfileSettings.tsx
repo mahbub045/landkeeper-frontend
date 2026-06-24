@@ -248,7 +248,7 @@ const ProfileSettings: React.FC = () => {
             </Button>
             <Button type='button' variant='danger'>
               <Lock className='mr-1 size-4' />
-              Reset Password
+              Change Password
             </Button>
           </div>
         </form>

@@ -3,7 +3,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { defaultNotifications } from '@/data/client/Common/SettingsData';
-import { NotificationSetting } from '@/types/client/Common/ProfileSettings/SettingsTypes';
+import { NotificationSetting } from '@/types/common/ProfileSettings/SettingsTypes';
 import { useState } from 'react';
 
 const NotificationSettings: React.FC = () => {
