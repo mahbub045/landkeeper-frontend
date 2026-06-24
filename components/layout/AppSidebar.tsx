@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/sidebar';
 import { buildItems, type NavItem } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
-import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { ChevronRight, LoaderPinwheel } from 'lucide-react';

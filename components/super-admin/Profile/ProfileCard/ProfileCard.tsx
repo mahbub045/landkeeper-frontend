@@ -21,7 +21,7 @@ import { Camera, LoaderPinwheel, Lock, Pencil } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-const ProfileSettings: React.FC = () => {
+const ProfileCard: React.FC = () => {
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
   const [editProfileInfo, { isLoading: isEditing }] =
     useEditProfileInfoMutation();
@@ -113,12 +113,6 @@ const ProfileSettings: React.FC = () => {
   return (
     <Card className='pt-0 pb-0'>
       <CardContent className='space-y-5 p-6'>
-        <div className='flex items-center justify-between'>
-          <h2 className='text-foreground text-sm font-semibold'>
-            Profile Settings
-          </h2>
-        </div>
-
         <div className='flex items-center gap-4'>
           <div className='relative'>
             <Avatar size='default' className='size-16'>
@@ -257,4 +251,4 @@ const ProfileSettings: React.FC = () => {
   );
 };
 
-export default ProfileSettings;
+export default ProfileCard;
