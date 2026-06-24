@@ -104,7 +104,7 @@ const ProfileSettings: React.FC = () => {
     return (
       <Card className='pt-0 pb-0'>
         <CardContent className='flex h-96 items-center justify-center p-6'>
-          <LoaderPinwheel className='size-6 animate-spin' />
+          <LoaderPinwheel className='text-primary animate-spin' />
         </CardContent>
       </Card>
     );

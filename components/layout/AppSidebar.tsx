@@ -165,7 +165,7 @@ const AppSidebar: React.FC = () => {
     return (
       <Sidebar collapsible='icon'>
         <div className='flex h-full items-center justify-center'>
-          <LoaderPinwheel className='animate-spin' />
+          <LoaderPinwheel className='text-primary animate-spin' />
         </div>
       </Sidebar>
     );
