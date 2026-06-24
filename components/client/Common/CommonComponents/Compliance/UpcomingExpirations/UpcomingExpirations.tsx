@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UpcomingExpirationsProps } from '@/types/client/Landlord/Compliance/ComplianceTypes';
+import { UpcomingExpirationsProps } from '@/types/client/Common/Compliance/ComplianceTypes';
 
 const UpcomingExpirations: React.FC<UpcomingExpirationsProps> = ({ items }) => {
   return (

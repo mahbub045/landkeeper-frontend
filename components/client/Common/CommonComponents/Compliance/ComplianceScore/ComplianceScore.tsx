@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ComplianceScoreProps } from '@/types/client/Landlord/Compliance/ComplianceTypes';
+import { ComplianceScoreProps } from '@/types/client/Common/Compliance/ComplianceTypes';
 
 function DonutChart({ percent }: { percent: number }) {
   const r = 70;
