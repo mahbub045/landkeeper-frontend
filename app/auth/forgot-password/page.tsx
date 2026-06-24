@@ -5,36 +5,56 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useForgotPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
 import { LoaderPinwheel } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { ForgotPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { resolvedTheme, theme } = useTheme();
+
+  const [forgotPassword, { isLoading: forgotPasswordLoading }] =
+    useForgotPasswordMutation();
 
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
   const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      // Replace with actual password reset API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Use the forgotPassword mutation to send the reset link
+      await forgotPassword({ email }).unwrap();
 
       setIsSubmitted(true);
       toast.success('Password reset link sent to your email');
-    } catch {
-      toast.error('Failed to send reset link. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } catch (error: unknown) {
+      let message = 'Failed to send reset link. Please try again.';
+      if (error && typeof error === 'object' && 'data' in error) {
+        const apiError = error as ForgotPasswordApiError;
+        const { data } = apiError;
+        if (data) {
+          if (typeof data === 'string') {
+            message = data;
+          } else if (data.email) {
+            message = Array.isArray(data.email) ? data.email[0] : data.email;
+          } else if (data.detail) {
+            message = data.detail;
+          } else if (data.message) {
+            message = data.message;
+          }
+        }
+      }
+      setErrorMessage(message);
+      toast.error(message);
     }
   };
 
@@ -76,8 +96,8 @@ export default function ForgotPasswordPage() {
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800'>
                 <p className='text-sm text-gray-600 dark:text-gray-300'>
                   A password reset link has been sent to{' '}
-                  <span className='font-medium'>{email}</span>. Please check
-                  your inbox (and spam folder).
+                  <span className='text-primary font-medium'>{email}</span>.
+                  Please check your inbox (and spam folder).
                 </p>
               </div>
               <Button
@@ -111,17 +131,28 @@ export default function ForgotPasswordPage() {
                   type='email'
                   placeholder='you@organisation.com'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   required
+                  className={
+                    errorMessage
+                      ? 'border-red-500 focus-visible:ring-red-500/50'
+                      : ''
+                  }
                 />
+                {errorMessage && (
+                  <p className='text-sm text-red-500'>{errorMessage}</p>
+                )}
               </div>
 
               <Button
                 type='submit'
-                disabled={isLoading}
+                disabled={forgotPasswordLoading}
                 className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
               >
-                {isLoading ? (
+                {forgotPasswordLoading ? (
                   <>
                     <LoaderPinwheel className='h-4 w-4 animate-spin' />
                     Sending reset link...

@@ -5,13 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useSetPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
 import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
+interface SetPasswordApiError {
+  data: {
+    new_password?: string | string[];
+    confirm_password?: string | string[];
+    detail?: string;
+    message?: string;
+  };
+}
 
 export default function SetPasswordPage() {
   const router = useRouter();
@@ -19,32 +29,79 @@ export default function SetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { resolvedTheme, theme } = useTheme();
+  const [setPasswordMutation, { isLoading: setPasswordLoading }] =
+    useSetPasswordMutation();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  const uid = searchParams.get('uid');
 
   const isDark = theme === 'dark' || resolvedTheme === 'dark';
   const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setFieldErrors({});
 
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
-    setIsLoading(true);
+    if (!token || !uid) {
+      toast.error('Invalid token or uid');
+      return;
+    }
+
+    const payload = {
+      new_password: password,
+      confirm_password: confirmPassword,
+    };
 
     try {
-      // Replace with actual password set API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await setPasswordMutation({ payload, token, uid }).unwrap();
 
       toast.success('Password set successfully');
       router.push('/auth/signin');
-    } catch {
-      toast.error('Failed to set password. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } catch (error: unknown) {
+      let message = 'Failed to set password. Please try again.';
+      if (error && typeof error === 'object' && 'data' in error) {
+        const apiError = error as SetPasswordApiError;
+        const { data } = apiError;
+        if (data) {
+          if (typeof data === 'string') {
+            message = data;
+          } else if (data.detail) {
+            message = data.detail;
+          } else if (data.message) {
+            message = data.message;
+          } else if (data.new_password || data.confirm_password) {
+            // Handle field errors
+            const newFieldErrors: Record<string, string> = {};
+            if (data.new_password) {
+              newFieldErrors.password = Array.isArray(data.new_password)
+                ? data.new_password[0]
+                : data.new_password;
+            }
+            if (data.confirm_password) {
+              newFieldErrors.confirmPassword = Array.isArray(
+                data.confirm_password,
+              )
+                ? data.confirm_password[0]
+                : data.confirm_password;
+            }
+            if (Object.keys(newFieldErrors).length > 0) {
+              setFieldErrors(newFieldErrors);
+              return;
+            }
+          }
+        }
+      }
+      setErrorMessage(message);
+      toast.error(message);
     }
   };
 
@@ -142,10 +199,10 @@ export default function SetPasswordPage() {
 
             <Button
               type='submit'
-              disabled={isLoading}
+              disabled={setPasswordLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
-              {isLoading ? (
+              {setPasswordLoading ? (
                 <>
                   <LoaderPinwheel className='h-4 w-4 animate-spin' />
                   Setting password...
