@@ -88,11 +88,6 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
             href: '/client/landlord/tools/team-access',
             icon: UserKey,
           },
-          {
-            label: 'Settings',
-            href: '/client/landlord/tools/settings',
-            icon: Settings,
-          },
         ],
       },
     ];
