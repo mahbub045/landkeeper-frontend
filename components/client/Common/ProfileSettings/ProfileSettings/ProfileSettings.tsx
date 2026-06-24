@@ -18,7 +18,7 @@ import {
 } from '@/store/api/endpoints/profile-settings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Camera, Lock, Pencil } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 const ProfileSettings: React.FC = () => {
@@ -26,19 +26,23 @@ const ProfileSettings: React.FC = () => {
   const [editProfileInfo, { isLoading: isEditing }] =
     useEditProfileInfoMutation();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
   const initialFormData = useMemo(
     () => ({
       title: profileData?.title ?? '',
       first_name: profileData?.first_name ?? '',
       middle_name: profileData?.middle_name ?? '',
       last_name: profileData?.last_name ?? '',
+      phone: profileData?.phone ?? '',
     }),
     [profileData],
   );
 
   const [formData, setFormData] = useState(initialFormData);
 
-  // ✅ Sync once when profileData arrives — safe because it's conditional on external data
   const [initialized, setInitialized] = useState(false);
   if (profileData && !initialized) {
     setFormData(initialFormData);
@@ -59,38 +63,85 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
-  // Remounts the form with correct defaultValues once profileData loads
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be smaller than 5 MB.');
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setIsUploadingImage(true);
+
+    try {
+      const body = new FormData();
+      body.append('profile_image', file);
+      await editProfileInfo(body).unwrap();
+      toast.success('Profile picture updated!');
+    } catch {
+      toast.error('Failed to upload image. Please try again.');
+      setPreviewUrl(null);
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = '';
+    }
+  };
+
   const formKey = isLoading ? 'loading' : 'loaded';
+  const avatarSrc = previewUrl ?? profileData?.profile_image ?? undefined;
 
   return (
     <Card className='pt-0'>
       <CardContent className='space-y-5 p-6'>
-        {/* Header */}
         <div className='flex items-center justify-between'>
           <h2 className='text-foreground text-sm font-semibold'>
             Profile Settings
           </h2>
         </div>
 
-        {/* Avatar + Name */}
         <div className='flex items-center gap-4'>
           <div className='relative'>
             <Avatar size='default' className='size-16'>
-              <AvatarImage
-                src={profileData?.profile_image ?? undefined}
-                alt='Profile'
-              />
+              <AvatarImage src={avatarSrc} alt='Profile' />
               <AvatarFallback>
                 {getInitials(profileData?.first_name) ?? 'U'}
               </AvatarFallback>
             </Avatar>
+
+            <input
+              ref={fileInputRef}
+              type='file'
+              accept='image/*'
+              className='hidden'
+              onChange={handleFileChange}
+            />
+
             <button
               type='button'
-              className='bg-primary text-primary-foreground absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full'
+              onClick={handleAvatarClick}
+              disabled={isUploadingImage}
+              aria-label='Change profile picture'
+              className='bg-primary text-primary-foreground absolute right-0 bottom-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50'
             >
-              <Camera className='size-4' />
+              {isUploadingImage ? (
+                <span className='size-3 animate-spin rounded-full border-2 border-white border-t-transparent' />
+              ) : (
+                <Camera className='size-4' />
+              )}
             </button>
           </div>
+
           <div className='flex-1'>
             <h3 className='text-lg font-semibold'>
               {formatChoiceFieldValue(profileData?.title)}{' '}
@@ -103,10 +154,8 @@ const ProfileSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* Form */}
         <form key={formKey} onSubmit={handleSubmit} className='space-y-4'>
           <div className='grid grid-cols-2 items-center gap-4'>
-            {/* Title */}
             <div className='flex flex-col items-start space-y-1.5'>
               <Label htmlFor='title'>Title</Label>
               <Select
@@ -128,7 +177,6 @@ const ProfileSettings: React.FC = () => {
               </Select>
             </div>
 
-            {/* First Name */}
             <div className='flex flex-col items-start space-y-1.5'>
               <Label htmlFor='first_name'>First Name</Label>
               <Input
@@ -141,7 +189,6 @@ const ProfileSettings: React.FC = () => {
               />
             </div>
 
-            {/* Middle Name */}
             <div className='flex flex-col items-start space-y-1.5'>
               <Label htmlFor='middle_name'>Middle Name</Label>
               <Input
@@ -154,7 +201,6 @@ const ProfileSettings: React.FC = () => {
               />
             </div>
 
-            {/* Last Name */}
             <div className='flex flex-col items-start space-y-1.5'>
               <Label htmlFor='last_name'>Last Name</Label>
               <Input
@@ -167,8 +213,18 @@ const ProfileSettings: React.FC = () => {
               />
             </div>
           </div>
+          <div className='flex flex-col items-start space-y-1.5'>
+            <Label htmlFor='phone'>Phone</Label>
+            <Input
+              type='text'
+              id='phone'
+              defaultValue={profileData?.phone ?? ''}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              placeholder='Phone'
+              disabled={isLoading || isEditing}
+            />
+          </div>
 
-          {/* Actions */}
           <div className='flex gap-3'>
             <Button type='submit' disabled={isEditing}>
               {isEditing ? (
