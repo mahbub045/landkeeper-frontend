@@ -1,11 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+
 import {
   certificates,
   complianceBreakdown,
   upcomingExpirations,
-} from '@/data/client/Landlord/compliance/ComplianceData';
+} from '@/data/client/common/compliance/ComplianceData';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';

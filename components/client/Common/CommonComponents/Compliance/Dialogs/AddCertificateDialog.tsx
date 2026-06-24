@@ -19,11 +19,12 @@ import {
 import {
   CERTIFICATE_TYPES,
   EMPTY_FORM,
-} from '@/data/client/Landlord/compliance/ComplianceData';
+} from '@/data/client/common/compliance/ComplianceData';
 import {
   AddCertificateModalProps,
   CertificateForm,
-} from '@/types/client/Landlord/Compliance/ComplianceTypes';
+} from '@/types/client/Common/Compliance/ComplianceTypes';
+
 import { CloudUpload, Loader2 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 

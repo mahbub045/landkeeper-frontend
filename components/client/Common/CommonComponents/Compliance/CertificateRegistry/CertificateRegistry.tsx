@@ -14,7 +14,7 @@ import {
 import {
   CertificateRegistryProps,
   CertStatus,
-} from '@/types/client/Landlord/Compliance/ComplianceTypes';
+} from '@/types/client/Common/Compliance/ComplianceTypes';
 
 import { Download, Pencil } from 'lucide-react';
 

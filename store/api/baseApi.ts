@@ -8,6 +8,10 @@ export const TAG_TYPES = [
   'FormLayout',
   'Network',
   'Organisation',
+
+
+  // Common Tags
+  'Property',
 ] as const;
 
 export const baseApi = createApi({
