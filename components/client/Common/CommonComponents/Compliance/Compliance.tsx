@@ -61,6 +61,7 @@ const Compliance: React.FC = () => {
         properties={[]} // pass your properties array here
       />
     </div>
+    
   );
 };
 
