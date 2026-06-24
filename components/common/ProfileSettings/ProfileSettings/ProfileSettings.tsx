@@ -17,9 +17,10 @@ import {
   useGetProfileInfoQuery,
 } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Camera, LoaderPinwheel, Lock, Pencil } from 'lucide-react';
+import { Camera, LoaderPinwheel, Pencil, RefreshCw } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import ChangePasswordDialog from './Dialogs/ChangePasswordDialog';
 
 const ProfileSettings: React.FC = () => {
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
@@ -29,6 +30,7 @@ const ProfileSettings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
   const initialFormData = useMemo(
     () => ({
@@ -111,149 +113,160 @@ const ProfileSettings: React.FC = () => {
   }
 
   return (
-    <Card className='pt-0 pb-0'>
-      <CardContent className='space-y-5 p-6'>
-        <div className='flex items-center justify-between'>
-          <h2 className='text-foreground text-sm font-semibold'>
-            Profile Settings
-          </h2>
-        </div>
-
-        <div className='flex items-center gap-4'>
-          <div className='relative'>
-            <Avatar size='default' className='size-16'>
-              <AvatarImage src={avatarSrc} alt='Profile' />
-              <AvatarFallback>
-                {getInitials(profileData?.first_name) ?? 'U'}
-              </AvatarFallback>
-            </Avatar>
-
-            <input
-              ref={fileInputRef}
-              type='file'
-              accept='image/*'
-              className='hidden'
-              onChange={handleFileChange}
-            />
-
-            <button
-              type='button'
-              onClick={handleAvatarClick}
-              disabled={isUploadingImage}
-              aria-label='Change profile picture'
-              className='bg-primary text-primary-foreground absolute right-0 bottom-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50'
-            >
-              {isUploadingImage ? (
-                <span className='size-3 animate-spin rounded-full border-2 border-white border-t-transparent' />
-              ) : (
-                <Camera className='size-4' />
-              )}
-            </button>
+    <>
+      <Card className='pt-0 pb-0'>
+        <CardContent className='space-y-5 p-6'>
+          <div className='flex items-center justify-between'>
+            <h2 className='text-foreground text-sm font-semibold'>
+              Profile Settings
+            </h2>
           </div>
 
-          <div className='flex-1'>
-            <h3 className='text-lg font-semibold'>
-              {formatChoiceFieldValue(profileData?.title)}{' '}
-              {profileData?.first_name} {profileData?.middle_name}{' '}
-              {profileData?.last_name}
-            </h3>
-            <p className='text-muted-foreground text-sm'>
-              {profileData?.email}
-            </p>
-          </div>
-        </div>
+          <div className='flex items-center gap-4'>
+            <div className='relative'>
+              <Avatar size='default' className='size-16'>
+                <AvatarImage src={avatarSrc} alt='Profile' />
+                <AvatarFallback>
+                  {getInitials(profileData?.first_name) ?? 'U'}
+                </AvatarFallback>
+              </Avatar>
 
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          <div className='grid grid-cols-2 items-center gap-4'>
-            <div className='flex flex-col items-start space-y-1.5'>
-              <Label htmlFor='title'>Title</Label>
-              <Select
-                defaultValue={profileData?.title ?? ''}
-                onValueChange={(val) => handleChange('title', val)}
-                disabled={isEditing}
+              <input
+                ref={fileInputRef}
+                type='file'
+                accept='image/*'
+                className='hidden'
+                onChange={handleFileChange}
+              />
+
+              <button
+                type='button'
+                onClick={handleAvatarClick}
+                disabled={isUploadingImage}
+                aria-label='Change profile picture'
+                className='bg-primary text-primary-foreground absolute right-0 bottom-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50'
               >
-                <SelectTrigger id='title'>
-                  <SelectValue placeholder='Select title' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='MR'>Mr</SelectItem>
-                  <SelectItem value='MS'>Ms</SelectItem>
-                  <SelectItem value='MRS'>Mrs</SelectItem>
-                  <SelectItem value='MISS'>Miss</SelectItem>
-                  <SelectItem value='DR'>Dr</SelectItem>
-                  <SelectItem value='PROFESSOR'>Professor</SelectItem>
-                </SelectContent>
-              </Select>
+                {isUploadingImage ? (
+                  <span className='size-3 animate-spin rounded-full border-2 border-white border-t-transparent' />
+                ) : (
+                  <Camera className='size-4' />
+                )}
+              </button>
+            </div>
+
+            <div className='flex-1'>
+              <h3 className='text-lg font-semibold'>
+                {formatChoiceFieldValue(profileData?.title)}{' '}
+                {profileData?.first_name} {profileData?.middle_name}{' '}
+                {profileData?.last_name}
+              </h3>
+              <p className='text-muted-foreground text-sm'>
+                {profileData?.email}
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className='grid grid-cols-2 items-center gap-4'>
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='title'>Title</Label>
+                <Select
+                  defaultValue={profileData?.title ?? ''}
+                  onValueChange={(val) => handleChange('title', val)}
+                  disabled={isEditing}
+                >
+                  <SelectTrigger id='title'>
+                    <SelectValue placeholder='Select title' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='MR'>Mr</SelectItem>
+                    <SelectItem value='MS'>Ms</SelectItem>
+                    <SelectItem value='MRS'>Mrs</SelectItem>
+                    <SelectItem value='MISS'>Miss</SelectItem>
+                    <SelectItem value='DR'>Dr</SelectItem>
+                    <SelectItem value='PROFESSOR'>Professor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='first_name'>First Name</Label>
+                <Input
+                  type='text'
+                  id='first_name'
+                  defaultValue={profileData?.first_name ?? ''}
+                  onChange={(e) => handleChange('first_name', e.target.value)}
+                  placeholder='First Name'
+                  disabled={isEditing}
+                />
+              </div>
+
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='middle_name'>Middle Name</Label>
+                <Input
+                  type='text'
+                  id='middle_name'
+                  defaultValue={profileData?.middle_name ?? ''}
+                  onChange={(e) => handleChange('middle_name', e.target.value)}
+                  placeholder='Middle Name'
+                  disabled={isEditing}
+                />
+              </div>
+
+              <div className='flex flex-col items-start space-y-1.5'>
+                <Label htmlFor='last_name'>Last Name</Label>
+                <Input
+                  type='text'
+                  id='last_name'
+                  defaultValue={profileData?.last_name ?? ''}
+                  onChange={(e) => handleChange('last_name', e.target.value)}
+                  placeholder='Last Name'
+                  disabled={isEditing}
+                />
+              </div>
             </div>
 
             <div className='flex flex-col items-start space-y-1.5'>
-              <Label htmlFor='first_name'>First Name</Label>
+              <Label htmlFor='phone'>Phone</Label>
               <Input
                 type='text'
-                id='first_name'
-                defaultValue={profileData?.first_name ?? ''}
-                onChange={(e) => handleChange('first_name', e.target.value)}
-                placeholder='First Name'
+                id='phone'
+                defaultValue={profileData?.phone ?? ''}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                placeholder='Phone'
                 disabled={isEditing}
               />
             </div>
 
-            <div className='flex flex-col items-start space-y-1.5'>
-              <Label htmlFor='middle_name'>Middle Name</Label>
-              <Input
-                type='text'
-                id='middle_name'
-                defaultValue={profileData?.middle_name ?? ''}
-                onChange={(e) => handleChange('middle_name', e.target.value)}
-                placeholder='Middle Name'
-                disabled={isEditing}
-              />
+            <div className='flex gap-3'>
+              <Button type='submit' disabled={isEditing}>
+                {isEditing ? (
+                  'Saving...'
+                ) : (
+                  <>
+                    <Pencil />
+                    Save Changes
+                  </>
+                )}
+              </Button>
+              <Button
+                type='button'
+                variant='destructive'
+                onClick={() => setIsPasswordDialogOpen(true)}
+              >
+                <RefreshCw />
+                Change Password
+              </Button>
             </div>
+          </form>
+        </CardContent>
+      </Card>
 
-            <div className='flex flex-col items-start space-y-1.5'>
-              <Label htmlFor='last_name'>Last Name</Label>
-              <Input
-                type='text'
-                id='last_name'
-                defaultValue={profileData?.last_name ?? ''}
-                onChange={(e) => handleChange('last_name', e.target.value)}
-                placeholder='Last Name'
-                disabled={isEditing}
-              />
-            </div>
-          </div>
-
-          <div className='flex flex-col items-start space-y-1.5'>
-            <Label htmlFor='phone'>Phone</Label>
-            <Input
-              type='text'
-              id='phone'
-              defaultValue={profileData?.phone ?? ''}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder='Phone'
-              disabled={isEditing}
-            />
-          </div>
-
-          <div className='flex gap-3'>
-            <Button type='submit' disabled={isEditing}>
-              {isEditing ? (
-                'Saving...'
-              ) : (
-                <>
-                  <Pencil className='mr-1 size-4' />
-                  Save Changes
-                </>
-              )}
-            </Button>
-            <Button type='button' variant='danger'>
-              <Lock className='mr-1 size-4' />
-              Change Password
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <ChangePasswordDialog
+        open={isPasswordDialogOpen}
+        onClose={() => setIsPasswordDialogOpen(false)}
+      />
+    </>
   );
 };
 
