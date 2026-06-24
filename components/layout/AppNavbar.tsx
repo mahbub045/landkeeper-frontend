@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useGetProfileInfoQuery } from '@/store/api/endpoints/profile-settings/ProfileApi';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
+import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Bell, LoaderPinwheel, LogOut, Search, User, X } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -24,8 +25,17 @@ import { ThemeToggle } from '../ui/theme-toggle';
 const AppNavbar: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
+  const { data: session } = useSession();
+  const userRole = session?.user?.role as UserRole | undefined;
 
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+
+  const getProfilePath = () => {
+    if (userRole === 'SUPER_ADMIN') {
+      return '/super-admin/profile';
+    }
+    return '/client/profile-settings';
+  };
 
   return (
     <header className='bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b px-4 backdrop-blur'>
@@ -128,10 +138,12 @@ const AppNavbar: React.FC = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <Link href='/client/profile-settings' passHref>
+                <Link href={getProfilePath()} passHref>
                   <DropdownMenuItem className='cursor-pointer'>
                     <User className='size-4' />
-                    Profile Settings
+                    {userRole === 'SUPER_ADMIN'
+                      ? 'Profile'
+                      : 'Profile Settings'}
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />

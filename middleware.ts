@@ -12,8 +12,11 @@ const SHARED_CLIENT_PATHS = [
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
 
-   // Allow shared paths for all authenticated users
-  if (SHARED_CLIENT_PATHS.some(p => path.startsWith(p))) {
+  // Allow shared paths for all client roles except SUPER_ADMIN
+  if (
+    role !== 'SUPER_ADMIN' &&
+    SHARED_CLIENT_PATHS.some((p) => path.startsWith(p))
+  ) {
     return true;
   }
 

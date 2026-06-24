@@ -1,8 +1,21 @@
+'use client';
+import { LoaderPinwheel } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import NotificationSettings from './Notificationsettings/Notificationsettings';
 import ProfileSettings from './ProfileSettings/ProfileSettings';
 import SubscriptionSettings from './Subscriptionsettings/Subscriptionsettings';
 
 const ProfileSettingsContainer: React.FC = () => {
+  const { data: session, status } = useSession();
+
+  if (status === 'loading') {
+    return (
+      <div className='flex h-96 items-center justify-center'>
+        <LoaderPinwheel className='text-primary animate-spin' />
+      </div>
+    );
+  }
+
   return (
     <div className='space-y-6'>
       <div>
@@ -14,12 +27,17 @@ const ProfileSettingsContainer: React.FC = () => {
         </p>
       </div>
 
-      <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+      {session?.user?.role === 'SUPER_ADMIN' ? (
         <ProfileSettings />
-        <NotificationSettings />
-      </div>
-
-      <SubscriptionSettings />
+      ) : (
+        <>
+          <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+            <ProfileSettings />
+            <NotificationSettings />
+          </div>
+          <SubscriptionSettings />
+        </>
+      )}
     </div>
   );
 };
