@@ -17,7 +17,7 @@ import {
   useGetProfileInfoQuery,
 } from '@/store/api/endpoints/profile-settings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Camera, Lock, Pencil } from 'lucide-react';
+import { Camera, LoaderPinwheel, Lock, Pencil } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -98,11 +98,20 @@ const ProfileSettings: React.FC = () => {
     }
   };
 
-  const formKey = isLoading ? 'loading' : 'loaded';
   const avatarSrc = previewUrl ?? profileData?.profile_image ?? undefined;
 
+  if (isLoading) {
+    return (
+      <Card className='pt-0 pb-0'>
+        <CardContent className='flex h-96 items-center justify-center p-6'>
+          <LoaderPinwheel className='size-6 animate-spin' />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className='pt-0'>
+    <Card className='pt-0 pb-0'>
       <CardContent className='space-y-5 p-6'>
         <div className='flex items-center justify-between'>
           <h2 className='text-foreground text-sm font-semibold'>
@@ -154,14 +163,14 @@ const ProfileSettings: React.FC = () => {
           </div>
         </div>
 
-        <form key={formKey} onSubmit={handleSubmit} className='space-y-4'>
+        <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='grid grid-cols-2 items-center gap-4'>
             <div className='flex flex-col items-start space-y-1.5'>
               <Label htmlFor='title'>Title</Label>
               <Select
                 defaultValue={profileData?.title ?? ''}
                 onValueChange={(val) => handleChange('title', val)}
-                disabled={isLoading || isEditing}
+                disabled={isEditing}
               >
                 <SelectTrigger id='title'>
                   <SelectValue placeholder='Select title' />
@@ -185,7 +194,7 @@ const ProfileSettings: React.FC = () => {
                 defaultValue={profileData?.first_name ?? ''}
                 onChange={(e) => handleChange('first_name', e.target.value)}
                 placeholder='First Name'
-                disabled={isLoading || isEditing}
+                disabled={isEditing}
               />
             </div>
 
@@ -197,7 +206,7 @@ const ProfileSettings: React.FC = () => {
                 defaultValue={profileData?.middle_name ?? ''}
                 onChange={(e) => handleChange('middle_name', e.target.value)}
                 placeholder='Middle Name'
-                disabled={isLoading || isEditing}
+                disabled={isEditing}
               />
             </div>
 
@@ -209,10 +218,11 @@ const ProfileSettings: React.FC = () => {
                 defaultValue={profileData?.last_name ?? ''}
                 onChange={(e) => handleChange('last_name', e.target.value)}
                 placeholder='Last Name'
-                disabled={isLoading || isEditing}
+                disabled={isEditing}
               />
             </div>
           </div>
+
           <div className='flex flex-col items-start space-y-1.5'>
             <Label htmlFor='phone'>Phone</Label>
             <Input
@@ -221,7 +231,7 @@ const ProfileSettings: React.FC = () => {
               defaultValue={profileData?.phone ?? ''}
               onChange={(e) => handleChange('phone', e.target.value)}
               placeholder='Phone'
-              disabled={isLoading || isEditing}
+              disabled={isEditing}
             />
           </div>
 

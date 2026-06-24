@@ -31,6 +31,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { Badge } from '../ui/badge';
 
 function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -225,9 +226,9 @@ const AppSidebar: React.FC = () => {
               {profileData?.first_name} {profileData?.middle_name}{' '}
               {profileData?.last_name}
             </p>
-            <p className='truncate text-xs'>
+            <Badge className='truncate text-xs'>
               {formatChoiceFieldValue(userRole)}
-            </p>
+            </Badge>
           </div>
         </div>
       </SidebarFooter>
