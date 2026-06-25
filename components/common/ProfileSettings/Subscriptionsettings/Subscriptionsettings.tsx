@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { usageStats } from '@/data/client/common/SettingsData';
+import { usageStats } from '@/data/common/SettingsData';
 import { getCurrencySign } from '@/utils/formatters';
 
 const SubscriptionSettings: React.FC = () => {

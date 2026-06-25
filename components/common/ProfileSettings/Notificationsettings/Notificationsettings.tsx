@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { defaultNotifications } from '@/data/client/common/SettingsData';
+import { defaultNotifications } from '@/data/common/SettingsData';
 import { NotificationSetting } from '@/types/common/ProfileSettings/SettingsTypes';
 import { useState } from 'react';
 

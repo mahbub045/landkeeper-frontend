@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { TitleOptions } from '@/data/common/TitleOptions';
 import {
   useEditProfileInfoMutation,
   useGetProfileInfoQuery,
@@ -179,12 +180,11 @@ const ProfileSettings: React.FC = () => {
                     <SelectValue placeholder='Select title' />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='MR'>Mr</SelectItem>
-                    <SelectItem value='MS'>Ms</SelectItem>
-                    <SelectItem value='MRS'>Mrs</SelectItem>
-                    <SelectItem value='MISS'>Miss</SelectItem>
-                    <SelectItem value='DR'>Dr</SelectItem>
-                    <SelectItem value='PROFESSOR'>Professor</SelectItem>
+                    {TitleOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
