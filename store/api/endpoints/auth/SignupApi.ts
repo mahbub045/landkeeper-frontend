@@ -10,8 +10,28 @@ export const SignupApi = authApi.injectEndpoints({
       }),
       invalidatesTags: ['Signup'],
     }),
+    emailVerify: builder.mutation({
+      query: (request) => ({
+        url: '/auth/verify-email',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['EmailVerify'],
+    }),
+    resendVerify: builder.mutation({
+      query: (request) => ({
+        url: '/auth/resend-verify',
+        method: 'POST',
+        body: request,
+      }),
+      invalidatesTags: ['ResendVerify'],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useSignupMutation } = SignupApi;
+export const {
+  useSignupMutation,
+  useEmailVerifyMutation,
+  useResendVerifyMutation,
+} = SignupApi;

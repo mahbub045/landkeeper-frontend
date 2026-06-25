@@ -1,8 +1,22 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          // ✅ This ensures we get an access_token back from Google
+          access_type: 'offline',
+          prompt: 'consent',
+          scope: 'openid email profile',
+        },
+      },
+    }),
+
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -10,7 +24,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // Step 1: Login → get tokens only
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
           {
@@ -26,7 +39,6 @@ export const authOptions: NextAuthOptions = {
 
         if (!access) return null;
 
-        // Step 2: Fetch user profile using the access token
         const profileRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
           {
@@ -42,7 +54,6 @@ export const authOptions: NextAuthOptions = {
 
         const profile = await profileRes.json();
 
-        // Return merged object — NextAuth stores whatever you return here
         return {
           id: profile.id,
           email: profile.email,
@@ -55,8 +66,57 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
-      // `user` is only present on the very first sign-in
+    async jwt({ token, user, account }) {
+
+      // ✅ Google sign-in flow
+      // `account.access_token` is the Google OAuth access token (ya29.xxx)
+      // We send it to your backend POST /auth/social/google
+      if (account?.provider === 'google' && account.access_token) {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/social/google`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                access_token: account.access_token,
+              }),
+            },
+          );
+
+          if (res.ok) {
+            const { access, refresh } = await res.json();
+
+            // Fetch your app's user profile using the returned token
+            const profileRes = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+              {
+                headers: {
+                  Authorization: `Bearer ${access}`,
+                  'Content-Type': 'application/json',
+                },
+              },
+            );
+
+            if (profileRes.ok) {
+              const profile = await profileRes.json();
+              token.id = profile.id;
+              token.email = profile.email;
+              token.role = profile.role;
+              token.accessToken = access;
+              token.refreshToken = refresh;
+            }
+          } else {
+            console.error('Backend Google auth failed:', await res.text());
+          }
+        } catch (error) {
+          console.error('Google auth backend error:', error);
+        }
+
+        return token;
+      }
+
+      // ✅ Credentials sign-in flow
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -64,6 +124,7 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
+
       return token;
     },
 
