@@ -12,10 +12,11 @@ import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function SetPasswordPage() {
+// ✅ Inner component uses useSearchParams
+function SetPasswordContent() {
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,6 +27,7 @@ export default function SetPasswordPage() {
   const { resolvedTheme, theme } = useTheme();
   const [setPasswordMutation, { isLoading: setPasswordLoading }] =
     useSetPasswordMutation();
+
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const uid = searchParams.get('uid');
@@ -55,7 +57,6 @@ export default function SetPasswordPage() {
 
     try {
       await setPasswordMutation({ payload, token, uid }).unwrap();
-
       toast.success('Password set successfully');
       router.push('/auth/signin');
     } catch (error: unknown) {
@@ -71,7 +72,6 @@ export default function SetPasswordPage() {
           } else if (data.message) {
             message = data.message;
           } else if (data.new_password || data.confirm_password) {
-            // Handle field errors
             const newFieldErrors: Record<string, string> = {};
             if (data.new_password) {
               newFieldErrors.password = Array.isArray(data.new_password)
@@ -221,5 +221,20 @@ export default function SetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ✅ Default export wraps inner component in Suspense
+export default function SetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='flex min-h-screen items-center justify-center'>
+          Loading...
+        </div>
+      }
+    >
+      <SetPasswordContent />
+    </Suspense>
   );
 }
