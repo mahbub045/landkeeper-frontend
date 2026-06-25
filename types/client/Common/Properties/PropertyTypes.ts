@@ -5,8 +5,11 @@ export type FilterTab =
   | 'Residential'
   | 'HMO'
   | 'Commercial'
+  | 'Mixed Use'
+  | 'Holiday Let'
   | 'Occupied'
-  | 'Vacant';
+  | 'Vacant'
+  | 'Under Maintenance';
 
 export type Tab = 'Details' | 'Mortgage' | 'Documents';
 export interface PropertyDocument {
@@ -73,8 +76,20 @@ export interface PropertyGridProps {
   isLoading?: boolean;
 }
 
+export interface PropertyDetailsProps {
+  onEdit?: () => void;
+  onDelete?: () => void;
+}
+
 export interface AddPropertyModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+}
+
+export interface UpdatePropertyModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  property: Property | null;
 }

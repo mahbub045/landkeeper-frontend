@@ -23,78 +23,148 @@ import {
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
-
-import { useAddPropertiesMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
+import { useUpdatePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
-  AddPropertyModalProps,
   DetailsForm,
+  PropertyDocument,
   Tab,
+  UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
-
 import { CloudUpload, Loader2, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-// ── Modal ─────────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
+/** Convert API status string → form select value */
+function apiStatusToForm(status: string): string {
+  const map: Record<string, string> = {
+    OCCUPIED: 'Occupied',
+    VACANT: 'Vacant',
+    UNDER_MAINTENANCE: 'UNDER_MAINTENANCE',
+  };
+  return map[status] ?? status;
+}
+
+/** Convert API property_type string → form select value */
+function apiTypeToForm(type: string): string {
+  const map: Record<string, string> = {
+    RESIDENTIAL: 'Residential',
+    HMO: 'HMO',
+    COMMERCIAL: 'Commercial',
+    MIXED_USE: 'MIXED_USE',
+    HOLIDAY_LET: 'HOLIDAY_LET',
+  };
+  return map[type] ?? type;
+}
+
+/** Strip trailing zeros — turns "1000000.00" → "1000000" */
+function cleanDecimal(val: string | null | undefined): string {
+  if (!val) return '';
+  const n = parseFloat(val);
+  return isNaN(n) ? '' : String(n);
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   open,
   onClose,
   onSuccess,
+  property,
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
   const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const [details, setDetails] = useState<DetailsForm>({
-    name: '',
-    type: 'Residential',
-    status: 'Occupied',
-    address: '',
-    purchasePrice: '',
-    currentValue: '',
-    rent_per_month: '',
-    purchaseDate: '',
-    bedrooms: '',
-    bathrooms: '',
-    notes: '',
+  // ── Initialise form from property prop ─────────────────────────────────────
+
+  const buildInitialDetails = (): DetailsForm => ({
+    name: property?.property_name ?? '',
+    type: apiTypeToForm(property?.property_type ?? 'Residential'),
+    status: apiStatusToForm(property?.status ?? 'Vacant'),
+    address: property?.address ?? '',
+    purchasePrice: cleanDecimal(property?.purchase_price),
+    currentValue: cleanDecimal(property?.current_value),
+    rent_per_month: cleanDecimal(property?.rent_per_month),
+    purchaseDate: property?.purchase_date ?? '',
+    bedrooms: property?.bedrooms != null ? String(property.bedrooms) : '',
+    bathrooms: property?.bathrooms != null ? String(property.bathrooms) : '',
+    notes: property?.notes ?? '',
   });
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [details, setDetails] = useState<DetailsForm>(buildInitialDetails);
+  const [existingDocs, setExistingDocs] = useState<PropertyDocument[]>(
+    property?.documents ?? [],
+  );
+  const [newFiles, setNewFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const propertyIdRef = useRef<string | null>(null);
+
+  // Track which property alias is currently seeded into local state.
+  // Using useState so the comparison is safe during render (useRef.current
+  // cannot be read during render per React's rules).
+  // When open flips true or the property alias changes we reset synchronously.
+  // This is the pattern React docs recommend for deriving state from props:
+  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  const [seededAlias, setSeededAlias] = useState<string | null>(null);
+  const incomingAlias = open ? (property?.alias ?? null) : null;
+  const [cachedExistingFiles, setCachedExistingFiles] = useState<File[]>([]);
+  const [docsLoading, setDocsLoading] = useState(false);
+
+  if (incomingAlias !== seededAlias) {
+    setSeededAlias(incomingAlias);
+    if (incomingAlias !== null) {
+      setDetails(buildInitialDetails());
+      setExistingDocs(property?.documents ?? []);
+      setNewFiles([]);
+      setCachedExistingFiles([]); // ← add this
+      setActiveTab('Details');
+      setBannerError(null);
+      setFieldErrors({});
+    }
+  }
+
+  useEffect(() => {
+    if (!open || !property?.documents?.length) return;
+
+    let cancelled = false;
+
+    const prefetch = async () => {
+      setDocsLoading(true);
+      try {
+        const files = await Promise.all(
+          property.documents.map(async (doc) => {
+            const res = await fetch(
+              `/api/proxy-image?url=${encodeURIComponent(doc.image)}`,
+            );
+            const blob = await res.blob();
+            const filename =
+              doc.image.split('/').pop() ||
+              doc.description ||
+              `document-${doc.id}`;
+            return new File([blob], filename, { type: blob.type });
+          }),
+        );
+        if (!cancelled) setCachedExistingFiles(files);
+      } finally {
+        if (!cancelled) setDocsLoading(false);
+      }
+    };
+
+    prefetch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, property?.alias]);
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
-  const [addProperty] = useAddPropertiesMutation();
+  const [updateProperty] = useUpdatePropertyMutation();
 
-  // ── Reset ───────────────────────────────────────────────────────────────────
-
-  function handleClose() {
-    setActiveTab('Details');
-    setBannerError(null);
-    setFieldErrors({});
-    setLoading(false);
-    setFiles([]);
-    propertyIdRef.current = null;
-    setDetails({
-      name: '',
-      type: 'Residential',
-      status: 'Occupied',
-      address: '',
-      purchasePrice: '',
-      currentValue: '',
-      rent_per_month: '',
-      purchaseDate: '',
-      bedrooms: '',
-      bathrooms: '',
-      notes: '',
-    });
-    onClose();
-  }
-
-  // ── Shared API error handler ────────────────────────────────────────────────
+  // ── Shared error handler (mirrors AddPropertyDialog) ───────────────────────
 
   function handleApiError(body: unknown) {
     if (typeof body === 'object' && body !== null) {
@@ -114,7 +184,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       };
 
       const normalized: Record<string, string> = {};
-
       Object.entries(apiError).forEach(([key, val]) => {
         if (key === 'message') return;
         const mapped = keyMap[key] ?? key;
@@ -142,6 +211,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   // ── Submit ──────────────────────────────────────────────────────────────────
 
   async function handleSubmit() {
+    if (!property?.alias) return;
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -159,11 +229,35 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       formData.append('bedrooms', details.bedrooms);
       formData.append('bathrooms', details.bathrooms);
       formData.append('notes', details.notes);
-      files.forEach((file) => formData.append('documents_data', file));
 
-      await addProperty(formData).unwrap();
+      const seen = new Set<string>();
+      const filesToKeep = cachedExistingFiles.filter((file) => {
+        if (seen.has(file.name)) return false;
+        seen.add(file.name);
+        return existingDocs.some(
+          (doc) => doc.image.split('/').pop() === file.name,
+        );
+      });
+
+      console.log(
+        'filesToKeep',
+        filesToKeep.map((f) => f.name),
+      );
+      console.log(
+        'existingDocs at submit',
+        existingDocs.map((d) => d.image.split('/').pop()),
+      );
+
+      filesToKeep.forEach((file) => formData.append('documents_data', file));
+      newFiles.forEach((file) => formData.append('documents_data', file));
+
+      await updateProperty({
+        property_alias: property.alias,
+        payload: formData,
+      }).unwrap();
+
       onSuccess?.();
-      handleClose();
+      onClose();
     } catch (err: unknown) {
       const rtkError = err as { data?: unknown };
       if (rtkError?.data) {
@@ -180,7 +274,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
   function addFiles(incoming: FileList | null) {
     if (!incoming) return;
-    setFiles((prev) => {
+    setNewFiles((prev) => {
       const existing = new Set(prev.map((f) => f.name + f.size));
       return [
         ...prev,
@@ -189,8 +283,12 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     });
   }
 
-  function removeFile(index: number) {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  function removeNewFile(index: number) {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function removeExistingDoc(id: number) {
+    setExistingDocs((prev) => prev.filter((d) => d.id !== id));
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -199,16 +297,25 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     addFiles(e.dataTransfer.files);
   }, []);
 
+  console.log(
+    'existingDocs',
+    existingDocs.map((d) => d.image.split('/').pop()),
+  );
+  console.log(
+    'cachedExistingFiles',
+    cachedExistingFiles.map((f) => f.name),
+  );
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-0'>
           <div className='flex items-center justify-between pb-4'>
             <DialogTitle className='text-foreground text-xl font-bold'>
-              Add New Property
+              Edit Property
             </DialogTitle>
           </div>
 
@@ -258,9 +365,11 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               errors={fieldErrors}
             />
           )}
+
           {activeTab === 'Documents' && (
             <DocumentsTab
-              files={files}
+              existingDocs={existingDocs}
+              newFiles={newFiles}
               dragging={dragging}
               fileInputRef={fileInputRef}
               errors={fieldErrors}
@@ -271,14 +380,15 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               }}
               onDragLeave={() => setDragging(false)}
               onFileChange={(e) => addFiles(e.target.files)}
-              onRemove={removeFile}
+              onRemoveExisting={removeExistingDoc}
+              onRemoveNew={removeNewFile}
             />
           )}
         </div>
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
+          <Button variant='outline' onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           {activeTab === 'Details' ? (
@@ -289,9 +399,9 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               Next
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
+            <Button onClick={handleSubmit} disabled={loading || docsLoading}>
               {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              Add Property
+              Update
             </Button>
           )}
         </div>
@@ -300,7 +410,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   );
 };
 
-export default AddPropertyDialog;
+export default UpdatePropertyDialog;
 
 // ── Details Tab ───────────────────────────────────────────────────────────────
 
@@ -359,7 +469,9 @@ const DetailsTab: React.FC<{
             <SelectContent>
               <SelectItem value='Occupied'>Occupied</SelectItem>
               <SelectItem value='Vacant'>Vacant</SelectItem>
-              <SelectItem value='UNDER_MAINTENANCE '>Under Maintenance</SelectItem>
+              <SelectItem value='UNDER_MAINTENANCE'>
+                Under Maintenance
+              </SelectItem>
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.status }]} />
@@ -389,7 +501,6 @@ const DetailsTab: React.FC<{
           <Input
             type='number'
             placeholder='£'
-            maxLength={10}
             value={form.purchasePrice}
             onChange={(e) => set('purchasePrice', e.target.value)}
             aria-invalid={!!errors.purchasePrice}
@@ -516,7 +627,8 @@ const DetailsTab: React.FC<{
 // ── Documents Tab ─────────────────────────────────────────────────────────────
 
 const DocumentsTab: React.FC<{
-  files: File[];
+  existingDocs: PropertyDocument[];
+  newFiles: File[];
   dragging: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   errors: Record<string, string>;
@@ -524,9 +636,11 @@ const DocumentsTab: React.FC<{
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onRemove: (i: number) => void;
+  onRemoveExisting: (id: number) => void;
+  onRemoveNew: (i: number) => void;
 }> = ({
-  files,
+  existingDocs,
+  newFiles,
   dragging,
   fileInputRef,
   errors,
@@ -534,17 +648,62 @@ const DocumentsTab: React.FC<{
   onDragOver,
   onDragLeave,
   onFileChange,
-  onRemove,
+  onRemoveExisting,
+  onRemoveNew,
 }) => {
   return (
     <div className='space-y-4'>
+      {/* ── Existing Documents ── */}
+      {existingDocs.length > 0 && (
+        <div className='space-y-2'>
+          <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+            Existing Documents
+          </p>
+          <ul className='space-y-2'>
+            {existingDocs.map((doc) => (
+              <li
+                key={doc.id}
+                className='bg-muted flex items-center gap-3 rounded-md px-3 py-2'
+              >
+                {/* Thumbnail */}
+                <div className='relative h-10 w-14 shrink-0 overflow-hidden rounded'>
+                  <Image
+                    src={doc.image}
+                    alt={doc.description ?? `Document ${doc.id}`}
+                    fill
+                    className='object-cover'
+                    sizes='56px'
+                  />
+                </div>
+
+                <span className='text-foreground min-w-0 flex-1 truncate text-sm'>
+                  {doc.description ?? `Document ${doc.id}`}
+                </span>
+
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  onClick={() => onRemoveExisting(doc.id)}
+                  className='text-muted-foreground hover:text-danger ml-auto h-6 w-6 shrink-0'
+                  aria-label='Remove document'
+                >
+                  <X className='h-4 w-4' />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ── Upload Zone ── */}
       <div
         onDrop={onDrop}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onClick={() => fileInputRef.current?.click()}
         className={[
-          'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-14 transition-colors',
+          'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-12 transition-colors',
           errors.documents
             ? 'border-danger bg-red-50 dark:bg-red-950/20'
             : dragging
@@ -580,32 +739,38 @@ const DocumentsTab: React.FC<{
         />
       </div>
 
-      {files.length > 0 && (
-        <ul className='space-y-2'>
-          {files.map((file, i) => (
-            <li
-              key={i}
-              className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
-            >
-              <Badge
-                variant='secondary'
-                className='max-w-[80%] truncate font-normal'
+      {/* ── New Files ── */}
+      {newFiles.length > 0 && (
+        <div className='space-y-2'>
+          <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+            New Uploads
+          </p>
+          <ul className='space-y-2'>
+            {newFiles.map((file, i) => (
+              <li
+                key={i}
+                className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
               >
-                {file.name}
-              </Badge>
-              <Button
-                type='button'
-                variant='ghost'
-                size='icon'
-                onClick={() => onRemove(i)}
-                className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                aria-label='Remove file'
-              >
-                <X className='h-4 w-4' />
-              </Button>
-            </li>
-          ))}
-        </ul>
+                <Badge
+                  variant='secondary'
+                  className='max-w-[80%] truncate font-normal'
+                >
+                  {file.name}
+                </Badge>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  onClick={() => onRemoveNew(i)}
+                  className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                  aria-label='Remove file'
+                >
+                  <X className='h-4 w-4' />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
