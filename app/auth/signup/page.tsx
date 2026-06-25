@@ -201,7 +201,7 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className='space-y-4'>
             {/* Title + First Name */}
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <div className='space-y-1.5'>
                 <Label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Title <span className='text-red-500'>*</span>
@@ -267,7 +267,7 @@ export default function SignupPage() {
             </div>
 
             {/* Middle Name + Last Name */}
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <div className='space-y-1.5'>
                 <Label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Middle Name{' '}
@@ -377,7 +377,7 @@ export default function SignupPage() {
             </div>
 
             {/* Password + Confirm Password */}
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <div className='space-y-1.5'>
                 <Label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Password <span className='text-red-500'>*</span>
