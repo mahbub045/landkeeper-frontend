@@ -133,18 +133,6 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {/* Divider */}
-          <div className='relative mb-5'>
-            <div className='absolute inset-0 flex items-center'>
-              <div className='w-full border-t border-gray-200 dark:border-gray-700' />
-            </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-gray-400 dark:bg-gray-900'>
-                or continue with email
-              </span>
-            </div>
-          </div>
-
           <form onSubmit={handleSubmit} className='space-y-4'>
             {/* Title + First Name */}
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
