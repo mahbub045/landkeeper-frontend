@@ -49,6 +49,7 @@ export default function SignupPage() {
   const [sighUp, { isLoading }] = useSignupMutation();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+// Replace your handleSubmit in SignupPage with this:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
@@ -70,23 +71,18 @@ export default function SignupPage() {
 
     try {
       await sighUp(payload).unwrap();
-      toast.success('Account created successfully');
-      router.push('/auth/signin');
+      toast.success('Account created! Please verify your email.');
+      // ✅ Pass email as query param so verify page knows where to send the code
+      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (error: unknown) {
-      // RTK Query wraps DRF errors in error.data
       if (error && typeof error === 'object' && 'data' in error) {
         const data = (error as { data: unknown }).data;
 
         if (data && typeof data === 'object') {
-          // DRF field errors: { field_name: string[] }
           setFieldErrors(data as SignupFieldErrors);
 
-          // Show non_field_errors or detail as toast
           const errObj = data as Record<string, unknown>;
-          if (
-            errObj.non_field_errors &&
-            Array.isArray(errObj.non_field_errors)
-          ) {
+          if (errObj.non_field_errors && Array.isArray(errObj.non_field_errors)) {
             toast.error(errObj.non_field_errors[0] as string);
           } else if (errObj.detail && typeof errObj.detail === 'string') {
             toast.error(errObj.detail);
@@ -101,7 +97,6 @@ export default function SignupPage() {
       }
     }
   };
-
   // Clears a specific field error when user starts typing
   const clearError = (key: keyof SignupFieldErrors) => {
     if (fieldErrors[key]) {
