@@ -1,19 +1,13 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { AlertTriangle } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function PasswordErrorPage() {
-  const { resolvedTheme, theme } = useTheme();
-
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
-  const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
-
   return (
     <div className='flex min-h-screen'>
       <div className='fixed top-4 right-4 z-50'>
@@ -25,17 +19,7 @@ export default function PasswordErrorPage() {
       <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
         <div className='w-full max-w-md'>
           {/* Mobile logo */}
-          <div className='mb-2 flex items-center justify-center gap-2 lg:hidden'>
-            <Image
-              src={logoSrc}
-              alt='Landkeeper'
-              width={400}
-              height={150}
-              className='h-12 w-40 rounded-xl'
-              suppressHydrationWarning
-              loading='eager'
-            />
-          </div>
+          <AuthPageMobileLogo />
 
           {/* Error icon */}
           <div className='mb-6 flex justify-center'>

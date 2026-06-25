@@ -1,6 +1,7 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +25,6 @@ function SetPasswordContent() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const { resolvedTheme, theme } = useTheme();
   const [setPasswordMutation, { isLoading: setPasswordLoading }] =
     useSetPasswordMutation();
 
@@ -32,8 +32,7 @@ function SetPasswordContent() {
   const token = searchParams.get('token');
   const uid = searchParams.get('uid');
 
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
-  const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,17 +106,7 @@ function SetPasswordContent() {
 
       <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
         <div className='w-full max-w-md'>
-          <div className='mb-2 flex items-center justify-center gap-2 lg:hidden'>
-            <Image
-              src={logoSrc}
-              alt='Landkeeper'
-              width={400}
-              height={150}
-              className='h-12 w-40 rounded-xl'
-              suppressHydrationWarning
-              loading='eager'
-            />
-          </div>
+          <AuthPageMobileLogo />
 
           <div className='mb-8'>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>

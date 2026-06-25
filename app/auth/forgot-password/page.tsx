@@ -1,30 +1,25 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useForgotPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
+import { ForgotPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
 import { LoaderPinwheel } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ForgotPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { resolvedTheme, theme } = useTheme();
 
   const [forgotPassword, { isLoading: forgotPasswordLoading }] =
     useForgotPasswordMutation();
-
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
-  const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,17 +63,7 @@ export default function ForgotPasswordPage() {
 
       <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
         <div className='w-full max-w-md'>
-          <div className='mb-2 flex items-center justify-center gap-2 lg:hidden'>
-            <Image
-              src={logoSrc}
-              alt='Landkeeper'
-              width={400}
-              height={150}
-              className='h-12 w-40 rounded-xl'
-              suppressHydrationWarning
-              loading='eager'
-            />
-          </div>
+          <AuthPageMobileLogo />
 
           <div className='mb-8'>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>

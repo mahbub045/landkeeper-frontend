@@ -1,6 +1,7 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +18,6 @@ import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
 import { signIn } from 'next-auth/react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -50,10 +49,6 @@ export default function SignupPage() {
 
   const [sighUp, { isLoading }] = useSignupMutation();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
-  const { theme, resolvedTheme } = useTheme();
-  const isDark = theme === 'dark' || resolvedTheme === 'dark';
-  const logoSrc = isDark ? '/images/logo-white.png' : '/images/logo-black.png';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,16 +128,7 @@ export default function SignupPage() {
       <div className='flex w-full items-start justify-center overflow-y-auto bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
         <div className='w-full max-w-lg py-8'>
           {/* Mobile Logo */}
-          <div className='mb-4 flex justify-center lg:hidden'>
-            <Image
-              src={logoSrc}
-              alt='Landkeeper'
-              width={400}
-              height={150}
-              className='h-12 w-40 rounded-xl'
-              loading='eager'
-            />
-          </div>
+          <AuthPageMobileLogo />
 
           {/* Header */}
           <div className='mb-6'>
