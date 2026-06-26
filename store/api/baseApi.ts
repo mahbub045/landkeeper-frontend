@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getSession } from 'next-auth/react';
-import type { AuthRootState } from '../types';
+
+export type AuthRootState = {
+  auth: {
+    accessToken: string | null;
+  };
+};
 
 export const TAG_TYPES = [
   'UserProfileAndSettings',
@@ -8,7 +13,6 @@ export const TAG_TYPES = [
   'FormLayout',
   'Network',
   'Organisation',
-
 
   // Common Tags
   'Property',
@@ -23,7 +27,7 @@ export const baseApi = createApi({
       const token =
         session?.user?.accessToken ||
         (getState() as AuthRootState).auth.accessToken;
-        
+
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
