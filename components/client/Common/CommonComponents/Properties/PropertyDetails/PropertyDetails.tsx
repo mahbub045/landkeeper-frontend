@@ -27,7 +27,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Loader2,
+  LoaderPinwheel,
   MapPin,
   Pencil,
   Trash2,
@@ -39,8 +39,6 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import DeletePropertyDialog from '../Dialogs/DeletePropertyDialog';
 import UpdatePropertyDialog from '../Dialogs/UpdatePropertyDialog';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -266,7 +264,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({
   if (isLoading) {
     return (
       <div className='flex h-64 items-center justify-center'>
-        <Loader2 className='text-muted-foreground size-6 animate-spin' />
+        <LoaderPinwheel className='text-muted-foreground size-6 animate-spin' />
       </div>
     );
   }

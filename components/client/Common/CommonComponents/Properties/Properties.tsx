@@ -11,44 +11,23 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  filterTabs,
+  propertyTypeMap,
+  statusMap,
+} from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
 
 const PAGE_LIMIT = 12;
-
-const filterTabs: FilterTab[] = [
-  'All',
-  'Residential',
-  'HMO',
-  'Commercial',
-  'Mixed Use',
-  'Holiday Let',
-  'Occupied',
-  'Vacant',
-  'Under Maintenance',
-];
-
-const propertyTypeMap: Partial<Record<FilterTab, string>> = {
-  Residential: 'RESIDENTIAL',
-  HMO: 'HMO',
-  Commercial: 'COMMERCIAL',
-  'Mixed Use': 'MIXED_USE',
-  'Holiday Let': 'HOLIDAY_LET',
-};
-
-const statusMap: Partial<Record<FilterTab, string>> = {
-  Occupied: 'OCCUPIED',
-  Vacant: 'VACANT',
-  'Under Maintenance': 'UNDER_MAINTENANCE',
-};
 
 const Properties: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
@@ -149,51 +128,59 @@ const Properties: React.FC = () => {
             isLoading={isLoading}
           />
           {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => page > 1 && setPage((p) => p - 1)}
-                    aria-disabled={page === 1}
-                    className={
-                      page === 1
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
+            <div className='flex items-center justify-between'>
+              <p className='text-muted-foreground text-sm whitespace-nowrap'>
+                Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
+                {data?.count ?? 0} Properties
+              </p>
 
-                {getPageNumbers().map((p, i) =>
-                  p === '...' ? (
-                    <PaginationItem key={`ellipsis-${i}`}>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  ) : (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        isActive={p === page}
-                        onClick={() => setPage(p as number)}
-                        className='cursor-pointer'
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ),
-                )}
+              <Pagination className='justify-end'>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => page > 1 && setPage((p) => p - 1)}
+                      aria-disabled={page === 1}
+                      className={
+                        page === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
+                    />
+                  </PaginationItem>
 
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => page < totalPages && setPage((p) => p + 1)}
-                    aria-disabled={page === totalPages}
-                    className={
-                      page === totalPages
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  {getPageNumbers().map((p, i) =>
+                    p === '...' ? (
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p as number)}
+                          className='cursor-pointer'
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => page < totalPages && setPage((p) => p + 1)}
+                      aria-disabled={page === totalPages}
+                      className={
+                        page === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </>
       )}

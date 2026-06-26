@@ -30,7 +30,7 @@ import {
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { CloudUpload, Loader2, X } from 'lucide-react';
+import { CloudUpload, LoaderPinwheel, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -400,7 +400,9 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading || docsLoading}>
-              {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              {loading && (
+                <LoaderPinwheel className='mr-2 h-4 w-4 animate-spin' />
+              )}
               Update
             </Button>
           )}
@@ -426,7 +428,9 @@ const DetailsTab: React.FC<{
   return (
     <div className='space-y-5'>
       <Field data-invalid={!!errors.name}>
-        <FieldLabel className='text-sm font-semibold gap-0'>Property Name<span className='text-danger'>*</span></FieldLabel>
+        <FieldLabel className='gap-0 text-sm font-semibold'>
+          Property Name<span className='text-danger'>*</span>
+        </FieldLabel>
         <Input
           type='text'
           placeholder='e.g. 14 Oak Street'
@@ -479,7 +483,9 @@ const DetailsTab: React.FC<{
       </div>
 
       <Field data-invalid={!!errors.address}>
-        <FieldLabel className='text-sm font-semibold gap-0'>Address<span className='text-danger'>*</span></FieldLabel>
+        <FieldLabel className='gap-0 text-sm font-semibold'>
+          Address<span className='text-danger'>*</span>
+        </FieldLabel>
         <Input
           type='text'
           placeholder='Full address'
@@ -733,7 +739,7 @@ const DocumentsTab: React.FC<{
           ref={fileInputRef}
           type='file'
           multiple
-          accept='.pdf,.doc,.docx,.jpg,.jpeg,.png'
+          accept='.jpg,.jpeg,.png'
           className='hidden'
           onChange={onFileChange}
         />

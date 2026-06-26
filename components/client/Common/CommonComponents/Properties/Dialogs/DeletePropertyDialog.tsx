@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, LoaderPinwheel } from 'lucide-react';
 import { useState } from 'react';
 
 interface DeletePropertyDialogProps {
@@ -62,11 +62,11 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
           )}
 
           <p className='text-foreground text-center'>
-            Are you sure you want to delete{' '} 
-            <span className='font-semibold'>{propertyName}</span>?<br /> This will
-            permanently remove the property and all associated data.
+            Are you sure you want to delete{' '}
+            <span className='font-semibold'>{propertyName}</span>?<br /> This
+            will permanently remove the property and all associated data.
           </p>
-          <p className='text-danger mt-3 text-sm text-center'>
+          <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.
           </p>
         </div>
@@ -80,7 +80,9 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
             onClick={handleDelete}
             disabled={loading}
           >
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {loading && (
+              <LoaderPinwheel className='mr-2 h-4 w-4 animate-spin' />
+            )}
             Delete Property
           </Button>
         </div>
