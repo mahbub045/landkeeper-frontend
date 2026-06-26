@@ -9,7 +9,6 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          // ✅ This ensures we get an access_token back from Google
           access_type: 'offline',
           prompt: 'consent',
           scope: 'openid email profile',
@@ -66,11 +65,16 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+
+      // ✅ Called by SessionSync → update() after token refresh in baseApi
+      if (trigger === 'update' && session?.accessToken) {
+        token.accessToken = session.accessToken;
+        token.refreshToken = session.refreshToken;
+        return token;
+      }
 
       // ✅ Google sign-in flow
-      // `account.access_token` is the Google OAuth access token (ya29.xxx)
-      // We send it to your backend POST /auth/social/google
       if (account?.provider === 'google' && account.access_token) {
         try {
           const res = await fetch(
@@ -87,7 +91,6 @@ export const authOptions: NextAuthOptions = {
           if (res.ok) {
             const { access, refresh } = await res.json();
 
-            // Fetch your app's user profile using the returned token
             const profileRes = await fetch(
               `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
               {
