@@ -19,6 +19,7 @@ export interface PropertyDocument {
 }
 
 export interface Property {
+  id: number;
   alias: string;
   property_name: string;
   property_type: string;

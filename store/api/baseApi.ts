@@ -16,6 +16,7 @@ export const TAG_TYPES = [
 
   // Common Tags
   'Property',
+  'Mortgage',
 ] as const;
 
 export const baseApi = createApi({

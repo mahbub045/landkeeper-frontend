@@ -17,10 +17,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
+import { useAddMortgagesMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import {
   AddMortgageModalProps,
   MortgageForm,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
@@ -34,6 +38,14 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [propertyOpen, setPropertyOpen] = useState(false);
+  const [propertySearch, setPropertySearch] = useState('');
+
+  const { data, isLoading } = useFilterPropertiesQuery(
+    propertySearch ? { search: propertySearch } : {},
+  );
+  console.log('property data: ', data);
+  const [addMortgage] = useAddMortgagesMutation();
 
   const [form, setForm] = useState<MortgageForm>({
     propertyId: '',
@@ -52,6 +64,13 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
   function set(key: keyof MortgageForm, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
+
+  const PRODUCT_TYPE_MAP: Record<string, string> = {
+    'Fixed Rate': 'FIXED_RATE',
+    'Variable Rate': 'VARIABLE_RATE',
+    Tracker: 'TRACKER',
+    'Interest Only': 'INTEREST_ONLY',
+  };
 
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
@@ -80,13 +99,86 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
     setFieldErrors({});
     setLoading(true);
 
-    // RTK Query mutation goes here
+    try {
+      const payload = {
+        property: form.propertyId,
+        lender_name: form.lenderName,
+        product_type: PRODUCT_TYPE_MAP[form.productType] ?? form.productType,
+        interest_rate: form.interestRate,
+        loan_amount: form.loanAmount,
+        outstanding_balance: form.outstandingBalance,
+        monthly_payment: form.monthlyPayment,
+        term: Number(form.termYears),
+        start_date: form.startDate || null,
+        end_date: form.endDate || null,
+        broker_notes: form.brokerNotes,
+      };
+
+      const result = await addMortgage(payload).unwrap();
+      onSuccess?.();
+      handleClose();
+    } catch (err: unknown) {
+      const data = (
+        err as {
+          data?: Record<string, unknown> & {
+            detail?: string;
+            message?: string;
+          };
+        }
+      )?.data;
+
+      if (data && typeof data === 'object') {
+        // Field-level errors — map backend keys back to form keys
+        const fieldMap: Record<string, keyof typeof fieldErrors> = {
+          property: 'propertyId',
+          lender_name: 'lenderName',
+          product_type: 'productType',
+          interest_rate: 'interestRate',
+          loan_amount: 'loanAmount',
+          outstanding_balance: 'outstandingBalance',
+          monthly_payment: 'monthlyPayment',
+          term: 'termYears',
+          start_date: 'startDate',
+          end_date: 'endDate',
+          broker_notes: 'brokerNotes',
+        };
+
+        const mapped: Record<string, string> = {};
+        let hasFieldErrors = false;
+
+        for (const [backendKey, formKey] of Object.entries(fieldMap)) {
+          if (data[backendKey]) {
+            mapped[formKey] = Array.isArray(data[backendKey])
+              ? data[backendKey][0]
+              : data[backendKey];
+            hasFieldErrors = true;
+          }
+        }
+
+        if (hasFieldErrors) {
+          setFieldErrors(mapped);
+        } else {
+          setBannerError(
+            data?.detail ??
+              data?.message ??
+              'Something went wrong. Please try again.',
+          );
+        }
+      } else {
+        setBannerError('Something went wrong. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
@@ -104,31 +196,77 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
 
           {/* Property */}
           <Field data-invalid={!!fieldErrors.propertyId}>
-            <FieldLabel className='text-sm font-semibold'>Property</FieldLabel>
-            <Select
-              value={form.propertyId}
-              onValueChange={(v) => set('propertyId', v)}
-            >
-              <SelectTrigger
-                className={fieldErrors.propertyId ? 'border-danger' : ''}
-              >
-                <SelectValue placeholder='Select property...' />
-              </SelectTrigger>
-              <SelectContent>
-                {properties.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Property<span className='text-danger'>*</span>
+            </FieldLabel>
+            <div className='relative'>
+              <Input
+                placeholder='Search by property name...'
+                value={
+                  form.propertyId
+                    ? (data?.find(
+                        (p: Property) => String(p.id) === form.propertyId,
+                      )?.property_name ?? propertySearch)
+                    : propertySearch
+                }
+                onChange={(e) => {
+                  setPropertySearch(e.target.value);
+                  set('propertyId', ''); // clear selection when user types
+                  setPropertyOpen(true);
+                }}
+                onClick={() => setPropertyOpen(true)}
+                onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
+                aria-invalid={!!fieldErrors.propertyId}
+                className={
+                  fieldErrors.propertyId
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+
+              {propertyOpen && (
+                <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
+                  {isLoading ? (
+                    <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
+                      <Loader2 className='h-4 w-4 animate-spin' />
+                      Loading...
+                    </div>
+                  ) : !data?.length ? (
+                    <p className='text-muted-foreground px-4 py-3 text-sm'>
+                      No properties found.
+                    </p>
+                  ) : (
+                    <ul className='max-h-60 overflow-y-auto py-1'>
+                      {data.map((p: Property) => (
+                        <li
+                          key={p.alias}
+                          onMouseDown={() => {
+                            set('propertyId', String(p.id));
+                            setPropertySearch('');
+                            setPropertyOpen(false);
+                          }}
+                          className={cn(
+                            'hover:bg-muted flex cursor-pointer items-center gap-3 px-4 py-2.5',
+                            form.propertyId === String(p.id) && 'bg-muted',
+                          )}
+                        >
+                          <span className='text-foreground text-sm'>
+                            {p.property_name}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
             <FieldError errors={[{ message: fieldErrors.propertyId }]} />
           </Field>
 
           {/* Lender Name */}
           <Field data-invalid={!!fieldErrors.lenderName}>
-            <FieldLabel className='text-sm font-semibold'>
-              Lender Name
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Lender Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               placeholder='e.g. Halifax, Nationwide'

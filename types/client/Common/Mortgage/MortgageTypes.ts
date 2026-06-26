@@ -1,16 +1,19 @@
 export interface Mortgage {
-  id: number;
-  property: string;
-  lender: string;
-  type: 'Fixed Rate' | 'Tracker' | 'Variable';
-  renewalDue: boolean;
-  interestRate: number;
-  outstandingBalance: number;
-  originalLoan: number;
-  monthlyPayment: number;
-  termRemainingMonths: number;
+  alias: string;
+  property: number;
+  lender_name: string;
+  product_type: 'FIXED_RATE' | 'VARIABLE_RATE' | 'INTEREST_ONLY' | 'TRACKER';
+  interest_rate: string | null;
+  loan_amount: string | null;
+  outstanding_balance: string | null;
+  monthly_payment: string | null;
+  term: number;
+  start_date: string;
+  end_date: string;
+  broker_notes: string;
+  created_at: string;
+  updated_at: string;
 }
-
 export interface SummaryStat {
   label: string;
   value: string;
