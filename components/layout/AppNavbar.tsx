@@ -15,10 +15,11 @@ import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSett
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { Bell, LoaderPinwheel, LogOut, Search, User, X } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useState } from 'react';
+import { handleSignOut } from '../SignOut';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
 
@@ -149,7 +150,7 @@ const AppNavbar: React.FC = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   variant='destructive'
-                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                  onClick={() => handleSignOut()}
                   className='cursor-pointer'
                 >
                   <LogOut className='size-4' />

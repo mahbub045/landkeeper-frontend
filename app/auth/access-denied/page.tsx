@@ -1,19 +1,12 @@
 'use client';
 
+import { handleSignOut } from '@/components/SignOut';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Home, LogOut, ShieldAlert } from 'lucide-react';
-import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function AccessDeniedPage() {
-  const handleLogout = async () => {
-    await signOut({
-      callbackUrl: '/auth/signin',
-      redirect: true,
-    });
-  };
-
   return (
     <div className='bg-background relative flex min-h-screen items-center justify-center overflow-hidden px-6'>
       {/* Background Pattern */}{' '}
@@ -60,7 +53,7 @@ export default function AccessDeniedPage() {
           {/* Actions */}
           <div className='flex flex-col gap-3 sm:flex-row sm:justify-center'>
             <Button
-              onClick={handleLogout}
+              onClick={handleSignOut}
               variant='destructive'
               className='min-w-37.5'
             >

@@ -1,10 +1,11 @@
+import { handleSignOut } from '@/components/SignOut';
 import {
   BaseQueryFn,
   createApi,
   FetchArgs,
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 
 export type AuthRootState = {
   auth: {
@@ -81,7 +82,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
       }
 
       if (!refreshToken) {
-        await handleLogout();
+        await handleSignOut();
         return null;
       }
 
@@ -114,7 +115,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
       return access;
     } catch (error) {
       console.error('Token refresh error:', error);
-      await handleLogout();
+      await handleSignOut();
       return null;
     } finally {
       isRefreshing = false;
@@ -143,15 +144,6 @@ const baseQueryWithReauth = async (
   }
 
   return result;
-};
-
-// ─── Logout ───────────────────────────────────────────────────────────────────
-export const handleLogout = async () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  }
-  await signOut({ callbackUrl: '/auth/signin' });
 };
 
 // ─── Base API ─────────────────────────────────────────────────────────────────
