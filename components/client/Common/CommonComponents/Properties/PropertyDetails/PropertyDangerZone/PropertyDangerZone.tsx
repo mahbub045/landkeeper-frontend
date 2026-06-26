@@ -42,7 +42,7 @@ const PropertyDangerZone: React.FC<PropertyDangerZoneProps> = ({
               className='shrink-0'
               onClick={() => setDeleteConfirm(true)}
             >
-              <Trash2 className='mr-1.5 size-3.5' />
+              <Trash2 className='size-3.5' />
               Delete
             </Button>
           ) : (
