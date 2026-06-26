@@ -291,7 +291,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           ) : (
             <Button onClick={handleSubmit} disabled={loading}>
               {loading && (
-                <LoaderPinwheel className='mr-2 h-4 w-4 animate-spin' />
+                <LoaderPinwheel className='h-4 w-4 animate-spin' />
               )}
               Add Property
             </Button>

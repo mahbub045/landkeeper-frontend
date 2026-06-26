@@ -117,7 +117,7 @@ const Properties: React.FC = () => {
       />
 
       {isError ? (
-        <p className='text-danger text-sm'>
+        <p className='text-danger text-sm text-center'>
           Failed to load properties. Please try again.
         </p>
       ) : (

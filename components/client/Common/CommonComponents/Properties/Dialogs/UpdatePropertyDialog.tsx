@@ -158,7 +158,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [open, property?.alias]);
+  }, [open, property?.alias, property?.documents]);
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
@@ -400,9 +400,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading || docsLoading}>
-              {loading && (
-                <LoaderPinwheel className='mr-2 h-4 w-4 animate-spin' />
-              )}
+              {loading && <LoaderPinwheel className='h-4 w-4 animate-spin' />}
               Update
             </Button>
           )}

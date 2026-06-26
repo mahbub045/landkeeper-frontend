@@ -4,7 +4,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { PropertyDetailsProps } from '@/types/client/Common/Properties/PropertyTypes';
+import formatChoiceFieldValue from '@/utils/formatters';
 import { ArrowLeft, LoaderPinwheel, MapPin, Pencil } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import DeletePropertyDialog from '../Dialogs/DeletePropertyDialog';
@@ -24,6 +26,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ onDelete }) => {
     isError,
     refetch,
   } = useGetPropertyDetailsQuery(alias, { skip: !alias });
+  const { data: session } = useSession();
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -31,7 +34,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ onDelete }) => {
   if (isLoading) {
     return (
       <div className='flex h-64 items-center justify-center'>
-        <LoaderPinwheel className='text-muted-foreground size-6 animate-spin' />
+        <LoaderPinwheel className='text-primary size-6 animate-spin' />
       </div>
     );
   }
@@ -85,7 +88,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ onDelete }) => {
                 isOccupied ? 'bg-white' : 'bg-muted-foreground/60'
               }`}
             />
-            {property.status}
+            {formatChoiceFieldValue(property.status)}
           </Badge>
           <Button size='sm' variant='outline' onClick={() => setEditOpen(true)}>
             <Pencil className='mr-1.5 size-3.5' />
@@ -109,7 +112,9 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ onDelete }) => {
       {property.notes && <PropertyNotes notes={property.notes} />}
 
       {/* ── Danger Zone ── */}
-      <PropertyDangerZone onDeleteClick={() => setDeleteOpen(true)} />
+      {session?.user?.role === 'LANDLORD' && (
+        <PropertyDangerZone onDeleteClick={() => setDeleteOpen(true)} />
+      )}
 
       {/* ── Dialogs ── */}
       <UpdatePropertyDialog
