@@ -25,7 +25,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
       <div className='flex flex-col items-center justify-center py-20 text-center'>
         <Home className='text-muted mb-3 size-10' />
         <p className='text-muted-foreground text-sm font-medium'>
-          No properties found for &quot;{activeFilter}&quot;
+          No properties found
         </p>
       </div>
     );

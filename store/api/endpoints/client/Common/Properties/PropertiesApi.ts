@@ -1,12 +1,13 @@
 import { baseApi } from '@/store/api/baseApi';
-import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
 export const PropertiesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProperties: builder.query({
-      query: () => ({ url: '/property', method: 'GET' }),
-      transformResponse: (res: unknown) =>
-        (res as { results: Property[] }).results,
+      query: (params) => ({ 
+        url: '/property', 
+        method: 'GET', 
+        params 
+      }),
       providesTags: ['Property'],
     }),
     addProperties: builder.mutation({
@@ -17,8 +18,35 @@ export const PropertiesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Property'],
     }),
+    getPropertyDetails: builder.query({
+      query: (alias) => ({ 
+        url: `/property/${alias}`, 
+        method: 'GET' 
+      }),
+      providesTags: ['Property'],
+    }),
+    updateProperty: builder.mutation({
+      query: ({ property_alias, payload }) => ({
+        url: `/property/${property_alias}`,
+        method: 'PATCH',
+        body: payload,
+      }),
+      invalidatesTags: ['Property'],
+    }),
+    deleteProperty: builder.mutation({
+      query: ({ property_alias }) => ({
+        url: `/property/${property_alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Property'],
+    }),
   }),
 });
 
-export const { useGetPropertiesQuery, useAddPropertiesMutation } =
-  PropertiesApi;
+export const {
+  useGetPropertiesQuery,
+  useAddPropertiesMutation,
+  useGetPropertyDetailsQuery,
+  useUpdatePropertyMutation,
+  useDeletePropertyMutation,
+} = PropertiesApi;
