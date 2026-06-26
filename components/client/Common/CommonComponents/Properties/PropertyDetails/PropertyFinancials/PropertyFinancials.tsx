@@ -1,12 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { PropertyFinancialsProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import { getCurrencySign } from '@/utils/formatters';
-
-interface PropertyFinancialsProps {
-  property: Property;
-}
 
 const fmt = (val: string | null) => {
   if (!val) return '—';

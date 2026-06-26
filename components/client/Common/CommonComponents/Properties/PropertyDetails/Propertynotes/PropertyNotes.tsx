@@ -1,10 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface PropertyNotesProps {
-  notes: string;
-}
+import { PropertyNotesProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 
 const PropertyNotes: React.FC<PropertyNotesProps> = ({ notes }) => {
   if (!notes) return null;

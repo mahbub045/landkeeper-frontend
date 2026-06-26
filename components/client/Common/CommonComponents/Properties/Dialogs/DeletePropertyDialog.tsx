@@ -75,14 +75,8 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
           <Button variant='outline' onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button
-            variant='destructive'
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            {loading && (
-              <LoaderPinwheel className='h-4 w-4 animate-spin' />
-            )}
+          <Button variant='danger' onClick={handleDelete} disabled={loading}>
+            {loading && <LoaderPinwheel className='h-4 w-4 animate-spin' />}
             Delete Property
           </Button>
         </div>

@@ -1,74 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { PropertyDocument } from '@/types/client/Common/Properties/PropertyTypes';
-import { ChevronLeft, ChevronRight, LoaderPinwheel, X } from 'lucide-react';
+import {
+  ImageWithLoaderProps,
+  LightboxProps,
+  PropertyGalleryProps,
+} from '@/types/client/Common/Properties/PropertyDetailsTypes';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Grid2x2,
+  LoaderPinwheel,
+  X,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-interface PropertyGalleryProps {
-  docs: PropertyDocument[];
-}
-
-// ─── Grid icon ────────────────────────────────────────────────────────────────
-
-const GridIcon = () => (
-  <svg
-    width='14'
-    height='14'
-    viewBox='0 0 16 16'
-    fill='none'
-    className='shrink-0'
-  >
-    <rect
-      x='1'
-      y='1'
-      width='6'
-      height='6'
-      rx='1'
-      stroke='currentColor'
-      strokeWidth='1.5'
-    />
-    <rect
-      x='9'
-      y='1'
-      width='6'
-      height='6'
-      rx='1'
-      stroke='currentColor'
-      strokeWidth='1.5'
-    />
-    <rect
-      x='1'
-      y='9'
-      width='6'
-      height='6'
-      rx='1'
-      stroke='currentColor'
-      strokeWidth='1.5'
-    />
-    <rect
-      x='9'
-      y='9'
-      width='6'
-      height='6'
-      rx='1'
-      stroke='currentColor'
-      strokeWidth='1.5'
-    />
-  </svg>
-);
-
-// ─── Image with loader ────────────────────────────────────────────────────────
-
-interface ImageWithLoaderProps {
-  src: string;
-  alt: string;
-  sizes: string;
-  priority?: boolean;
-  className?: string;
-}
+// Image with loader
 
 const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
   src,
@@ -99,7 +48,7 @@ const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
   );
 };
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// Main component
 
 const PropertyGallery: React.FC<PropertyGalleryProps> = ({ docs }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -387,9 +336,10 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ docs }) => {
                         e.stopPropagation();
                         openLightbox(i + 1);
                       }}
+                      className='h-8 px-2 sm:h-9 sm:px-3'
                     >
-                      <GridIcon />
-                      Show all photos
+                      <Grid2x2 />
+                      <span className='ml-2 hidden sm:inline'>Show all</span>
                     </Button>
                   </div>
                 )}
@@ -416,25 +366,18 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ docs }) => {
   );
 };
 
-// ─── Show all button ──────────────────────────────────────────────────────────
-
+// Show all button
 const ShowAllButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
-  <Button className='absolute right-3 bottom-3' onClick={onClick}>
-    <GridIcon />
-    Show all photos
+  <Button
+    onClick={onClick}
+    className='absolute right-2 bottom-2 z-20 h-8 rounded-md px-2 shadow-lg sm:right-3 sm:bottom-3 sm:h-9 sm:px-3'
+  >
+    <Grid2x2 />
+    <span className='ml-2 hidden sm:inline'>Show all</span>
   </Button>
 );
 
-// ─── Lightbox ─────────────────────────────────────────────────────────────────
-
-interface LightboxProps {
-  docs: PropertyDocument[];
-  index: number;
-  open: boolean;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
-}
+// Lightbox
 
 const Lightbox: React.FC<LightboxProps> = ({
   docs,

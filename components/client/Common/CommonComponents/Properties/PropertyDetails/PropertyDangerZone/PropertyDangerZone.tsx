@@ -3,12 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { PropertyDangerZoneProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-
-interface PropertyDangerZoneProps {
-  onDeleteClick: () => void;
-}
 
 const PropertyDangerZone: React.FC<PropertyDangerZoneProps> = ({
   onDeleteClick,

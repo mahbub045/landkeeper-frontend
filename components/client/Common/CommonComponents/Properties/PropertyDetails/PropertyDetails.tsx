@@ -3,7 +3,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { PropertyDetailsProps } from '@/types/client/Common/Properties/PropertyTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { ArrowLeft, LoaderPinwheel, MapPin, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -17,7 +16,7 @@ import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
 
-const PropertyDetails: React.FC<PropertyDetailsProps> = ({ onDelete }) => {
+const PropertyDetails: React.FC = () => {
   const params = useParams();
   const alias = params.propertyalias as string;
   const {

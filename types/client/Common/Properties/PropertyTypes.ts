@@ -76,10 +76,7 @@ export interface PropertyGridProps {
   isLoading?: boolean;
 }
 
-export interface PropertyDetailsProps {
-  onEdit?: () => void;
-  onDelete?: () => void;
-}
+
 
 export interface AddPropertyModalProps {
   open: boolean;
