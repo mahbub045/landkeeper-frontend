@@ -3,23 +3,53 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MortgageCardProps } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { formatTerm, getCurrencySign } from '@/utils/formatters';
-import { Calculator, FileText, TriangleAlert } from 'lucide-react';
+import { Calculator, FileText, Pencil, Trash2, TriangleAlert } from 'lucide-react';
 
-const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
+const productTypeLabel: Record<string, string> = {
+  FIXED_RATE: 'Fixed Rate',
+  VARIABLE_RATE: 'Variable Rate',
+  INTEREST_ONLY: 'Interest Only',
+  TRACKER: 'Tracker',
+};
+
+const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
+  const renewalDue = (mortgage.term ?? 0) === 0;
+
   return (
-    <Card className='shadow-lg'>
+    <Card className='shadow-lg py-0'>
       <CardContent className='space-y-5 p-6'>
-        {/* Top row: property + lender name + rate */}
+        <div className='flex justify-end border-b border-muted-foreground pb-4'>
+          <div className='flex justify-center items-center gap-1'>
+              <Button
+                variant='default'
+                onClick={() => {/* open edit dialog */}}
+              >
+                <Pencil className='size-4' />
+                Edit
+              </Button>
+              <Button
+                variant='danger'
+                onClick={() => {/* open delete dialog */}}
+              >
+                <Trash2 className='size-4' />
+                Delete
+              </Button>
+            </div>
+        </div>
         <div className='flex items-start justify-between'>
           <div>
-            <p className='text-muted-foreground text-sm'>{mortgage.property}</p>
+            <p className='text-muted-foreground text-sm'>
+              Property #{mortgage.property}
+            </p>
             <div className='mt-1 flex flex-wrap items-center gap-3'>
               <h2 className='text-xl font-bold'>
-                {mortgage.lender} – {mortgage.type}
+                {mortgage.lender_name} –{' '}
+                {productTypeLabel[mortgage.product_type] ??
+                  mortgage.product_type}
               </h2>
-              {mortgage.renewalDue && (
+              {renewalDue && (
                 <Badge
                   variant='outline'
                   className='border-danger/40 bg-danger/15 text-danger flex items-center gap-1.5'
@@ -32,15 +62,16 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
           </div>
           <div className='shrink-0 text-right'>
             <p className='text-muted-foreground text-xs'>Rate</p>
-            <p className='text-2xl font-bold'>{mortgage.interestRate}%</p>
+            <p className='text-2xl font-bold'>
+              {parseFloat(mortgage.interest_rate ?? '0')}%
+            </p>
           </div>
         </div>
 
-        {/* Outstanding balance */}
         <div>
           <p className='text-3xl font-bold'>
             {getCurrencySign()}
-            {mortgage.outstandingBalance.toLocaleString('en-GB')}
+            {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString('en-GB')}
           </p>
           <p className='text-muted-foreground mt-1 text-sm'>
             Outstanding Balance
@@ -49,33 +80,31 @@ const MortgageCard: React.FC<MortgageCardProps> = ({ mortgage }) => {
 
         <div className='border-border border-t' />
 
-        {/* Three stats */}
         <div className='grid grid-cols-3 gap-4'>
           <div>
             <p className='text-muted-foreground text-xs'>Original Loan</p>
             <p className='mt-1 text-base font-semibold'>
               {getCurrencySign()}
-              {mortgage.originalLoan}
+              {parseFloat(mortgage.loan_amount ?? '0').toLocaleString('en-GB')}
             </p>
           </div>
           <div>
             <p className='text-muted-foreground text-xs'>Monthly Payment</p>
             <p className='mt-1 text-base font-semibold'>
               {getCurrencySign()}
-              {mortgage.monthlyPayment}
+              {parseFloat(mortgage.monthly_payment ?? '0').toLocaleString('en-GB')}
             </p>
           </div>
           <div>
             <p className='text-muted-foreground text-xs'>Term Remaining</p>
             <p className='mt-1 text-base font-semibold'>
-              {formatTerm(mortgage.termRemainingMonths)}
+              {formatTerm(mortgage.term)}
             </p>
           </div>
         </div>
 
         <div className='border-border border-t' />
 
-        {/* Action buttons */}
         <div className='flex items-center gap-3'>
           <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
             <FileText />
