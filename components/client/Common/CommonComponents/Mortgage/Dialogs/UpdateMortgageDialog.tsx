@@ -507,7 +507,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loading className='mr-2 h-4 w-4 animate-spin' />}
+            {loading && <Loading className='text-white!' />}
             Update
           </Button>
         </div>

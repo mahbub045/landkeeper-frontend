@@ -109,11 +109,11 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
 
         <div className='flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between'>
           <div className='flex items-center gap-2'>
-            <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
+            <Button variant='secondary' size='sm' className='rounded-xl'>
               <FileText />
               View Documents
             </Button>
-            <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
+            <Button variant='secondary' size='sm' className='rounded-xl'>
               <Calculator />
               Remortgage Calculator
             </Button>

@@ -226,8 +226,8 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               {propertyOpen && (
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
-                    <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
-                      <Loading />
+                    <div className='flex items-center gap-2 px-4 py-3 text-sm'>
+                      <Loading className='text-white!' />
                       Loading...
                     </div>
                   ) : !data?.length ? (
@@ -477,7 +477,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loading size={16} className='animate-spin' />}
+            {loading && <Loading className='text-white!' />}
             Add Mortgage
           </Button>
         </div>
