@@ -257,7 +257,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
                     <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
-                      <Loading className='h-4 w-4 animate-spin' />
+                      <Loading />
                       Loading...
                     </div>
                   ) : !data?.length ? (

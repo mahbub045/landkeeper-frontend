@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,7 +27,6 @@ import {
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
-import { LoaderPinwheel } from 'lucide-react';
 import { useState } from 'react';
 
 const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
@@ -227,7 +227,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
                     <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
-                      <LoaderPinwheel size={16} className='animate-spin' />
+                      <Loading />
                       Loading...
                     </div>
                   ) : !data?.length ? (
@@ -477,7 +477,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <LoaderPinwheel size={16} className='animate-spin' />}
+            {loading && <Loading size={16} className='animate-spin' />}
             Add Mortgage
           </Button>
         </div>
