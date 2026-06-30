@@ -22,8 +22,8 @@ import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 const productTypeLabel: Record<string, string> = {
   FIXED_RATE: 'Fixed Rate',
   VARIABLE_RATE: 'Variable Rate',
-  INTEREST_ONLY: 'Interest Only',
   TRACKER: 'Tracker',
+  OFFSET: 'Offset',
 };
 
 const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {

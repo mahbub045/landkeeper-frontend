@@ -60,6 +60,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
+    { skip: !propertyOpen },
   );
   const [updateMortgage] = useUpdateMortgageMutation();
 

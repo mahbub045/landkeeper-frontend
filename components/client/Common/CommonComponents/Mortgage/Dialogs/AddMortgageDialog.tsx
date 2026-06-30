@@ -43,13 +43,14 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
+    { skip: !propertyOpen },
   );
   const [addMortgage] = useAddMortgagesMutation();
 
   const [form, setForm] = useState<MortgageForm>({
     propertyId: '',
     lenderName: '',
-    productType: 'Fixed Rate',
+    productType: '',
     interestRate: '',
     loanAmount: '',
     outstandingBalance: '',
@@ -68,7 +69,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     'Fixed Rate': 'FIXED_RATE',
     'Variable Rate': 'VARIABLE_RATE',
     Tracker: 'TRACKER',
-    'Interest Only': 'INTEREST_ONLY',
+    Offset: 'OFFSET',
   };
 
   // ── Reset ───────────────────────────────────────────────────────────────────
@@ -200,6 +201,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
             </FieldLabel>
             <div className='relative'>
               <Input
+                type='text'
                 placeholder='Search by property name...'
                 value={
                   form.propertyId
@@ -216,11 +218,11 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 onClick={() => setPropertyOpen(true)}
                 onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
                 aria-invalid={!!fieldErrors.propertyId}
-                className={
-                  fieldErrors.propertyId
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
+                className={cn(
+                  'h-10',
+                  fieldErrors.propertyId &&
+                    'border-danger focus-visible:ring-danger/50',
+                )}
               />
 
               {propertyOpen && (
@@ -268,6 +270,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               Lender Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
+              type='text'
               placeholder='e.g. Halifax, Nationwide'
               value={form.lenderName}
               onChange={(e) => set('lenderName', e.target.value)}
@@ -294,13 +297,13 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 <SelectTrigger
                   className={fieldErrors.productType ? 'border-danger' : ''}
                 >
-                  <SelectValue />
+                  <SelectValue placeholder='Select Product Type' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='Fixed Rate'>Fixed Rate</SelectItem>
-                  <SelectItem value='Variable Rate'>Variable Rate</SelectItem>
-                  <SelectItem value='Tracker'>Tracker</SelectItem>
-                  <SelectItem value='Interest Only'>Interest Only</SelectItem>
+                  <SelectItem value='FIXED_RATE'>Fixed Rate</SelectItem>
+                  <SelectItem value='VARIABLE_RATE'>Variable Rate</SelectItem>
+                  <SelectItem value='TRACKER'>Tracker</SelectItem>
+                  <SelectItem value='OFFSET'>Offset</SelectItem>
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.productType }]} />
