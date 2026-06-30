@@ -20,75 +20,102 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
-import { useAddMortgagesMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
+import { useUpdateMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import {
-  AddMortgageDialogProps,
+  Mortgage,
   MortgageForm,
+  UpdateMortgageDialogProps,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
 import { useState } from 'react';
 
-const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
+const PRODUCT_TYPE_MAP: Record<string, string> = {
+  'Fixed Rate': 'FIXED_RATE',
+  'Variable Rate': 'VARIABLE_RATE',
+  Tracker: 'TRACKER',
+  'Interest Only': 'INTEREST_ONLY',
+};
+
+const PRODUCT_TYPE_REVERSE_MAP: Record<string, string> = {
+  FIXED_RATE: 'Fixed Rate',
+  VARIABLE_RATE: 'Variable Rate',
+  TRACKER: 'Tracker',
+  INTEREST_ONLY: 'Interest Only',
+};
+
+const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   open,
   onClose,
   onSuccess,
-  properties = [],
+  mortgage,
 }) => {
   const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [propertyOpen, setPropertyOpen] = useState(false);
-  const [propertySearch, setPropertySearch] = useState('');
+  const [propertySearch, setPropertySearch] = useState(
+    () => mortgage?.property?.property_name ?? '',
+  );
 
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
   );
-  const [addMortgage] = useAddMortgagesMutation();
+  const [updateMortgage] = useUpdateMortgageMutation();
 
-  const [form, setForm] = useState<MortgageForm>({
-    propertyId: '',
-    lenderName: '',
-    productType: 'Fixed Rate',
-    interestRate: '',
-    loanAmount: '',
-    outstandingBalance: '',
-    monthlyPayment: '',
-    termYears: '',
-    startDate: '',
-    endDate: '',
-    brokerNotes: '',
-  });
+  // ── Build initial form from the mortgage being edited ─────────────────────
+  // No useEffect needed here: the parent should remount this dialog per
+  // mortgage via `key={mortgage.alias}`, so a lazy initializer is enough.
+  function buildFormFromMortgage(m: Mortgage): MortgageForm {
+    if (!m) {
+      return {
+        propertyId: '',
+        lenderName: '',
+        productType: 'Fixed Rate',
+        interestRate: '',
+        loanAmount: '',
+        outstandingBalance: '',
+        monthlyPayment: '',
+        termYears: '',
+        startDate: '',
+        endDate: '',
+        brokerNotes: '',
+      };
+    }
+
+    return {
+      propertyId: m.property?.id ? String(m.property.id) : '',
+      lenderName: m.lender_name ?? '',
+      productType:
+        PRODUCT_TYPE_REVERSE_MAP[m.product_type] ??
+        m.product_type ??
+        'Fixed Rate',
+      interestRate: m.interest_rate ? String(m.interest_rate) : '',
+      loanAmount: m.loan_amount ? String(m.loan_amount) : '',
+      outstandingBalance: m.outstanding_balance
+        ? String(m.outstanding_balance)
+        : '',
+      monthlyPayment: m.monthly_payment ? String(m.monthly_payment) : '',
+      termYears: m.term ? String(m.term) : '',
+      startDate: m.start_date ?? '',
+      endDate: m.end_date ?? '',
+      brokerNotes: m.broker_notes ?? '',
+    };
+  }
+
+  const [form, setForm] = useState<MortgageForm>(() =>
+    buildFormFromMortgage(mortgage),
+  );
 
   function set(key: keyof MortgageForm, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
-
-  const PRODUCT_TYPE_MAP: Record<string, string> = {
-    'Fixed Rate': 'FIXED_RATE',
-    'Variable Rate': 'VARIABLE_RATE',
-    Tracker: 'TRACKER',
-    'Interest Only': 'INTEREST_ONLY',
-  };
 
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
     setLoading(false);
-    setForm({
-      propertyId: '',
-      lenderName: '',
-      productType: 'Fixed Rate',
-      interestRate: '',
-      loanAmount: '',
-      outstandingBalance: '',
-      monthlyPayment: '',
-      termYears: '',
-      startDate: '',
-      endDate: '',
-      brokerNotes: '',
-    });
     onClose();
   }
 
@@ -113,7 +140,10 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
         broker_notes: form.brokerNotes,
       };
 
-      const result = await addMortgage(payload).unwrap();
+      await updateMortgage({
+        mortgage_alias: mortgage.alias,
+        payload,
+      }).unwrap();
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -181,7 +211,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
-            Add Mortgage
+            Update Mortgage
           </DialogTitle>
         </DialogHeader>
 
@@ -226,8 +256,8 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               {propertyOpen && (
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
-                    <div className='flex items-center gap-2 px-4 py-3 text-sm'>
-                      <Loading className='text-white!' />
+                    <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
+                      <Loading />
                       Loading...
                     </div>
                   ) : !data?.length ? (
@@ -478,7 +508,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
             {loading && <Loading className='text-white!' />}
-            Add Mortgage
+            Update
           </Button>
         </div>
       </DialogContent>
@@ -486,4 +516,4 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   );
 };
 
-export default AddMortgageDialog;
+export default UpdateMortgageDialog;

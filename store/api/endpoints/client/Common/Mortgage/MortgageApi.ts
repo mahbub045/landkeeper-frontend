@@ -3,10 +3,10 @@ import { baseApi } from '@/store/api/baseApi';
 export const MortgageApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMortgages: builder.query({
-      query: (params) => ({ 
-        url: '/mortgage', 
-        method: 'GET', 
-        params 
+      query: (params) => ({
+        url: '/mortgage',
+        method: 'GET',
+        params,
       }),
       providesTags: ['Mortgage'],
     }),
@@ -26,6 +26,13 @@ export const MortgageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Mortgage'],
     }),
+    deleteMortgage: builder.mutation({
+      query: ({ mortgage_alias }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Mortgage'],
+    }),
   }),
 });
 
@@ -33,4 +40,5 @@ export const {
   useGetMortgagesQuery,
   useAddMortgagesMutation,
   useUpdateMortgageMutation,
+  useDeleteMortgageMutation,
 } = MortgageApi;

@@ -5,7 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { formatTerm, getCurrencySign } from '@/utils/formatters';
-import { Calculator, FileText, Pencil, Trash2, TriangleAlert } from 'lucide-react';
+import { getMortgageUrl } from '@/utils/redirectPath';
+import {
+  Calculator,
+  FileText,
+  Pencil,
+  Trash2,
+  TriangleAlert,
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import DeleteMortgageDialog from '../Dialogs/DeleteMortgageDialog';
+import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 
 const productTypeLabel: Record<string, string> = {
   FIXED_RATE: 'Fixed Rate',
@@ -16,32 +28,18 @@ const productTypeLabel: Record<string, string> = {
 
 const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
   const renewalDue = (mortgage.term ?? 0) === 0;
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
-    <Card className='shadow-lg py-0'>
+    <Card className='group py-0 shadow-lg transition-all hover:-translate-y-1'>
       <CardContent className='space-y-5 p-6'>
-        <div className='flex justify-end border-b border-muted-foreground pb-4'>
-          <div className='flex justify-center items-center gap-1'>
-              <Button
-                variant='default'
-                onClick={() => {/* open edit dialog */}}
-              >
-                <Pencil className='size-4' />
-                Edit
-              </Button>
-              <Button
-                variant='danger'
-                onClick={() => {/* open delete dialog */}}
-              >
-                <Trash2 className='size-4' />
-                Delete
-              </Button>
-            </div>
-        </div>
         <div className='flex items-start justify-between'>
           <div>
             <p className='text-muted-foreground text-sm'>
-              Property #{mortgage.property}
+              {mortgage.property.property_name}
             </p>
             <div className='mt-1 flex flex-wrap items-center gap-3'>
               <h2 className='text-xl font-bold'>
@@ -71,7 +69,9 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
         <div>
           <p className='text-3xl font-bold'>
             {getCurrencySign()}
-            {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString('en-GB')}
+            {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
+              'en-GB',
+            )}
           </p>
           <p className='text-muted-foreground mt-1 text-sm'>
             Outstanding Balance
@@ -92,7 +92,9 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             <p className='text-muted-foreground text-xs'>Monthly Payment</p>
             <p className='mt-1 text-base font-semibold'>
               {getCurrencySign()}
-              {parseFloat(mortgage.monthly_payment ?? '0').toLocaleString('en-GB')}
+              {parseFloat(mortgage.monthly_payment ?? '0').toLocaleString(
+                'en-GB',
+              )}
             </p>
           </div>
           <div>
@@ -105,17 +107,43 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
 
         <div className='border-border border-t' />
 
-        <div className='flex items-center gap-3'>
-          <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
-            <FileText />
-            View Documents
-          </Button>
-          <Button variant='secondary' size='sm' className='gap-2 rounded-xl'>
-            <Calculator />
-            Remortgage Calculator
-          </Button>
+        <div className='flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between'>
+          <div className='flex items-center gap-2'>
+            <Button variant='secondary' size='sm' className='rounded-xl'>
+              <FileText />
+              View Documents
+            </Button>
+            <Button variant='secondary' size='sm' className='rounded-xl'>
+              <Calculator />
+              Remortgage Calculator
+            </Button>
+          </div>
+          <div className='flex items-center gap-2 opacity-100 md:translate-y-1 md:scale-95 md:opacity-0 md:transition-all md:duration-300 md:ease-out md:group-hover:translate-y-0 md:group-hover:opacity-100'>
+            <Button variant='outline' onClick={() => setEditOpen(true)}>
+              <Pencil className='size-4' />
+              Edit
+            </Button>
+            <Button variant='outline' onClick={() => setDeleteOpen(true)}>
+              <Trash2 className='size-4' />
+              Delete
+            </Button>
+          </div>
         </div>
       </CardContent>
+
+      <UpdateMortgageDialog
+        key={mortgage.alias}
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        mortgage={mortgage}
+      />
+
+      <DeleteMortgageDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onSuccess={() => router.push(getMortgageUrl(session))}
+        mortgageAlias={mortgage.alias}
+      />
     </Card>
   );
 };

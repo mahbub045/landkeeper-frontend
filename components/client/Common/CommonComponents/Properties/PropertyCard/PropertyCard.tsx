@@ -5,12 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign } from '@/utils/formatters';
+import { getPropertyDetailsUrl } from '@/utils/redirectPath';
 import { Bath, Bed, Home, MapPin } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+  const { data: session } = useSession();
   const isOccupied = property.status === 'OCCUPIED';
   const image = property.documents?.[0]?.image ?? '';
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -30,7 +33,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <Link href={`/client/landlord/properties/${property.alias}`}>
+    <Link href={getPropertyDetailsUrl(session, property.alias)}>
       <Card className='border-border cursor-pointer overflow-hidden rounded-2xl pt-0 pb-3 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md'>
         <div className='relative h-48 w-full'>
           {image ? (

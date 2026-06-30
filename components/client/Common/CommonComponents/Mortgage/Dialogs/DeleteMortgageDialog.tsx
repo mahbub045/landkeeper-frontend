@@ -8,31 +8,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { DeletePropertyDialogProps } from '@/types/client/Common/Properties/PropertyTypes';
+import { useDeleteMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
+import { DeleteMortgageDialogProps } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 
-const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
+
+
+const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
   open,
   onClose,
   onSuccess,
-  propertyAlias,
-  propertyName,
+  mortgageAlias,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deleteProperty] = useDeletePropertyMutation();
+  const [deleteMortgage] = useDeleteMortgageMutation();
 
   async function handleDelete() {
     setLoading(true);
     setError(null);
     try {
-      await deleteProperty({ property_alias: propertyAlias }).unwrap();
+      await deleteMortgage({ mortgage_alias: mortgageAlias }).unwrap();
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete property. Please try again.');
+      setError('Failed to delete mortgage. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -44,7 +45,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
         <DialogHeader className='border-b px-6 pt-6 pb-4'>
           <DialogTitle className='text-foreground flex items-center gap-2 text-xl font-bold'>
             <AlertTriangle className='text-destructive size-5' />
-            Delete Property
+            Delete Mortgage
           </DialogTitle>
         </DialogHeader>
 
@@ -56,9 +57,9 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
           )}
 
           <p className='text-foreground text-center'>
-            Are you sure you want to delete{' '}
-            <span className='font-semibold'>{propertyName}</span>?<br /> This
-            will permanently remove the property and all associated data.
+            Are you sure you want to delete this mortgage
+            <br /> This will permanently remove the mortgage and all associated
+            data.
           </p>
           <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.
@@ -71,7 +72,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
           </Button>
           <Button variant='danger' onClick={handleDelete} disabled={loading}>
             {loading && <Loading className='text-white!' />}
-            Delete Property
+            Delete Mortgage
           </Button>
         </div>
       </DialogContent>
@@ -79,4 +80,4 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
   );
 };
 
-export default DeletePropertyDialog;
+export default DeleteMortgageDialog;
