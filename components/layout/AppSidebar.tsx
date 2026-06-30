@@ -2,6 +2,14 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -24,13 +32,14 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import Loading from '../common/CustomLoader/Loading';
+import { handleSignOut } from '../SignOut';
 import { Badge } from '../ui/badge';
 
 function isNavActive(pathname: string, href: string) {
@@ -165,6 +174,13 @@ const AppSidebar: React.FC = () => {
     );
   }
 
+  const getProfilePath = () => {
+    if (userRole === 'SUPER_ADMIN') {
+      return '/super-admin/profile';
+    }
+    return '/client/profile-settings';
+  };
+
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader className='gap-0 px-4 py-4 group-data-[collapsible=icon]:px-2'>
@@ -212,27 +228,66 @@ const AppSidebar: React.FC = () => {
       <SidebarSeparator className='mx-0 h-px!' />
 
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
-        <div className='flex items-center gap-3 group-data-[collapsible=icon]:justify-center'>
-          <Avatar size='lg'>
-            <AvatarImage
-              src={profileData?.profile_image ?? undefined}
-              alt='User profile picture'
-            />
-            <AvatarFallback className='bg-primary text-xs font-semibold text-white'>
-              {getInitials(profileData?.first_name) ?? 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div className='min-w-0 group-data-[collapsible=icon]:hidden'>
-            <p className='truncate text-sm font-semibold'>
-              {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
-              {profileData?.first_name} {profileData?.middle_name}{' '}
-              {profileData?.last_name}
-            </p>
-            <Badge className='truncate text-xs'>
-              {formatChoiceFieldValue(userRole)}
-            </Badge>
-          </div>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type='button'
+              className='flex w-full cursor-pointer items-center gap-3 rounded-lg p-1 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center'
+            >
+              <Avatar size='lg'>
+                <AvatarImage
+                  src={profileData?.profile_image ?? undefined}
+                  alt='User profile picture'
+                />
+                <AvatarFallback className='bg-primary text-xs font-semibold text-white'>
+                  {getInitials(profileData?.first_name) ?? 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className='min-w-0 group-data-[collapsible=icon]:hidden'>
+                <p className='truncate text-sm font-semibold'>
+                  {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
+                  {profileData?.first_name} {profileData?.middle_name}{' '}
+                  {profileData?.last_name}
+                </p>
+                <Badge className='truncate text-xs'>
+                  {formatChoiceFieldValue(userRole)}
+                </Badge>
+              </div>
+              <Settings size={16} />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align='end' className='w-56'>
+            <DropdownMenuLabel>
+              <div className='flex flex-col gap-1'>
+                <span className='font-medium'>
+                  {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
+                  {profileData?.first_name} {profileData?.middle_name}{' '}
+                  {profileData?.last_name}
+                </span>
+                <span className='text-muted-foreground text-xs font-normal'>
+                  {profileData?.email}
+                </span>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <Link href={getProfilePath()} passHref>
+              <DropdownMenuItem className='cursor-pointer'>
+                <User className='size-4' />
+                {userRole === 'SUPER_ADMIN' ? 'Profile' : 'Profile Settings'}
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant='destructive'
+              onClick={() => handleSignOut()}
+              className='cursor-pointer'
+            >
+              <LogOut className='size-4' />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarFooter>
 
       <SidebarRail />

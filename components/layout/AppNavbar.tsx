@@ -1,31 +1,16 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
-import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Bell, LogOut, Search, User, X } from 'lucide-react';
+import { Bell, Search, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { useState } from 'react';
-import Loading from '../common/CustomLoader/Loading';
-import { handleSignOut } from '../SignOut';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
 
 const AppNavbar: React.FC = () => {
-  const { theme, setTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const { data: session } = useSession();
   const userRole = session?.user?.role as UserRole | undefined;
@@ -99,7 +84,7 @@ const AppNavbar: React.FC = () => {
               <Bell />
             </Button>
 
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant='ghost'
@@ -158,7 +143,7 @@ const AppNavbar: React.FC = () => {
                   Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
         </div>
       )}

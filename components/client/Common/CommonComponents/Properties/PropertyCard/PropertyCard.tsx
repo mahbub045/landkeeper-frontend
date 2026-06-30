@@ -96,9 +96,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               </span>
             )}
           </div>
-          <p className='text-foreground mt-1 text-lg font-bold'>
-            {`${getCurrencySign()}${parseFloat(property.rent_per_month!).toLocaleString()}/mo`}
-          </p>
+          {property.rent_per_month && (
+            <p className='text-foreground mt-1 text-lg font-bold'>
+              {`${getCurrencySign()}${parseFloat(property?.rent_per_month).toLocaleString()}/mo`}
+            </p>
+          )}
         </CardContent>
       </Card>
     </Link>
