@@ -24,12 +24,13 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { ChevronRight, LoaderPinwheel } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import Loading from '../common/CustomLoader/Loading';
 import { Badge } from '../ui/badge';
 
 function isNavActive(pathname: string, href: string) {
@@ -158,7 +159,7 @@ const AppSidebar: React.FC = () => {
     return (
       <Sidebar collapsible='icon'>
         <div className='flex h-full items-center justify-center'>
-          <LoaderPinwheel className='text-primary animate-spin' />
+          <Loading />
         </div>
       </Sidebar>
     );

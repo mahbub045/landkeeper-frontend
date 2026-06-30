@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,7 +32,7 @@ import {
   Tab,
 } from '@/types/client/Common/Properties/PropertyTypes';
 
-import { CloudUpload, LoaderPinwheel, X } from 'lucide-react';
+import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
@@ -290,9 +291,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading}>
-              {loading && (
-                <LoaderPinwheel className='h-4 w-4 animate-spin' />
-              )}
+              {loading && <Loading className='text-white!' />}
               Add Property
             </Button>
           )}

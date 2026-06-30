@@ -1,18 +1,13 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   ImageWithLoaderProps,
   LightboxProps,
   PropertyGalleryProps,
 } from '@/types/client/Common/Properties/PropertyDetailsTypes';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Grid2x2,
-  LoaderPinwheel,
-  X,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Grid2x2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -32,7 +27,7 @@ const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
     <>
       {!loaded && (
         <div className='bg-muted/40 absolute inset-0 flex items-center justify-center'>
-          <LoaderPinwheel className='text-primary size-6 animate-spin' />
+          <Loading />
         </div>
       )}
       <Image

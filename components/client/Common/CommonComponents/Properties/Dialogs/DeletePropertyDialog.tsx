@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { AlertTriangle, LoaderPinwheel } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 
 interface DeletePropertyDialogProps {
@@ -76,7 +77,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
             Cancel
           </Button>
           <Button variant='danger' onClick={handleDelete} disabled={loading}>
-            {loading && <LoaderPinwheel className='h-4 w-4 animate-spin' />}
+            {loading && <Loading className='text-white!' />}
             Delete Property
           </Button>
         </div>

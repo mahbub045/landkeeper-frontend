@@ -2,15 +2,14 @@
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useSetPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
 import { SetPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
-import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
@@ -31,8 +30,6 @@ function SetPasswordContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const uid = searchParams.get('uid');
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,7 +182,7 @@ function SetPasswordContent() {
             >
               {setPasswordLoading ? (
                 <>
-                  <LoaderPinwheel className='h-4 w-4 animate-spin' />
+                  <Loading className='text-white!' />
                   Setting password...
                 </>
               ) : (

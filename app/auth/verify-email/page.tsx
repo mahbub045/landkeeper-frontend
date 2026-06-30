@@ -2,13 +2,14 @@
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import {
   useEmailVerifyMutation,
   useResendVerifyMutation,
 } from '@/store/api/endpoints/auth/SignupApi';
-import { LoaderPinwheel, Mail, RotateCcw } from 'lucide-react';
+import { Mail, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useRef, useState } from 'react';
@@ -182,7 +183,7 @@ function VerifyEmailContent() {
           >
             {isVerifying ? (
               <>
-                <LoaderPinwheel className='h-4 w-4 animate-spin' />
+                <Loading className='text-white!' />
                 Verifying...
               </>
             ) : (
@@ -198,11 +199,11 @@ function VerifyEmailContent() {
                 type='button'
                 onClick={handleResend}
                 disabled={isResending}
-                className='text-primary hover:text-primary/80 inline-flex items-center gap-1 font-medium disabled:opacity-50'
+                className='text-primary hover:text-primary/80 inline-flex cursor-pointer items-center gap-1 font-medium disabled:opacity-50'
               >
                 {isResending ? (
                   <>
-                    <LoaderPinwheel className='h-3 w-3 animate-spin' />
+                    <Loading size={14} />
                     Resending...
                   </>
                 ) : (

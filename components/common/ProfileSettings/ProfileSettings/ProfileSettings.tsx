@@ -18,9 +18,10 @@ import {
   useGetProfileInfoQuery,
 } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Camera, LoaderPinwheel, Pencil, RefreshCw } from 'lucide-react';
+import { Camera, Pencil, RefreshCw } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '../../CustomLoader/Loading';
 import ChangePasswordDialog from './Dialogs/ChangePasswordDialog';
 
 const ProfileSettings: React.FC = () => {
@@ -107,7 +108,7 @@ const ProfileSettings: React.FC = () => {
     return (
       <Card className='pt-0 pb-0'>
         <CardContent className='flex h-96 items-center justify-center p-6'>
-          <LoaderPinwheel className='text-primary animate-spin' />
+          <Loading />
         </CardContent>
       </Card>
     );

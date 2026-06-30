@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,7 +31,7 @@ import {
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { CloudUpload, LoaderPinwheel, X } from 'lucide-react';
+import { CloudUpload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -400,7 +401,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={loading || docsLoading}>
-              {loading && <LoaderPinwheel className='h-4 w-4 animate-spin' />}
+              {loading && <Loading className='text-white!' />}
               Update
             </Button>
           )}

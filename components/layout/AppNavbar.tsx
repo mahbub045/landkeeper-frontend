@@ -14,11 +14,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Bell, LoaderPinwheel, LogOut, Search, User, X } from 'lucide-react';
+import { Bell, LogOut, Search, User, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useState } from 'react';
+import Loading from '../common/CustomLoader/Loading';
 import { handleSignOut } from '../SignOut';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
@@ -109,7 +110,7 @@ const AppNavbar: React.FC = () => {
                   <Avatar size='sm'>
                     {isLoading ? (
                       <AvatarFallback className='bg-muted flex items-center justify-center'>
-                        <LoaderPinwheel className='text-primary size-3 animate-spin' />
+                        <Loading />
                       </AvatarFallback>
                     ) : (
                       <>

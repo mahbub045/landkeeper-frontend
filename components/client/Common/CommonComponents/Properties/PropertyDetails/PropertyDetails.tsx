@@ -1,10 +1,11 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import formatChoiceFieldValue from '@/utils/formatters';
-import { ArrowLeft, LoaderPinwheel, MapPin, Pencil } from 'lucide-react';
+import { ArrowLeft, MapPin, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -33,7 +34,7 @@ const PropertyDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className='flex h-64 items-center justify-center'>
-        <LoaderPinwheel className='text-primary size-6 animate-spin' />
+        <Loading />
       </div>
     );
   }
@@ -41,9 +42,7 @@ const PropertyDetails: React.FC = () => {
   if (isError || !property) {
     return (
       <div className='flex h-64 items-center justify-center'>
-        <p className='text-muted-foreground text-sm'>
-          Failed to load property.
-        </p>
+        <Loading />
       </div>
     );
   }

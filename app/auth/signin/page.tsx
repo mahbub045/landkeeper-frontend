@@ -2,11 +2,12 @@
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -82,7 +83,7 @@ export default function SignInPage() {
             className='mb-6 h-11 w-full font-medium'
           >
             {isGoogleLoading ? (
-              <LoaderPinwheel className='h-4 w-4 animate-spin' />
+              <Loading />
             ) : (
               <svg className='h-4 w-4' viewBox='0 0 24 24' aria-hidden='true'>
                 <path
@@ -184,7 +185,7 @@ export default function SignInPage() {
             >
               {isLoading ? (
                 <>
-                  <LoaderPinwheel className='h-4 w-4 animate-spin' />
+                  <Loading className='text-white!' />
                   Signing in...
                 </>
               ) : (

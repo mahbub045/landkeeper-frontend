@@ -2,6 +2,7 @@
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +17,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { TitleOptions } from '@/data/common/TitleOptions';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
-import { Eye, EyeOff, LoaderPinwheel } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -49,7 +50,7 @@ export default function SignupPage() {
   const [sighUp, { isLoading }] = useSignupMutation();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-// Replace your handleSubmit in SignupPage with this:
+  // Replace your handleSubmit in SignupPage with this:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
@@ -82,7 +83,10 @@ export default function SignupPage() {
           setFieldErrors(data as SignupFieldErrors);
 
           const errObj = data as Record<string, unknown>;
-          if (errObj.non_field_errors && Array.isArray(errObj.non_field_errors)) {
+          if (
+            errObj.non_field_errors &&
+            Array.isArray(errObj.non_field_errors)
+          ) {
             toast.error(errObj.non_field_errors[0] as string);
           } else if (errObj.detail && typeof errObj.detail === 'string') {
             toast.error(errObj.detail);
@@ -381,7 +385,7 @@ export default function SignupPage() {
             >
               {isLoading ? (
                 <>
-                  <LoaderPinwheel className='h-4 w-4 animate-spin' />
+                  <Loading className='text-white!' />
                   Creating account...
                 </>
               ) : (

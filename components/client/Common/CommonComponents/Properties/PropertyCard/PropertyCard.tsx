@@ -1,10 +1,11 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign } from '@/utils/formatters';
-import { Bath, Bed, Home, LoaderPinwheel, MapPin } from 'lucide-react';
+import { Bath, Bed, Home, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -36,7 +37,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             <>
               {!imageLoaded && (
                 <div className='bg-muted absolute inset-0 flex items-center justify-center'>
-                  <LoaderPinwheel className='text-muted-foreground size-6 animate-spin' />
+                  <Loading />
                 </div>
               )}
               <Image

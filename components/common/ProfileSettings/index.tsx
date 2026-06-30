@@ -1,6 +1,6 @@
 'use client';
-import { LoaderPinwheel } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import Loading from '../CustomLoader/Loading';
 import NotificationSettings from './Notificationsettings/Notificationsettings';
 import ProfileSettings from './ProfileSettings/ProfileSettings';
 import SubscriptionSettings from './Subscriptionsettings/Subscriptionsettings';
@@ -11,7 +11,7 @@ const ProfileSettingsContainer: React.FC = () => {
   if (status === 'loading') {
     return (
       <div className='flex h-96 items-center justify-center'>
-        <LoaderPinwheel className='text-primary animate-spin' />
+        <Loading />
       </div>
     );
   }

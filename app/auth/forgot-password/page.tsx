@@ -2,13 +2,13 @@
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useForgotPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
 import { ForgotPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
-import { LoaderPinwheel } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
               >
                 {forgotPasswordLoading ? (
                   <>
-                    <LoaderPinwheel className='h-4 w-4 animate-spin' />
+                    <Loading className='text-white!' />
                     Sending reset link...
                   </>
                 ) : (
