@@ -1,4 +1,4 @@
-import CompliancePageContainer from "@/components/landlord/Compliance";
+import CompliancePageContainer from '@/components/client/Landlord/Compliance';
 
 export default function CompliancePage() {
   return <CompliancePageContainer />;

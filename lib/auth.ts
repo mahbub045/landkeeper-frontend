@@ -1,111 +1,153 @@
-import type { UserRole } from "@/types/next-auth";
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-
-interface TestUser {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  accessToken: string;
-}
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          access_type: 'offline',
+          prompt: 'consent',
+          scope: 'openid email profile',
+        },
+      },
+    }),
+
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        // call your API here
-        // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        //   method: "POST",
-        //   body: JSON.stringify(credentials),
-        //   headers: { "Content-Type": "application/json" },
-        // })
-
-        // const user = await res.json()
-
-        // if (res.ok && user) {
-        //   return user
-        // }
-
-        // ✅ TEST CREDENTIALS — remove before production
-        const testUsers: TestUser[] = [
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
           {
-            id: "1",
-            name: "Admin User",
-            email: "rahat@admin.com",
-            password: "admin",
-            role: "ADMIN",
-            accessToken: "test-token-admin",
+            method: 'POST',
+            body: JSON.stringify(credentials),
+            headers: { 'Content-Type': 'application/json' },
           },
-          {
-            id: "2",
-            name: "Landlord User",
-            email: "landlord@test.com",
-            password: "landlord123",
-            role: "LANDLORD",
-            accessToken: "test-token-landlord",
-          },
-          {
-            id: "3",
-            name: "Mortgage Adviser",
-            email: "mortgage@test.com",
-            password: "mortgage123",
-            role: "MORTGAGE_ADVISER",
-            accessToken: "test-token-mortgage",
-          },
-        ];
-
-        const user = testUsers.find(
-          (u) =>
-            u.email === credentials?.email &&
-            u.password === credentials?.password,
         );
 
-        if (user) {
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            accessToken: user.accessToken,
-          };
-        }
-        // ✅ TEST CREDENTIALS — remove before production end
+        if (!res.ok) return null;
 
-        return null;
+        const { access, refresh } = await res.json();
+
+        if (!access) return null;
+
+        const profileRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${access}`,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        if (!profileRes.ok) return null;
+
+        const profile = await profileRes.json();
+
+        return {
+          id: profile.id,
+          email: profile.email,
+          role: profile.role,
+          accessToken: access,
+          refreshToken: refresh,
+        };
       },
     }),
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, trigger, session }) {
+
+      // ✅ Called by SessionSync → update() after token refresh in baseApi
+      if (trigger === 'update' && session?.accessToken) {
+        token.accessToken = session.accessToken;
+        token.refreshToken = session.refreshToken;
+        return token;
+      }
+
+      // ✅ Google sign-in flow
+      if (account?.provider === 'google' && account.access_token) {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/social/google`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                access_token: account.access_token,
+              }),
+            },
+          );
+
+          if (res.ok) {
+            const { access, refresh } = await res.json();
+
+            const profileRes = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+              {
+                headers: {
+                  Authorization: `Bearer ${access}`,
+                  'Content-Type': 'application/json',
+                },
+              },
+            );
+
+            if (profileRes.ok) {
+              const profile = await profileRes.json();
+              token.id = profile.id;
+              token.email = profile.email;
+              token.role = profile.role;
+              token.accessToken = access;
+              token.refreshToken = refresh;
+            }
+          } else {
+            console.error('Backend Google auth failed:', await res.text());
+          }
+        } catch (error) {
+          console.error('Google auth backend error:', error);
+        }
+
+        return token;
+      }
+
+      // ✅ Credentials sign-in flow
       if (user) {
         token.id = user.id;
-        token.accessToken = user.accessToken;
+        token.email = user.email;
         token.role = user.role;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
       }
+
       return token;
     },
+
     async session({ session, token }) {
       session.user.id = token.id;
-      session.user.accessToken = token.accessToken;
+      session.user.email = token.email || '';
       session.user.role = token.role;
+      session.user.accessToken = token.accessToken;
+      session.user.refreshToken = token.refreshToken;
       return session;
     },
   },
 
   pages: {
-    signIn: "/auth/login", // ← your custom login page
+    signIn: '/auth/signin',
   },
 
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
+    maxAge: 12 * 60 * 60, // 12 hours
   },
 
   secret: process.env.NEXTAUTH_SECRET,
