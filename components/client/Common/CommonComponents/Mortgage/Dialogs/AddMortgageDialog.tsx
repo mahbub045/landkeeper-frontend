@@ -26,7 +26,7 @@ import {
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, LoaderPinwheel } from 'lucide-react';
 import { useState } from 'react';
 
 const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
@@ -44,7 +44,6 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
   );
-  console.log('property data: ', data);
   const [addMortgage] = useAddMortgagesMutation();
 
   const [form, setForm] = useState<MortgageForm>({
@@ -228,7 +227,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
                     <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
-                      <Loader2 className='h-4 w-4 animate-spin' />
+                      <LoaderPinwheel size={16} className='animate-spin' />
                       Loading...
                     </div>
                   ) : !data?.length ? (
@@ -478,7 +477,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {loading && <LoaderPinwheel size={16} className='animate-spin' />}
             Add Mortgage
           </Button>
         </div>
