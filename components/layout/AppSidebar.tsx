@@ -26,7 +26,6 @@ import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { ChevronRight, LoaderPinwheel } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -148,18 +147,12 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
 
 const AppSidebar: React.FC = () => {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
   const userRole = user?.role as UserRole | undefined;
   const navItems = buildItems({ role: userRole });
-  const { resolvedTheme } = useTheme();
 
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
-
-  const logoSrc =
-    resolvedTheme === 'dark'
-      ? '/images/logo-white.png'
-      : '/images/logo-black.png';
 
   if (isLoading) {
     return (
@@ -176,11 +169,19 @@ const AppSidebar: React.FC = () => {
       <SidebarHeader className='gap-0 px-4 py-4 group-data-[collapsible=icon]:px-2'>
         <div className='flex items-center gap-2 group-data-[collapsible=icon]:hidden'>
           <Image
-            src={logoSrc}
+            src='/images/logo-black.png'
             alt='Landkeeper'
             width={400}
-            height={100}
-            className='h-12 w-44 rounded-xl'
+            height={150}
+            className='h-12 w-40 rounded-xl dark:hidden'
+            loading='eager'
+          />
+          <Image
+            src='/images/logo-white.png'
+            alt='Landkeeper'
+            width={400}
+            height={150}
+            className='hidden h-12 w-40 rounded-xl dark:block'
             loading='eager'
           />
         </div>
