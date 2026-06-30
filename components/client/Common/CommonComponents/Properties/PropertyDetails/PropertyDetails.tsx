@@ -16,6 +16,7 @@ import PropertyFinancials from './PropertyFinancials/PropertyFinancials';
 import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
+import { getPropertiesUrl } from '@/utils/redirectPath';
 
 const PropertyDetails: React.FC = () => {
   const params = useParams();
@@ -124,7 +125,7 @@ const PropertyDetails: React.FC = () => {
       <DeletePropertyDialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        onSuccess={() => router.push('/client/landlord/properties')}
+        onSuccess={() => router.push(getPropertiesUrl(session))}
         propertyAlias={property.alias}
         propertyName={property.property_name}
       />
