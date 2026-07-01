@@ -9,16 +9,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
+import { DeletePropertyDialogProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-
-interface DeletePropertyDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onSuccess?: () => void;
-  propertyAlias: string;
-  propertyName: string;
-}
 
 const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
   open,

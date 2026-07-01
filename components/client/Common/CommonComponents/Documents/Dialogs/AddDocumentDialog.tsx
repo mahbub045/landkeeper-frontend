@@ -183,6 +183,7 @@ const AddDocumentDialog: React.FC<UploadDocumentModalProps> = ({
               Document Name
             </FieldLabel>
             <Input
+              type='text'
               placeholder='e.g. Tenancy Agreement - Oak Street'
               value={form.name}
               onChange={(e) => set('name', e.target.value)}
@@ -199,6 +200,7 @@ const AddDocumentDialog: React.FC<UploadDocumentModalProps> = ({
           <Field data-invalid={!!fieldErrors.tags}>
             <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
             <Input
+              type='text'
               placeholder='Comma separated tags...'
               value={form.tags}
               onChange={(e) => set('tags', e.target.value)}

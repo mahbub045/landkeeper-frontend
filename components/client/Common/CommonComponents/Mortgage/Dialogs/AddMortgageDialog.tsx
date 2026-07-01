@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,15 +22,15 @@ import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddMortgagesMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import {
-  AddMortgageModalProps,
+  AddMortgageDialogProps,
   MortgageForm,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { getCurrencySign } from '@/utils/formatters';
 
-import { Loader2, LoaderPinwheel } from 'lucide-react';
 import { useState } from 'react';
 
-const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
+const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   open,
   onClose,
   onSuccess,
@@ -43,13 +44,14 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
 
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
+    { skip: !propertyOpen },
   );
   const [addMortgage] = useAddMortgagesMutation();
 
   const [form, setForm] = useState<MortgageForm>({
     propertyId: '',
     lenderName: '',
-    productType: 'Fixed Rate',
+    productType: '',
     interestRate: '',
     loanAmount: '',
     outstandingBalance: '',
@@ -68,7 +70,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
     'Fixed Rate': 'FIXED_RATE',
     'Variable Rate': 'VARIABLE_RATE',
     Tracker: 'TRACKER',
-    'Interest Only': 'INTEREST_ONLY',
+    Offset: 'OFFSET',
   };
 
   // ── Reset ───────────────────────────────────────────────────────────────────
@@ -200,6 +202,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
             </FieldLabel>
             <div className='relative'>
               <Input
+                type='text'
                 placeholder='Search by property name...'
                 value={
                   form.propertyId
@@ -216,18 +219,18 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
                 onClick={() => setPropertyOpen(true)}
                 onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
                 aria-invalid={!!fieldErrors.propertyId}
-                className={
-                  fieldErrors.propertyId
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
+                className={cn(
+                  'h-10',
+                  fieldErrors.propertyId &&
+                    'border-danger focus-visible:ring-danger/50',
+                )}
               />
 
               {propertyOpen && (
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
-                    <div className='text-muted-foreground flex items-center gap-2 px-4 py-3 text-sm'>
-                      <LoaderPinwheel size={16} className='animate-spin' />
+                    <div className='flex items-center gap-2 px-4 py-3 text-sm'>
+                      <Loading className='text-white!' />
                       Loading...
                     </div>
                   ) : !data?.length ? (
@@ -268,6 +271,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
               Lender Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
+              type='text'
               placeholder='e.g. Halifax, Nationwide'
               value={form.lenderName}
               onChange={(e) => set('lenderName', e.target.value)}
@@ -294,13 +298,13 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
                 <SelectTrigger
                   className={fieldErrors.productType ? 'border-danger' : ''}
                 >
-                  <SelectValue />
+                  <SelectValue placeholder='Select Product Type' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='Fixed Rate'>Fixed Rate</SelectItem>
-                  <SelectItem value='Variable Rate'>Variable Rate</SelectItem>
-                  <SelectItem value='Tracker'>Tracker</SelectItem>
-                  <SelectItem value='Interest Only'>Interest Only</SelectItem>
+                  <SelectItem value='FIXED_RATE'>Fixed Rate</SelectItem>
+                  <SelectItem value='VARIABLE_RATE'>Variable Rate</SelectItem>
+                  <SelectItem value='TRACKER'>Tracker</SelectItem>
+                  <SelectItem value='OFFSET'>Offset</SelectItem>
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.productType }]} />
@@ -335,7 +339,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.loanAmount}
                 onChange={(e) => set('loanAmount', e.target.value)}
                 aria-invalid={!!fieldErrors.loanAmount}
@@ -354,7 +358,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.outstandingBalance}
                 onChange={(e) => set('outstandingBalance', e.target.value)}
                 aria-invalid={!!fieldErrors.outstandingBalance}
@@ -378,7 +382,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.monthlyPayment}
                 onChange={(e) => set('monthlyPayment', e.target.value)}
                 aria-invalid={!!fieldErrors.monthlyPayment}
@@ -477,7 +481,7 @@ const AddMortgageDialog: React.FC<AddMortgageModalProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <LoaderPinwheel size={16} className='animate-spin' />}
+            {loading && <Loading className='text-white!' />}
             Add Mortgage
           </Button>
         </div>

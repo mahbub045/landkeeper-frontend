@@ -189,6 +189,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
               Certificate Number
             </FieldLabel>
             <Input
+              type='text'
               placeholder='e.g. CERT-2026-001'
               value={form.certificateNumber}
               onChange={(e) => set('certificateNumber', e.target.value)}
@@ -206,6 +207,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
           <Field data-invalid={!!fieldErrors.issuedBy}>
             <FieldLabel className='text-sm font-semibold'>Issued By</FieldLabel>
             <Input
+              type='text'
               placeholder='Company or engineer name'
               value={form.issuedBy}
               onChange={(e) => set('issuedBy', e.target.value)}

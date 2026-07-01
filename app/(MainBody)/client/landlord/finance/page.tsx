@@ -1,5 +1,5 @@
-import FinanceContainer from '@/components/client/Landlord/Finance';
+import LandlordFinanceContainer from '@/components/client/Landlord/Finance';
 
 export default function FinancePage() {
-  return <FinanceContainer />;
+  return <LandlordFinanceContainer />;
 }

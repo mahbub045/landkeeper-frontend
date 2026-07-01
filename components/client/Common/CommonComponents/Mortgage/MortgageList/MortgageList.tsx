@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import MortgageCard from '../MortgageCard/MortgageCard';
 
@@ -9,7 +10,11 @@ const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
 }) => {
   if (isLoading)
     return (
-      <p className='text-muted-foreground text-sm'>Loading mortgages...</p>
+      <div className='space-y-4'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className='h-84 rounded-2xl' />
+        ))}
+      </div>
     );
 
   if (!mortgages.length)

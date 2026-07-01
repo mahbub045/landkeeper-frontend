@@ -1,7 +1,7 @@
 import Tenant from '../../Common/CommonComponents/Tenant/Tenant';
 
-const TenantsContainer: React.FC = () => {
+const LandlordTenantsContainer: React.FC = () => {
   return <Tenant />;
 };
 
-export default TenantsContainer;
+export default LandlordTenantsContainer;

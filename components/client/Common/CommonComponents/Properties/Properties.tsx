@@ -12,6 +12,11 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   filterTabs,
   propertyTypeMap,
   statusMap,
@@ -21,7 +26,7 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { Plus } from 'lucide-react';
+import { Info, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
@@ -84,7 +89,7 @@ const Properties: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      <div className='flex items-start justify-between gap-4'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div>
           <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Properties
@@ -93,19 +98,40 @@ const Properties: React.FC = () => {
             Manage your property portfolio
           </p>
         </div>
+
         <div className='flex items-center gap-2'>
-          <div className='relative'>
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
             <Input
               type='text'
-              placeholder='Search properties...'
+              placeholder='Search...'
               value={search}
               onChange={handleSearchChange}
-              className='w-64 pl-9'
+              className='h-8! w-64 pr-8! pl-7!'
             />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type='button'
+                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full'
+                >
+                  <Info className='size-3' />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className='w-72 p-3' align='end'>
+                <p className='text-muted-foreground flex items-start gap-2 text-sm'>
+                  <Search className='mt-0.5 size-4 shrink-0' />
+                  <small className=''>
+                    You can search using Property Name and Address.
+                  </small>
+                </p>
+              </PopoverContent>
+            </Popover>
           </div>
-          <Button variant='default' onClick={() => setModalOpen(true)}>
+
+          <Button onClick={() => setModalOpen(true)}>
             <Plus />
-            Add Property
+            Add Mortgage
           </Button>
         </div>
       </div>
@@ -117,7 +143,7 @@ const Properties: React.FC = () => {
       />
 
       {isError ? (
-        <p className='text-danger text-sm text-center'>
+        <p className='text-danger text-center text-sm'>
           Failed to load properties. Please try again.
         </p>
       ) : (

@@ -5,4 +5,5 @@ export const TitleOptions = [
   { value: 'MISS', label: 'Miss' },
   { value: 'DR', label: 'Dr' },
   { value: 'PROFESSOR', label: 'Professor' },
+  { value: 'DOCTOR', label: 'Doctor' },
 ];

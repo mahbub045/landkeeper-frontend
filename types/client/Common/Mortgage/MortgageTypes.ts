@@ -1,6 +1,10 @@
 export interface Mortgage {
   alias: string;
-  property: number;
+  property: {
+    id: number;
+    alias: string;
+    property_name: string;
+  };
   lender_name: string;
   product_type: 'FIXED_RATE' | 'VARIABLE_RATE' | 'INTEREST_ONLY' | 'TRACKER';
   interest_rate: string | null;
@@ -40,10 +44,23 @@ export interface MortgageForm {
   brokerNotes: string;
 }
 
-export interface AddMortgageModalProps {
+export interface AddMortgageDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  // Pass your properties list here so the dropdown can be populated
   properties?: { id: string; name: string }[];
+}
+
+export interface UpdateMortgageDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  mortgage: Mortgage;
+}
+
+export interface DeleteMortgageDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  mortgageAlias: string;
 }

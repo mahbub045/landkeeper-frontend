@@ -1,7 +1,7 @@
 import Properties from '../../Common/CommonComponents/Properties/Properties';
 
-const PropertiesContainer: React.FC = () => {
+const LandlordPropertiesContainer: React.FC = () => {
   return <Properties />;
 };
 
-export default PropertiesContainer;
+export default LandlordPropertiesContainer;

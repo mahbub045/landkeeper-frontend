@@ -1,7 +1,7 @@
 import Compliance from '../../Common/CommonComponents/Compliance/Compliance';
 
-const ComplianceContainer: React.FC = () => {
+const LandlordComplianceContainer: React.FC = () => {
   return <Compliance />;
 };
 
-export default ComplianceContainer;
+export default LandlordComplianceContainer;

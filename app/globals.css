@@ -147,6 +147,11 @@
   }
 }
 
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 /* Auto-style all form inputs, selects, and textareas */
 input[type='text'],
 input[type='email'],

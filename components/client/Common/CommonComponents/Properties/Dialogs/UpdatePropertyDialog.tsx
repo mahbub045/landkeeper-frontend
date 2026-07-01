@@ -31,6 +31,7 @@ import {
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
+import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -505,7 +506,7 @@ const DetailsTab: React.FC<{
           </FieldLabel>
           <Input
             type='number'
-            placeholder='£'
+            placeholder={getCurrencySign()}
             value={form.purchasePrice}
             onChange={(e) => set('purchasePrice', e.target.value)}
             aria-invalid={!!errors.purchasePrice}
@@ -524,7 +525,7 @@ const DetailsTab: React.FC<{
           </FieldLabel>
           <Input
             type='number'
-            placeholder='£'
+            placeholder={getCurrencySign()}
             value={form.currentValue}
             onChange={(e) => set('currentValue', e.target.value)}
             aria-invalid={!!errors.currentValue}
@@ -545,7 +546,7 @@ const DetailsTab: React.FC<{
           </FieldLabel>
           <Input
             type='number'
-            placeholder='£'
+            placeholder={getCurrencySign()}
             value={form.rent_per_month}
             onChange={(e) => set('rent_per_month', e.target.value)}
             aria-invalid={!!errors.rent_per_month}

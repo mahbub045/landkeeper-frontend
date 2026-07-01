@@ -25,6 +25,7 @@ import {
   AddTransactionModalProps,
   TransactionForm,
 } from '@/types/client/Common/Finance/FinanceTypes';
+import { getCurrencySign } from '@/utils/formatters';
 
 import { Loader2, Paperclip } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
@@ -190,7 +191,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               <FieldLabel className='text-sm font-semibold'>Amount</FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 step='0.01'
                 value={form.amount}
                 onChange={(e) => set('amount', e.target.value)}

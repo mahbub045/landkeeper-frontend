@@ -1,31 +1,16 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
-import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Bell, LogOut, Search, User, X } from 'lucide-react';
+import { Bell, Search, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { useState } from 'react';
-import Loading from '../common/CustomLoader/Loading';
-import { handleSignOut } from '../SignOut';
 import { Input } from '../ui/input';
 import { ThemeToggle } from '../ui/theme-toggle';
 
 const AppNavbar: React.FC = () => {
-  const { theme, setTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const { data: session } = useSession();
   const userRole = session?.user?.role as UserRole | undefined;
@@ -47,12 +32,15 @@ const AppNavbar: React.FC = () => {
       {/* Mobile search overlay */}
       {searchOpen ? (
         <div className='flex flex-1 items-center gap-2'>
-          <Input
-            type='text'
-            autoFocus
-            className='h-9! flex-1'
-            placeholder='Search properties, tenants, or documents...'
-          />
+          <div className='relative flex-1'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              autoFocus
+              className='h-9! flex-1 pl-8!'
+              placeholder='Search properties, tenants, or documents...'
+            />
+          </div>
           <Button
             variant='ghost'
             size='icon-sm'
@@ -65,10 +53,11 @@ const AppNavbar: React.FC = () => {
       ) : (
         <div className='flex flex-1 items-center justify-between gap-4'>
           {/* Desktop search — hidden on mobile */}
-          <div className='hidden sm:block'>
+          <div className='relative hidden sm:block sm:min-w-sm'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
             <Input
               type='text'
-              className='h-9! min-w-sm'
+              className='h-9! min-w-sm pl-8!'
               placeholder='Search properties, tenants, or documents...'
             />
           </div>
@@ -99,7 +88,7 @@ const AppNavbar: React.FC = () => {
               <Bell />
             </Button>
 
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant='ghost'
@@ -158,7 +147,7 @@ const AppNavbar: React.FC = () => {
                   Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </div>
         </div>
       )}

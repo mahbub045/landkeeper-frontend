@@ -77,8 +77,6 @@ export interface PropertyGridProps {
   isLoading?: boolean;
 }
 
-
-
 export interface AddPropertyModalProps {
   open: boolean;
   onClose: () => void;
@@ -90,4 +88,12 @@ export interface UpdatePropertyModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   property: Property | null;
+}
+
+export interface DeletePropertyDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  propertyAlias: string;
+  propertyName: string;
 }
