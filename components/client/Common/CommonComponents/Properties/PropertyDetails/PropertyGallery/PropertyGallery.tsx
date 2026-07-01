@@ -407,6 +407,7 @@ const Lightbox: React.FC<LightboxProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <ImageWithLoader
+          key={docs[index].id ?? index}
           src={docs[index].image}
           alt={docs[index].description ?? `Image ${index + 1}`}
           sizes='90vw'
