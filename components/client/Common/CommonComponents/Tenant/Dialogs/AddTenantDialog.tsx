@@ -122,6 +122,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 First Name
               </FieldLabel>
               <Input
+                type='text'
                 value={form.firstName}
                 onChange={(e) => set('firstName', e.target.value)}
                 aria-invalid={!!fieldErrors.firstName}
@@ -139,6 +140,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 Last Name
               </FieldLabel>
               <Input
+                type='text'
                 value={form.lastName}
                 onChange={(e) => set('lastName', e.target.value)}
                 aria-invalid={!!fieldErrors.lastName}
@@ -271,6 +273,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               Employment Details
             </FieldLabel>
             <Input
+              type='text'
               placeholder='Employer name and role'
               value={form.employmentDetails}
               onChange={(e) => set('employmentDetails', e.target.value)}
@@ -290,6 +293,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               Guarantor Name
             </FieldLabel>
             <Input
+              type='text'
               placeholder='Optional'
               value={form.guarantorName}
               onChange={(e) => set('guarantorName', e.target.value)}
