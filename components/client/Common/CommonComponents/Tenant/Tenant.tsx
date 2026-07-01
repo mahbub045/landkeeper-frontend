@@ -33,7 +33,7 @@ function getStatus(endDate: string): TenantStatus {
 
 function mapApiTenant(apiTenant: ApiTenant): TenantModel {
   return {
-    id: apiTenant.alias,
+    alias: apiTenant.alias,
     name: `${apiTenant.first_name} ${apiTenant.last_name}`.trim(),
     email: apiTenant.email,
     avatar: apiTenant.avatar ?? undefined,

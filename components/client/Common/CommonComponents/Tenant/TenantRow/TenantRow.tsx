@@ -106,7 +106,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onSuccess={() => setDeleteOpen(false)}
-        tenantAlias={tenant.id}
+        tenantAlias={tenant.alias}
         tenantName={tenant.name}
       />
 

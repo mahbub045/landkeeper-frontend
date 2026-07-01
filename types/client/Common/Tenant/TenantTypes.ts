@@ -1,7 +1,7 @@
 export type TenantStatus = 'Active' | 'Renewal Due';
 
 export interface Tenant {
-  id: string;
+  alias: string;
   name: string;
   email: string;
   avatar?: string;

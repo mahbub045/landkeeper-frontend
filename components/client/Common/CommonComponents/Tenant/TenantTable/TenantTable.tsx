@@ -80,11 +80,11 @@ const TenantTable: React.FC<TenantTableProps> = ({
               </TableRow>
             ) : tenants.length > 0 ? (
               tenants.map((tenant, idx) => {
-                const apiTenant = apiTenantByAlias.get(tenant.id);
+                const apiTenant = apiTenantByAlias.get(tenant.alias);
                 if (!apiTenant) return null; // shouldn't happen, but keeps TS happy and avoids a crash
                 return (
                   <TenantRow
-                    key={tenant.id}
+                    key={tenant.alias}
                     tenant={tenant}
                     apiTenant={apiTenant}
                     idx={idx}

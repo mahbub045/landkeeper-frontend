@@ -27,7 +27,7 @@ import {
 } from '@/types/client/Common/Tenant/TenantTypes';
 import { getCurrencySign } from '@/utils/formatters';
 
-import { Loader2, Upload, User, X } from 'lucide-react';
+import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 const EMPTY_FORM: TenantForm = {
@@ -201,7 +201,6 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               {/* Container — NOT a button, just positions the trigger + badge */}
               <div className='group relative h-40 w-40 shrink-0'>
                 <Button
-                  type='button'
                   variant='ghost'
                   onClick={() => fileInputRef.current?.click()}
                   className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -230,7 +229,6 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
                 {avatarPreview && (
                   <Button
-                    type='button'
                     variant='destructive'
                     size='icon'
                     onClick={(e) => {
@@ -552,7 +550,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {loading && <Loading className='mr-2 h-4 w-4 animate-spin' />}
             Add Tenant
           </Button>
         </div>
