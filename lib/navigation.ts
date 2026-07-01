@@ -160,11 +160,10 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: House,
       },
       {
-        label: 'Mortgages',
-        href: '/client/letting-agent/mortgages',
-        icon: Landmark,
+        label: 'Tenants',
+        href: '/client/letting-agent/tenants',
+        icon: UsersRound,
       },
-
       {
         label: 'Compliance',
         href: '/client/letting-agent/compliance',
