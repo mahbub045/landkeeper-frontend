@@ -550,7 +550,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loading className='mr-2 h-4 w-4 animate-spin' />}
+            {loading && <Loading className='text-white!' />}
             Add Tenant
           </Button>
         </div>

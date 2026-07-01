@@ -592,7 +592,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={loading}>
-          {loading && <Loading />}
+          {loading && <Loading className='text-white!' />}
           Update
         </Button>
       </div>
