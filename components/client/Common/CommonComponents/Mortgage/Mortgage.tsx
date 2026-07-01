@@ -11,8 +11,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
-import { Plus } from 'lucide-react';
+import { Info, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
@@ -51,7 +56,14 @@ const Mortgage: React.FC = () => {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     if (page <= 3) return [1, 2, 3, 4, '...', totalPages];
     if (page >= totalPages - 2)
-      return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+      return [
+        1,
+        '...',
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
     return [1, '...', page - 1, page, page + 1, '...', totalPages];
   };
 
@@ -67,13 +79,35 @@ const Mortgage: React.FC = () => {
           </p>
         </div>
         <div className='flex items-center gap-2'>
-          <Input
-            type='text'
-            placeholder='Search mortgages...'
-            value={search}
-            onChange={handleSearchChange}
-            className='w-64'
-          />
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search...'
+              value={search}
+              onChange={handleSearchChange}
+              className='h-8! w-64 pr-8! pl-6!'
+            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type='button'
+                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 items-center justify-center rounded-full'
+                >
+                  <Info className='size-3' />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className='w-72 p-3' align='end'>
+                <p className='text-muted-foreground flex items-start gap-2 text-sm'>
+                  <Search className='mt-0.5 size-4 shrink-0' />
+                  <small className=''>
+                    You can search using Property Name and Lender Name.
+                  </small>
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <Button onClick={() => setModalOpen(true)}>
             <Plus />
             Add Mortgage
