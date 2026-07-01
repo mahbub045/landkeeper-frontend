@@ -190,7 +190,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               <FieldLabel className='text-sm font-semibold'>Amount</FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 step='0.01'
                 value={form.amount}
                 onChange={(e) => set('amount', e.target.value)}

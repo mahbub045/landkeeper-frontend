@@ -214,7 +214,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <FieldLabel className='text-sm font-semibold'>Deposit</FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.deposit}
                 onChange={(e) => set('deposit', e.target.value)}
                 aria-invalid={!!fieldErrors.deposit}

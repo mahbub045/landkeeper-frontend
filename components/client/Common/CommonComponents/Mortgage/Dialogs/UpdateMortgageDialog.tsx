@@ -366,7 +366,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.loanAmount}
                 onChange={(e) => set('loanAmount', e.target.value)}
                 aria-invalid={!!fieldErrors.loanAmount}
@@ -385,7 +385,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.outstandingBalance}
                 onChange={(e) => set('outstandingBalance', e.target.value)}
                 aria-invalid={!!fieldErrors.outstandingBalance}
@@ -409,7 +409,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               </FieldLabel>
               <Input
                 type='number'
-                placeholder='£'
+                placeholder={getCurrencySign()}
                 value={form.monthlyPayment}
                 onChange={(e) => set('monthlyPayment', e.target.value)}
                 aria-invalid={!!fieldErrors.monthlyPayment}
