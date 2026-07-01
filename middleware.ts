@@ -1,7 +1,7 @@
-import { getDashboardPath } from '@/lib/navigation';
 import type { UserRole } from '@/types/next-auth';
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import { getDashboardPath } from './utils/redirectPath';
 
 const SHARED_CLIENT_PATHS = [
   '/client/profile-settings',

@@ -6,7 +6,6 @@ import {
   House,
   Landmark,
   LayoutDashboard,
-  Settings,
   ShieldUser,
   UserKey,
   UsersRound,
@@ -100,6 +99,36 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/admin/dashboard',
         icon: LayoutDashboard,
       },
+      {
+        label: 'Properties',
+        href: '/client/admin/properties',
+        icon: House,
+      },
+      {
+        label: 'Mortgages',
+        href: '/client/admin/mortgages',
+        icon: Landmark,
+      },
+      {
+        label: 'Tenants',
+        href: '/client/admin/tenants',
+        icon: UsersRound,
+      },
+      {
+        label: 'Compliance',
+        href: '/client/admin/compliance',
+        icon: ShieldUser,
+      },
+      {
+        label: 'Documents',
+        href: '/client/admin/documents',
+        icon: Files,
+      },
+      {
+        label: 'Finance',
+        href: '/client/admin/finance',
+        icon: ChartNoAxesCombined,
+      },
     ];
   }
   if (role === 'LETTING_AGENT') {
@@ -109,17 +138,24 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/letting-agent/dashboard',
         icon: LayoutDashboard,
       },
+      {
+        label: 'Properties',
+        href: '/client/letting-agent/properties',
+        icon: House,
+      },
+      {
+        label: 'Mortgages',
+        href: '/client/letting-agent/mortgages',
+        icon: Landmark,
+      },
+
+      {
+        label: 'Compliance',
+        href: '/client/letting-agent/compliance',
+        icon: ShieldUser,
+      },
     ];
   }
 
   return [];
 };
-export function getDashboardPath(role: UserRole | undefined): string {
-  const paths: Record<UserRole, string> = {
-    SUPER_ADMIN: '/super-admin/dashboard',
-    LANDLORD: '/client/landlord/dashboard',
-    ADMIN: '/client/admin/dashboard',
-    LETTING_AGENT: '/client/letting-agent/dashboard',
-  };
-  return role && paths[role] ? paths[role] : '/auth/access-denied';
-}

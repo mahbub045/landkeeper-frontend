@@ -1,6 +1,6 @@
 import { authOptions } from '@/lib/auth';
-import { getDashboardPath } from '@/lib/navigation';
 import { UserRole } from '@/types/next-auth';
+import { getDashboardPath } from '@/utils/redirectPath';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 

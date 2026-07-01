@@ -1,4 +1,15 @@
+import { UserRole } from '@/types/next-auth';
 import { Session } from 'next-auth';
+
+export function getDashboardPath(role: UserRole | undefined): string {
+  const paths: Record<UserRole, string> = {
+    SUPER_ADMIN: '/super-admin/dashboard',
+    LANDLORD: '/client/landlord/dashboard',
+    ADMIN: '/client/admin/dashboard',
+    LETTING_AGENT: '/client/letting-agent/dashboard',
+  };
+  return role && paths[role] ? paths[role] : '/auth/access-denied';
+}
 
 // All user Property List
 export const getPropertiesUrl = (session: Session | null) => {
