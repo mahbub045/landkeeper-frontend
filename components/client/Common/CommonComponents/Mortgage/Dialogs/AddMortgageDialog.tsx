@@ -26,6 +26,7 @@ import {
   MortgageForm,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { getCurrencySign } from '@/utils/formatters';
 
 import { useState } from 'react';
 

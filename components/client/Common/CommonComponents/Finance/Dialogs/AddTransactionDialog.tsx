@@ -25,6 +25,7 @@ import {
   AddTransactionModalProps,
   TransactionForm,
 } from '@/types/client/Common/Finance/FinanceTypes';
+import { getCurrencySign } from '@/utils/formatters';
 
 import { Loader2, Paperclip } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';

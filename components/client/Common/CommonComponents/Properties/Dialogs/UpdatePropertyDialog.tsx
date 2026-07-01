@@ -31,6 +31,7 @@ import {
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
+import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';

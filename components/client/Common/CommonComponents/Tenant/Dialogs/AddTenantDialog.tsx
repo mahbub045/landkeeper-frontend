@@ -21,6 +21,7 @@ import {
   AddTenantModalProps,
   TenantForm,
 } from '@/types/client/Common/Tenant/TenantTypes';
+import { getCurrencySign } from '@/utils/formatters';
 
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
