@@ -32,12 +32,15 @@ const AppNavbar: React.FC = () => {
       {/* Mobile search overlay */}
       {searchOpen ? (
         <div className='flex flex-1 items-center gap-2'>
-          <Input
-            type='text'
-            autoFocus
-            className='h-9! flex-1'
-            placeholder='Search properties, tenants, or documents...'
-          />
+          <div className='relative flex-1'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              autoFocus
+              className='h-9! flex-1 pl-8!'
+              placeholder='Search properties, tenants, or documents...'
+            />
+          </div>
           <Button
             variant='ghost'
             size='icon-sm'
@@ -50,10 +53,11 @@ const AppNavbar: React.FC = () => {
       ) : (
         <div className='flex flex-1 items-center justify-between gap-4'>
           {/* Desktop search — hidden on mobile */}
-          <div className='hidden sm:block'>
+          <div className='relative hidden sm:block sm:min-w-sm'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
             <Input
               type='text'
-              className='h-9! min-w-sm'
+              className='h-9! min-w-sm pl-8!'
               placeholder='Search properties, tenants, or documents...'
             />
           </div>

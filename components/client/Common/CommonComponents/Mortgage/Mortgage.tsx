@@ -69,7 +69,7 @@ const Mortgage: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      <div className='flex items-start justify-between'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div>
           <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Mortgages
@@ -86,7 +86,7 @@ const Mortgage: React.FC = () => {
               placeholder='Search...'
               value={search}
               onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-6!'
+              className='h-8! w-64 pr-8! pl-7!'
             />
             <Popover>
               <PopoverTrigger asChild>
