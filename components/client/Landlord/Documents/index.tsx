@@ -1,7 +1,7 @@
 import Documents from '../../Common/CommonComponents/Documents/Documents';
 
-const DocumentsContainer: React.FC = () => {
+const LandlordDocumentsContainer: React.FC = () => {
   return <Documents />;
 };
 
-export default DocumentsContainer;
+export default LandlordDocumentsContainer;

@@ -1,7 +1,7 @@
 import Reports from '@/components/client/Common/CommonComponents/Tools/Reports/Reports';
 
-const ReportContainer: React.FC = () => {
+const LandlordReportsContainer: React.FC = () => {
   return <Reports />;
 };
 
-export default ReportContainer;
+export default LandlordReportsContainer;

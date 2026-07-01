@@ -1,7 +1,7 @@
-import PropertyDetails from '@/components/client/Common/CommonComponents/Properties/PropertyDetails/PropertyDetails'
+import PropertyDetails from '@/components/client/Common/CommonComponents/Properties/PropertyDetails/PropertyDetails';
 
-const PropertyDetailsContainer: React.FC = () => {
-  return <PropertyDetails />
+const LandlordPropertyDetailsContainer: React.FC = () => {
+  return <PropertyDetails />;
 };
 
-export default PropertyDetailsContainer;
+export default LandlordPropertyDetailsContainer;

@@ -1,7 +1,7 @@
 import Mortgage from '../../Common/CommonComponents/Mortgage/Mortgage';
 
-const MortgageContainer: React.FC = () => {
+const LandlordMortgageContainer: React.FC = () => {
   return <Mortgage />;
 };
 
-export default MortgageContainer;
+export default LandlordMortgageContainer;

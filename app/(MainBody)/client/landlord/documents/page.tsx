@@ -1,5 +1,5 @@
-import DocumentsContainer from '@/components/client/Landlord/Documents';
+import LandlordDocumentsContainer from '@/components/client/Landlord/Documents';
 
 export default function DocumentsPage() {
-  return <DocumentsContainer />;
+  return <LandlordDocumentsContainer />;
 }

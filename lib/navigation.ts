@@ -7,6 +7,7 @@ import {
   Landmark,
   LayoutDashboard,
   ShieldUser,
+  Ticket,
   UserKey,
   UsersRound,
   Wrench,
@@ -32,6 +33,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Dashboard',
         href: '/super-admin/dashboard',
         icon: LayoutDashboard,
+      },
+      {
+        label: 'Support Tickets',
+        href: '/super-admin/support-tickets',
+        icon: Ticket,
       },
     ];
   }
@@ -89,6 +95,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
           },
         ],
       },
+      {
+        label: 'Support Tickets',
+        href: '/client/landlord/support-tickets',
+        icon: Ticket,
+      },
     ];
   }
 
@@ -129,6 +140,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/admin/finance',
         icon: ChartNoAxesCombined,
       },
+      {
+        label: 'Support Tickets',
+        href: '/client/admin/support-tickets',
+        icon: Ticket,
+      },
     ];
   }
   if (role === 'LETTING_AGENT') {
@@ -153,6 +169,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Compliance',
         href: '/client/letting-agent/compliance',
         icon: ShieldUser,
+      },
+      {
+        label: 'Support Tickets',
+        href: '/client/letting-agent/support-tickets',
+        icon: Ticket,
       },
     ];
   }

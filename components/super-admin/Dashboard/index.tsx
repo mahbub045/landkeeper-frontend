@@ -1,13 +1,8 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, MapPin, Users } from 'lucide-react';
 
-const stats = [
+const SuperAdminDashboardContainer: React.FC = () => {
+    const stats = [
   {
     title: 'Total Parcels',
     value: '12,400+',
@@ -27,14 +22,12 @@ const stats = [
     icon: Users,
   },
 ];
-
-export default function DashboardPage() {
   return (
-    <div className='space-y-6'>
+     <div className='space-y-6'>
       <div>
-        <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
+        <h1 className='text-2xl font-bold tracking-tight'>Admin Dashboard</h1>
         <p className='text-sm text-muted-foreground'>
-          Overview of your land management activity.
+          Complete overview of all land management activity.
         </p>
       </div>
 
@@ -54,4 +47,6 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+};
+
+export default SuperAdminDashboardContainer;

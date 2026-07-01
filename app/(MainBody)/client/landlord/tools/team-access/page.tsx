@@ -1,5 +1,5 @@
-import TeamAccessContainer from '@/components/client/Landlord/Tools/TeamAccess';
+import LandlordTeamAccessContainer from '@/components/client/Landlord/Tools/TeamAccess';
 
 export default function TeamAccessPage() {
-  return <TeamAccessContainer />;
+  return <LandlordTeamAccessContainer />;
 }
