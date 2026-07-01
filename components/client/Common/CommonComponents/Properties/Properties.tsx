@@ -113,7 +113,7 @@ const Properties: React.FC = () => {
               <PopoverTrigger asChild>
                 <button
                   type='button'
-                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 items-center justify-center rounded-full'
+                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full'
                 >
                   <Info className='size-3' />
                 </button>
