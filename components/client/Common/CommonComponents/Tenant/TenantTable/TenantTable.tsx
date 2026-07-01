@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -28,8 +29,12 @@ const TABLE_COLUMNS = [
 const TenantTable: React.FC<TenantTableProps> = ({
   tenants,
   search,
+  apiTenants,
   onSearchChange,
+  isLoading,
 }) => {
+  const apiTenantByAlias = new Map(apiTenants.map((t) => [t.alias, t]));
+
   return (
     <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
       <div className='border-border flex items-center justify-between border-b px-6 py-4'>
@@ -63,10 +68,29 @@ const TenantTable: React.FC<TenantTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tenants.length > 0 ? (
-              tenants.map((tenant, idx) => (
-                <TenantRow key={tenant.id} tenant={tenant} idx={idx} />
-              ))
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={7} className='p-0'>
+                  <div className='space-y-3 p-6'>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={i} className='h-14 w-full rounded-xl' />
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : tenants.length > 0 ? (
+              tenants.map((tenant, idx) => {
+                const apiTenant = apiTenantByAlias.get(tenant.id);
+                if (!apiTenant) return null; // shouldn't happen, but keeps TS happy and avoids a crash
+                return (
+                  <TenantRow
+                    key={tenant.id}
+                    tenant={tenant}
+                    apiTenant={apiTenant}
+                    idx={idx}
+                  />
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell
