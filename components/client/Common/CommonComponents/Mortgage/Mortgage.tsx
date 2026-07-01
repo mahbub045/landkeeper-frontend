@@ -18,7 +18,7 @@ import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
 import SummaryCards from './SummaryCards/SummaryCards';
 
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 12;
 
 const Mortgage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
