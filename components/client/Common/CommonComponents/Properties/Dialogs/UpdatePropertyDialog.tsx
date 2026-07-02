@@ -299,15 +299,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     addFiles(e.dataTransfer.files);
   }, []);
 
-  console.log(
-    'existingDocs',
-    existingDocs.map((d) => d.image.split('/').pop()),
-  );
-  console.log(
-    'cachedExistingFiles',
-    cachedExistingFiles.map((f) => f.name),
-  );
-
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (

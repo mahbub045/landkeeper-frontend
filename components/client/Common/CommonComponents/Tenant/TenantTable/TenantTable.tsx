@@ -3,6 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -13,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TenantTableProps } from '@/types/client/Common/Tenant/TenantTypes';
-import { Download } from 'lucide-react';
+import { Download, Info, Search } from 'lucide-react';
 import TenantRow from '../TenantRow/TenantRow';
 
 const TABLE_COLUMNS = [
@@ -40,13 +45,35 @@ const TenantTable: React.FC<TenantTableProps> = ({
       <div className='border-border flex items-center justify-between border-b px-6 py-4'>
         <h2 className='text-foreground text-base font-semibold'>All Tenants</h2>
         <div className='flex items-center gap-2'>
-          <Input
-            type='text'
-            placeholder='Search tenants...'
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className='h-9! w-56 rounded-xl'
-          />
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search tenants...'
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className='h-9! w-64 rounded-xl pr-8! pl-7!'
+            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type='button'
+                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full'
+                >
+                  <Info className='size-3' />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className='w-72 p-3' align='end'>
+                <p className='text-muted-foreground flex items-start gap-2 text-sm'>
+                  <Search className='mt-0.5 size-4 shrink-0' />
+                  <small className=''>
+                    You can search using First Name, Last Name, Email and Phone.
+                  </small>
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <Button variant='outline' size='lg' className='rounded-lg'>
             <Download />
           </Button>
