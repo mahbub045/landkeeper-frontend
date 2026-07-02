@@ -23,7 +23,6 @@ const TABLE_COLUMNS = [
   'Rent',
   'Start Date',
   'End Date',
-  'Status',
   'Actions',
 ];
 

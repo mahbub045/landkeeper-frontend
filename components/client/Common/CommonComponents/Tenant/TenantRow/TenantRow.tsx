@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { avatarColors } from '@/data/client/common/tenant/TenantData';
@@ -56,16 +55,6 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
           {formatDate(tenant.endDate)}
-        </TableCell>
-        <TableCell>
-          <Badge
-            className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isActive ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}
-          >
-            <span
-              className={`inline-block size-1.5 rounded-full ${isActive ? 'bg-success' : 'bg-warning'}`}
-            />
-            {tenant.status}
-          </Badge>
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
