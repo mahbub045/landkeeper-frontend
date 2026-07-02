@@ -1,5 +1,6 @@
 'use client';
 
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -11,13 +12,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
-import { Info, Plus, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
@@ -88,24 +84,7 @@ const Mortgage: React.FC = () => {
               onChange={handleSearchChange}
               className='h-8! w-64 pr-8! pl-7!'
             />
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type='button'
-                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full'
-                >
-                  <Info className='size-3' />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className='w-72 p-3' align='end'>
-                <p className='text-muted-foreground flex items-start gap-2 text-sm'>
-                  <Search className='mt-0.5 size-4 shrink-0' />
-                  <small className=''>
-                    You can search using Property Name and Lender Name.
-                  </small>
-                </p>
-              </PopoverContent>
-            </Popover>
+            <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
           </div>
 
           <Button onClick={() => setModalOpen(true)}>

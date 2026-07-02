@@ -1,5 +1,6 @@
 'use client';
 
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,11 +13,6 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
   filterTabs,
   propertyTypeMap,
   statusMap,
@@ -26,7 +22,7 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { Info, Plus, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
@@ -40,6 +36,7 @@ const Properties: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -109,24 +106,7 @@ const Properties: React.FC = () => {
               onChange={handleSearchChange}
               className='h-8! w-64 pr-8! pl-7!'
             />
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type='button'
-                  className='absolute top-1/2 right-2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full'
-                >
-                  <Info className='size-3' />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className='w-72 p-3' align='end'>
-                <p className='text-muted-foreground flex items-start gap-2 text-sm'>
-                  <Search className='mt-0.5 size-4 shrink-0' />
-                  <small className=''>
-                    You can search using Property Name and Address.
-                  </small>
-                </p>
-              </PopoverContent>
-            </Popover>
+            <HoverInfoPopover text='You can search using Property Name and Address.' />
           </div>
 
           <Button onClick={() => setModalOpen(true)}>
