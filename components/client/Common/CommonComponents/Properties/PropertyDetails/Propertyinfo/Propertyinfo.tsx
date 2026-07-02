@@ -13,15 +13,6 @@ const TYPE_LABELS: Record<string, string> = {
   HOLIDAY_LET: 'Holiday Let',
 };
 
-// const formatDate = (iso: string | null) => {
-//   if (!iso) return '—';
-//   return new Date(iso).toLocaleDateString('en-GB', {
-//     day: 'numeric',
-//     month: 'short',
-//     year: 'numeric',
-//   });
-// };
-
 const InfoRow: React.FC<{ label: string; value: React.ReactNode }> = ({
   label,
   value,
