@@ -59,7 +59,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         </TableCell>
         <TableCell>
           <Badge
-            className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${isActive ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}
+            className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isActive ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}
           >
             <span
               className={`inline-block size-1.5 rounded-full ${isActive ? 'bg-success' : 'bg-warning'}`}
