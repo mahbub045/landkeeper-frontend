@@ -131,7 +131,7 @@ const Properties: React.FC = () => {
 
           <Button onClick={() => setModalOpen(true)}>
             <Plus />
-            Add Mortgage
+            Add Property
           </Button>
         </div>
       </div>

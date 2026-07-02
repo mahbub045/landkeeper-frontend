@@ -23,6 +23,7 @@ export const TAG_TYPES = [
   // Common Tags
   'Property',
   'Mortgage',
+  'Tenant',
 ] as const;
 
 // ─── Mutex ────────────────────────────────────────────────────────────────────
