@@ -42,9 +42,9 @@ const TenantTable: React.FC<TenantTableProps> = ({
 
   return (
     <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
-      <div className='border-border flex items-center justify-between border-b px-6 py-4'>
+      <div className='border-border flex gap-1 items-center justify-between border-b px-6 py-4'>
         <h2 className='text-foreground text-base font-semibold'>All Tenants</h2>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-1'>
           <div className='relative w-64'>
             <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
             <Input
