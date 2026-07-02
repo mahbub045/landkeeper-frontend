@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { avatarColors } from '@/data/client/common/tenant/TenantData';
 import { TenantRowProps } from '@/types/client/Common/Tenant/TenantTypes';
-import { getCurrencySign, getInitials } from '@/utils/formatters';
+import { formatDate, getCurrencySign, getInitials } from '@/utils/formatters';
 import { Eye, Pencil, Trash } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import DeleteTenantDialog from '../Dialogs/DeleteTenantDialog';
 import UpdateTenantDialog from '../Dialogs/UpdateTenantDialog';
@@ -16,6 +17,7 @@ function avatarColor(idx: number) {
 }
 
 const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
+  const { data: session } = useSession();
   const isActive = tenant.status === 'Active';
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -25,7 +27,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
     <>
       <TableRow className='text-center'>
         <TableCell>
-          <div className='flex items-center justify-center gap-3'>
+          <div className='flex items-center justify-start gap-3 pl-10'>
             <Avatar className='size-9 shrink-0'>
               <AvatarImage src={apiTenant.avatar || ''} alt={tenant.name} />
               <AvatarFallback
@@ -34,7 +36,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
                 {getInitials(tenant.name)}
               </AvatarFallback>
             </Avatar>
-            <div>
+            <div className='flex flex-col items-start justify-center'>
               <p className='text-foreground text-sm font-semibold'>
                 {tenant.name}
               </p>
@@ -42,7 +44,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             </div>
           </div>
         </TableCell>
-        <TableCell className='text-muted-foreground text-sm'>
+        <TableCell className='text-muted-foreground flex justify-start pl-15 text-sm'>
           {tenant.property}
         </TableCell>
         <TableCell className='text-foreground text-sm font-bold'>
@@ -50,10 +52,10 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           {tenant.rent.toLocaleString('en-GB')}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {tenant.startDate}
+          {formatDate(tenant.startDate)}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {tenant.endDate}
+          {formatDate(tenant.endDate)}
         </TableCell>
         <TableCell>
           <Badge
@@ -68,7 +70,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
             <Button
-              variant='outline'
+              variant='secondary'
               size='icon'
               className='rounded-lg'
               onClick={() => setViewOpen(true)}
@@ -76,21 +78,23 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
               <Eye />
             </Button>
             <Button
-              variant='outline'
+              variant='default'
               size='icon'
               className='rounded-lg'
               onClick={() => setEditOpen(true)}
             >
               <Pencil />
             </Button>
-            <Button
-              variant='outline'
-              size='icon'
-              className='rounded-lg'
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash />
-            </Button>
+            {session?.user?.role === 'LANDLORD' && (
+              <Button
+                variant='danger'
+                size='icon'
+                className='rounded-lg'
+                onClick={() => setDeleteOpen(true)}
+              >
+                <Trash />
+              </Button>
+            )}
           </div>
         </TableCell>
       </TableRow>

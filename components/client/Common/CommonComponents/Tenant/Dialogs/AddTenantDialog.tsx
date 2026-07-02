@@ -118,6 +118,18 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit() {
+    if (
+      form.tenancyStart &&
+      form.tenancyEnd &&
+      form.tenancyEnd < form.tenancyStart
+    ) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        tenancyEnd: 'End date cannot be before start date',
+      }));
+      return;
+    }
+
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -455,7 +467,20 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <Input
                 type='date'
                 value={form.tenancyStart}
-                onChange={(e) => set('tenancyStart', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  set('tenancyStart', value);
+                  setFieldErrors((prev) => {
+                    if (form.tenancyEnd && value && form.tenancyEnd < value) {
+                      return {
+                        ...prev,
+                        tenancyEnd: 'End date cannot be before start date',
+                      };
+                    }
+                    const { tenancyEnd, ...rest } = prev;
+                    return rest;
+                  });
+                }}
                 aria-invalid={!!fieldErrors.tenancyStart}
                 className={
                   fieldErrors.tenancyStart
@@ -473,7 +498,25 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <Input
                 type='date'
                 value={form.tenancyEnd}
-                onChange={(e) => set('tenancyEnd', e.target.value)}
+                min={form.tenancyStart || undefined}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  set('tenancyEnd', value);
+                  setFieldErrors((prev) => {
+                    if (
+                      form.tenancyStart &&
+                      value &&
+                      value < form.tenancyStart
+                    ) {
+                      return {
+                        ...prev,
+                        tenancyEnd: 'End date cannot be before start date',
+                      };
+                    }
+                    const { tenancyEnd, ...rest } = prev;
+                    return rest;
+                  });
+                }}
                 aria-invalid={!!fieldErrors.tenancyEnd}
                 className={
                   fieldErrors.tenancyEnd

@@ -96,6 +96,14 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit() {
+    if (form.startDate && form.endDate && form.endDate < form.startDate) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        endDate: 'End date cannot be before start date',
+      }));
+      return;
+    }
+
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -424,7 +432,20 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.startDate}
-                onChange={(e) => set('startDate', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  set('startDate', value);
+                  setFieldErrors((prev) => {
+                    if (form.endDate && value && form.endDate < value) {
+                      return {
+                        ...prev,
+                        endDate: 'End date cannot be before start date',
+                      };
+                    }
+                    const { endDate, ...rest } = prev;
+                    return rest;
+                  });
+                }}
                 aria-invalid={!!fieldErrors.startDate}
                 className={
                   fieldErrors.startDate
@@ -442,7 +463,21 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.endDate}
-                onChange={(e) => set('endDate', e.target.value)}
+                min={form.startDate || undefined}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  set('endDate', value);
+                  setFieldErrors((prev) => {
+                    if (form.startDate && value && value < form.startDate) {
+                      return {
+                        ...prev,
+                        endDate: 'End date cannot be before start date',
+                      };
+                    }
+                    const { endDate, ...rest } = prev;
+                    return rest;
+                  });
+                }}
                 aria-invalid={!!fieldErrors.endDate}
                 className={
                   fieldErrors.endDate
