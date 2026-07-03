@@ -20,11 +20,9 @@ const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
 
   if (!mortgages.length)
     return (
-      <div className='flex flex-col items-center justify-center py-20 text-center'>
-        <Landmark className='text-muted mb-3 size-10' />
-        <p className='text-muted-foreground text-sm font-medium'>
-          No mortgages found
-        </p>
+      <div className='text-muted-foreground flex flex-col items-center justify-center py-20 text-center'>
+        <Landmark className='mb-3 size-10' />
+        <p className='text-sm font-medium'>No mortgages found</p>
       </div>
     );
 

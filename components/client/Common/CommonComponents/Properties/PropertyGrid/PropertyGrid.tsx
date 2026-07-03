@@ -22,11 +22,9 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
 
   if (properties.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center py-20 text-center'>
-        <Home className='text-muted mb-3 size-10' />
-        <p className='text-muted-foreground text-sm font-medium'>
-          No properties found
-        </p>
+      <div className='text-muted-foreground flex flex-col items-center justify-center py-20 text-center'>
+        <Home className='mb-3 size-10' />
+        <p className='text-sm font-medium'>No properties found</p>
       </div>
     );
   }

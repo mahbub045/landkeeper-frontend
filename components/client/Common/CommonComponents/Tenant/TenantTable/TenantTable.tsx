@@ -99,13 +99,13 @@ const TenantTable: React.FC<TenantTableProps> = ({
               })
             ) : (
               <TableRow>
-  <TableCell colSpan={7} className='py-16 text-center'>
-    <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
-      <User className='size-10' />
-      <span className='text-sm'>No tenants found</span>
-    </div>
-  </TableCell>
-</TableRow>
+                <TableCell colSpan={7} className='py-16 text-center'>
+                  <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
+                    <User className='size-10' />
+                    <span className='text-sm'>No tenants found</span>
+                  </div>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
