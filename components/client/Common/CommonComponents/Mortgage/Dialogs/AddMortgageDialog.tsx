@@ -81,7 +81,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     setForm({
       propertyId: '',
       lenderName: '',
-      productType: 'Fixed Rate',
+      productType: '',
       interestRate: '',
       loanAmount: '',
       outstandingBalance: '',
@@ -95,15 +95,8 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        endDate: 'End date cannot be before start date',
-      }));
-      return;
-    }
-
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -196,7 +189,11 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <form
+          id='add-mortgage-form'
+          onSubmit={handleSubmit}
+          className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger mb-1 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -232,14 +229,14 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                   fieldErrors.propertyId &&
                     'border-danger focus-visible:ring-danger/50',
                 )}
+                required
               />
 
               {propertyOpen && (
                 <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
                   {isLoading ? (
-                    <div className='flex items-center gap-2 px-4 py-3 text-sm'>
-                      <Loading className='text-white!' />
-                      Loading...
+                    <div className='flex items-center justify-center gap-2 px-4 py-3 text-sm'>
+                      <Loading />
                     </div>
                   ) : !data?.length ? (
                     <p className='text-muted-foreground px-4 py-3 text-sm'>
@@ -289,6 +286,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.lenderName }]} />
           </Field>
@@ -296,15 +294,20 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           {/* Product Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.productType}>
-              <FieldLabel className='text-sm font-semibold'>
-                Product Type
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Product Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
                 value={form.productType}
                 onValueChange={(v) => set('productType', v)}
               >
                 <SelectTrigger
-                  className={fieldErrors.productType ? 'border-danger' : ''}
+                  aria-invalid={!!fieldErrors.productType}
+                  className={
+                    fieldErrors.productType
+                      ? 'border-danger focus-visible:ring-danger/50'
+                      : ''
+                  }
                 >
                   <SelectValue placeholder='Select Product Type' />
                 </SelectTrigger>
@@ -425,6 +428,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
           {/* Start Date + End Date */}
           <div className='grid grid-cols-2 gap-4'>
+            {/* Start Date */}
             <Field data-invalid={!!fieldErrors.startDate}>
               <FieldLabel className='text-sm font-semibold'>
                 Start Date
@@ -432,20 +436,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.startDate}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('startDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.endDate && value && form.endDate < value) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('startDate', e.target.value)}
                 aria-invalid={!!fieldErrors.startDate}
                 className={
                   fieldErrors.startDate
@@ -456,6 +447,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <FieldError errors={[{ message: fieldErrors.startDate }]} />
             </Field>
 
+            {/* End Date */}
             <Field data-invalid={!!fieldErrors.endDate}>
               <FieldLabel className='text-sm font-semibold'>
                 End Date
@@ -464,20 +456,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 type='date'
                 value={form.endDate}
                 min={form.startDate || undefined}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('endDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.startDate && value && value < form.startDate) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('endDate', e.target.value)}
                 aria-invalid={!!fieldErrors.endDate}
                 className={
                   fieldErrors.endDate
@@ -508,14 +487,14 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
           </Field>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
           <Button variant='outline' onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
+          <Button type='submit' form='add-mortgage-form' disabled={loading}>
             {loading && <Loading className='text-white!' />}
             Add Mortgage
           </Button>

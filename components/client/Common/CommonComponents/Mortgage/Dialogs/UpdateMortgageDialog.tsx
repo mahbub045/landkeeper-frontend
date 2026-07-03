@@ -73,7 +73,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       return {
         propertyId: '',
         lenderName: '',
-        productType: 'Fixed Rate',
+        productType: '',
         interestRate: '',
         loanAmount: '',
         outstandingBalance: '',
@@ -122,15 +122,8 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        endDate: 'End date cannot be before start date',
-      }));
-      return;
-    }
-
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -226,7 +219,11 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <form
+          id='update-mortgage-form'
+          onSubmit={handleSubmit}
+          className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger mb-1 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -261,6 +258,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
 
               {propertyOpen && (
@@ -317,6 +315,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.lenderName }]} />
           </Field>
@@ -324,8 +323,8 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           {/* Product Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.productType}>
-              <FieldLabel className='text-sm font-semibold'>
-                Product Type
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Product Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
                 value={form.productType}
@@ -453,6 +452,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
           {/* Start Date + End Date */}
           <div className='grid grid-cols-2 gap-4'>
+            {/* Start Date */}
             <Field data-invalid={!!fieldErrors.startDate}>
               <FieldLabel className='text-sm font-semibold'>
                 Start Date
@@ -460,20 +460,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.startDate}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('startDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.endDate && value && form.endDate < value) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('startDate', e.target.value)}
                 aria-invalid={!!fieldErrors.startDate}
                 className={
                   fieldErrors.startDate
@@ -484,6 +471,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <FieldError errors={[{ message: fieldErrors.startDate }]} />
             </Field>
 
+            {/* End Date */}
             <Field data-invalid={!!fieldErrors.endDate}>
               <FieldLabel className='text-sm font-semibold'>
                 End Date
@@ -492,20 +480,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 type='date'
                 value={form.endDate}
                 min={form.startDate || undefined}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('endDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.startDate && value && value < form.startDate) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('endDate', e.target.value)}
                 aria-invalid={!!fieldErrors.endDate}
                 className={
                   fieldErrors.endDate
@@ -536,14 +511,14 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
           </Field>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
           <Button variant='outline' onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
+          <Button type='submit' form='update-mortgage-form' disabled={loading}>
             {loading && <Loading className='text-white!' />}
             Update
           </Button>

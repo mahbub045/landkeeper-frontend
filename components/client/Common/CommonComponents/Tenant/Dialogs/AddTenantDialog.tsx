@@ -117,19 +117,8 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (
-      form.tenancyStart &&
-      form.tenancyEnd &&
-      form.tenancyEnd < form.tenancyStart
-    ) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        tenancyEnd: 'End date cannot be before start date',
-      }));
-      return;
-    }
-
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -191,7 +180,11 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <form
+          id='add-tenant-form'
+          onSubmit={handleSubmit}
+          className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -213,6 +206,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               {/* Container — NOT a button, just positions the trigger + badge */}
               <div className='group relative h-40 w-40 shrink-0'>
                 <Button
+                  type='button'
                   variant='ghost'
                   onClick={() => fileInputRef.current?.click()}
                   className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -241,6 +235,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
                 {avatarPreview && (
                   <Button
+                    type='button'
                     variant='destructive'
                     size='icon'
                     onClick={(e) => {
@@ -305,6 +300,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                   fieldErrors.propertyId &&
                     'border-danger focus-visible:ring-danger/50',
                 )}
+                required
               />
 
               {propertyOpen && (
@@ -348,8 +344,8 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           {/* First Name + Last Name */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.firstName}>
-              <FieldLabel className='text-sm font-semibold'>
-                First Name
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                First Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
@@ -361,13 +357,14 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.firstName }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.lastName}>
-              <FieldLabel className='text-sm font-semibold'>
-                Last Name
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Last Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
@@ -379,6 +376,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.lastName }]} />
             </Field>
@@ -387,7 +385,9 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           {/* Email + Phone */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.email}>
-              <FieldLabel className='text-sm font-semibold'>Email</FieldLabel>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Email<span className='text-danger'>*</span>
+              </FieldLabel>
               <Input
                 type='email'
                 value={form.email}
@@ -398,12 +398,15 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.email }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.phone}>
-              <FieldLabel className='text-sm font-semibold'>Phone</FieldLabel>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Phone<span className='text-danger'>*</span>
+              </FieldLabel>
               <Input
                 type='tel'
                 value={form.phone}
@@ -414,6 +417,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.phone }]} />
             </Field>
@@ -467,20 +471,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <Input
                 type='date'
                 value={form.tenancyStart}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('tenancyStart', value);
-                  setFieldErrors((prev) => {
-                    if (form.tenancyEnd && value && form.tenancyEnd < value) {
-                      return {
-                        ...prev,
-                        tenancyEnd: 'End date cannot be before start date',
-                      };
-                    }
-                    const { tenancyEnd, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('tenancyStart', e.target.value)}
                 aria-invalid={!!fieldErrors.tenancyStart}
                 className={
                   fieldErrors.tenancyStart
@@ -499,24 +490,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 type='date'
                 value={form.tenancyEnd}
                 min={form.tenancyStart || undefined}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('tenancyEnd', value);
-                  setFieldErrors((prev) => {
-                    if (
-                      form.tenancyStart &&
-                      value &&
-                      value < form.tenancyStart
-                    ) {
-                      return {
-                        ...prev,
-                        tenancyEnd: 'End date cannot be before start date',
-                      };
-                    }
-                    const { tenancyEnd, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('tenancyEnd', e.target.value)}
                 aria-invalid={!!fieldErrors.tenancyEnd}
                 className={
                   fieldErrors.tenancyEnd
@@ -585,14 +559,19 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.notes }]} />
           </Field>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={handleClose}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
+          <Button type='submit' form='add-tenant-form' disabled={loading}>
             {loading && <Loading className='text-white!' />}
             Add Tenant
           </Button>
