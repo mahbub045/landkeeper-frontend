@@ -9,6 +9,13 @@ export const TeamAccessApi = baseApi.injectEndpoints({
       }),
       providesTags: ['TeamAccess'],
     }),
+    getInviteTeamMember: builder.query({
+      query: () => ({
+        url: `/organisation/invite-users`,
+        method: 'GET',
+      }),
+      providesTags: ['TeamAccess'],
+    }),
     inviteTeamMember: builder.mutation({
       query: (body) => ({
         url: '/auth/send/invites',
@@ -37,6 +44,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
 
 export const {
   useGetTeamMembersQuery,
+  useGetInviteTeamMemberQuery,
   useInviteTeamMemberMutation,
   useEditTeamMemberMutation,
   useDeleteTeamMemberMutation,
