@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import Members from './Members/Members';
-import InviteTeamMemberDialog from './Dialogs/InviteTeamMemberModal';
+import InviteTeamMemberDialog from './Dialogs/InviteTeamMemberDialog';
 
 const TeamAccess: React.FC = () => {
   const [inviteOpen, setInviteOpen] = useState(false); // ← new
@@ -25,15 +25,14 @@ const TeamAccess: React.FC = () => {
           Invite User
         </Button>
       </div>
+
+      {/* Member List  */}
       <Members />
 
       {/* Invite Team Member modal */}
       <InviteTeamMemberDialog
         open={inviteOpen}
         onClose={() => setInviteOpen(false)}
-        onSuccess={() => {
-          // refetch / revalidate Members list here once the API call is wired up
-        }}
       />
     </div>
   );
