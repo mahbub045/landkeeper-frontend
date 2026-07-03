@@ -1,5 +1,3 @@
-export type MemberStatus = 'ACTIVE' | 'PENDING' | 'DEACTIVATED';
-
 export type FormErrors = Partial<Record<keyof InviteTeamMemberForm, string>>;
 export type ApiError = {
   status?: number;
@@ -23,12 +21,21 @@ export interface AcceptInviteApiError {
 }
 
 export interface TeamMember {
-  id: number;
-  name: string;
+  user: {
+    id: number;
+    alias: string;
+    email: string;
+    title: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    phone?: string;
+    profile_image?: string;
+    is_active: boolean;
+  };
   role: string;
-  email: string;
-  message?: string;
-  status: MemberStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface InviteTeamMemberForm {

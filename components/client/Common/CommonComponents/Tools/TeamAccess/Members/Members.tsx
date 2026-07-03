@@ -1,10 +1,14 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetTeamMembersQuery } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
-import { getInitials } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  formatDate,
+  getInitials,
+} from '@/utils/formatters';
 import {
   AlertCircle,
   MessagesSquare,
@@ -93,42 +97,48 @@ const Members: React.FC = () => {
           !isError &&
           members.length > 0 &&
           members.map((member: TeamMember) => (
-            <Card key={member.id} className='border'>
+            <Card key={member?.user?.alias} className='border'>
               <CardContent className='relative flex items-center gap-4 px-4 py-4'>
                 <Badge
-                  className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member.status === 'ACTIVE' ? 'border-success/30 bg-success/10 text-success' : member.status === 'PENDING' ? 'border-warning/30 bg-warning/10 text-warning' : 'border-danger/30 bg-danger/10 text-danger'}`}
+                  className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
                 >
                   <span
-                    className={`inline-block size-1.5 rounded-full ${member.status === 'ACTIVE' ? 'bg-success' : member.status === 'PENDING' ? 'bg-warning' : 'bg-danger'}`}
+                    className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-warning'}`}
                   />
-                  {member.status === 'ACTIVE'
-                    ? 'Active'
-                    : member.status === 'PENDING'
-                      ? 'Pending'
-                      : member.status === 'DEACTIVATED'
-                        ? 'Deactivated'
-                        : ''}
+                  {member?.user?.is_active ? 'Active' : 'Pending'}
                 </Badge>
 
                 {/* Avatar */}
-                <div className='bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full'>
-                  <span className='text-primary text-sm font-bold'>
-                    {getInitials(member.name)}
-                  </span>
-                </div>
+                <Avatar className='size-11 shrink-0'>
+                  <AvatarImage
+                    src={member?.user?.profile_image}
+                    alt={member?.user?.first_name || 'User'}
+                  />
+                  <AvatarFallback className='bg-primary/10 text-primary text-sm font-bold'>
+                    {getInitials(member?.user?.first_name || 'U')}
+                  </AvatarFallback>
+                </Avatar>
 
                 {/* Info */}
                 <div className='min-w-0 flex-1'>
                   <p className='text-foreground text-sm font-bold'>
-                    {member.name}
+                    {formatChoiceFieldValue(member?.user?.title)}{' '}
+                    {member?.user?.first_name} {member?.user?.middle_name}{' '}
+                    {member?.user?.last_name}
                   </p>
                   <p className='text-muted-foreground mt-0.5 text-xs'>
-                    {member.role} &bull; {member.email}
+                    {formatChoiceFieldValue(member?.role)} &bull;{' '}
+                    {member?.user?.email}
                   </p>
-                  {member.message && (
+                  {member?.user?.phone && (
                     <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
                       <MessagesSquare size={16} />
-                      {member.message}
+                      {member?.user?.phone}
+                    </p>
+                  )}
+                  {member?.created_at && (
+                    <p className='text-muted-foreground/70 mt-0.5 text-xs'>
+                      Joined {formatDate(member?.created_at)}
                     </p>
                   )}
                 </div>
