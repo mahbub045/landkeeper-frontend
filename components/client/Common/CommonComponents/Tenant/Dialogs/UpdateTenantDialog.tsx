@@ -158,46 +158,9 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     onClose();
   }
 
-  // ── Validation ──────────────────────────────────────────────────────────────
-
-  function validate(): Record<string, string> {
-    const errors: Record<string, string> = {};
-
-    if (!form.propertyId) {
-      errors.propertyId = 'Property is required';
-    }
-    if (!form.firstName.trim()) {
-      errors.firstName = 'First name is required';
-    }
-    if (!form.lastName.trim()) {
-      errors.lastName = 'Last name is required';
-    }
-    if (!form.email.trim()) {
-      errors.email = 'Email is required';
-    }
-    if (!form.phone.trim()) {
-      errors.phone = 'Phone is required';
-    }
-
-    if (
-      form.tenancyStart &&
-      form.tenancyEnd &&
-      form.tenancyEnd < form.tenancyStart
-    ) {
-      errors.tenancyEnd = 'End date cannot be before start date';
-    }
-
-    return errors;
-  }
-
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    const errors = validate();
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
     setBannerError(null);
     setFieldErrors({});
@@ -262,7 +225,11 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
       </DialogHeader>
 
       {/* Scrollable body */}
-      <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+      <form
+        id='update-tenant-form'
+        onSubmit={handleSubmit}
+        className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+      >
         {bannerError && (
           <p className='text-danger rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
             {bannerError}
@@ -284,6 +251,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
             {/* Container — NOT a button, just positions the trigger + badge */}
             <div className='group relative h-40 w-40 shrink-0'>
               <Button
+                type='button'
                 variant='ghost'
                 onClick={() => fileInputRef.current?.click()}
                 className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -312,6 +280,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
               {avatarPreview && (
                 <Button
+                  type='button'
                   variant='destructive'
                   size='icon'
                   onClick={(e) => {
@@ -375,6 +344,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                 fieldErrors.propertyId &&
                   'border-danger focus-visible:ring-danger/50',
               )}
+              required
             />
 
             {propertyOpen && (
@@ -432,6 +402,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.firstName }]} />
           </Field>
@@ -450,6 +421,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.lastName }]} />
           </Field>
@@ -471,6 +443,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.email }]} />
           </Field>
@@ -489,6 +462,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.phone }]} />
           </Field>
@@ -542,20 +516,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
             <Input
               type='date'
               value={form.tenancyStart}
-              onChange={(e) => {
-                const value = e.target.value;
-                set('tenancyStart', value);
-                setFieldErrors((prev) => {
-                  if (form.tenancyEnd && value && form.tenancyEnd < value) {
-                    return {
-                      ...prev,
-                      tenancyEnd: 'End date cannot be before start date',
-                    };
-                  }
-                  const { tenancyEnd, ...rest } = prev;
-                  return rest;
-                });
-              }}
+              onChange={(e) => set('tenancyStart', e.target.value)}
               aria-invalid={!!fieldErrors.tenancyStart}
               className={
                 fieldErrors.tenancyStart
@@ -574,20 +535,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
               type='date'
               value={form.tenancyEnd}
               min={form.tenancyStart || undefined}
-              onChange={(e) => {
-                const value = e.target.value;
-                set('tenancyEnd', value);
-                setFieldErrors((prev) => {
-                  if (form.tenancyStart && value && value < form.tenancyStart) {
-                    return {
-                      ...prev,
-                      tenancyEnd: 'End date cannot be before start date',
-                    };
-                  }
-                  const { tenancyEnd, ...rest } = prev;
-                  return rest;
-                });
-              }}
+              onChange={(e) => set('tenancyEnd', e.target.value)}
               aria-invalid={!!fieldErrors.tenancyEnd}
               className={
                 fieldErrors.tenancyEnd
@@ -656,14 +604,19 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           />
           <FieldError errors={[{ message: fieldErrors.notes }]} />
         </Field>
-      </div>
+      </form>
 
       {/* Footer */}
       <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-        <Button variant='outline' onClick={handleClose} disabled={loading}>
+        <Button
+          type='button'
+          variant='outline'
+          onClick={handleClose}
+          disabled={loading}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={loading}>
+        <Button type='submit' form='update-tenant-form' disabled={loading}>
           {loading && <Loading className='text-white!' />}
           Update
         </Button>

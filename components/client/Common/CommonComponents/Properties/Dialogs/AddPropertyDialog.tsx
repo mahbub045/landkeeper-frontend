@@ -66,6 +66,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const propertyIdRef = useRef<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
@@ -94,21 +95,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       notes: '',
     });
     onClose();
-  }
-
-  // ── Validation ──────────────────────────────────────────────────────────────
-
-  function validate(): Record<string, string> {
-    const errors: Record<string, string> = {};
-
-    if (!details.name.trim()) {
-      errors.name = 'Property name is required';
-    }
-    if (!details.address.trim()) {
-      errors.address = 'Address is required';
-    }
-
-    return errors;
   }
 
   // ── Shared API error handler ────────────────────────────────────────────────
@@ -158,19 +144,8 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
   // ── Submit ──────────────────────────────────────────────────────────────────
 
-  async function handleSubmit() {
-    const error = validate();
-
-    if (Object.keys(error).length > 0) {
-      setFieldErrors(error);
-      const targetTab = TAB_PRIORITY.find((tab) =>
-        Object.keys(error).some((field) => FIELD_TAB_MAP[field] === tab),
-      );
-      if (targetTab) setActiveTab(targetTab);
-      setBannerError('Please fix the highlighted fields and try again.');
-      return;
-    }
-
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -273,7 +248,12 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 overflow-y-auto px-6 py-5'>
+        <form
+          id='add-property-form'
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className='flex-1 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -303,22 +283,38 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               onRemove={removeFile}
             />
           )}
-        </div>
+        </form>
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={handleClose}
+            disabled={loading}
+          >
             Cancel
           </Button>
           {activeTab === 'Details' ? (
             <Button
-              onClick={() => setActiveTab('Documents')}
+              key='next-btn'
+              type='button'
+              onClick={() => {
+                if (formRef.current?.reportValidity()) {
+                  setActiveTab('Documents');
+                }
+              }}
               disabled={loading}
             >
               Next
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
+            <Button
+              key='submit-btn'
+              type='submit'
+              form='add-property-form'
+              disabled={loading}
+            >
               {loading && <Loading className='text-white!' />}
               Add Property
             </Button>
@@ -354,6 +350,7 @@ const DetailsTab: React.FC<{
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
           aria-invalid={!!errors.name}
+          required
           className={
             errors.name ? 'border-danger focus-visible:ring-danger/50' : ''
           }
@@ -409,6 +406,7 @@ const DetailsTab: React.FC<{
           value={form.address}
           onChange={(e) => set('address', e.target.value)}
           aria-invalid={!!errors.address}
+          required
           className={
             errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
           }

@@ -32,38 +32,15 @@ const PropertyDangerZone: React.FC<PropertyDangerZoneProps> = ({
               cannot be undone.
             </p>
           </div>
-          {!deleteConfirm ? (
-            <Button
-              variant='destructive'
-              size='sm'
-              className='shrink-0'
-              onClick={() => setDeleteConfirm(true)}
-            >
-              <Trash2 className='size-3.5' />
-              Delete
-            </Button>
-          ) : (
-            <div className='flex shrink-0 items-center gap-2'>
-              <span className='text-muted-foreground text-xs'>Sure?</span>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setDeleteConfirm(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant='destructive'
-                size='sm'
-                onClick={() => {
-                  setDeleteConfirm(false);
-                  onDeleteClick();
-                }}
-              >
-                Confirm
-              </Button>
-            </div>
-          )}
+          <Button
+            variant='destructive'
+            size='sm'
+            className='shrink-0'
+            onClick={() => onDeleteClick()}
+          >
+            <Trash2 className='size-3.5' />
+            Delete
+          </Button>
         </div>
       </CardContent>
     </Card>
