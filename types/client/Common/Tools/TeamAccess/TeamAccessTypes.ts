@@ -38,6 +38,14 @@ export interface TeamMember {
   updated_at: string;
 }
 
+export interface InviteMember {
+  email: string;
+  role: string;
+  message: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface InviteTeamMemberForm {
   email: string;
   role: string;

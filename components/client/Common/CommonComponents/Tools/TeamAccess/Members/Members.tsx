@@ -8,7 +8,10 @@ import {
   useGetInviteTeamMemberQuery,
   useGetTeamMembersQuery,
 } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
-import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
+import {
+  InviteMember,
+  TeamMember,
+} from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import formatChoiceFieldValue, {
   formatDate,
   getInitials,
@@ -22,15 +25,6 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react';
-
-// TODO: replace with the real type if one exists in TeamAccessTypes.ts
-interface InviteMember {
-  email: string;
-  role: string;
-  message: string;
-  created_at: string;
-  updated_at: string;
-}
 
 const Members: React.FC = () => {
   const {
