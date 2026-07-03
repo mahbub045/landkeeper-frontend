@@ -23,7 +23,9 @@ export interface ImageWithLoaderProps {
   alt: string;
   sizes: string;
   priority?: boolean;
+  fill?: boolean;
   className?: string;
+  unoptimized?: boolean;
 }
 
 export interface PropertyDangerZoneProps {
