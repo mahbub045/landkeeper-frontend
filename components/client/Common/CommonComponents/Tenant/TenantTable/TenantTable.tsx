@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TenantTableProps } from '@/types/client/Common/Tenant/TenantTypes';
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { useState } from 'react';
 import TenantRow from '../TenantRow/TenantRow';
 
@@ -99,13 +99,13 @@ const TenantTable: React.FC<TenantTableProps> = ({
               })
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={7}
-                  className='text-muted-foreground py-16 text-center text-sm'
-                >
-                  No tenants found for &quot;{search}&quot;
-                </TableCell>
-              </TableRow>
+  <TableCell colSpan={7} className='py-16 text-center'>
+    <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
+      <User className='size-10' />
+      <span className='text-sm'>No tenants found</span>
+    </div>
+  </TableCell>
+</TableRow>
             )}
           </TableBody>
         </Table>

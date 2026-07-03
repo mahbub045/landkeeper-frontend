@@ -96,6 +96,21 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     onClose();
   }
 
+  // ── Validation ──────────────────────────────────────────────────────────────
+
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (!details.name.trim()) {
+      errors.name = 'Property name is required';
+    }
+    if (!details.address.trim()) {
+      errors.address = 'Address is required';
+    }
+
+    return errors;
+  }
+
   // ── Shared API error handler ────────────────────────────────────────────────
 
   function handleApiError(body: unknown) {
@@ -144,6 +159,18 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   // ── Submit ──────────────────────────────────────────────────────────────────
 
   async function handleSubmit() {
+    const error = validate();
+
+    if (Object.keys(error).length > 0) {
+      setFieldErrors(error);
+      const targetTab = TAB_PRIORITY.find((tab) =>
+        Object.keys(error).some((field) => FIELD_TAB_MAP[field] === tab),
+      );
+      if (targetTab) setActiveTab(targetTab);
+      setBannerError('Please fix the highlighted fields and try again.');
+      return;
+    }
+
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -570,7 +597,7 @@ const DocumentsTab: React.FC<{
           Drag &amp; Drop or Click to Upload
         </p>
         <p className='text-muted-foreground mt-1 text-xs'>
-          PDF, DOC, JPG, PNG up to 50MB
+          JPG, JPEG, PNG up to 50MB
         </p>
         {errors.documents && (
           <FieldError

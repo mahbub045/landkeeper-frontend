@@ -73,6 +73,28 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     Offset: 'OFFSET',
   };
 
+  // ── Validation ──────────────────────────────────────────────────────────────
+
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (!form.propertyId) {
+      errors.propertyId = 'Property is required';
+    }
+    if (!form.lenderName.trim()) {
+      errors.lenderName = 'Lender name is required';
+    }
+    if (!form.productType) {
+      errors.productType = 'Product type is required';
+    }
+
+    if (form.startDate && form.endDate && form.endDate < form.startDate) {
+      errors.endDate = 'End date cannot be before start date';
+    }
+
+    return errors;
+  }
+
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
     setBannerError(null);
@@ -81,7 +103,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     setForm({
       propertyId: '',
       lenderName: '',
-      productType: 'Fixed Rate',
+      productType: '',
       interestRate: '',
       loanAmount: '',
       outstandingBalance: '',
@@ -96,11 +118,10 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit() {
-    if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        endDate: 'End date cannot be before start date',
-      }));
+    const errors = validate();
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -296,15 +317,20 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           {/* Product Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.productType}>
-              <FieldLabel className='text-sm font-semibold'>
-                Product Type
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Product Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
                 value={form.productType}
                 onValueChange={(v) => set('productType', v)}
               >
                 <SelectTrigger
-                  className={fieldErrors.productType ? 'border-danger' : ''}
+                  aria-invalid={!!fieldErrors.productType}
+                  className={
+                    fieldErrors.productType
+                      ? 'border-danger focus-visible:ring-danger/50'
+                      : ''
+                  }
                 >
                   <SelectValue placeholder='Select Product Type' />
                 </SelectTrigger>

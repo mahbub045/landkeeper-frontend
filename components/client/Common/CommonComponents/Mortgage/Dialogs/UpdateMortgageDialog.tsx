@@ -113,6 +113,28 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  // ── Validation ──────────────────────────────────────────────────────────────
+
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (!form.propertyId) {
+      errors.propertyId = 'Property is required';
+    }
+    if (!form.lenderName.trim()) {
+      errors.lenderName = 'Lender name is required';
+    }
+    if (!form.productType) {
+      errors.productType = 'Product type is required';
+    }
+
+    if (form.startDate && form.endDate && form.endDate < form.startDate) {
+      errors.endDate = 'End date cannot be before start date';
+    }
+
+    return errors;
+  }
+
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
     setBannerError(null);
@@ -123,11 +145,10 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit() {
-    if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        endDate: 'End date cannot be before start date',
-      }));
+    const errors = validate();
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -324,8 +345,8 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           {/* Product Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.productType}>
-              <FieldLabel className='text-sm font-semibold'>
-                Product Type
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Product Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
                 value={form.productType}

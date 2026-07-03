@@ -158,17 +158,44 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     onClose();
   }
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
+  // ── Validation ──────────────────────────────────────────────────────────────
+
+  function validate(): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (!form.propertyId) {
+      errors.propertyId = 'Property is required';
+    }
+    if (!form.firstName.trim()) {
+      errors.firstName = 'First name is required';
+    }
+    if (!form.lastName.trim()) {
+      errors.lastName = 'Last name is required';
+    }
+    if (!form.email.trim()) {
+      errors.email = 'Email is required';
+    }
+    if (!form.phone.trim()) {
+      errors.phone = 'Phone is required';
+    }
+
     if (
       form.tenancyStart &&
       form.tenancyEnd &&
       form.tenancyEnd < form.tenancyStart
     ) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        tenancyEnd: 'End date cannot be before start date',
-      }));
+      errors.tenancyEnd = 'End date cannot be before start date';
+    }
+
+    return errors;
+  }
+
+  // ── Submit ──────────────────────────────────────────────────────────────────
+  async function handleSubmit() {
+    const errors = validate();
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
@@ -392,8 +419,8 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         {/* First Name + Last Name */}
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!fieldErrors.firstName}>
-            <FieldLabel className='text-sm font-semibold'>
-              First Name
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              First Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               type='text'
@@ -410,7 +437,9 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           </Field>
 
           <Field data-invalid={!!fieldErrors.lastName}>
-            <FieldLabel className='text-sm font-semibold'>Last Name</FieldLabel>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Last Name<span className='text-danger'>*</span>
+            </FieldLabel>
             <Input
               type='text'
               value={form.lastName}
@@ -429,7 +458,9 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         {/* Email + Phone */}
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!fieldErrors.email}>
-            <FieldLabel className='text-sm font-semibold'>Email</FieldLabel>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Email<span className='text-danger'>*</span>
+            </FieldLabel>
             <Input
               type='email'
               value={form.email}
@@ -445,7 +476,9 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           </Field>
 
           <Field data-invalid={!!fieldErrors.phone}>
-            <FieldLabel className='text-sm font-semibold'>Phone</FieldLabel>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Phone<span className='text-danger'>*</span>
+            </FieldLabel>
             <Input
               type='tel'
               value={form.phone}
