@@ -1,3 +1,4 @@
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,33 +17,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { RoleOptions } from '@/data/common/RoleOptions';
 import { TitleOptions } from '@/data/common/TitleOptions';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
-import { EditAcceptedUserDialogProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
+import {
+  EditAcceptedUserDialogProps,
+  FormState,
+} from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
 import { formatChoiceFieldValue } from '@/utils/formatters';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import React, { useState } from 'react';
-import { toast } from 'sonner'; // swap for your toast lib if different
-
-type FormState = {
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  role: string;
-};
+import { toast } from 'sonner';
 
 const emptyForm: FormState = {
   title: '',
   first_name: '',
   middle_name: '',
   last_name: '',
-  email: '',
   phone: '',
   role: '',
+  is_active: true,
 };
 
 const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
@@ -67,8 +62,8 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
       first_name: member?.user?.first_name ?? '',
       middle_name: member?.user?.middle_name ?? '',
       last_name: member?.user?.last_name ?? '',
-      email: member?.user?.email ?? '',
       phone: member?.user?.phone ?? '',
+      is_active: member?.user.is_active ?? true,
       role: member?.role ?? '',
     };
     setForm(next);
@@ -78,7 +73,10 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
 
   const hasChanged = JSON.stringify(form) !== JSON.stringify(initialForm);
 
-  const updateField = (key: keyof FormState, value: string) => {
+  const updateField = <K extends keyof FormState>(
+    key: K,
+    value: FormState[K],
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -93,8 +91,8 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
         first_name: form.first_name,
         middle_name: form.middle_name,
         last_name: form.last_name,
-        email: form.email,
         phone: form.phone,
+        is_active: form.is_active,
       },
       role: form.role,
     };
@@ -195,20 +193,6 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='email'>
-              Email <span className='text-danger'>*</span>
-            </Label>
-            <Input
-              id='email'
-              type='email'
-              required
-              value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
-              placeholder='name@example.com'
-            />
-          </div>
-
-          <div className='space-y-2'>
             <Label htmlFor='phone'>
               Phone <span className='text-danger'>*</span>
             </Label>
@@ -246,11 +230,22 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
             </Select>
           </div>
 
+          <div className='flex items-center justify-between rounded-md border px-3 py-2'>
+            <Label htmlFor='is_active' className='cursor-pointer'>
+              Status
+            </Label>
+            <Switch
+              id='is_active'
+              className='cursor-pointer'
+              checked={form.is_active}
+              onCheckedChange={(checked) => updateField('is_active', checked)}
+            />
+          </div>
+
           {isError && (
             <div className='bg-danger/10 text-danger flex items-center gap-2 rounded-md px-3 py-2 text-xs'>
               <AlertCircle className='size-4 shrink-0' />
-              Something went wrong while updating this member. Please try
-              again.
+              Something went wrong while updating this member. Please try again.
             </div>
           )}
 
@@ -268,7 +263,7 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
               disabled={isLoading || !hasChanged}
               className='gap-1.5'
             >
-              {isLoading && <Loader2 className='size-4 animate-spin' />}
+              {isLoading && <Loading className='text-white!' />}
               Save Changes
             </Button>
           </DialogFooter>

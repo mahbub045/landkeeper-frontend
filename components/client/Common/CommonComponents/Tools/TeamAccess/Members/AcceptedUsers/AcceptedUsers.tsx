@@ -133,12 +133,12 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
           <Card key={member?.user?.alias} className='border'>
             <CardContent className='relative flex items-center gap-4 px-4 py-4'>
               <Badge
-                className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
+                className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
               >
                 <span
-                  className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-warning'}`}
+                  className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-danger'}`}
                 />
-                {member?.user?.is_active ? 'Active' : 'Pending'}
+                {member?.user?.is_active ? 'Active' : 'Deactivated'}
               </Badge>
 
               <Avatar className='size-11 shrink-0'>

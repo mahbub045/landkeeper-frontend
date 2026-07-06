@@ -17,3 +17,13 @@ export interface EditAcceptedUserDialogProps {
   onClose: () => void;
   member: TeamMember | null;
 }
+
+export type FormState = {
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  phone: string;
+  role: string;
+  is_active: boolean;
+};
