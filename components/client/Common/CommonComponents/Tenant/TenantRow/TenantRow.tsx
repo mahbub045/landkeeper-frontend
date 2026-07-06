@@ -44,17 +44,17 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           </div>
         </TableCell>
         <TableCell className='text-muted-foreground flex justify-start pl-15 text-sm'>
-          {tenant.property}
+          {tenant.property || 'Not Available'}
         </TableCell>
         <TableCell className='text-foreground text-sm font-bold'>
           {getCurrencySign()}
-          {tenant.rent.toLocaleString('en-GB')}
+          {tenant.rent.toLocaleString('en-GB') || 'Not Available'}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {formatDate(tenant.startDate)}
+          {formatDate(tenant.startDate) || 'Not Available'}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {formatDate(tenant.endDate)}
+          {formatDate(tenant.endDate) || 'Not Available'}
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>

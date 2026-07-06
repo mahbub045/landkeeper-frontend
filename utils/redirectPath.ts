@@ -93,3 +93,32 @@ export const getMortgageUrl = (session: Session | null) => {
   //   If no role found
   return '/auth/login';
 };
+
+
+// All users Compliance List
+export const getComplianceUrl = (session: Session | null) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  //   Landlord Property List
+  if (role === 'LANDLORD') {
+    return '/client/landlord/compliance';
+  }
+
+  //   Admin Property List
+  if (role === 'ADMIN') {
+    return '/client/admin/compliance';
+  }
+
+  //   Letting Agent Property List
+  if (role === 'LETTING_AGENT') {
+    return '/client/letting-agent/compliance';
+  }
+
+  //   If no role found
+  return '/auth/login';
+};

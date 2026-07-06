@@ -1,8 +1,7 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -12,34 +11,37 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  ApiCertificate,
+  Certificate,
   CertificateRegistryProps,
-  CertStatus,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
-
-import { Download, Pencil } from 'lucide-react';
+import { FileBadge } from 'lucide-react';
+import CertificateRow from '../CertificateRow/CertificateRow';
 
 const TABLE_COLUMNS = [
   'Property',
   'Type',
-  'Issue Date',
-  'Expiry Date',
+  'Certificate No',
+  'Issue & Expiry Date',
+  'Documents',
   'Status',
   'Actions',
 ];
 
-const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
-  Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
-  Expired: { color: 'bg-danger/10 text-danger', dot: 'bg-danger' },
-  'Expiring Soon': { color: 'bg-warning/10 text-warning', dot: 'bg-warning' },
-};
+interface CertificateRegistryComponentProps extends CertificateRegistryProps {
+  isLoading?: boolean;
+  apiCertificates: ApiCertificate[];
+}
 
-const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
+const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
   certificates,
+  isLoading,
+  apiCertificates,
 }) => {
   return (
     <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
       <CardHeader className='border-border border-b pb-3'>
-        <CardTitle className='text-foreground text-base font-semibold'>
+        <CardTitle className='text-foreground pt-3 text-base font-semibold'>
           Certificate Registry
         </CardTitle>
       </CardHeader>
@@ -51,7 +53,7 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-center text-xs font-semibold tracking-wider uppercase'
+                  className='px-6 text-center text-xs font-semibold tracking-wider'
                 >
                   {col}
                 </TableHead>
@@ -59,56 +61,47 @@ const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {certificates.map((cert) => {
-              const { color, dot } = statusConfig[cert.status];
-              return (
-                <TableRow key={cert.id} className='text-center'>
-                  <TableCell className='text-muted-foreground px-6 text-sm'>
-                    {cert.property}
-                  </TableCell>
-                  <TableCell className='text-muted-foreground px-6 text-sm'>
-                    <span className='flex items-center justify-center gap-2'>
-                      <span className='text-primary'>✳</span>
-                      {cert.type}
-                    </span>
-                  </TableCell>
-                  <TableCell className='text-muted-foreground px-6 text-sm'>
-                    {cert.issueDate}
-                  </TableCell>
-                  <TableCell className='text-muted-foreground px-6 text-sm'>
-                    {cert.expiryDate}
-                  </TableCell>
-                  <TableCell className='px-6'>
-                    <Badge
-                      className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
-                    >
-                      <span
-                        className={`inline-block size-1.5 rounded-full ${dot}`}
-                      />
-                      {cert.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className='px-6'>
-                    <div className='flex items-center justify-center gap-2'>
-                      <Button
-                        variant='outline'
-                        size='icon'
-                        className='rounded-lg'
-                      >
-                        <Download />
-                      </Button>
-                      <Button
-                        variant='outline'
-                        size='icon'
-                        className='rounded-lg'
-                      >
-                        <Pencil />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={TABLE_COLUMNS.length}
+                  className='text-muted-foreground py-6 text-center text-sm'
+                >
+                  <div className='flex flex-col gap-3'>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={i} className='h-14 w-full rounded-xl' />
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : certificates.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={TABLE_COLUMNS.length}
+                  className='text-muted-foreground py-30 text-center text-sm'
+                >
+                  <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
+                    <FileBadge className='size-10' />
+                    <span className='text-sm'>No certificates found</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              certificates.map((cert: Certificate) => {
+                const apiCertificate = apiCertificates.find(
+                  (a) => a.alias === cert.alias,
+                );
+                if (!apiCertificate) return null;
+
+                return (
+                  <CertificateRow
+                    key={cert.alias}
+                    cert={cert}
+                    apiCertificate={apiCertificate}
+                  />
+                );
+              })
+            )}
           </TableBody>
         </Table>
       </div>

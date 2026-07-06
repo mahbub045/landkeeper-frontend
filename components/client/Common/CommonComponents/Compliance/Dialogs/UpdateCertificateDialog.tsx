@@ -17,23 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  CERTIFICATE_TYPES,
-  EMPTY_FORM,
-} from '@/data/client/common/compliance/ComplianceData';
+import { CERTIFICATE_TYPES } from '@/data/client/common/compliance/ComplianceData';
 import { cn } from '@/lib/utils';
-import { useAddCompliancesMutation } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
+import { useUpdateComplianceMutation } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import {
-  AddCertificateModalProps,
+  ApiCertificate,
   CertificateForm,
+  UpdateCertificateDialogProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 
-import { CloudUpload, Loader2 } from 'lucide-react';
+import { CloudUpload, FileText, Loader2, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
-// Backend enum mapping (adjust labels to match CERTIFICATE_TYPES values if they already are enums)
+// Backend enum mapping (matches AddCertificateDialog)
 const CERTIFICATE_TYPE_MAP: Record<string, string> = {
   'Gas Safety Certificate': 'GAS_SAFETY_CERTIFICATE',
   'EPC Certificate': 'EPC_CERTIFICATE',
@@ -45,7 +43,14 @@ const CERTIFICATE_TYPE_MAP: Record<string, string> = {
   'Insurance Document': 'INSURANCE_DOCUMENT',
 };
 
-// Backend field key -> form field key, used to map API field errors back onto the form
+// Reverse map: backend enum -> display label, used to pre-fill the Select
+const CERTIFICATE_TYPE_REVERSE_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(CERTIFICATE_TYPE_MAP).map(([label, enumVal]) => [
+    enumVal,
+    label,
+  ]),
+);
+
 const FIELD_MAP: Record<string, keyof CertificateForm | 'file'> = {
   property: 'propertyId',
   certificate_type: 'certificateType',
@@ -56,16 +61,43 @@ const FIELD_MAP: Record<string, keyof CertificateForm | 'file'> = {
   certificate_file: 'file',
 };
 
-const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
+function buildInitialForm(certificate: ApiCertificate): CertificateForm {
+  return {
+    propertyId: String(certificate.property.id),
+    certificateType:
+      CERTIFICATE_TYPE_REVERSE_MAP[certificate.certificate_type] ?? '',
+    issueDate: certificate.issue_date ?? '',
+    expiryDate: certificate.expiry_date ?? '',
+    certificateNumber: certificate.certificate_number
+      ? String(certificate.certificate_number)
+      : '',
+    issuedBy: certificate.issued_by ?? '',
+  };
+}
+
+// Derives a filename from the file URL for display purposes
+function getFileNameFromUrl(url: string): string {
+  try {
+    const pathname = new URL(url).pathname;
+    return decodeURIComponent(pathname.split('/').pop() ?? 'certificate-file');
+  } catch {
+    return 'certificate-file';
+  }
+}
+
+const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
   open,
   onClose,
   onSuccess,
-  properties = [],
+  certificate,
 }) => {
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [form, setForm] = useState<CertificateForm>(EMPTY_FORM);
+  const [form, setForm] = useState<CertificateForm>(() =>
+    buildInitialForm(certificate),
+  );
   const [file, setFile] = useState<File | null>(null);
+  const [removeExistingFile, setRemoveExistingFile] = useState(false);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [propertyOpen, setPropertyOpen] = useState(false);
@@ -82,12 +114,14 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
     { skip: !propertyOpen },
   );
 
-  const [addCompliance, { isLoading: loading }] = useAddCompliancesMutation();
+  const [updateCompliance, { isLoading: loading }] =
+    useUpdateComplianceMutation();
 
   // ── File helpers ────────────────────────────────────────────────────────────
   function handleFile(incoming: FileList | null) {
     if (!incoming?.length) return;
     setFile(incoming[0]);
+    setRemoveExistingFile(false);
     setFieldErrors((prev) => ({ ...prev, file: '' }));
   }
 
@@ -97,12 +131,22 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
     handleFile(e.dataTransfer.files);
   }, []);
 
+  function handleRemoveStagedFile() {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleRemoveExistingFile() {
+    setRemoveExistingFile(true);
+  }
+
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
-    setForm(EMPTY_FORM);
+    setForm(buildInitialForm(certificate));
     setFile(null);
+    setRemoveExistingFile(false);
     onClose();
   }
 
@@ -111,12 +155,10 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
     e.preventDefault();
     setBannerError(null);
 
-    // Manual guards for non-native controls (shadcn Select + custom file drop zone),
-    // native `required` doesn't validate these.
+    // Manual guard for the shadcn Select, native `required` doesn't validate it.
     const guardErrors: Record<string, string> = {};
     if (!form.certificateType)
       guardErrors.certificateType = 'Please select a certificate type.';
-    // if (!file) guardErrors.file = 'Please upload a certificate file.';
 
     if (Object.keys(guardErrors).length > 0) {
       setFieldErrors(guardErrors);
@@ -135,9 +177,17 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
       formData.append('expiry_date', form.expiryDate);
       formData.append('certificate_number', form.certificateNumber);
       formData.append('issued_by', form.issuedBy);
-      if (file) formData.append('certificate_file', file);
 
-      await addCompliance(formData).unwrap();
+      if (file) {
+        formData.append('certificate_file', file);
+      } else if (removeExistingFile) {
+        formData.append('certificate_file', '');
+      }
+
+      await updateCompliance({
+        compliance_alias: certificate.alias,
+        payload: formData,
+      }).unwrap();
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -178,6 +228,14 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
     }
   }
 
+  // Resolve selected property's display name for the search input
+  const selectedPropertyName =
+    data?.find((p: Property) => String(p.id) === form.propertyId)
+      ?.property_name ?? certificate.property.property_name;
+
+  const showExistingFile =
+    !!certificate.certificate_file && !removeExistingFile && !file;
+
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -185,13 +243,13 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
-            Add Certificate
+            Update Certificate
           </DialogTitle>
         </DialogHeader>
 
         {/* Scrollable body */}
         <form
-          id='add-certificate-form'
+          id='update-certificate-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -211,18 +269,19 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 type='text'
                 placeholder='Search by property name...'
                 value={
-                  form.propertyId
-                    ? (data?.find(
-                        (p: Property) => String(p.id) === form.propertyId,
-                      )?.property_name ?? propertySearch)
-                    : propertySearch
+                  propertyOpen
+                    ? propertySearch
+                    : (selectedPropertyName ?? propertySearch)
                 }
                 onChange={(e) => {
                   setPropertySearch(e.target.value);
                   set('propertyId', '');
                   setPropertyOpen(true);
                 }}
-                onClick={() => setPropertyOpen(true)}
+                onClick={() => {
+                  setPropertySearch('');
+                  setPropertyOpen(true);
+                }}
                 onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
                 aria-invalid={!!fieldErrors.propertyId}
                 className={cn(
@@ -361,7 +420,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 fieldErrors.certificateNumber
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
-              }              
+              }
             />
             <FieldError errors={[{ message: fieldErrors.certificateNumber }]} />
           </Field>
@@ -381,13 +440,13 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 fieldErrors.issuedBy
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
-              }              
+              }
             />
             <FieldError errors={[{ message: fieldErrors.issuedBy }]} />
           </Field>
 
           {/* File upload */}
-          <div>
+          <div className='space-y-3'>
             <div
               onDrop={handleDrop}
               onDragOver={(e) => {
@@ -406,20 +465,12 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
               ].join(' ')}
             >
               <CloudUpload className='text-primary mb-3 h-10 w-10' />
-              {file ? (
-                <p className='text-foreground text-sm font-semibold'>
-                  {file.name}
-                </p>
-              ) : (
-                <>
-                  <p className='text-foreground text-sm font-semibold'>
-                    Upload Certificate
-                  </p>
-                  <p className='text-muted-foreground mt-1 text-xs'>
-                    PDF or image file
-                  </p>
-                </>
-              )}
+              <p className='text-foreground text-sm font-semibold'>
+                Upload Certificate
+              </p>
+              <p className='text-muted-foreground mt-1 text-xs'>
+                PDF or image file
+              </p>
               <input
                 ref={fileInputRef}
                 type='file'
@@ -428,6 +479,52 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 onChange={(e) => handleFile(e.target.files)}
               />
             </div>
+
+            {/* Staged new file (not yet uploaded) */}
+            {file && (
+              <div className='bg-muted/40 border-border flex items-center justify-between rounded-lg border px-4 py-2.5'>
+                <div className='flex min-w-0 items-center gap-2.5'>
+                  <FileText className='text-primary h-4 w-4 shrink-0' />
+                  <span className='text-foreground truncate text-sm font-medium'>
+                    {file.name}
+                  </span>
+                </div>
+                <button
+                  type='button'
+                  onClick={handleRemoveStagedFile}
+                  className='text-muted-foreground hover:bg-background hover:text-danger shrink-0 rounded-md p-1 transition-colors'
+                  aria-label='Remove selected file'
+                >
+                  <X className='h-4 w-4' />
+                </button>
+              </div>
+            )}
+
+            {/* Existing file from server */}
+            {showExistingFile && certificate.certificate_file && (
+              <div className='bg-muted/40 border-border flex items-center justify-between rounded-lg border px-4 py-2.5'>
+                <a
+                  href={certificate.certificate_file}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex min-w-0 items-center gap-2.5'
+                >
+                  <FileText className='text-primary h-4 w-4 shrink-0' />
+                  <span className='text-primary truncate text-sm font-medium underline'>
+                    {getFileNameFromUrl(certificate.certificate_file)}
+                  </span>
+                </a>
+                <button
+                  type='button'
+                  onClick={handleRemoveExistingFile}
+                  className='text-muted-foreground hover:bg-background hover:text-danger shrink-0 rounded-md p-1 transition-colors'
+                  aria-label='Remove current file'
+                >
+                  <X className='h-4 w-4' />
+                </button>
+              </div>
+            )}
+
             <FieldError errors={[{ message: fieldErrors.file }]} />
           </div>
         </form>
@@ -437,9 +534,9 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
           <Button variant='outline' onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button form='add-certificate-form' disabled={loading}>
+          <Button form='update-certificate-form' disabled={loading}>
             {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Add Certificate
+            Update Certificate
           </Button>
         </div>
       </DialogContent>
@@ -447,4 +544,4 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   );
 };
 
-export default AddCertificateDialog;
+export default UpdateCertificateDialog;
