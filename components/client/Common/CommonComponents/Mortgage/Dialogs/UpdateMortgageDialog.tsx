@@ -518,7 +518,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           <Button variant='outline' onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
-          <Button type='submit' form='update-mortgage-form' disabled={loading}>
+          <Button form='update-mortgage-form' disabled={loading}>
             {loading && <Loading className='text-white!' />}
             Update
           </Button>

@@ -251,7 +251,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
             {/* Container — NOT a button, just positions the trigger + badge */}
             <div className='group relative h-40 w-40 shrink-0'>
               <Button
-                type='button'
                 variant='ghost'
                 onClick={() => fileInputRef.current?.click()}
                 className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -280,7 +279,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
               {avatarPreview && (
                 <Button
-                  type='button'
                   variant='destructive'
                   size='icon'
                   onClick={(e) => {
@@ -296,7 +294,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
             <div className='flex flex-col gap-1.5'>
               <Button
-                type='button'
                 variant='outline'
                 size='sm'
                 onClick={() => fileInputRef.current?.click()}
@@ -608,15 +605,10 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
       {/* Footer */}
       <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-        <Button
-          type='button'
-          variant='outline'
-          onClick={handleClose}
-          disabled={loading}
-        >
+        <Button variant='outline' onClick={handleClose} disabled={loading}>
           Cancel
         </Button>
-        <Button type='submit' form='update-tenant-form' disabled={loading}>
+        <Button form='update-tenant-form' disabled={loading}>
           {loading && <Loading className='text-white!' />}
           Update
         </Button>
