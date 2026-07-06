@@ -172,11 +172,14 @@ const ProfileSettings: React.FC = () => {
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='grid grid-cols-2 items-center gap-4'>
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='title'>Title</Label>
+                <Label htmlFor='title'>
+                  Title<span className='text-danger'>*</span>
+                </Label>
                 <Select
                   defaultValue={profileData?.title ?? ''}
                   onValueChange={(val) => handleChange('title', val)}
                   disabled={isEditing}
+                  required
                 >
                   <SelectTrigger id='title'>
                     <SelectValue placeholder='Select title' />
@@ -192,7 +195,9 @@ const ProfileSettings: React.FC = () => {
               </div>
 
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='first_name'>First Name</Label>
+                <Label htmlFor='first_name'>
+                  First Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
                   type='text'
                   id='first_name'
@@ -200,6 +205,7 @@ const ProfileSettings: React.FC = () => {
                   onChange={(e) => handleChange('first_name', e.target.value)}
                   placeholder='First Name'
                   disabled={isEditing}
+                  required
                 />
               </div>
 
@@ -216,7 +222,9 @@ const ProfileSettings: React.FC = () => {
               </div>
 
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='last_name'>Last Name</Label>
+                <Label htmlFor='last_name'>
+                  Last Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
                   type='text'
                   id='last_name'
@@ -224,6 +232,7 @@ const ProfileSettings: React.FC = () => {
                   onChange={(e) => handleChange('last_name', e.target.value)}
                   placeholder='Last Name'
                   disabled={isEditing}
+                  required
                 />
               </div>
             </div>
