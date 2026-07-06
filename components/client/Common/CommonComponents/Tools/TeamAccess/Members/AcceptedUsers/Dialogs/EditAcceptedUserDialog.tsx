@@ -40,16 +40,39 @@ const emptyForm: FormState = {
   is_active: true,
 };
 
+// Shape we expect back from DRF-style validation errors, e.g.:
+// { user: { first_name: ["This field is required."] }, role: ["Invalid role"], non_field_errors: ["..."] }
+type ApiFieldErrors = {
+  user?: Record<string, string[] | string>;
+  [key: string]: unknown;
+};
+
+const KNOWN_USER_FIELDS = [
+  'title',
+  'first_name',
+  'middle_name',
+  'last_name',
+  'phone',
+  'is_active',
+];
+const KNOWN_TOP_FIELDS = ['role'];
+
+const toMessage = (value?: string[] | string) => {
+  if (!value) return undefined;
+  return Array.isArray(value) ? value[0] : value;
+};
+
 const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
   isOpen,
   onClose,
   member,
 }) => {
-  const [editAcceptedUser, { isLoading, isError }] =
-    useEditAcceptedUserMutation();
+  const [editAcceptedUser, { isLoading }] = useEditAcceptedUserMutation();
 
   const [initialForm, setInitialForm] = useState<FormState>(emptyForm);
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [apiErrors, setApiErrors] = useState<ApiFieldErrors | null>(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   // Track what we last synced from, so we only reset when the dialog
   // freshly opens or a different member is being edited.
@@ -69,6 +92,8 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
     setForm(next);
     setInitialForm(next);
     setSyncedKey(currentKey);
+    setApiErrors(null);
+    setGeneralError(null);
   }
 
   const hasChanged = JSON.stringify(form) !== JSON.stringify(initialForm);
@@ -80,11 +105,54 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Field-level error getters
+  const getUserFieldError = (key: string) =>
+    toMessage(apiErrors?.user?.[key]);
+  const getTopFieldError = (key: string) =>
+    toMessage(apiErrors?.[key] as string[] | string | undefined);
+
+  // Anything the API returned that we didn't render next to a specific field
+  // (e.g. non_field_errors, detail, or a shape we don't recognize)
+  const unmatchedErrors: string[] = (() => {
+    if (!apiErrors) return [];
+    const messages: string[] = [];
+
+    Object.entries(apiErrors).forEach(([key, value]) => {
+      if (key === 'user') {
+        const userErrors = value as
+          | Record<string, string[] | string>
+          | undefined;
+        if (userErrors) {
+          Object.entries(userErrors).forEach(([userKey, userValue]) => {
+            if (!KNOWN_USER_FIELDS.includes(userKey)) {
+              const msg = toMessage(userValue);
+              if (msg) messages.push(msg);
+            }
+          });
+        }
+        return;
+      }
+      if (!KNOWN_TOP_FIELDS.includes(key)) {
+        const msg = toMessage(value as string[] | string);
+        if (msg) messages.push(msg);
+      }
+    });
+
+    return messages;
+  })();
+
+  // Only show the generic banner for errors that aren't already shown inline
+  // next to a specific field.
+  const isError = Boolean(generalError) || unmatchedErrors.length > 0;
+
   const handleSubmit = async () => {
     if (!hasChanged) {
       onClose();
       return;
     }
+    setApiErrors(null);
+    setGeneralError(null);
+
     const payload = {
       user: {
         title: form.title,
@@ -103,7 +171,13 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
       }).unwrap();
       toast.success('Team member updated');
       onClose();
-    } catch {
+    } catch (err: unknown) {
+      const data = (err as { data?: ApiFieldErrors })?.data;
+      if (data && typeof data === 'object') {
+        setApiErrors(data);
+      } else {
+        setGeneralError('Failed to update member. Please try again.');
+      }
       toast.error('Failed to update member. Please try again.');
     }
   };
@@ -148,6 +222,11 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              {getUserFieldError('title') && (
+                <p className='text-danger text-xs'>
+                  {getUserFieldError('title')}
+                </p>
+              )}
             </div>
 
             <div className='col-span-2 space-y-2'>
@@ -162,6 +241,11 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 onChange={(e) => updateField('first_name', e.target.value)}
                 placeholder='First name'
               />
+              {getUserFieldError('first_name') && (
+                <p className='text-danger text-xs'>
+                  {getUserFieldError('first_name')}
+                </p>
+              )}
             </div>
           </div>
 
@@ -175,6 +259,11 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 onChange={(e) => updateField('middle_name', e.target.value)}
                 placeholder='Middle name (optional)'
               />
+              {getUserFieldError('middle_name') && (
+                <p className='text-danger text-xs'>
+                  {getUserFieldError('middle_name')}
+                </p>
+              )}
             </div>
 
             <div className='space-y-2'>
@@ -189,6 +278,11 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 onChange={(e) => updateField('last_name', e.target.value)}
                 placeholder='Last name'
               />
+              {getUserFieldError('last_name') && (
+                <p className='text-danger text-xs'>
+                  {getUserFieldError('last_name')}
+                </p>
+              )}
             </div>
           </div>
 
@@ -204,6 +298,11 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
               onChange={(e) => updateField('phone', e.target.value)}
               placeholder='Phone number'
             />
+            {getUserFieldError('phone') && (
+              <p className='text-danger text-xs'>
+                {getUserFieldError('phone')}
+              </p>
+            )}
           </div>
 
           <div className='space-y-2'>
@@ -228,24 +327,45 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 ))}
               </SelectContent>
             </Select>
+            {getTopFieldError('role') && (
+              <p className='text-danger text-xs'>{getTopFieldError('role')}</p>
+            )}
           </div>
 
-          <div className='flex items-center justify-between rounded-md border px-3 py-2'>
-            <Label htmlFor='is_active' className='cursor-pointer'>
-              Status
-            </Label>
-            <Switch
-              id='is_active'
-              className='cursor-pointer'
-              checked={form.is_active}
-              onCheckedChange={(checked) => updateField('is_active', checked)}
-            />
+          <div className='space-y-2'>
+            <div className='flex items-center justify-between rounded-md border px-3 py-2'>
+              <Label htmlFor='is_active' className='cursor-pointer'>
+                Status
+              </Label>
+              <Switch
+                id='is_active'
+                className='cursor-pointer'
+                checked={form.is_active}
+                onCheckedChange={(checked) =>
+                  updateField('is_active', checked)
+                }
+              />
+            </div>
+            {getUserFieldError('is_active') && (
+              <p className='text-danger text-xs'>
+                {getUserFieldError('is_active')}
+              </p>
+            )}
           </div>
 
           {isError && (
-            <div className='bg-danger/10 text-danger flex items-center gap-2 rounded-md px-3 py-2 text-xs'>
-              <AlertCircle className='size-4 shrink-0' />
-              Something went wrong while updating this member. Please try again.
+            <div className='bg-danger/10 text-danger flex flex-col gap-1 rounded-md px-3 py-2 text-xs'>
+              <div className='flex items-center gap-2'>
+                <AlertCircle className='size-4 shrink-0' />
+                {generalError ?? 'Some fields could not be updated:'}
+              </div>
+              {unmatchedErrors.length > 0 && (
+                <ul className='list-disc space-y-0.5 pl-6'>
+                  {unmatchedErrors.map((msg, idx) => (
+                    <li key={idx}>{msg}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
 
