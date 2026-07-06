@@ -3,16 +3,18 @@ import { baseApi } from '@/store/api/baseApi';
 export const TeamAccessApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTeamMembers: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: '/organisation/users',
         method: 'GET',
+        params,
       }),
       providesTags: ['TeamAccess'],
     }),
     getInviteTeamMember: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: `/organisation/invite-users`,
         method: 'GET',
+        params,
       }),
       providesTags: ['TeamAccess'],
     }),
@@ -24,17 +26,31 @@ export const TeamAccessApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['TeamAccess'],
     }),
-    editTeamMember: builder.mutation({
-      query: ({ alias, ...body }) => ({
-        url: `/team-access/members/${alias}`,
+    editAcceptedUser: builder.mutation({
+      query: ({ alias, body }) => ({
+        url: `/organisation/users/${alias}`,
         method: 'PATCH',
         body,
       }),
       invalidatesTags: ['TeamAccess'],
     }),
-    deleteTeamMember: builder.mutation({
+    deleteAcceptedUser: builder.mutation({
       query: (alias) => ({
-        url: `/team-access/members/${alias}`,
+        url: `/organisation/users/${alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['TeamAccess'],
+    }),
+    resendInviteEmail: builder.mutation({
+      query: (alias) => ({
+        url: `/auth/invites/${alias}/resend`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['TeamAccess'],
+    }),
+    deleteInvitedUser: builder.mutation({
+      query: (alias) => ({
+        url: `/auth/invites/${alias}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['TeamAccess'],
@@ -46,6 +62,8 @@ export const {
   useGetTeamMembersQuery,
   useGetInviteTeamMemberQuery,
   useInviteTeamMemberMutation,
-  useEditTeamMemberMutation,
-  useDeleteTeamMemberMutation,
+  useEditAcceptedUserMutation,
+  useDeleteAcceptedUserMutation,
+  useResendInviteEmailMutation,
+  useDeleteInvitedUserMutation,
 } = TeamAccessApi;

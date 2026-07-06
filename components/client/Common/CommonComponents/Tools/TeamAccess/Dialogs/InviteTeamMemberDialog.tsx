@@ -18,10 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  EMPTY_FORM,
-  ROLES,
-} from '@/data/client/common/tools/teamAccess/TeamAccessData';
+import { EMPTY_FORM } from '@/data/client/common/tools/teamAccess/TeamAccessData';
+import { RoleOptions } from '@/data/common/RoleOptions';
 import { useInviteTeamMemberMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import {
   ApiError,
@@ -151,7 +149,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ROLES.map((role, idx) => (
+                {RoleOptions.map((role, idx) => (
                   <SelectItem key={idx} value={role.value}>
                     {role.label}
                   </SelectItem>

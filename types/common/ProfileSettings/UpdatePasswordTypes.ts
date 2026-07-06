@@ -1,7 +1,10 @@
-export interface ChangePasswordDialogProps {
+import { ProfileInfo } from './SettingsTypes';
+
+export interface UpdatePasswordDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  profileData: ProfileInfo;
 }
 
 interface ApiErrorData {
@@ -12,4 +15,9 @@ interface ApiErrorData {
 
 export interface ApiError {
   data: ApiErrorData;
+}
+
+export interface SetPasswordDialogProps {
+  open: boolean;
+  onClose: () => void;
 }

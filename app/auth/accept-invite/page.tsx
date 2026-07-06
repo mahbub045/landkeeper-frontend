@@ -6,7 +6,15 @@ import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { TitleOptions } from '@/data/common/TitleOptions';
 import { useAcceptTeamMemberInviteMutation } from '@/store/api/endpoints/auth/TeamMemberAcceptInviteApi';
 import { AcceptInviteApiError } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { Eye, EyeOff } from 'lucide-react';
@@ -15,13 +23,31 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { toast } from 'sonner';
 
+interface AcceptInviteFormData {
+  title: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const initialFormData: AcceptInviteFormData = {
+  title: '',
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  phone: '',
+  password: '',
+  confirmPassword: '',
+};
+
 // ✅ Inner component uses useSearchParams
 function AcceptInviteContent() {
   const router = useRouter();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [formData, setFormData] =
+    useState<AcceptInviteFormData>(initialFormData);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -32,12 +58,18 @@ function AcceptInviteContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
+  const handleChange =
+    (field: keyof AcceptInviteFormData) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setFieldErrors({});
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
@@ -48,10 +80,13 @@ function AcceptInviteContent() {
     }
 
     const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      password: password,
-      confirm_password: confirmPassword,
+      title: formData.title,
+      first_name: formData.firstName,
+      middle_name: formData.middleName,
+      last_name: formData.lastName,
+      phone: formData.phone,
+      password: formData.password,
+      confirm_password: formData.confirmPassword,
     };
 
     try {
@@ -71,21 +106,39 @@ function AcceptInviteContent() {
           } else if (data.message) {
             message = data.message;
           } else if (
+            data.title ||
             data.password ||
             data.confirm_password ||
             data.first_name ||
-            data.last_name
+            data.middle_name ||
+            data.last_name ||
+            data.phone
           ) {
             const newFieldErrors: Record<string, string> = {};
+            if (data.title) {
+              newFieldErrors.title = Array.isArray(data.title)
+                ? data.title[0]
+                : data.title;
+            }
             if (data.first_name) {
               newFieldErrors.firstName = Array.isArray(data.first_name)
                 ? data.first_name[0]
                 : data.first_name;
             }
+            if (data.middle_name) {
+              newFieldErrors.middleName = Array.isArray(data.middle_name)
+                ? data.middle_name[0]
+                : data.middle_name;
+            }
             if (data.last_name) {
               newFieldErrors.lastName = Array.isArray(data.last_name)
                 ? data.last_name[0]
                 : data.last_name;
+            }
+            if (data.phone) {
+              newFieldErrors.phone = Array.isArray(data.phone)
+                ? data.phone[0]
+                : data.phone;
             }
             if (data.password) {
               newFieldErrors.password = Array.isArray(data.password)
@@ -129,8 +182,43 @@ function AcceptInviteContent() {
             </h2>
           </div>
 
+          {errorMessage && (
+            <p className='mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/40 dark:text-red-200'>
+              {errorMessage}
+            </p>
+          )}
+
           <form onSubmit={handleSubmit} className='space-y-5'>
             <div className='flex gap-4'>
+              <div className='w-1/2 space-y-1.5'>
+                <Label
+                  htmlFor='title'
+                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
+                >
+                  Title<span className='text-danger'>*</span>
+                </Label>
+                <Select
+                  value={formData.title}
+                  onValueChange={(val) => {
+                    setFormData((prev) => ({ ...prev, title: val }));
+                  }}
+                  required
+                >
+                  <SelectTrigger id='title'>
+                    <SelectValue placeholder='Select' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TitleOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldErrors.title && (
+                  <p className='text-danger text-xs'>{fieldErrors.title}</p>
+                )}
+              </div>
               <div className='w-1/2 space-y-1.5'>
                 <Label
                   htmlFor='firstName'
@@ -142,15 +230,37 @@ function AcceptInviteContent() {
                   id='firstName'
                   type='text'
                   placeholder='Enter your first name'
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  value={formData.firstName}
+                  onChange={handleChange('firstName')}
                   required
                 />
                 {fieldErrors.firstName && (
                   <p className='text-danger text-xs'>{fieldErrors.firstName}</p>
                 )}
               </div>
+            </div>
 
+            <div className='flex gap-4'>
+              <div className='w-1/2 space-y-1.5'>
+                <Label
+                  htmlFor='middleName'
+                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
+                >
+                  Middle name
+                </Label>
+                <Input
+                  id='middleName'
+                  type='text'
+                  placeholder='Enter your middle name'
+                  value={formData.middleName}
+                  onChange={handleChange('middleName')}
+                />
+                {fieldErrors.middleName && (
+                  <p className='text-danger text-xs'>
+                    {fieldErrors.middleName}
+                  </p>
+                )}
+              </div>
               <div className='w-1/2 space-y-1.5'>
                 <Label
                   htmlFor='lastName'
@@ -162,8 +272,8 @@ function AcceptInviteContent() {
                   id='lastName'
                   type='text'
                   placeholder='Enter your last name'
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  value={formData.lastName}
+                  onChange={handleChange('lastName')}
                   required
                 />
                 {fieldErrors.lastName && (
@@ -174,75 +284,90 @@ function AcceptInviteContent() {
 
             <div className='space-y-1.5'>
               <Label
-                htmlFor='password'
+                htmlFor='phone'
                 className='text-sm font-medium text-gray-700 dark:text-gray-300'
               >
-                Password<span className='text-danger'>*</span>
+                Phone
               </Label>
-              <div className='relative'>
-                <Input
-                  id='password'
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='Enter your password'
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type='button'
-                  onClick={() => setShowPassword(!showPassword)}
-                  className='absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
-                >
-                  {showPassword ? (
-                    <EyeOff className='h-4 w-4' />
-                  ) : (
-                    <Eye className='h-4 w-4' />
-                  )}
-                </button>
-              </div>
-              {fieldErrors.password && (
-                <p className='text-danger text-xs'>{fieldErrors.password}</p>
+              <Input
+                id='phone'
+                type='tel'
+                placeholder='Enter your phone number'
+                value={formData.phone}
+                onChange={handleChange('phone')}
+              />
+              {fieldErrors.phone && (
+                <p className='text-danger text-xs'>{fieldErrors.phone}</p>
               )}
             </div>
-
-            <div className='space-y-1.5'>
-              <Label
-                htmlFor='confirmPassword'
-                className='text-sm font-medium text-gray-700 dark:text-gray-300'
-              >
-                Confirm password<span className='text-danger'>*</span>
-              </Label>
-              <div className='relative'>
-                <Input
-                  id='confirmPassword'
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder='Confirm your password'
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type='button'
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className='absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+            <div className='flex gap-4'>
+              <div className='w-1/2 space-y-1.5'>
+                <Label
+                  htmlFor='password'
+                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff className='h-4 w-4' />
-                  ) : (
-                    <Eye className='h-4 w-4' />
-                  )}
-                </button>
+                  Password<span className='text-danger'>*</span>
+                </Label>
+                <div className='relative'>
+                  <Input
+                    id='password'
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder='Enter your password'
+                    value={formData.password}
+                    onChange={handleChange('password')}
+                    required
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+                  >
+                    {showPassword ? (
+                      <EyeOff className='h-4 w-4' />
+                    ) : (
+                      <Eye className='h-4 w-4' />
+                    )}
+                  </button>
+                </div>
+                {fieldErrors.password && (
+                  <p className='text-danger text-xs'>{fieldErrors.password}</p>
+                )}
               </div>
-              {fieldErrors.confirmPassword && (
-                <p className='text-danger text-xs'>
-                  {fieldErrors.confirmPassword}
-                </p>
-              )}
+              <div className='w-1/2 space-y-1.5'>
+                <Label
+                  htmlFor='confirmPassword'
+                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
+                >
+                  Confirm password<span className='text-danger'>*</span>
+                </Label>
+                <div className='relative'>
+                  <Input
+                    id='confirmPassword'
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder='Confirm your password'
+                    value={formData.confirmPassword}
+                    onChange={handleChange('confirmPassword')}
+                    required
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className='absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className='h-4 w-4' />
+                    ) : (
+                      <Eye className='h-4 w-4' />
+                    )}
+                  </button>
+                </div>
+                {fieldErrors.confirmPassword && (
+                  <p className='text-danger text-xs'>
+                    {fieldErrors.confirmPassword}
+                  </p>
+                )}
+              </div>
             </div>
-
-            {errorMessage && (
-              <p className='text-danger text-sm'>{errorMessage}</p>
-            )}
 
             <Button
               type='submit'
