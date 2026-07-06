@@ -3,16 +3,18 @@ import { baseApi } from '@/store/api/baseApi';
 export const TeamAccessApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTeamMembers: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: '/organisation/users',
         method: 'GET',
+        params,
       }),
       providesTags: ['TeamAccess'],
     }),
     getInviteTeamMember: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: `/organisation/invite-users`,
         method: 'GET',
+        params,
       }),
       providesTags: ['TeamAccess'],
     }),
