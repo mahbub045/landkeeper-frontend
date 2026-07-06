@@ -21,8 +21,11 @@ import {
 } from '@/utils/formatters';
 import {
   AlertCircle,
+  Mail,
   MessagesSquare,
   Pencil,
+  Phone,
+  ShieldUser,
   Trash2,
   Users,
 } from 'lucide-react';
@@ -165,13 +168,20 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   {member?.user?.first_name} {member?.user?.middle_name}{' '}
                   {member?.user?.last_name}
                 </p>
-                <p className='text-muted-foreground mt-0.5 text-xs'>
-                  {formatChoiceFieldValue(member?.role)} &bull;{' '}
-                  {member?.user?.email}
+                <p className='text-muted-foreground mt-0.5 flex gap-2 text-xs font-semibold'>
+                  <span className='flex gap-0.5'>
+                    <ShieldUser size={14} />
+                    {formatChoiceFieldValue(member?.role)}
+                  </span>
+                  <span className='font-bold'>&bull;</span>
+                  <span className='flex gap-0.5'>
+                    <Mail size={14} />
+                    {member?.user?.email}
+                  </span>
                 </p>
                 {member?.user?.phone && (
-                  <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
-                    <MessagesSquare size={16} />
+                  <p className='text-muted-foreground mt-0.5 flex items-center gap-1 text-xs'>
+                    <Phone size={16} />
                     {member?.user?.phone}
                   </p>
                 )}
