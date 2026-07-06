@@ -226,7 +226,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               return (
                 <button
                   key={tab}
-                  type='button'
+                  // type='button'
                   onClick={() => setActiveTab(tab)}
                   className={[
                     'pb-3 text-sm font-medium transition-colors',
@@ -288,7 +288,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
           <Button
-            type='button'
             variant='outline'
             onClick={handleClose}
             disabled={loading}
@@ -298,7 +297,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           {activeTab === 'Details' ? (
             <Button
               key='next-btn'
-              type='button'
               onClick={() => {
                 if (formRef.current?.reportValidity()) {
                   setActiveTab('Documents');
@@ -311,7 +309,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           ) : (
             <Button
               key='submit-btn'
-              type='submit'
               form='add-property-form'
               disabled={loading}
             >
@@ -627,7 +624,6 @@ const DocumentsTab: React.FC<{
                 {file.name}
               </Badge>
               <Button
-                type='button'
                 variant='ghost'
                 size='icon'
                 onClick={() => onRemove(i)}

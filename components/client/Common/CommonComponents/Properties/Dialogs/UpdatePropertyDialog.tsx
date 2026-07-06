@@ -325,7 +325,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
               return (
                 <button
                   key={tab}
-                  type='button'
                   onClick={() => setActiveTab(tab)}
                   className={[
                     'pb-3 text-sm font-medium transition-colors',
@@ -389,18 +388,12 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button variant='outline' onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           {activeTab === 'Details' ? (
             <Button
               key='next-btn'
-              type='button'
               onClick={() => {
                 if (formRef.current?.reportValidity()) {
                   setActiveTab('Documents');
@@ -413,7 +406,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
           ) : (
             <Button
               key='submit-btn'
-              type='submit'
               form='update-property-form'
               disabled={loading || docsLoading}
             >
@@ -704,7 +696,6 @@ const DocumentsTab: React.FC<{
                 </span>
 
                 <Button
-                  type='button'
                   variant='ghost'
                   size='icon'
                   onClick={() => onRemoveExisting(doc.id)}
@@ -781,7 +772,6 @@ const DocumentsTab: React.FC<{
                   {file.name}
                 </Badge>
                 <Button
-                  type='button'
                   variant='ghost'
                   size='icon'
                   onClick={() => onRemoveNew(i)}
