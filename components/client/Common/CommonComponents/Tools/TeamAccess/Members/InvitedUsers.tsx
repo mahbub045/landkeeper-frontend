@@ -1,3 +1,4 @@
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,8 +17,15 @@ import {
   InviteMember,
 } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
-import { AlertCircle, Mail, MessagesSquare, UserPlus } from 'lucide-react';
-import React from 'react';
+import {
+  AlertCircle,
+  Mail,
+  MessagesSquare,
+  RefreshCw,
+  Trash2,
+  UserPlus,
+} from 'lucide-react';
+import React, { useState } from 'react';
 
 const InvitedUsers: React.FC<InvitedUsersProps> = ({
   invites,
@@ -31,6 +39,10 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
   totalCount,
 }) => {
   const PAGE_LIMIT = 12;
+
+  // Track per-row loading state so only the clicked row shows a spinner
+  const [resendingEmail, setResendingEmail] = useState<string | null>(null);
+  const [deletingEmail, setDeletingEmail] = useState<string | null>(null);
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_LIMIT));
 
@@ -53,6 +65,11 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
     pages.push(total);
     return pages;
   };
+
+  const handleResend = async (invite: InviteMember) => {};
+
+  const handleDelete = async (invite: InviteMember) => {};
+
   return (
     <>
       {isInviteLoading && (
@@ -109,40 +126,77 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
       {!isInviteLoading &&
         !isInviteError &&
         invites.length > 0 &&
-        invites.map((invite: InviteMember, i: number) => (
-          <Card key={`${invite.email}-${i}`} className='border'>
-            <CardContent className='relative flex items-center gap-4 px-4 py-4'>
-              <Badge className='border-warning/30 bg-warning/10 text-warning absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit'>
-                <span className='bg-warning inline-block size-1.5 rounded-full' />
-                Pending
-              </Badge>
+        invites.map((invite: InviteMember, i: number) => {
+          const isResending = resendingEmail === invite.email;
+          const isDeleting = deletingEmail === invite.email;
 
-              <div className='bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full'>
-                <Mail className='text-primary size-5' />
-              </div>
+          return (
+            <Card key={`${invite.email}-${i}`} className='border'>
+              <CardContent className='relative flex items-center gap-4 px-4 py-4'>
+                <Badge className='border-warning/30 bg-warning/10 text-warning absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit'>
+                  <span className='bg-warning inline-block size-1.5 rounded-full' />
+                  Pending
+                </Badge>
 
-              <div className='min-w-0 flex-1'>
-                <p className='text-foreground truncate text-sm font-bold'>
-                  {invite.email} &bull;{' '}
-                  <small className='text-muted-foreground mt-0.5 text-xs'>
-                    {' '}
-                    {formatChoiceFieldValue(invite?.role)}
-                  </small>
-                </p>
+                <div className='bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full'>
+                  <Mail className='text-primary size-5' />
+                </div>
 
-                {invite.message && (
-                  <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
-                    <MessagesSquare size={16} />
-                    {invite.message}
+                <div className='min-w-0 flex-1'>
+                  <p className='text-foreground truncate text-sm font-bold'>
+                    {invite.email} &bull;{' '}
+                    <small className='text-muted-foreground mt-0.5 text-xs'>
+                      {' '}
+                      {formatChoiceFieldValue(invite?.role)}
+                    </small>
                   </p>
-                )}
-                <p className='text-muted-foreground/70 mt-0.5 text-xs'>
-                  Invited {formatDate(invite.created_at)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+
+                  {invite.message && (
+                    <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
+                      <MessagesSquare size={16} />
+                      {invite.message}
+                    </p>
+                  )}
+                  <p className='text-muted-foreground/70 mt-0.5 text-xs'>
+                    Invited {formatDate(invite.created_at)}
+                  </p>
+                </div>
+
+                <div className='flex shrink-0 items-center gap-1.5'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    disabled={isResending || isDeleting}
+                    onClick={() => handleResend(invite)}
+                    title='Resend invite email'
+                  >
+                    {isResending ? (
+                      <Loading className='text-white!' />
+                    ) : (
+                      <RefreshCw />
+                    )}
+                    Resend Email
+                  </Button>
+
+                  <Button
+                    variant='destructive'
+                    size='sm'
+                    disabled={isResending || isDeleting}
+                    onClick={() => handleDelete(invite)}
+                    title='Delete invite'
+                  >
+                    {isDeleting ? (
+                      <Loading className='text-white!' />
+                    ) : (
+                      <Trash2 />
+                    )}
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
 
       {totalPages > 1 && (
         <div className='mt-3 flex items-center justify-between'>
