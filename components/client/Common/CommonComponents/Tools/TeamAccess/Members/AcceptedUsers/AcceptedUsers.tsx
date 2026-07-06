@@ -27,6 +27,7 @@ import {
   Users,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import DeleteAcceptedUserDialog from './Dialogs/DeleteAcceptedUserDialog';
 import EditAcceptedUserDialog from './Dialogs/EditAcceptedUserDialog';
 
 const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
@@ -41,11 +42,18 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
   const PAGE_LIMIT = 12;
   const [isEditAcceptedUserDialogOpen, setIsEditAcceptedUserDialogOpen] =
     useState(false);
+  const [isDeleteAcceptedUserDialogOpen, setIsDeleteAcceptedUserDialogOpen] =
+    useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
   const handleEditAcceptedUserDialogOpen = (member: TeamMember) => {
     setSelectedMember(member);
     setIsEditAcceptedUserDialogOpen(true);
+  };
+
+  const handleDeleteAcceptedUserDialogOpen = (member: TeamMember) => {
+    setSelectedMember(member);
+    setIsDeleteAcceptedUserDialogOpen(true);
   };
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_LIMIT));
@@ -189,6 +197,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   variant='danger'
                   size='icon'
                   className='rounded-lg'
+                  onClick={() => handleDeleteAcceptedUserDialogOpen(member)}
                 >
                   <Trash2 />
                 </Button>
@@ -258,8 +267,12 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
         onClose={() => setIsEditAcceptedUserDialogOpen(false)}
         member={selectedMember}
       />
+      <DeleteAcceptedUserDialog
+        isOpen={isDeleteAcceptedUserDialogOpen}
+        onClose={() => setIsDeleteAcceptedUserDialogOpen(false)}
+        member={selectedMember}
+      />
     </>
   );
 };
-
 export default AcceptedUsers;

@@ -43,14 +43,14 @@ export const TeamAccessApi = baseApi.injectEndpoints({
     }),
     resendInviteEmail: builder.mutation({
       query: (alias) => ({
-        url: `/auth/resend/invite/${alias}`,
+        url: `/auth/invites/${alias}/resend`,
         method: 'POST',
       }),
       invalidatesTags: ['TeamAccess'],
     }),
     deleteInvitedUser: builder.mutation({
       query: (alias) => ({
-        url: `/auth/delete/invite/${alias}`,
+        url: `/auth/invites/${alias}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['TeamAccess'],

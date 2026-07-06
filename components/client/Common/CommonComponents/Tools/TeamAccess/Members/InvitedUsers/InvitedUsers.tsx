@@ -23,6 +23,8 @@ import {
   UserPlus,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import DeleteInvitedUserDialog from './Dialogs/DeleteInvitedUserDialog';
+import ResendEmailInvitedUserDialog from './Dialogs/ResendEmailInvitedUserDialog';
 
 const InvitedUsers: React.FC<InvitedUsersProps> = ({
   invites,
@@ -36,10 +38,24 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
   totalCount,
 }) => {
   const PAGE_LIMIT = 12;
+  const [
+    isResendEmailInvitedUserDialogOpen,
+    setIsResendEmailInvitedUserDialogOpen,
+  ] = useState(false);
+  const [isDeleteInvitedUserDialogOpen, setIsDeleteInvitedUserDialogOpen] =
+    useState(false);
+  const [selectedInviteUser, setSelectedInviteUser] =
+    useState<InviteMember | null>(null);
 
-  // Track per-row loading state so only the clicked row shows a spinner
-  const [resendingEmail, setResendingEmail] = useState<string | null>(null);
-  const [deletingEmail, setDeletingEmail] = useState<string | null>(null);
+  const handleResendEmailDialogOpen = (invite: InviteMember) => {
+    setSelectedInviteUser(invite);
+    setIsResendEmailInvitedUserDialogOpen(true);
+  };
+
+  const handleDeleteInvitedUserDialogOpen = (invite: InviteMember) => {
+    setSelectedInviteUser(invite);
+    setIsDeleteInvitedUserDialogOpen(true);
+  };
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_LIMIT));
 
@@ -62,10 +78,6 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
     pages.push(total);
     return pages;
   };
-
-  const handleResend = async (invite: InviteMember) => {};
-
-  const handleDelete = async (invite: InviteMember) => {};
 
   return (
     <>
@@ -124,9 +136,6 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
         !isInviteError &&
         invites.length > 0 &&
         invites.map((invite: InviteMember, i: number) => {
-          const isResending = resendingEmail === invite.email;
-          const isDeleting = deletingEmail === invite.email;
-
           return (
             <Card key={`${invite.email}-${i}`} className='border'>
               <CardContent className='relative flex items-center gap-4 px-4 py-4'>
@@ -163,9 +172,8 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   <Button
                     variant='outline'
                     size='sm'
-                    disabled={isResending || isDeleting}
-                    onClick={() => handleResend(invite)}
                     title='Resend invite email'
+                    onClick={() => handleResendEmailDialogOpen(invite)}
                   >
                     <RefreshCw />
                     Resend Email
@@ -174,8 +182,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   <Button
                     variant='destructive'
                     size='sm'
-                    disabled={isResending || isDeleting}
-                    onClick={() => handleDelete(invite)}
+                    onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
                     title='Delete invite'
                   >
                     <Trash2 />
@@ -242,6 +249,18 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
           </Pagination>
         </div>
       )}
+
+      {/* Dialogs  */}
+      <ResendEmailInvitedUserDialog
+        isOpen={isResendEmailInvitedUserDialogOpen}
+        onClose={() => setIsResendEmailInvitedUserDialogOpen(false)}
+        inviteUserData={selectedInviteUser}
+      />
+      <DeleteInvitedUserDialog
+        isOpen={isDeleteInvitedUserDialogOpen}
+        onClose={() => setIsDeleteInvitedUserDialogOpen(false)}
+        inviteUserData={selectedInviteUser}
+      />
     </>
   );
 };

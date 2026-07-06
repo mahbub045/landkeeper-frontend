@@ -39,6 +39,7 @@ export interface TeamMember {
 }
 
 export interface InviteMember {
+  alias: string;
   email: string;
   role: string;
   message: string;

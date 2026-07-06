@@ -11,3 +11,15 @@ export type InvitedUsersProps = {
   hasPrevious: boolean;
   totalCount: number;
 };
+
+export interface ResendEmailInvitedUserDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  inviteUserData: InviteMember | null;
+}
+
+export interface DeleteInvitedUserDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  inviteUserData: InviteMember | null;
+}

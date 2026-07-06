@@ -27,3 +27,9 @@ export type FormState = {
   role: string;
   is_active: boolean;
 };
+
+export interface DeleteAcceptedUserDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  member: TeamMember | null;
+}
