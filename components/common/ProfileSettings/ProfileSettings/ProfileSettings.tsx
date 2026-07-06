@@ -22,7 +22,7 @@ import { Camera, Pencil, RefreshCw } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Loading from '../../CustomLoader/Loading';
-import ChangePasswordDialog from './Dialogs/ChangePasswordDialog';
+import UpdatePasswordDialog from './Dialogs/UpdatePasswordDialog';
 
 const ProfileSettings: React.FC = () => {
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
@@ -32,7 +32,8 @@ const ProfileSettings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [isUpdatePasswordDialogOpen, setIsUpdatePasswordDialogOpen] =
+    useState(false);
 
   const initialFormData = useMemo(
     () => ({
@@ -250,23 +251,36 @@ const ProfileSettings: React.FC = () => {
                   </>
                 )}
               </Button>
-              <Button
-                type='button'
-                variant='destructive'
-                onClick={() => setIsPasswordDialogOpen(true)}
-              >
-                <RefreshCw />
-                Change Password
-              </Button>
+              {profileData?.is_password_available ? (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={() => setIsUpdatePasswordDialogOpen(true)}
+                >
+                  <RefreshCw />
+                  Change Password
+                </Button>
+              ) : (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={() => setIsUpdatePasswordDialogOpen(true)}
+                >
+                  <RefreshCw />
+                  Set Password
+                </Button>
+              )}
             </div>
           </form>
         </CardContent>
+        <>
+          <UpdatePasswordDialog
+            open={isUpdatePasswordDialogOpen}
+            onClose={() => setIsUpdatePasswordDialogOpen(false)}
+            profileData={profileData}
+          />
+        </>
       </Card>
-
-      <ChangePasswordDialog
-        open={isPasswordDialogOpen}
-        onClose={() => setIsPasswordDialogOpen(false)}
-      />
     </>
   );
 };
