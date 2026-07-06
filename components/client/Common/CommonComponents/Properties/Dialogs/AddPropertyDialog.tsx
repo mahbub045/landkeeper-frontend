@@ -148,6 +148,13 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
+
+    if (files.length === 0) {
+      setFieldErrors({ documents: 'Please upload at least one image.' });
+      setActiveTab('Documents');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -226,7 +233,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               return (
                 <button
                   key={tab}
-                  // type='button'
                   onClick={() => setActiveTab(tab)}
                   className={[
                     'pb-3 text-sm font-medium transition-colors',
@@ -287,11 +293,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
         {/* Footer */}
         <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button
-            variant='outline'
-            onClick={handleClose}
-            disabled={loading}
-          >
+          <Button variant='outline' onClick={handleClose} disabled={loading}>
             Cancel
           </Button>
           {activeTab === 'Details' ? (
@@ -608,6 +610,12 @@ const DocumentsTab: React.FC<{
           className='hidden'
           onChange={onFileChange}
         />
+      </div>
+
+      <div className='bg-warning border-2-warning rounded p-2'>
+        <p className='text-xs text-white'>
+          At least one image is required to add a property
+        </p>
       </div>
 
       {files.length > 0 && (
