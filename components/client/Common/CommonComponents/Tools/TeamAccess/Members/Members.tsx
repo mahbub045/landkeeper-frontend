@@ -6,8 +6,8 @@ import {
   useGetTeamMembersQuery,
 } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import React, { useState } from 'react';
-import AcceptedUsers from './AcceptedUsers';
-import InvitedUsers from './InvitedUsers';
+import AcceptedUsers from './AcceptedUsers/AcceptedUsers';
+import InvitedUsers from './InvitedUsers/InvitedUsers';
 
 const Members: React.FC = () => {
   const [invitesPage, setInvitesPage] = useState(1);

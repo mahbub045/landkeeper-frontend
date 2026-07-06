@@ -26,17 +26,31 @@ export const TeamAccessApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['TeamAccess'],
     }),
-    editTeamMember: builder.mutation({
-      query: ({ alias, ...body }) => ({
-        url: `/team-access/members/${alias}`,
+    editAcceptedUser: builder.mutation({
+      query: ({ alias, body }) => ({
+        url: `/organisation/users/${alias}`,
         method: 'PATCH',
         body,
       }),
       invalidatesTags: ['TeamAccess'],
     }),
-    deleteTeamMember: builder.mutation({
+    deleteAcceptedUser: builder.mutation({
       query: (alias) => ({
-        url: `/team-access/members/${alias}`,
+        url: `/organisation/users/${alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['TeamAccess'],
+    }),
+    resendInviteEmail: builder.mutation({
+      query: (alias) => ({
+        url: `/auth/resend/invite/${alias}`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['TeamAccess'],
+    }),
+    deleteInvitedUser: builder.mutation({
+      query: (alias) => ({
+        url: `/auth/delete/invite/${alias}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['TeamAccess'],
@@ -48,6 +62,8 @@ export const {
   useGetTeamMembersQuery,
   useGetInviteTeamMemberQuery,
   useInviteTeamMemberMutation,
-  useEditTeamMemberMutation,
-  useDeleteTeamMemberMutation,
+  useEditAcceptedUserMutation,
+  useDeleteAcceptedUserMutation,
+  useResendInviteEmailMutation,
+  useDeleteInvitedUserMutation,
 } = TeamAccessApi;

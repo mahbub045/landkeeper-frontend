@@ -56,27 +56,3 @@ export interface InviteTeamMemberModalProps {
   open: boolean;
   onClose: () => void;
 }
-
-export type InvitedUsersProps = {
-  invites: InviteMember[];
-  isInviteLoading: boolean;
-  isInviteError: boolean;
-  refetchInvites: () => void;
-  page: number;
-  onPageChange: (page: number) => void;
-  hasNext: boolean;
-  hasPrevious: boolean;
-  totalCount: number;
-};
-
-export type AcceptedUsersProps = {
-  members: TeamMember[];
-  isLoading: boolean;
-  isError: boolean;
-  refetch: () => void;
-  page: number;
-  onPageChange: (page: number) => void;
-  hasNext: boolean;
-  hasPrevious: boolean;
-  totalCount: number;
-};

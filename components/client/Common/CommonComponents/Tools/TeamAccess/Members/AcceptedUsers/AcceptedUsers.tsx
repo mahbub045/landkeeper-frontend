@@ -1,4 +1,4 @@
-import Loading from '@/components/common/CustomLoader/Loading';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,37 +12,41 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AcceptedUsersProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
+import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import {
-  InvitedUsersProps,
-  InviteMember,
-} from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
-import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
+  formatChoiceFieldValue,
+  formatDate,
+  getInitials,
+} from '@/utils/formatters';
 import {
   AlertCircle,
-  Mail,
   MessagesSquare,
-  RefreshCw,
+  Pencil,
   Trash2,
-  UserPlus,
+  Users,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import EditAcceptedUserDialog from './Dialogs/EditAcceptedUserDialog';
 
-const InvitedUsers: React.FC<InvitedUsersProps> = ({
-  invites,
-  isInviteLoading,
-  isInviteError,
-  refetchInvites,
+const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
+  members,
+  isLoading,
+  isError,
+  refetch,
   page,
   onPageChange,
-  hasNext,
-  hasPrevious,
   totalCount,
 }) => {
   const PAGE_LIMIT = 12;
+  const [isEditAcceptedUserDialogOpen, setIsEditAcceptedUserDialogOpen] =
+    useState(false);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
-  // Track per-row loading state so only the clicked row shows a spinner
-  const [resendingEmail, setResendingEmail] = useState<string | null>(null);
-  const [deletingEmail, setDeletingEmail] = useState<string | null>(null);
+  const handleEditAcceptedUserDialogOpen = (member: TeamMember) => {
+    setSelectedMember(member);
+    setIsEditAcceptedUserDialogOpen(true);
+  };
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_LIMIT));
 
@@ -65,14 +69,9 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
     pages.push(total);
     return pages;
   };
-
-  const handleResend = async (invite: InviteMember) => {};
-
-  const handleDelete = async (invite: InviteMember) => {};
-
   return (
     <>
-      {isInviteLoading && (
+      {isLoading && (
         <div className='space-y-3'>
           {Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className='border'>
@@ -82,128 +81,128 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   <Skeleton className='h-4 w-32' />
                   <Skeleton className='h-3 w-48' />
                 </div>
+                <div className='flex shrink-0 items-center gap-2'>
+                  <Skeleton className='size-9 rounded-lg' />
+                  <Skeleton className='size-9 rounded-lg' />
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
 
-      {!isInviteLoading && isInviteError && (
+      {!isLoading && isError && (
         <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
           <div className='bg-danger/10 flex size-12 items-center justify-center rounded-full'>
             <AlertCircle className='text-danger size-6' />
           </div>
           <div>
             <p className='text-foreground text-sm font-semibold'>
-              Failed to load invited users
+              Failed to load team members
             </p>
             <p className='text-muted-foreground mt-1 text-xs'>
-              Something went wrong while fetching invites. Please try again.
+              Something went wrong while fetching the team. Please try again.
             </p>
           </div>
-          <Button variant='outline' size='sm' onClick={() => refetchInvites()}>
+          <Button variant='outline' size='sm' onClick={() => refetch()}>
             Retry
           </Button>
         </div>
       )}
 
-      {!isInviteLoading && !isInviteError && invites.length === 0 && (
+      {!isLoading && !isError && members.length === 0 && (
         <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
           <div className='bg-muted flex size-12 items-center justify-center rounded-full'>
-            <UserPlus className='text-muted-foreground size-6' />
+            <Users className='text-muted-foreground size-6' />
           </div>
           <div>
             <p className='text-foreground text-sm font-semibold'>
-              No pending invites
+              No team members found
             </p>
             <p className='text-muted-foreground mt-1 text-xs'>
-              You haven&apos;t invited any team members yet.
+              You haven&apos;t added any team members yet.
             </p>
           </div>
         </div>
       )}
 
-      {!isInviteLoading &&
-        !isInviteError &&
-        invites.length > 0 &&
-        invites.map((invite: InviteMember, i: number) => {
-          const isResending = resendingEmail === invite.email;
-          const isDeleting = deletingEmail === invite.email;
+      {!isLoading &&
+        !isError &&
+        members.length > 0 &&
+        members.map((member: TeamMember) => (
+          <Card key={member?.user?.alias} className='border'>
+            <CardContent className='relative flex items-center gap-4 px-4 py-4'>
+              <Badge
+                className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-warning/30 bg-warning/10 text-warning'}`}
+              >
+                <span
+                  className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-warning'}`}
+                />
+                {member?.user?.is_active ? 'Active' : 'Pending'}
+              </Badge>
 
-          return (
-            <Card key={`${invite.email}-${i}`} className='border'>
-              <CardContent className='relative flex items-center gap-4 px-4 py-4'>
-                <Badge className='border-warning/30 bg-warning/10 text-warning absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit'>
-                  <span className='bg-warning inline-block size-1.5 rounded-full' />
-                  Pending
-                </Badge>
+              <Avatar className='size-11 shrink-0'>
+                <AvatarImage
+                  src={member?.user?.profile_image}
+                  alt={member?.user?.first_name || 'User'}
+                />
+                <AvatarFallback className='bg-primary/10 text-primary text-sm font-bold'>
+                  {getInitials(member?.user?.first_name || 'U')}
+                </AvatarFallback>
+              </Avatar>
 
-                <div className='bg-primary/10 flex size-11 shrink-0 items-center justify-center rounded-full'>
-                  <Mail className='text-primary size-5' />
-                </div>
-
-                <div className='min-w-0 flex-1'>
-                  <p className='text-foreground truncate text-sm font-bold'>
-                    {invite.email} &bull;{' '}
-                    <small className='text-muted-foreground mt-0.5 text-xs'>
-                      {' '}
-                      {formatChoiceFieldValue(invite?.role)}
-                    </small>
+              <div className='min-w-0 flex-1'>
+                <p className='text-foreground text-sm font-bold'>
+                  {formatChoiceFieldValue(member?.user?.title)}{' '}
+                  {member?.user?.first_name} {member?.user?.middle_name}{' '}
+                  {member?.user?.last_name}
+                </p>
+                <p className='text-muted-foreground mt-0.5 text-xs'>
+                  {formatChoiceFieldValue(member?.role)} &bull;{' '}
+                  {member?.user?.email}
+                </p>
+                {member?.user?.phone && (
+                  <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
+                    <MessagesSquare size={16} />
+                    {member?.user?.phone}
                   </p>
-
-                  {invite.message && (
-                    <p className='text-muted-foreground/70 mt-0.5 flex items-center gap-1 text-xs'>
-                      <MessagesSquare size={16} />
-                      {invite.message}
-                    </p>
-                  )}
+                )}
+                {member?.created_at && (
                   <p className='text-muted-foreground/70 mt-0.5 text-xs'>
-                    Invited {formatDate(invite.created_at)}
+                    Joined {formatDate(member?.created_at)}
                   </p>
-                </div>
+                )}
+              </div>
 
-                <div className='flex shrink-0 items-center gap-1.5'>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    disabled={isResending || isDeleting}
-                    onClick={() => handleResend(invite)}
-                    title='Resend invite email'
-                  >
-                    {isResending ? (
-                      <Loading className='text-white!' />
-                    ) : (
-                      <RefreshCw />
-                    )}
-                    Resend Email
-                  </Button>
-
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    disabled={isResending || isDeleting}
-                    onClick={() => handleDelete(invite)}
-                    title='Delete invite'
-                  >
-                    {isDeleting ? (
-                      <Loading className='text-white!' />
-                    ) : (
-                      <Trash2 />
-                    )}
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-
+              <div className='flex shrink-0 items-center gap-2'>
+                <Button
+                  aria-label='Edit'
+                  variant='outline'
+                  size='icon'
+                  className='rounded-lg'
+                  onClick={() => handleEditAcceptedUserDialogOpen(member)}
+                >
+                  <Pencil />
+                </Button>
+                <Button
+                  aria-label='Remove'
+                  variant='danger'
+                  size='icon'
+                  className='rounded-lg'
+                >
+                  <Trash2 />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className='mt-3 flex items-center justify-between'>
           <p className='text-muted-foreground text-sm whitespace-nowrap'>
             Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
             {Math.min(page * PAGE_LIMIT, totalCount ?? 0)} of {totalCount ?? 0}{' '}
-            Invites
+            Members
           </p>
 
           <Pagination className='justify-end'>
@@ -253,8 +252,14 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
           </Pagination>
         </div>
       )}
+      {/* Dialogs  */}
+      <EditAcceptedUserDialog
+        isOpen={isEditAcceptedUserDialogOpen}
+        onClose={() => setIsEditAcceptedUserDialogOpen(false)}
+        member={selectedMember}
+      />
     </>
   );
 };
 
-export default InvitedUsers;
+export default AcceptedUsers;
