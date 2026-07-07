@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { ROLE_OPTIONS } from '@/data/common/ROLE_OPTIONS';
-import { TITLE_OPTIONS } from '@/data/common/TITLE_OPTIONS';
+import { ROLE_OPTIONS } from '@/data/common/RoleOptions';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import {
   EditAcceptedUserDialogProps,

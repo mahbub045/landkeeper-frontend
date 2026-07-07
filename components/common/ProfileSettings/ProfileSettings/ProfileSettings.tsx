@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TITLE_OPTIONS } from '@/data/common/TITLE_OPTIONS';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import {
   useEditProfileInfoMutation,
   useGetProfileInfoQuery,
