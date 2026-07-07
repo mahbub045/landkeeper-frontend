@@ -29,7 +29,7 @@ import {
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { snakeToCamel } from '@/utils/formatters';
-import { CloudUpload, FileText, Loader2, X } from 'lucide-react';
+import { CloudUpload, FileText, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 function buildInitialForm(certificate: ApiCertificate): CertificateForm {
@@ -516,7 +516,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
               Cancel
             </Button>
             <Button type='submit' disabled={loading}>
-              {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              {loading && <Loading className='text-white!' />}
               Update Certificate
             </Button>
           </div>

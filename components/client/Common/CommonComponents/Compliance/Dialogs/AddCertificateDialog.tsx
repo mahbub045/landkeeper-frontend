@@ -31,7 +31,7 @@ import {
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { snakeToCamel } from '@/utils/formatters';
-import { CloudUpload, Loader2 } from 'lucide-react';
+import { CloudUpload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
 const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
@@ -426,7 +426,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
               Cancel
             </Button>
             <Button type='submit' disabled={loading}>
-              {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              {loading && <Loading className='text-white!' />}
               Add Certificate
             </Button>
           </div>
