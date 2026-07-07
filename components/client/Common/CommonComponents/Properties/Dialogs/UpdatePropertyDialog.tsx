@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -280,11 +281,12 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-0'>
-          <div className='flex items-center justify-between pb-4'>
-            <DialogTitle className='text-foreground text-xl font-bold'>
-              Edit Property
-            </DialogTitle>
-          </div>
+          <DialogTitle className='text-foreground text-xl font-bold'>
+            Edit Property
+          </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 mb-4 text-sm'>
+            Update the details of this property.
+          </DialogDescription>
 
           {/* Tabs */}
           <div className='flex gap-6'>

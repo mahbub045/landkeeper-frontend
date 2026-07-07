@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -147,7 +148,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -219,6 +220,9 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         <DialogTitle className='text-foreground text-xl font-bold'>
           Update Tenant
         </DialogTitle>
+        <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          Update the details of this tenant.
+        </DialogDescription>
       </DialogHeader>
 
       {/* Scrollable body */}

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -155,6 +156,9 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Mortgage
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+            Add a new mortgage to the system.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
@@ -459,7 +463,12 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
           {/* Footer */}
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
               Cancel
             </Button>
             <Button type='submit' disabled={loading}>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -160,12 +161,18 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Certificate
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+            Add a new certificate to the system.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
@@ -410,7 +417,12 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
           </div>
 
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
               Cancel
             </Button>
             <Button type='submit' disabled={loading}>

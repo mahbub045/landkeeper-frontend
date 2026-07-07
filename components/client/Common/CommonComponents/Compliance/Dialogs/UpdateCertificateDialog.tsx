@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -219,6 +220,9 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Update Certificate
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+            Update the details of an existing certificate.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
@@ -503,7 +507,12 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
 
           {/* Footer */}
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
               Cancel
             </Button>
             <Button type='submit' disabled={loading}>
