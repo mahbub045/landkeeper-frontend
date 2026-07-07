@@ -183,14 +183,8 @@ export default function SignInPage() {
               disabled={isLoading || isGoogleLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
-              {isLoading ? (
-                <>
-                  <Loading className='text-white!' />
-                  Signing in...
-                </>
-              ) : (
-                'Sign in'
-              )}
+              {isLoading && <Loading className='text-white!' />}
+              Sign in
             </Button>
           </form>
 
