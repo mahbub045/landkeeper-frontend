@@ -101,3 +101,7 @@ export function getInitials(first_name: string | null | undefined) {
     .toUpperCase()
     .slice(0, 2);
 }
+
+export function snakeToCamel(str: string): string {
+  return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+}

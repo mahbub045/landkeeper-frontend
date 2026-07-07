@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  CERTIFICATE_TYPES,
+  CERTIFICATE_OPTIONS,
   EMPTY_FORM,
 } from '@/data/client/common/compliance/ComplianceData';
 import { cn } from '@/lib/utils';
@@ -29,32 +29,9 @@ import {
   CertificateForm,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-
+import { snakeToCamel } from '@/utils/formatters';
 import { CloudUpload, Loader2 } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-
-// Backend enum mapping (adjust labels to match CERTIFICATE_TYPES values if they already are enums)
-const CERTIFICATE_TYPE_MAP: Record<string, string> = {
-  'Gas Safety Certificate': 'GAS_SAFETY_CERTIFICATE',
-  'EPC Certificate': 'EPC_CERTIFICATE',
-  'Electrical Safety Certificate': 'ELECTRICAL_SAFETY_CERTIFICATE',
-  'Fire Risk Assessment': 'FIRE_RISK_ASSESSMENT',
-  'HMO Licence': 'HMO_LICENCE',
-  'PAT Testing': 'PAT_TESTING',
-  'Legionella Assessment': 'LEGIONELLA_ASSESSMENT',
-  'Insurance Document': 'INSURANCE_DOCUMENT',
-};
-
-// Backend field key -> form field key, used to map API field errors back onto the form
-const FIELD_MAP: Record<string, keyof CertificateForm | 'file'> = {
-  property: 'propertyId',
-  certificate_type: 'certificateType',
-  issue_date: 'issueDate',
-  expiry_date: 'expiryDate',
-  certificate_number: 'certificateNumber',
-  issued_by: 'issuedBy',
-  certificate_file: 'file',
-};
 
 const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   open,
@@ -85,6 +62,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   const [addCompliance, { isLoading: loading }] = useAddCompliancesMutation();
 
   // ── File helpers ────────────────────────────────────────────────────────────
+
   function handleFile(incoming: FileList | null) {
     if (!incoming?.length) return;
     setFile(incoming[0]);
@@ -98,6 +76,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   }, []);
 
   // ── Reset ───────────────────────────────────────────────────────────────────
+
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
@@ -107,6 +86,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBannerError(null);
@@ -127,10 +107,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
     try {
       const formData = new FormData();
       formData.append('property', form.propertyId);
-      formData.append(
-        'certificate_type',
-        CERTIFICATE_TYPE_MAP[form.certificateType] ?? form.certificateType,
-      );
+      formData.append('certificate_type', form.certificateType);
       formData.append('issue_date', form.issueDate);
       formData.append('expiry_date', form.expiryDate);
       formData.append('certificate_number', form.certificateNumber);
@@ -154,13 +131,14 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
         const mapped: Record<string, string> = {};
         let hasFieldErrors = false;
 
-        for (const [backendKey, formKey] of Object.entries(FIELD_MAP)) {
-          if (data[backendKey]) {
-            mapped[formKey] = Array.isArray(data[backendKey])
-              ? (data[backendKey] as string[])[0]
-              : (data[backendKey] as string);
-            hasFieldErrors = true;
-          }
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            backendKey === 'certificate_file'
+              ? 'file'
+              : snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
         }
 
         if (hasFieldErrors) {
@@ -179,6 +157,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
@@ -191,7 +170,6 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
 
         {/* Scrollable body */}
         <form
-          id='add-certificate-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -294,9 +272,9 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 <SelectValue placeholder='Select certificate type...' />
               </SelectTrigger>
               <SelectContent>
-                {CERTIFICATE_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                {CERTIFICATE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -361,7 +339,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 fieldErrors.certificateNumber
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
-              }              
+              }
             />
             <FieldError errors={[{ message: fieldErrors.certificateNumber }]} />
           </Field>
@@ -381,7 +359,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
                 fieldErrors.issuedBy
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
-              }              
+              }
             />
             <FieldError errors={[{ message: fieldErrors.issuedBy }]} />
           </Field>
@@ -430,18 +408,17 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
             </div>
             <FieldError errors={[{ message: fieldErrors.file }]} />
           </div>
-        </form>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button form='add-certificate-form' disabled={loading}>
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Add Certificate
-          </Button>
-        </div>
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              Add Certificate
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

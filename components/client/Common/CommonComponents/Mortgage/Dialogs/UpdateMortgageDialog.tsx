@@ -18,6 +18,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  EMPTY_MORTGAGE_FORM,
+  PRODUCT_TYPE_OPTIONS,
+} from '@/data/client/common/mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
@@ -27,23 +31,9 @@ import {
   UpdateMortgageDialogProps,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { useState } from 'react';
-
-const PRODUCT_TYPE_MAP: Record<string, string> = {
-  'Fixed Rate': 'FIXED_RATE',
-  'Variable Rate': 'VARIABLE_RATE',
-  Tracker: 'TRACKER',
-  'Interest Only': 'INTEREST_ONLY',
-};
-
-const PRODUCT_TYPE_REVERSE_MAP: Record<string, string> = {
-  FIXED_RATE: 'Fixed Rate',
-  VARIABLE_RATE: 'Variable Rate',
-  TRACKER: 'Tracker',
-  INTEREST_ONLY: 'Interest Only',
-};
 
 const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   open,
@@ -66,32 +56,13 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   const [updateMortgage] = useUpdateMortgageMutation();
 
   // ── Build initial form from the mortgage being edited ─────────────────────
-  // No useEffect needed here: the parent should remount this dialog per
-  // mortgage via `key={mortgage.alias}`, so a lazy initializer is enough.
   function buildFormFromMortgage(m: Mortgage): MortgageForm {
-    if (!m) {
-      return {
-        propertyId: '',
-        lenderName: '',
-        productType: '',
-        interestRate: '',
-        loanAmount: '',
-        outstandingBalance: '',
-        monthlyPayment: '',
-        termYears: '',
-        startDate: '',
-        endDate: '',
-        brokerNotes: '',
-      };
-    }
+    if (!m) return EMPTY_MORTGAGE_FORM;
 
     return {
       propertyId: m.property?.id ? String(m.property.id) : '',
       lenderName: m.lender_name ?? '',
-      productType:
-        PRODUCT_TYPE_REVERSE_MAP[m.product_type] ??
-        m.product_type ??
-        'Fixed Rate',
+      productType: m.product_type ?? '',
       interestRate: m.interest_rate ? String(m.interest_rate) : '',
       loanAmount: m.loan_amount ? String(m.loan_amount) : '',
       outstandingBalance: m.outstanding_balance
@@ -124,6 +95,17 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   // ── Submit ──────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const guardErrors: Record<string, string> = {};
+    if (!form.productType)
+      guardErrors.productType = 'Please select a product type.';
+
+    if (Object.keys(guardErrors).length > 0) {
+      setFieldErrors(guardErrors);
+      setLoading(false);
+      return;
+    }
+
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -132,7 +114,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       const payload = {
         property: form.propertyId,
         lender_name: form.lenderName,
-        product_type: PRODUCT_TYPE_MAP[form.productType] ?? form.productType,
+        product_type: form.productType,
         interest_rate: form.interestRate,
         loan_amount: form.loanAmount,
         outstanding_balance: form.outstandingBalance,
@@ -160,31 +142,15 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       )?.data;
 
       if (data && typeof data === 'object') {
-        // Field-level errors — map backend keys back to form keys
-        const fieldMap: Record<string, keyof typeof fieldErrors> = {
-          property: 'propertyId',
-          lender_name: 'lenderName',
-          product_type: 'productType',
-          interest_rate: 'interestRate',
-          loan_amount: 'loanAmount',
-          outstanding_balance: 'outstandingBalance',
-          monthly_payment: 'monthlyPayment',
-          term: 'termYears',
-          start_date: 'startDate',
-          end_date: 'endDate',
-          broker_notes: 'brokerNotes',
-        };
-
         const mapped: Record<string, string> = {};
         let hasFieldErrors = false;
 
-        for (const [backendKey, formKey] of Object.entries(fieldMap)) {
-          if (data[backendKey]) {
-            mapped[formKey] = Array.isArray(data[backendKey])
-              ? data[backendKey][0]
-              : data[backendKey];
-            hasFieldErrors = true;
-          }
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            backendKey === 'term' ? 'termYears' : snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
         }
 
         if (hasFieldErrors) {
@@ -220,7 +186,6 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
         {/* Scrollable body */}
         <form
-          id='update-mortgage-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -336,10 +301,11 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='Fixed Rate'>Fixed Rate</SelectItem>
-                  <SelectItem value='Variable Rate'>Variable Rate</SelectItem>
-                  <SelectItem value='Tracker'>Tracker</SelectItem>
-                  <SelectItem value='Interest Only'>Interest Only</SelectItem>
+                  {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.productType }]} />
@@ -511,18 +477,17 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
           </Field>
-        </form>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button form='update-mortgage-form' disabled={loading}>
-            {loading && <Loading className='text-white!' />}
-            Update
-          </Button>
-        </div>
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Update
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

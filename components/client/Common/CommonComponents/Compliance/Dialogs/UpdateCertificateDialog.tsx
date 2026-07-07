@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CERTIFICATE_TYPES } from '@/data/client/common/compliance/ComplianceData';
+import { CERTIFICATE_OPTIONS } from '@/data/client/common/compliance/ComplianceData';
 import { cn } from '@/lib/utils';
 import { useUpdateComplianceMutation } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
@@ -27,45 +27,14 @@ import {
   UpdateCertificateDialogProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-
+import { snakeToCamel } from '@/utils/formatters';
 import { CloudUpload, FileText, Loader2, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
-
-// Backend enum mapping (matches AddCertificateDialog)
-const CERTIFICATE_TYPE_MAP: Record<string, string> = {
-  'Gas Safety Certificate': 'GAS_SAFETY_CERTIFICATE',
-  'EPC Certificate': 'EPC_CERTIFICATE',
-  'Electrical Safety Certificate': 'ELECTRICAL_SAFETY_CERTIFICATE',
-  'Fire Risk Assessment': 'FIRE_RISK_ASSESSMENT',
-  'HMO Licence': 'HMO_LICENCE',
-  'PAT Testing': 'PAT_TESTING',
-  'Legionella Assessment': 'LEGIONELLA_ASSESSMENT',
-  'Insurance Document': 'INSURANCE_DOCUMENT',
-};
-
-// Reverse map: backend enum -> display label, used to pre-fill the Select
-const CERTIFICATE_TYPE_REVERSE_MAP: Record<string, string> = Object.fromEntries(
-  Object.entries(CERTIFICATE_TYPE_MAP).map(([label, enumVal]) => [
-    enumVal,
-    label,
-  ]),
-);
-
-const FIELD_MAP: Record<string, keyof CertificateForm | 'file'> = {
-  property: 'propertyId',
-  certificate_type: 'certificateType',
-  issue_date: 'issueDate',
-  expiry_date: 'expiryDate',
-  certificate_number: 'certificateNumber',
-  issued_by: 'issuedBy',
-  certificate_file: 'file',
-};
 
 function buildInitialForm(certificate: ApiCertificate): CertificateForm {
   return {
     propertyId: String(certificate.property.id),
-    certificateType:
-      CERTIFICATE_TYPE_REVERSE_MAP[certificate.certificate_type] ?? '',
+    certificateType: certificate.certificate_type ?? '',
     issueDate: certificate.issue_date ?? '',
     expiryDate: certificate.expiry_date ?? '',
     certificateNumber: certificate.certificate_number
@@ -118,6 +87,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
     useUpdateComplianceMutation();
 
   // ── File helpers ────────────────────────────────────────────────────────────
+
   function handleFile(incoming: FileList | null) {
     if (!incoming?.length) return;
     setFile(incoming[0]);
@@ -141,6 +111,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
   }
 
   // ── Reset ───────────────────────────────────────────────────────────────────
+
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
@@ -151,6 +122,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBannerError(null);
@@ -169,10 +141,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
     try {
       const formData = new FormData();
       formData.append('property', form.propertyId);
-      formData.append(
-        'certificate_type',
-        CERTIFICATE_TYPE_MAP[form.certificateType] ?? form.certificateType,
-      );
+      formData.append('certificate_type', form.certificateType);
       formData.append('issue_date', form.issueDate);
       formData.append('expiry_date', form.expiryDate);
       formData.append('certificate_number', form.certificateNumber);
@@ -204,13 +173,14 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
         const mapped: Record<string, string> = {};
         let hasFieldErrors = false;
 
-        for (const [backendKey, formKey] of Object.entries(FIELD_MAP)) {
-          if (data[backendKey]) {
-            mapped[formKey] = Array.isArray(data[backendKey])
-              ? (data[backendKey] as string[])[0]
-              : (data[backendKey] as string);
-            hasFieldErrors = true;
-          }
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            backendKey === 'certificate_file'
+              ? 'file'
+              : snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
         }
 
         if (hasFieldErrors) {
@@ -237,9 +207,13 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
     !!certificate.certificate_file && !removeExistingFile && !file;
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
@@ -249,7 +223,6 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
 
         {/* Scrollable body */}
         <form
-          id='update-certificate-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -353,9 +326,9 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
                 <SelectValue placeholder='Select certificate type...' />
               </SelectTrigger>
               <SelectContent>
-                {CERTIFICATE_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                {CERTIFICATE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -527,18 +500,18 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
 
             <FieldError errors={[{ message: fieldErrors.file }]} />
           </div>
-        </form>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button form='update-certificate-form' disabled={loading}>
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Update Certificate
-          </Button>
-        </div>
+          {/* Footer */}
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              Update Certificate
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

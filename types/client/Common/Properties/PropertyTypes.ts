@@ -44,7 +44,7 @@ export interface DetailsForm {
   address: string;
   purchasePrice: string;
   currentValue: string;
-  rent_per_month: string;
+  rentPerMonth: string;
   purchaseDate: string;
   bedrooms: string;
   bathrooms: string;

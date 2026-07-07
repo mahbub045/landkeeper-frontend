@@ -35,20 +35,20 @@ export const complianceBreakdown: ComplianceBreakdownItem[] = [
   { label: 'Electrical', current: 5, total: 5, color: 'bg-emerald-500' },
 ];
 
-export const CERTIFICATE_TYPES = [
-  'Gas Safety Certificate',
-  'EPC Certificate',
-  'Electrical Safety Certificate',
-  'Fire Risk Assessment',
-  'HMO Licence',
-  'PAT Testing',
-  'Legionella Assessment',
-  'Insurance Document',
+export const CERTIFICATE_OPTIONS = [
+  { value: 'GAS_SAFETY_CERTIFICATE', label: 'Gas Safety Certificate' },
+  { value: 'EPC_CERTIFICATE', label: 'EPC Certificate' },
+  { value: 'ELECTRICAL_SAFETY_CERTIFICATE', label: 'Electrical Safety Certificate' },
+  { value: 'FIRE_RISK_ASSESSMENT', label: 'Fire Risk Assessment' },
+  { value: 'HMO_LICENCE', label: 'HMO Licence' },
+  { value: 'PAT_TESTING', label: 'PAT Testing' },
+  { value: 'LEGIONELLA_ASSESSMENT', label: 'Legionella Assessment' },
+  { value: 'INSURANCE_DOCUMENT', label: 'Insurance Document' },
 ];
 
 export const EMPTY_FORM: CertificateForm = {
   propertyId: '',
-  certificateType: 'Gas Safety Certificate',
+  certificateType: '',
   issueDate: '',
   expiryDate: '',
   certificateNumber: '',

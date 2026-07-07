@@ -21,6 +21,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   FIELD_TAB_MAP,
+  OVERRIDE_KEY_MAP,
+  PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
@@ -31,34 +34,12 @@ import {
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Convert API status string → form select value */
-function apiStatusToForm(status: string): string {
-  const map: Record<string, string> = {
-    OCCUPIED: 'Occupied',
-    VACANT: 'Vacant',
-    UNDER_MAINTENANCE: 'UNDER_MAINTENANCE',
-  };
-  return map[status] ?? status;
-}
-
-/** Convert API property_type string → form select value */
-function apiTypeToForm(type: string): string {
-  const map: Record<string, string> = {
-    RESIDENTIAL: 'Residential',
-    HMO: 'HMO',
-    COMMERCIAL: 'Commercial',
-    MIXED_USE: 'MIXED_USE',
-    HOLIDAY_LET: 'HOLIDAY_LET',
-  };
-  return map[type] ?? type;
-}
 
 /** Strip trailing zeros — turns "1000000.00" → "1000000" */
 function cleanDecimal(val: string | null | undefined): string {
@@ -84,12 +65,12 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
   const buildInitialDetails = (): DetailsForm => ({
     name: property?.property_name ?? '',
-    type: apiTypeToForm(property?.property_type ?? 'Residential'),
-    status: apiStatusToForm(property?.status ?? 'Vacant'),
+    type: property?.property_type ?? 'RESIDENTIAL',
+    status: property?.status ?? 'VACANT',
     address: property?.address ?? '',
     purchasePrice: cleanDecimal(property?.purchase_price),
     currentValue: cleanDecimal(property?.current_value),
-    rent_per_month: cleanDecimal(property?.rent_per_month),
+    rentPerMonth: cleanDecimal(property?.rent_per_month),
     purchaseDate: property?.purchase_date ?? '',
     bedrooms: property?.bedrooms != null ? String(property.bedrooms) : '',
     bathrooms: property?.bathrooms != null ? String(property.bathrooms) : '',
@@ -172,24 +153,11 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   function handleApiError(body: unknown) {
     if (typeof body === 'object' && body !== null) {
       const apiError = body as Record<string, unknown>;
-
-      const keyMap: Record<string, string> = {
-        purchase_price: 'purchasePrice',
-        current_value: 'currentValue',
-        purchase_date: 'purchaseDate',
-        property_name: 'name',
-        property_type: 'type',
-        rent_per_month: 'rent_per_month',
-        address: 'address',
-        bedrooms: 'bedrooms',
-        bathrooms: 'bathrooms',
-        notes: 'notes',
-      };
-
       const normalized: Record<string, string> = {};
+
       Object.entries(apiError).forEach(([key, val]) => {
         if (key === 'message') return;
-        const mapped = keyMap[key] ?? key;
+        const mapped = OVERRIDE_KEY_MAP[key] ?? snakeToCamel(key);
         normalized[mapped] = Array.isArray(val) ? val[0] : String(val);
       });
 
@@ -224,12 +192,12 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     try {
       const formData = new FormData();
       formData.append('property_name', details.name);
-      formData.append('property_type', details.type.toUpperCase());
-      formData.append('status', details.status.toUpperCase());
+      formData.append('property_type', details.type);
+      formData.append('status', details.status);
       formData.append('address', details.address);
       formData.append('purchase_price', details.purchasePrice);
       formData.append('current_value', details.currentValue);
-      formData.append('rent_per_month', details.rent_per_month);
+      formData.append('rent_per_month', details.rentPerMonth);
       formData.append('purchase_date', details.purchaseDate);
       formData.append('bedrooms', details.bedrooms);
       formData.append('bathrooms', details.bathrooms);
@@ -306,7 +274,10 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-0'>
           <div className='flex items-center justify-between pb-4'>
@@ -347,7 +318,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
         {/* Scrollable body */}
         <form
-          id='update-property-form'
           ref={formRef}
           onSubmit={handleSubmit}
           className='flex-1 overflow-y-auto px-6 py-5'
@@ -384,36 +354,43 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
               onRemoveNew={removeNewFile}
             />
           )}
+
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            {activeTab === 'Details' ? (
+              <Button
+                type='button'
+                key='next-btn'
+                onClick={() => {
+                  if (formRef.current?.reportValidity()) {
+                    setActiveTab('Documents');
+                  }
+                }}
+                disabled={loading}
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                key='submit-btn'
+                type='submit'
+                disabled={loading || docsLoading}
+              >
+                {loading && <Loading className='text-white!' />}
+                Update
+              </Button>
+            )}
+          </div>
         </form>
 
         {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={onClose} disabled={loading}>
-            Cancel
-          </Button>
-          {activeTab === 'Details' ? (
-            <Button
-              key='next-btn'
-              onClick={() => {
-                if (formRef.current?.reportValidity()) {
-                  setActiveTab('Documents');
-                }
-              }}
-              disabled={loading}
-            >
-              Next
-            </Button>
-          ) : (
-            <Button
-              key='submit-btn'
-              form='update-property-form'
-              disabled={loading || docsLoading}
-            >
-              {loading && <Loading className='text-white!' />}
-              Update
-            </Button>
-          )}
-        </div>
       </DialogContent>
     </Dialog>
   );
@@ -462,11 +439,11 @@ const DetailsTab: React.FC<{
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='Residential'>Residential</SelectItem>
-              <SelectItem value='HMO'>HMO</SelectItem>
-              <SelectItem value='Commercial'>Commercial</SelectItem>
-              <SelectItem value='MIXED_USE'>Mixed Use</SelectItem>
-              <SelectItem value='HOLIDAY_LET'>Holiday Let</SelectItem>
+              {PROPERTY_TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.type }]} />
@@ -479,11 +456,11 @@ const DetailsTab: React.FC<{
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='Occupied'>Occupied</SelectItem>
-              <SelectItem value='Vacant'>Vacant</SelectItem>
-              <SelectItem value='UNDER_MAINTENANCE'>
-                Under Maintenance
-              </SelectItem>
+              {PROPERTY_STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.status }]} />
@@ -549,23 +526,23 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.rent_per_month}>
+        <Field data-invalid={!!errors.rentPerMonth}>
           <FieldLabel className='text-sm font-semibold'>
             Rent Per Month
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.rent_per_month}
-            onChange={(e) => set('rent_per_month', e.target.value)}
-            aria-invalid={!!errors.rent_per_month}
+            value={form.rentPerMonth}
+            onChange={(e) => set('rentPerMonth', e.target.value)}
+            aria-invalid={!!errors.rentPerMonth}
             className={
-              errors.rent_per_month
+              errors.rentPerMonth
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.rent_per_month }]} />
+          <FieldError errors={[{ message: errors.rentPerMonth }]} />
         </Field>
 
         <Field data-invalid={!!errors.purchaseDate}>
