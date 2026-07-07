@@ -180,14 +180,8 @@ function SetPasswordContent() {
               disabled={setPasswordLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
-              {setPasswordLoading ? (
-                <>
-                  <Loading className='text-white!' />
-                  Setting password...
-                </>
-              ) : (
-                'Set password'
-              )}
+              {setPasswordLoading && <Loading className='text-white!' />}
+              Set password
             </Button>
           </form>
 

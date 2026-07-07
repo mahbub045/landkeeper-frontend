@@ -430,14 +430,8 @@ export default function SignupPage() {
               disabled={isLoading || isGoogleLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
-              {isLoading ? (
-                <>
-                  <Loading className='text-white!' />
-                  Creating account...
-                </>
-              ) : (
-                'Create Account'
-              )}
+              {isLoading && <Loading className='text-white!' />}
+              Create Account
             </Button>
           </form>
 

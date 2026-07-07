@@ -251,14 +251,8 @@ const ProfileSettings: React.FC = () => {
 
             <div className='flex gap-3'>
               <Button type='submit' disabled={isEditing}>
-                {isEditing ? (
-                  'Saving...'
-                ) : (
-                  <>
-                    <Pencil />
-                    Save Changes
-                  </>
-                )}
+                {isEditing ? <Loading className='text-white!' /> : <Pencil />}
+                Save Changes
               </Button>
               {profileData?.is_password_available ? (
                 <Button

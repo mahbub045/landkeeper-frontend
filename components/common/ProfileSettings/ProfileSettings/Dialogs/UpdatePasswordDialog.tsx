@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -258,11 +259,13 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
             </Button>
             {profileData.is_password_available ? (
               <Button type='submit' disabled={isLoading}>
-                {isLoading ? 'Changing Password...' : 'Change Password'}
+                {isLoading && <Loading className='text-white!' />}
+                Change Password
               </Button>
             ) : (
               <Button type='submit' disabled={isLoading}>
-                {isLoading ? 'Setting Password...' : 'Set Password'}
+                {isLoading && <Loading className='text-white!' />}
+                Set Password
               </Button>
             )}
           </div>

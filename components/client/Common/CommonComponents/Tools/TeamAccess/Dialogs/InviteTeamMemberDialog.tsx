@@ -36,6 +36,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
 }) => {
   const [form, setForm] = useState<InviteTeamMemberForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [nonFieldError, setNonFieldError] = useState<string>('');
 
   const [inviteTeamMember, { isLoading }] = useInviteTeamMemberMutation();
 
@@ -55,6 +56,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
   function handleClose() {
     setForm(EMPTY_FORM);
     setErrors({});
+    setNonFieldError('');
     onClose();
   }
 
@@ -62,6 +64,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
   async function handleSubmit() {
     try {
       setErrors({});
+      setNonFieldError('');
 
       const response = await inviteTeamMember(form).unwrap();
 
@@ -74,9 +77,24 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
 
       if (error.data && typeof error.data === 'object') {
         const fieldErrors: FormErrors = {};
+        const knownFields = Object.keys(EMPTY_FORM);
 
         Object.entries(error.data).forEach(([key, value]) => {
           if (key === 'message') return;
+
+          const isNonFieldKey =
+            key === 'non_field_errors' ||
+            key === 'nonFieldErrors' ||
+            key === 'detail' ||
+            key === 'error' ||
+            !knownFields.includes(key);
+
+          const message = Array.isArray(value) ? String(value[0]) : value;
+
+          if (isNonFieldKey && typeof message === 'string') {
+            setNonFieldError((prev) => prev || message);
+            return;
+          }
 
           if (Array.isArray(value)) {
             fieldErrors[key as keyof InviteTeamMemberForm] = String(value[0]);
@@ -94,7 +112,9 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
         return;
       }
 
-      toast.error(error.error ?? 'Failed to invite team member.');
+      const fallbackMessage = error.error ?? 'Failed to invite team member.';
+      setNonFieldError(fallbackMessage);
+      toast.error(fallbackMessage);
     }
   }
 
@@ -118,6 +138,13 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
           }}
           id='invite-team-member-form'
         >
+          {/* Non-field error */}
+          {nonFieldError && (
+            <div className='bg-danger/10 border-danger/30 text-danger rounded-md border px-3 py-2 text-sm'>
+              {nonFieldError}
+            </div>
+          )}
+
           {/* Email Address */}
           <Field>
             <FieldLabel className='text-sm font-semibold'>
