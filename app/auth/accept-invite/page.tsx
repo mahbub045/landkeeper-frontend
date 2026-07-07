@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TitleOptions } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/TITLE_OPTIONS';
 import { useAcceptTeamMemberInviteMutation } from '@/store/api/endpoints/auth/TeamMemberAcceptInviteApi';
 import { AcceptInviteApiError } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { Eye, EyeOff } from 'lucide-react';
@@ -208,7 +208,7 @@ function AcceptInviteContent() {
                     <SelectValue placeholder='Select' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TitleOptions.map((option) => (
+                    {TITLE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>

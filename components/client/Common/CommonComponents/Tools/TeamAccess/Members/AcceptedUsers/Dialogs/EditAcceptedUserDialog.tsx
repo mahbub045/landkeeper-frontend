@@ -18,8 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { RoleOptions } from '@/data/common/RoleOptions';
-import { TitleOptions } from '@/data/common/TitleOptions';
+import { ROLE_OPTIONS } from '@/data/common/ROLE_OPTIONS';
+import { TITLE_OPTIONS } from '@/data/common/TITLE_OPTIONS';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import {
   EditAcceptedUserDialogProps,
@@ -106,8 +106,7 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
   };
 
   // Field-level error getters
-  const getUserFieldError = (key: string) =>
-    toMessage(apiErrors?.user?.[key]);
+  const getUserFieldError = (key: string) => toMessage(apiErrors?.user?.[key]);
   const getTopFieldError = (key: string) =>
     toMessage(apiErrors?.[key] as string[] | string | undefined);
 
@@ -215,7 +214,7 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {TitleOptions.map((option) => (
+                  {TITLE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
@@ -320,7 +319,7 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {RoleOptions.map((option) => (
+                {ROLE_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -341,9 +340,7 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
                 id='is_active'
                 className='cursor-pointer'
                 checked={form.is_active}
-                onCheckedChange={(checked) =>
-                  updateField('is_active', checked)
-                }
+                onCheckedChange={(checked) => updateField('is_active', checked)}
               />
             </div>
             {getUserFieldError('is_active') && (

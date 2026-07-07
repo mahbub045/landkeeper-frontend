@@ -1,4 +1,4 @@
-export const TitleOptions = [
+export const TITLE_OPTIONS = [
   { value: 'MR', label: 'Mr' },
   { value: 'MRS', label: 'Mrs' },
   { value: 'MS', label: 'Ms' },

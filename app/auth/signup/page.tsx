@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TitleOptions } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/TITLE_OPTIONS';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import { Eye, EyeOff } from 'lucide-react';
@@ -205,7 +205,7 @@ export default function SignupPage() {
                     <SelectValue placeholder='Select' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TitleOptions.map((option) => (
+                    {TITLE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
