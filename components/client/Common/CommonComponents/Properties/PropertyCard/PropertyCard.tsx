@@ -46,9 +46,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               <Image
                 src={image}
                 alt={property.property_name}
-                fill
                 className='object-cover'
-                sizes='(max-width: 768px) 100vw, 33vw'
+                fill
+                unoptimized
+                priority
                 onLoad={() => setImageLoaded(true)}
               />
             </>
