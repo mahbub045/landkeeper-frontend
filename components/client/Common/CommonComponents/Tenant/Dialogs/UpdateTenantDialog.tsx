@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { OVERRIDE_KEY_MAP } from '@/data/client/common/tenant/TenantData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
@@ -27,27 +29,10 @@ import {
   UpdateTenantFormProps,
   UpdateTenantModalProps,
 } from '@/types/client/Common/Tenant/TenantTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-// Backend snake_case -> form camelCase key mapping for field-level errors
-const ERROR_KEY_MAP: Record<string, string> = {
-  avatar: 'avatar',
-  first_name: 'firstName',
-  last_name: 'lastName',
-  email: 'email',
-  phone: 'phone',
-  rent_amount: 'rentAmount',
-  deposit: 'deposit',
-  tenancy_start_date: 'tenancyStart',
-  tenancy_end_date: 'tenancyEnd',
-  employment_details: 'employmentDetails',
-  guarantor_name: 'guarantorName',
-  notes: 'notes',
-  property: 'propertyId',
-};
 
 function tenantToForm(tenant: ApiTenant): TenantForm {
   return {
@@ -77,7 +62,10 @@ const UpdateTenantDialog: React.FC<UpdateTenantModalProps> = ({
 }) => {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {tenant && (
           <UpdateTenantForm
             key={tenant.alias}
@@ -151,6 +139,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
   }
 
   // ── Reset (called on Cancel / dialog close) ───────────────────────────────
+
   function handleClose() {
     if (avatarPreview && avatarPreview.startsWith('blob:')) {
       URL.revokeObjectURL(avatarPreview);
@@ -159,6 +148,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -195,17 +185,25 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
       if (data && typeof data === 'object') {
         const mapped: Record<string, string> = {};
+        let hasFieldErrors = false;
 
-        Object.keys(data).forEach((key) => {
-          const mappedKey = ERROR_KEY_MAP[key] ?? key;
-          const value = data[key];
-          mapped[mappedKey] = Array.isArray(value) ? value[0] : value;
-        });
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            OVERRIDE_KEY_MAP[backendKey] ?? snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
+        }
 
-        setFieldErrors(mapped);
-        setBannerError(
-          data.detail || data.message || 'Please fix the errors below.',
-        );
+        if (hasFieldErrors) {
+          setFieldErrors(mapped);
+        } else {
+          setBannerError(
+            data?.detail ??
+              data?.message ??
+              'Something went wrong. Please try again.',
+          );
+        }
       } else {
         setBannerError('Something went wrong. Please try again.');
       }
@@ -222,11 +220,13 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         <DialogTitle className='text-foreground text-xl font-bold'>
           Update Tenant
         </DialogTitle>
+        <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          Update the details of this tenant.
+        </DialogDescription>
       </DialogHeader>
 
       {/* Scrollable body */}
       <form
-        id='update-tenant-form'
         onSubmit={handleSubmit}
         className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
       >
@@ -251,6 +251,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
             {/* Container — NOT a button, just positions the trigger + badge */}
             <div className='group relative h-40 w-40 shrink-0'>
               <Button
+                type='button'
                 variant='ghost'
                 onClick={() => fileInputRef.current?.click()}
                 className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -279,6 +280,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
               {avatarPreview && (
                 <Button
+                  type='button'
                   variant='destructive'
                   size='icon'
                   onClick={(e) => {
@@ -294,6 +296,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
             <div className='flex flex-col gap-1.5'>
               <Button
+                type='button'
                 variant='outline'
                 size='sm'
                 onClick={() => fileInputRef.current?.click()}
@@ -601,18 +604,23 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           />
           <FieldError errors={[{ message: fieldErrors.notes }]} />
         </Field>
-      </form>
 
-      {/* Footer */}
-      <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-        <Button variant='outline' onClick={handleClose} disabled={loading}>
-          Cancel
-        </Button>
-        <Button form='update-tenant-form' disabled={loading}>
-          {loading && <Loading className='text-white!' />}
-          Update
-        </Button>
-      </div>
+        {/* Footer */}
+        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={handleClose}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button type='submit' disabled={loading}>
+            {loading && <Loading className='text-white!' />}
+            Update
+          </Button>
+        </div>
+      </form>
     </>
   );
 };

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,6 +18,10 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  EMPTY_FORM,
+  OVERRIDE_KEY_MAP,
+} from '@/data/client/common/tenant/TenantData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
@@ -25,42 +30,10 @@ import {
   AddTenantModalProps,
   TenantForm,
 } from '@/types/client/Common/Tenant/TenantTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-const EMPTY_FORM: TenantForm = {
-  propertyId: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  rentAmount: '',
-  deposit: '',
-  tenancyStart: '',
-  tenancyEnd: '',
-  employmentDetails: '',
-  guarantorName: '',
-  notes: '',
-};
-
-// Backend snake_case -> form camelCase key mapping for field-level errors
-const ERROR_KEY_MAP: Record<string, string> = {
-  avatar: 'avatar',
-  first_name: 'firstName',
-  last_name: 'lastName',
-  email: 'email',
-  phone: 'phone',
-  rent_amount: 'rentAmount',
-  deposit: 'deposit',
-  tenancy_start_date: 'tenancyStart',
-  tenancy_end_date: 'tenancyEnd',
-  employment_details: 'employmentDetails',
-  guarantor_name: 'guarantorName',
-  notes: 'notes',
-  property: 'propertyId',
-};
 
 const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   open,
@@ -93,6 +66,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   const [addTenant] = useAddTenantsMutation();
 
   // ── Avatar handlers ────────────────────────────────────────────────────────
+
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -105,6 +79,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Reset ───────────────────────────────────────────────────────────────────
+
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
@@ -117,6 +92,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBannerError(null);
@@ -149,17 +125,25 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
       if (data && typeof data === 'object') {
         const mapped: Record<string, string> = {};
+        let hasFieldErrors = false;
 
-        Object.keys(data).forEach((key) => {
-          const mappedKey = ERROR_KEY_MAP[key] ?? key;
-          const value = data[key];
-          mapped[mappedKey] = Array.isArray(value) ? value[0] : value;
-        });
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            OVERRIDE_KEY_MAP[backendKey] ?? snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
+        }
 
-        setFieldErrors(mapped);
-        setBannerError(
-          data.detail || data.message || 'Please fix the errors below.',
-        );
+        if (hasFieldErrors) {
+          setFieldErrors(mapped);
+        } else {
+          setBannerError(
+            data?.detail ??
+              data?.message ??
+              'Something went wrong. Please try again.',
+          );
+        }
       } else {
         setBannerError('Something went wrong. Please try again.');
       }
@@ -169,19 +153,25 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Tenant
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+            Add a new tenant to the system.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
         <form
-          id='add-tenant-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -206,6 +196,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               {/* Container — NOT a button, just positions the trigger + badge */}
               <div className='group relative h-40 w-40 shrink-0'>
                 <Button
+                  type='button'
                   variant='ghost'
                   onClick={() => fileInputRef.current?.click()}
                   className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -234,6 +225,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
                 {avatarPreview && (
                   <Button
+                    type='button'
                     variant='destructive'
                     size='icon'
                     onClick={(e) => {
@@ -252,6 +244,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
               <div className='flex flex-col gap-1.5'>
                 <Button
+                  type='button'
                   variant='outline'
                   size='sm'
                   onClick={() => fileInputRef.current?.click()}
@@ -556,18 +549,23 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.notes }]} />
           </Field>
-        </form>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button form='add-tenant-form' disabled={loading}>
-            {loading && <Loading className='text-white!' />}
-            Add Tenant
-          </Button>
-        </div>
+          {/* Footer */}
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Add Tenant
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

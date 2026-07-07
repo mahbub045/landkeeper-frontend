@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -18,6 +19,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  EMPTY_MORTGAGE_FORM,
+  PRODUCT_TYPE_OPTIONS,
+} from '@/data/client/common/mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddMortgagesMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
@@ -26,7 +31,7 @@ import {
   MortgageForm,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { useState } from 'react';
 
@@ -34,7 +39,6 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   open,
   onClose,
   onSuccess,
-  properties = [],
 }) => {
   const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
@@ -48,55 +52,36 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   );
   const [addMortgage] = useAddMortgagesMutation();
 
-  const [form, setForm] = useState<MortgageForm>({
-    propertyId: '',
-    lenderName: '',
-    productType: '',
-    interestRate: '',
-    loanAmount: '',
-    outstandingBalance: '',
-    monthlyPayment: '',
-    termYears: '',
-    startDate: '',
-    endDate: '',
-    brokerNotes: '',
-  });
+  const [form, setForm] = useState<MortgageForm>(EMPTY_MORTGAGE_FORM);
 
   function set(key: keyof MortgageForm, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  const PRODUCT_TYPE_MAP: Record<string, string> = {
-    'Fixed Rate': 'FIXED_RATE',
-    'Variable Rate': 'VARIABLE_RATE',
-    Tracker: 'TRACKER',
-    Offset: 'OFFSET',
-  };
-
   // ── Reset ───────────────────────────────────────────────────────────────────
+
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
     setLoading(false);
-    setForm({
-      propertyId: '',
-      lenderName: '',
-      productType: '',
-      interestRate: '',
-      loanAmount: '',
-      outstandingBalance: '',
-      monthlyPayment: '',
-      termYears: '',
-      startDate: '',
-      endDate: '',
-      brokerNotes: '',
-    });
+    setForm(EMPTY_MORTGAGE_FORM);
     onClose();
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const guardErrors: Record<string, string> = {};
+    if (!form.productType)
+      guardErrors.productType = 'Please select a product type.';
+
+    if (Object.keys(guardErrors).length > 0) {
+      setFieldErrors(guardErrors);
+      setLoading(false);
+      return;
+    }
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -105,7 +90,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
       const payload = {
         property: form.propertyId,
         lender_name: form.lenderName,
-        product_type: PRODUCT_TYPE_MAP[form.productType] ?? form.productType,
+        product_type: form.productType,
         interest_rate: form.interestRate,
         loan_amount: form.loanAmount,
         outstanding_balance: form.outstandingBalance,
@@ -116,7 +101,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
         broker_notes: form.brokerNotes,
       };
 
-      const result = await addMortgage(payload).unwrap();
+      await addMortgage(payload).unwrap();
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -130,31 +115,15 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
       )?.data;
 
       if (data && typeof data === 'object') {
-        // Field-level errors — map backend keys back to form keys
-        const fieldMap: Record<string, keyof typeof fieldErrors> = {
-          property: 'propertyId',
-          lender_name: 'lenderName',
-          product_type: 'productType',
-          interest_rate: 'interestRate',
-          loan_amount: 'loanAmount',
-          outstanding_balance: 'outstandingBalance',
-          monthly_payment: 'monthlyPayment',
-          term: 'termYears',
-          start_date: 'startDate',
-          end_date: 'endDate',
-          broker_notes: 'brokerNotes',
-        };
-
         const mapped: Record<string, string> = {};
         let hasFieldErrors = false;
 
-        for (const [backendKey, formKey] of Object.entries(fieldMap)) {
-          if (data[backendKey]) {
-            mapped[formKey] = Array.isArray(data[backendKey])
-              ? data[backendKey][0]
-              : data[backendKey];
-            hasFieldErrors = true;
-          }
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            backendKey === 'term' ? 'termYears' : snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
         }
 
         if (hasFieldErrors) {
@@ -175,6 +144,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent
@@ -186,11 +156,13 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Mortgage
           </DialogTitle>
+          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+            Add a new mortgage to the system.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
         <form
-          id='add-mortgage-form'
           onSubmit={handleSubmit}
           className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
         >
@@ -312,10 +284,11 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                   <SelectValue placeholder='Select Product Type' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='FIXED_RATE'>Fixed Rate</SelectItem>
-                  <SelectItem value='VARIABLE_RATE'>Variable Rate</SelectItem>
-                  <SelectItem value='TRACKER'>Tracker</SelectItem>
-                  <SelectItem value='OFFSET'>Offset</SelectItem>
+                  {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.productType }]} />
@@ -487,18 +460,23 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
           </Field>
-        </form>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button form='add-mortgage-form' disabled={loading}>
-            {loading && <Loading className='text-white!' />}
-            Add Mortgage
-          </Button>
-        </div>
+          {/* Footer */}
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Add Mortgage
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

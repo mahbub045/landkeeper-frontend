@@ -70,7 +70,10 @@ const Compliance: React.FC = () => {
 
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
 
-  const apiCertificates: ApiCertificate[] = data?.results ?? [];
+  const apiCertificates: ApiCertificate[] = useMemo(
+    () => data?.results ?? [],
+    [data?.results],
+  );
 
   const certificates: Certificate[] = useMemo(() => {
     return apiCertificates.map((cert: ApiCertificate) => ({
