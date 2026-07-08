@@ -7,7 +7,6 @@ import PropertyCard from '../PropertyCard/PropertyCard';
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   properties,
-  activeFilter,
   isLoading,
 }) => {
   if (isLoading) {

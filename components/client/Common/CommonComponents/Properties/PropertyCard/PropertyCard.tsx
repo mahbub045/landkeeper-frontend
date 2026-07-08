@@ -14,7 +14,6 @@ import { useState } from 'react';
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const { data: session } = useSession();
-  const isOccupied = property.status === 'OCCUPIED';
   const image = property.documents?.[0]?.image ?? '';
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -30,6 +29,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     OCCUPIED: 'Occupied',
     VACANT: 'Vacant',
     UNDER_MAINTENANCE: 'Under Maintenance',
+  };
+
+  const STATUS_STYLES: Record<string, string> = {
+    OCCUPIED: 'bg-success/70 text-white',
+    VACANT: 'bg-warning/70 text-white',
+    UNDER_MAINTENANCE: 'bg-destructive/70 text-white',
   };
 
   return (
@@ -60,11 +65,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           )}
           <div className='absolute top-3 right-3'>
             <Badge
-              className={`gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold ${isOccupied ? 'bg-success/90 text-white' : 'bg-muted text-muted-foreground'}`}
+              className={`gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
             >
-              <span
-                className={`inline-block size-1.5 rounded-full ${isOccupied ? 'bg-white' : 'bg-muted-foreground/90'}`}
-              />
+              <span className='inline-block size-1.5 rounded-full bg-white' />
               <span className='pt-0.5'>
                 {STATUS_LABELS[property.status] ?? property.status}
               </span>
