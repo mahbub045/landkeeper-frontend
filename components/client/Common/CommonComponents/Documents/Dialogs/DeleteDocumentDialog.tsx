@@ -12,6 +12,7 @@ import { useDeleteDocumentMutation } from '@/store/api/endpoints/client/Common/D
 import { DeleteDocumentDialogProps } from '@/types/client/Common/Documents/DocumentTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeleteDocumentDialog: React.FC<DeleteDocumentDialogProps> = ({
   open,
@@ -29,10 +30,11 @@ const DeleteDocumentDialog: React.FC<DeleteDocumentDialogProps> = ({
     setError(null);
     try {
       await deleteDocument({ document_alias: documentAlias }).unwrap();
+      toast.success('Document deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete document. Please try again.');
+      toast.error('Failed to delete document. Please try again.');
     } finally {
       setLoading(false);
     }

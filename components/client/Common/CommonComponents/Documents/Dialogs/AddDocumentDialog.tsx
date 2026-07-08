@@ -34,6 +34,7 @@ import { snakeToCamel } from '@/utils/formatters';
 
 import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // ── Dialog ─────────────────────────────────────────────────────────────────
 
@@ -127,18 +128,23 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
 
     try {
       await addDocument(payload).unwrap();
+      toast.success('Document uploaded successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
-      const errorData = (err as { data?: Record<string, string[]> })?.data;
-      if (errorData) {
-        const mapped: Record<string, string> = {};
-        Object.entries(errorData).forEach(([key, messages]) => {
-          mapped[snakeToCamel(key)] = Array.isArray(messages)
-            ? messages[0]
-            : String(messages);
-        });
-        setFieldErrors((prev) => ({ ...prev, ...mapped }));
+      try {
+        const errorData = (err as { data?: Record<string, string[]> })?.data;
+        if (errorData) {
+          const mapped: Record<string, string> = {};
+          Object.entries(errorData).forEach(([key, messages]) => {
+            mapped[snakeToCamel(key)] = Array.isArray(messages)
+              ? messages[0]
+              : String(messages);
+          });
+          setFieldErrors((prev) => ({ ...prev, ...mapped }));
+        }
+      } catch {
+        toast.error('Failed to upload document. Please try again.');
       }
     }
   }

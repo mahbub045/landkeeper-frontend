@@ -33,6 +33,7 @@ import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 function tenantToForm(tenant: ApiTenant): TenantForm {
   return {
@@ -177,6 +178,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         payload: formData as any,
       }).unwrap();
+      toast.success('Tenant updated successfully.');
       onSuccess?.();
       handleClose();
     } catch (err) {
@@ -198,14 +200,14 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         if (hasFieldErrors) {
           setFieldErrors(mapped);
         } else {
-          setBannerError(
+          toast.error(
             data?.detail ??
               data?.message ??
               'Something went wrong. Please try again.',
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);

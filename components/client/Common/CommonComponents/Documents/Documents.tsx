@@ -26,7 +26,7 @@ import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
 
-const PAGE_LIMIT = 10;
+const PAGE_LIMIT = 12;
 
 const Documents: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');

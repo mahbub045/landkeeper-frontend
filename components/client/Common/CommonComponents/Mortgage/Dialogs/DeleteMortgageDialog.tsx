@@ -12,8 +12,7 @@ import { useDeleteMortgageMutation } from '@/store/api/endpoints/client/Common/M
 import { DeleteMortgageDialogProps } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-
-
+import { toast } from 'sonner';
 
 const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
   open,
@@ -30,10 +29,11 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
     setError(null);
     try {
       await deleteMortgage({ mortgage_alias: mortgageAlias }).unwrap();
+      toast.success('Mortgage deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete mortgage. Please try again.');
+      toast.error('Failed to delete mortgage. Please try again.');
     } finally {
       setLoading(false);
     }

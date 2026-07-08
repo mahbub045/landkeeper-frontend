@@ -31,6 +31,7 @@ import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { snakeToCamel } from '@/utils/formatters';
 import { CloudUpload, FileText, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 function buildInitialForm(certificate: ApiCertificate): CertificateForm {
   return {
@@ -158,6 +159,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
         compliance_alias: certificate.alias,
         payload: formData,
       }).unwrap();
+      toast.success('Certificate updated successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -194,7 +196,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     }
   }

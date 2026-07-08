@@ -35,6 +35,7 @@ import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   open,
@@ -130,6 +131,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
         mortgage_alias: mortgage.alias,
         payload,
       }).unwrap();
+      toast.success('Mortgage updated successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -157,14 +159,14 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
         if (hasFieldErrors) {
           setFieldErrors(mapped);
         } else {
-          setBannerError(
+          toast.error(
             data?.detail ??
               data?.message ??
               'Something went wrong. Please try again.',
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);

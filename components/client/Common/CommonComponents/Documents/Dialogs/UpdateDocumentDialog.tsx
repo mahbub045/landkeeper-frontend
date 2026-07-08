@@ -35,6 +35,7 @@ import { snakeToCamel } from '@/utils/formatters';
 
 import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -153,18 +154,23 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
         document_alias: document.alias,
         payload,
       }).unwrap();
+      toast.success('Document updated successfully.');
       onSuccess?.();
       onClose();
     } catch (err: unknown) {
-      const errorData = (err as { data?: Record<string, string[]> })?.data;
-      if (errorData) {
-        const mapped: Record<string, string> = {};
-        Object.entries(errorData).forEach(([key, messages]) => {
-          mapped[snakeToCamel(key)] = Array.isArray(messages)
-            ? messages[0]
-            : String(messages);
-        });
-        setFieldErrors((prev) => ({ ...prev, ...mapped }));
+      try {
+        const errorData = (err as { data?: Record<string, string[]> })?.data;
+        if (errorData) {
+          const mapped: Record<string, string> = {};
+          Object.entries(errorData).forEach(([key, messages]) => {
+            mapped[snakeToCamel(key)] = Array.isArray(messages)
+              ? messages[0]
+              : String(messages);
+          });
+          setFieldErrors((prev) => ({ ...prev, ...mapped }));
+        }
+      } catch {
+        toast.error('Failed to update document. Please try again.');
       }
     }
   }

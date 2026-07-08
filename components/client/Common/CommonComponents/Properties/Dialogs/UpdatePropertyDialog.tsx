@@ -39,6 +39,7 @@ import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -168,16 +169,16 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
           Object.keys(normalized).some((field) => FIELD_TAB_MAP[field] === tab),
         );
         if (targetTab) setActiveTab(targetTab);
-        setBannerError('Please fix the highlighted fields and try again.');
+        toast.error('Please fix the highlighted fields and try again.');
         return;
       }
 
       if (typeof apiError.message === 'string') {
-        setBannerError(apiError.message);
+        toast.error(apiError.message);
         return;
       }
     }
-    setBannerError('Something went wrong. Please try again.');
+    toast.error('Something went wrong. Please try again.');
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -229,7 +230,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
         property_alias: property.alias,
         payload: formData,
       }).unwrap();
-
+      toast.success('Property updated successfully.');
       onSuccess?.();
       onClose();
     } catch (err: unknown) {
@@ -237,7 +238,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       if (rtkError?.data) {
         handleApiError(rtkError.data);
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
