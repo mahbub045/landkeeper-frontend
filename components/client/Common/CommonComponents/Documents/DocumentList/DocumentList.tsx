@@ -189,10 +189,9 @@ const DocumentList: React.FC<DocumentListProps> = ({
                 </Button>
 
                 <Button
-                  variant='outline'
+                  variant='destructive'
                   size='icon'
                   aria-label='Delete'
-                  className='text-danger hover:bg-danger/10 hover:text-danger'
                   onClick={() => setDeletingDoc(doc)}
                 >
                   <Trash2 />
