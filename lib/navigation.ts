@@ -6,6 +6,9 @@ import {
   House,
   Landmark,
   LayoutDashboard,
+  Package,
+  Podcast,
+  ReceiptText,
   ShieldUser,
   Ticket,
   UserKey,
@@ -33,6 +36,17 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Dashboard',
         href: '/super-admin/dashboard',
         icon: LayoutDashboard,
+      },
+
+      {
+        label: 'Pricing Plans',
+        href: '/super-admin/pricing-plans',
+        icon: Package,
+      },
+      {
+        label: 'Subscriptions',
+        href: '/super-admin/subscriptions',
+        icon: Podcast,
       },
       {
         label: 'Support Tickets',
@@ -94,6 +108,16 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
             icon: UserKey,
           },
         ],
+      },
+      {
+        label: 'Billing',
+        href: '/client/landlord/billing',
+        icon: ReceiptText,
+      },
+      {
+        label: 'Pricing Plans',
+        href: '/client/landlord/pricing-plans',
+        icon: Package,
       },
       {
         label: 'Support Tickets',

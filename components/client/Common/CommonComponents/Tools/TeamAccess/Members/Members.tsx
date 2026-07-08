@@ -43,17 +43,17 @@ const Members: React.FC = () => {
           <TabsList className='mb-4 grid w-full grid-cols-2'>
             <TabsTrigger value='invited' className='cursor-pointer'>
               Invite Users
-              {invites.length > 0 && (
+              {inviteTeamMembers.count > 0 && (
                 <Badge className='ml-2 h-5 min-w-5 rounded-full px-1.5 text-xs'>
-                  {invites.length}
+                  {inviteTeamMembers.count}
                 </Badge>
               )}
             </TabsTrigger>
             <TabsTrigger value='accepted' className='cursor-pointer'>
               Accepted Users
-              {members.length > 0 && (
+              {teamMembers.count > 0 && (
                 <Badge className='ml-2 h-5 min-w-5 rounded-full px-1.5 text-xs'>
-                  {members.length}
+                  {teamMembers.count}
                 </Badge>
               )}
             </TabsTrigger>
