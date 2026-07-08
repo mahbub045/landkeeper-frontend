@@ -585,11 +585,13 @@ const DocumentsTab: React.FC<{
         />
       </div>
 
-      <div className='bg-warning border-2-warning rounded p-2'>
-        <p className='text-xs text-white'>
-          At least one image is required to add a property
-        </p>
-      </div>
+      {files.length === 0 && (
+        <div className='bg-warning border-2-warning rounded p-2'>
+          <p className='text-xs text-white'>
+            At least one image is required to add a property
+          </p>
+        </div>
+      )}
 
       {files.length > 0 && (
         <ul className='space-y-2'>

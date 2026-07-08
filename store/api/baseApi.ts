@@ -25,6 +25,7 @@ export const TAG_TYPES = [
   'Mortgage',
   'Tenant',
   'Compliance',
+  'Document',
   'TeamAccess',
 ] as const;
 
