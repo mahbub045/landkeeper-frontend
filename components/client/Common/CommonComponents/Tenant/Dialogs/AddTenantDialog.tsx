@@ -167,7 +167,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Tenant
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          <DialogDescription>
             Add a new tenant to the system.
           </DialogDescription>
         </DialogHeader>

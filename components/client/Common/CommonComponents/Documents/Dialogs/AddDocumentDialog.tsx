@@ -162,7 +162,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Upload Document
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          <DialogDescription>
             Add a new document for your proprty.
           </DialogDescription>
         </DialogHeader>

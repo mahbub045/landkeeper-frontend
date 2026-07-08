@@ -222,7 +222,7 @@ const UpdateCertificateDialog: React.FC<UpdateCertificateDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Update Certificate
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          <DialogDescription>
             Update the details of an existing certificate.
           </DialogDescription>
         </DialogHeader>

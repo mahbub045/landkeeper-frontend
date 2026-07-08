@@ -192,7 +192,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add New Property
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 mb-4 text-sm'>
+          <DialogDescription>
             Add a new property to the system.
           </DialogDescription>
 

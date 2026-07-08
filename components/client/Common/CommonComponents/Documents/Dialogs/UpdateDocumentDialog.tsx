@@ -442,7 +442,7 @@ const UpdateDocumentDialog: React.FC<UpdateDocumentDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Update Document
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          <DialogDescription>
             Update the details of your document.
           </DialogDescription>
         </DialogHeader>

@@ -158,7 +158,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Mortgage
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+          <DialogDescription>
             Add a new mortgage to the system.
           </DialogDescription>
         </DialogHeader>

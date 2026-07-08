@@ -285,7 +285,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Edit Property
           </DialogTitle>
-          <DialogDescription className='text-muted-foreground mt-1 mb-4 text-sm'>
+          <DialogDescription>
             Update the details of this property.
           </DialogDescription>
 

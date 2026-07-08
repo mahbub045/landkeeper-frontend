@@ -222,7 +222,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
         <DialogTitle className='text-foreground text-xl font-bold'>
           Update Tenant
         </DialogTitle>
-        <DialogDescription className='text-muted-foreground mt-1 text-sm'>
+        <DialogDescription>
           Update the details of this tenant.
         </DialogDescription>
       </DialogHeader>
