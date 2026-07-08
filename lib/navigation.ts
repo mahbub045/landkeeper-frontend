@@ -13,6 +13,7 @@ import {
   Ticket,
   UserKey,
   UsersRound,
+  Wallet,
   Wrench,
   type LucideIcon,
 } from 'lucide-react';
@@ -37,7 +38,6 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/super-admin/dashboard',
         icon: LayoutDashboard,
       },
-
       {
         label: 'Pricing Plans',
         href: '/super-admin/pricing-plans',
@@ -110,14 +110,20 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         ],
       },
       {
-        label: 'Billing',
-        href: '/client/landlord/billing',
-        icon: ReceiptText,
-      },
-      {
-        label: 'Pricing Plans',
-        href: '/client/landlord/pricing-plans',
-        icon: Package,
+        label: 'Billing & Plans',
+        icon: Wallet,
+        children: [
+          {
+            label: 'Billing',
+            href: '/client/landlord/billing-and-plans/billing',
+            icon: ReceiptText,
+          },
+          {
+            label: 'Pricing Plans',
+            href: '/client/landlord/billing-and-plans/pricing-plans',
+            icon: Package,
+          },
+        ],
       },
       {
         label: 'Support Tickets',
