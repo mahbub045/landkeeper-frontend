@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -11,7 +10,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { AcceptedUsersProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
 import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import {
@@ -22,7 +29,6 @@ import {
 import {
   AlertCircle,
   Mail,
-  MessagesSquare,
   Pencil,
   Phone,
   ShieldUser,
@@ -30,6 +36,7 @@ import {
   Users,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import DeleteAcceptedUserDialog from './Dialogs/DeleteAcceptedUserDialog';
 import EditAcceptedUserDialog from './Dialogs/EditAcceptedUserDialog';
 
@@ -48,6 +55,8 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
   const [isDeleteAcceptedUserDialogOpen, setIsDeleteAcceptedUserDialogOpen] =
     useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [updateAcceptedUserStatus, { isLoading: isUpdatingStatus }] =
+    useEditAcceptedUserMutation();
 
   const handleEditAcceptedUserDialogOpen = (member: TeamMember) => {
     setSelectedMember(member);
@@ -57,6 +66,31 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
   const handleDeleteAcceptedUserDialogOpen = (member: TeamMember) => {
     setSelectedMember(member);
     setIsDeleteAcceptedUserDialogOpen(true);
+  };
+
+  const handleStatusChange = async (member: TeamMember, nextStatus: string) => {
+    if (!member?.user?.alias) return;
+
+    const nextIsActive = nextStatus === 'active';
+
+    if (member.user.is_active === nextIsActive) return;
+
+    try {
+      await updateAcceptedUserStatus({
+        alias: member.user.alias,
+        body: {
+          user: {
+            is_active: nextIsActive,
+          },
+        },
+      }).unwrap();
+
+      toast.success(
+        nextIsActive ? 'Member marked active' : 'Member deactivated',
+      );
+    } catch {
+      toast.error('Failed to update member status. Please try again.');
+    }
   };
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_LIMIT));
@@ -143,14 +177,39 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
         members.map((member: TeamMember) => (
           <Card key={member?.user?.alias} className='border'>
             <CardContent className='relative flex items-center gap-4 px-4 py-4'>
-              <Badge
-                className={`absolute -top-2 right-2 gap-1.5 px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+              <Select
+                value={member?.user?.is_active ? 'active' : 'deactivated'}
+                onValueChange={(value) => handleStatusChange(member, value)}
+                disabled={isUpdatingStatus}
               >
-                <span
-                  className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-danger'}`}
-                />
-                {member?.user?.is_active ? 'Active' : 'Deactivated'}
-              </Badge>
+                <SelectTrigger
+                  size='sm'
+                  className={`absolute -top-2 right-2 h-6! w-fit cursor-pointer gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+                >
+                  <span
+                    className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-danger'}`}
+                  />
+                  <SelectValue>
+                    {member?.user?.is_active ? 'Active' : 'Deactivated'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    value='active'
+                    className='focus:bg-success/10 cursor-pointer'
+                  >
+                    <span className='bg-success inline-block size-1.5 rounded-full' />
+                    Active
+                  </SelectItem>
+                  <SelectItem
+                    value='deactivated'
+                    className='focus:bg-danger/10 cursor-pointer'
+                  >
+                    <span className='bg-danger inline-block size-1.5 rounded-full' />
+                    Deactivated
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
               <Avatar className='size-11 shrink-0'>
                 <AvatarImage

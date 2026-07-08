@@ -25,7 +25,7 @@ export type FormState = {
   last_name: string;
   phone: string;
   role: string;
-  is_active: boolean;
+  is_active?: boolean;
 };
 
 export interface DeleteAcceptedUserDialogProps {

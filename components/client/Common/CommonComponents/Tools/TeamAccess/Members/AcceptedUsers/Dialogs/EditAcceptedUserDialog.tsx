@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { ROLE_OPTIONS } from '@/data/common/RoleOptions';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
@@ -37,7 +36,6 @@ const emptyForm: FormState = {
   last_name: '',
   phone: '',
   role: '',
-  is_active: true,
 };
 
 // Shape we expect back from DRF-style validation errors, e.g.:
@@ -53,7 +51,6 @@ const KNOWN_USER_FIELDS = [
   'middle_name',
   'last_name',
   'phone',
-  'is_active',
 ];
 const KNOWN_TOP_FIELDS = ['role'];
 
@@ -86,7 +83,6 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
       middle_name: member?.user?.middle_name ?? '',
       last_name: member?.user?.last_name ?? '',
       phone: member?.user?.phone ?? '',
-      is_active: member?.user.is_active ?? true,
       role: member?.role ?? '',
     };
     setForm(next);
@@ -159,7 +155,6 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
         middle_name: form.middle_name,
         last_name: form.last_name,
         phone: form.phone,
-        is_active: form.is_active,
       },
       role: form.role,
     };
@@ -328,25 +323,6 @@ const EditAcceptedUserDialog: React.FC<EditAcceptedUserDialogProps> = ({
             </Select>
             {getTopFieldError('role') && (
               <p className='text-danger text-xs'>{getTopFieldError('role')}</p>
-            )}
-          </div>
-
-          <div className='space-y-2'>
-            <div className='flex items-center justify-between rounded-md border px-3 py-2'>
-              <Label htmlFor='is_active' className='cursor-pointer'>
-                Status
-              </Label>
-              <Switch
-                id='is_active'
-                className='cursor-pointer'
-                checked={form.is_active}
-                onCheckedChange={(checked) => updateField('is_active', checked)}
-              />
-            </div>
-            {getUserFieldError('is_active') && (
-              <p className='text-danger text-xs'>
-                {getUserFieldError('is_active')}
-              </p>
             )}
           </div>
 
