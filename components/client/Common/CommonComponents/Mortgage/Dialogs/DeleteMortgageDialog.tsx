@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -47,6 +48,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
             <AlertTriangle className='text-destructive size-5' />
             Delete Mortgage
           </DialogTitle>
+          <DialogDescription>This action is irreversible.</DialogDescription>
         </DialogHeader>
 
         <div className='px-6 py-5'>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -48,6 +49,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
             <AlertTriangle className='text-destructive size-5' />
             Delete Property
           </DialogTitle>
+          <DialogDescription>This action is irreversible.</DialogDescription>
         </DialogHeader>
 
         <div className='px-6 py-5'>
@@ -59,8 +61,8 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
 
           <p className='text-foreground text-center'>
             Are you sure you want to delete{' '}
-            <span className='font-semibold'>{propertyName}</span>?<br /> This
-            will permanently remove the property and all associated data.
+            <span className='text-danger font-bold'>{propertyName}</span>?<br />{' '}
+            This will permanently remove the property and all associated data.
           </p>
           <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.
