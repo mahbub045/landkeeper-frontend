@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -127,6 +128,10 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Invite Team Member
           </DialogTitle>
+          <DialogDescription>
+            Enter the email address of the person you want to invite and select
+            their role.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
