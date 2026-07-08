@@ -12,6 +12,7 @@ import { useDeleteTenantMutation } from '@/store/api/endpoints/client/Common/Ten
 import { DeleteTenantDialogProps } from '@/types/client/Common/Tenant/TenantTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
   open,
@@ -29,10 +30,11 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
     setError(null);
     try {
       await deleteTenant({ tenant_alias: tenantAlias }).unwrap();
+      toast.success('Tenant deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete tenant. Please try again.');
+      toast.error('Failed to delete tenant. Please try again.');
     } finally {
       setLoading(false);
     }

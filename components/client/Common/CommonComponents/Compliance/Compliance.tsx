@@ -1,8 +1,5 @@
 'use client';
 
-import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Pagination,
   PaginationContent,
@@ -22,7 +19,6 @@ import {
   Certificate,
   CertStatus,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
-import { Plus, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceScore from './ComplianceScore/ComplianceScore';
@@ -124,24 +120,6 @@ const Compliance: React.FC = () => {
             Track certificates and regulatory requirements
           </p>
         </div>
-        <div className='flex items-center gap-2'>
-          <div className='relative w-64'>
-            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-            <Input
-              type='text'
-              placeholder='Search...'
-              value={search}
-              onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-7!'
-            />
-            <HoverInfoPopover text='You can search using Property Name and Certificate Type.' />
-          </div>
-
-          <Button onClick={() => setModalOpen(true)}>
-            <Plus />
-            Add Certificate
-          </Button>
-        </div>
       </div>
 
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
@@ -164,6 +142,9 @@ const Compliance: React.FC = () => {
             certificates={certificates}
             apiCertificates={apiCertificates}
             isLoading={isLoading}
+            search={search}
+            onSearchChange={handleSearchChange}
+            onAddClick={() => setModalOpen(true)}
           />
 
           {totalPages > 1 && (

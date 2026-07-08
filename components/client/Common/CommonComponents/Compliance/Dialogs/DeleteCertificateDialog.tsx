@@ -12,6 +12,7 @@ import { useDeleteComplianceMutation } from '@/store/api/endpoints/client/Common
 import { DeleteCertificateDialogProps } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeleteCertificateDialog: React.FC<DeleteCertificateDialogProps> = ({
   open,
@@ -28,10 +29,11 @@ const DeleteCertificateDialog: React.FC<DeleteCertificateDialogProps> = ({
     setError(null);
     try {
       await deleteCertificate({ compliance_alias: certificateAlias }).unwrap();
+      toast.success('Certificate deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete certificate. Please try again.');
+      toast.error('Failed to delete certificate. Please try again.');
     } finally {
       setLoading(false);
     }

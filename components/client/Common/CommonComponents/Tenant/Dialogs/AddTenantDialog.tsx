@@ -34,6 +34,7 @@ import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   open,
@@ -117,6 +118,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await addTenant(formData as any).unwrap();
+      toast.success('Tenant added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err) {
@@ -138,14 +140,14 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
         if (hasFieldErrors) {
           setFieldErrors(mapped);
         } else {
-          setBannerError(
+          toast.error(
             data?.detail ??
               data?.message ??
               'Something went wrong. Please try again.',
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);

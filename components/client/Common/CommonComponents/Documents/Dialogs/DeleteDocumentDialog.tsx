@@ -8,32 +8,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDeleteMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
-import { DeleteMortgageDialogProps } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { useDeleteDocumentMutation } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
+import { DeleteDocumentDialogProps } from '@/types/client/Common/Documents/DocumentTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
+const DeleteDocumentDialog: React.FC<DeleteDocumentDialogProps> = ({
   open,
   onClose,
   onSuccess,
-  mortgageAlias,
+  documentAlias,
+  documentName,
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deleteMortgage] = useDeleteMortgageMutation();
+  const [deleteDocument] = useDeleteDocumentMutation();
 
   async function handleDelete() {
     setLoading(true);
     setError(null);
     try {
-      await deleteMortgage({ mortgage_alias: mortgageAlias }).unwrap();
-      toast.success('Mortgage deleted successfully.');
+      await deleteDocument({ document_alias: documentAlias }).unwrap();
+      toast.success('Document deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      toast.error('Failed to delete mortgage. Please try again.');
+      toast.error('Failed to delete document. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
         <DialogHeader className='border-b px-6 pt-6 pb-4'>
           <DialogTitle className='text-foreground flex items-center gap-2 text-xl font-bold'>
             <AlertTriangle className='text-destructive size-5' />
-            Delete Mortgage
+            Delete Document
           </DialogTitle>
         </DialogHeader>
 
@@ -57,9 +58,9 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
           )}
 
           <p className='text-foreground text-center'>
-            Are you sure you want to delete this mortgage
-            <br /> This will permanently remove the mortgage and all associated
-            data.
+            Are you sure you want to delete{' '}
+            <span className='font-semibold'>{documentName}</span>?<br /> This
+            will permanently remove the document and all associated data.
           </p>
           <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.
@@ -72,7 +73,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
           </Button>
           <Button variant='danger' onClick={handleDelete} disabled={loading}>
             {loading && <Loading className='text-white!' />}
-            Delete Mortgage
+            Delete Document
           </Button>
         </div>
       </DialogContent>
@@ -80,4 +81,4 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
   );
 };
 
-export default DeleteMortgageDialog;
+export default DeleteDocumentDialog;

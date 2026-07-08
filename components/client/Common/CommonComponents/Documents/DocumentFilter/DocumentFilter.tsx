@@ -22,11 +22,11 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({
     >
       {filterTabs.map((tab) => (
         <ToggleGroupItem
-          key={tab}
-          value={tab}
+          key={tab.value}
+          value={tab.value}
           className='data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium'
         >
-          {tab}
+          {tab.label}
         </ToggleGroupItem>
       ))}
     </ToggleGroup>

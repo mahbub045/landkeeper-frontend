@@ -40,6 +40,7 @@ import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
@@ -97,16 +98,16 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           Object.keys(normalized).some((field) => FIELD_TAB_MAP[field] === tab),
         );
         if (targetTab) setActiveTab(targetTab);
-        setBannerError('Please fix the highlighted fields and try again.');
+        toast.error('Please fix the highlighted fields and try again.');
         return;
       }
 
       if (typeof apiError.message === 'string') {
-        setBannerError(apiError.message);
+        toast.error(apiError.message);
         return;
       }
     }
-    setBannerError('Something went wrong. Please try again.');
+    toast.error('Something went wrong. Please try again.');
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -140,6 +141,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       files.forEach((file) => formData.append('documents_data', file));
 
       await addProperty(formData).unwrap();
+      toast.success('Property added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -147,7 +149,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       if (rtkError?.data) {
         handleApiError(rtkError.data);
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -585,11 +587,13 @@ const DocumentsTab: React.FC<{
         />
       </div>
 
-      <div className='bg-warning border-2-warning rounded p-2'>
-        <p className='text-xs text-white'>
-          At least one image is required to add a property
-        </p>
-      </div>
+      {files.length === 0 && (
+        <div className='bg-warning border-2-warning rounded p-2'>
+          <p className='text-xs text-white'>
+            At least one image is required to add a property
+          </p>
+        </div>
+      )}
 
       {files.length > 0 && (
         <ul className='space-y-2'>

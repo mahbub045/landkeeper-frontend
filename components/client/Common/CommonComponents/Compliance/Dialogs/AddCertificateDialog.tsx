@@ -33,6 +33,7 @@ import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { snakeToCamel } from '@/utils/formatters';
 import { CloudUpload } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
   open,
@@ -116,6 +117,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
       if (file) formData.append('certificate_file', file);
 
       await addCompliance(formData).unwrap();
+      toast.success('Certificate added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -152,7 +154,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     }
   }

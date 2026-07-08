@@ -34,6 +34,7 @@ import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   open,
@@ -102,6 +103,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
       };
 
       await addMortgage(payload).unwrap();
+      toast.success('Mortgage added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -136,7 +138,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);

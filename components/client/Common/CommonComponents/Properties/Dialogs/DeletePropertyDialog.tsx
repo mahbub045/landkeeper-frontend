@@ -12,6 +12,7 @@ import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/P
 import { DeletePropertyDialogProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
   open,
@@ -29,10 +30,11 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
     setError(null);
     try {
       await deleteProperty({ property_alias: propertyAlias }).unwrap();
+      toast.success('Property deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete property. Please try again.');
+      toast.error('Failed to delete property. Please try again.');
     } finally {
       setLoading(false);
     }

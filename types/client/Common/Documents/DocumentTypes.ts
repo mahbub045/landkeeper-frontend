@@ -1,25 +1,67 @@
+import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+
 export type DocCategory =
-  | 'mortgage'
-  | 'tenancy'
-  | 'certificate'
-  | 'insurance'
-  | 'legal'
-  | 'photo'
-  | 'invoice';
-export type FilterTab =
-  | 'All'
-  | 'Mortgage'
-  | 'Tenancy'
-  | 'Certificates'
-  | 'Insurance'
-  | 'Legal';
+  | 'MORTGAGE_DOCUMENTS'
+  | 'TENANCY_AGREEMENT'
+  | 'CERTIFICATE'
+  | 'INSURANCE'
+  | 'INVOICE'
+  | 'TAX_DOCUMENT'
+  | 'PROPERTY_PHOTO'
+  | 'LEGAL_DOCUMENT';
+
+export type DocumentCategory =
+  (typeof documentCategoryOptions)[number]['value'];
+
+export interface DocumentForm {
+  propertyId: string;
+  category: DocumentCategory;
+  name: string;
+  tags: string;
+}
+
+export const initialForm: DocumentForm = {
+  propertyId: '',
+  category: 'MORTGAGE_DOCUMENTS',
+  name: '',
+  tags: '',
+};
+
+// 'ALL' means "no category filter applied" -- everything else maps
+// 1:1 to the document_category param sent to the API.
+export type FilterTab = 'ALL' | DocCategory;
+
+export interface DocumentFilterOption {
+  value: FilterTab;
+  label: string;
+}
+
+export interface DocumentFile {
+  id: number;
+  file: string;
+  description: string | null;
+}
+
+export interface DocumentProperty {
+  id: number;
+  alias: string;
+  property_name: string;
+}
 
 export interface PropertyDocument {
-  id: number;
-  name: string;
-  property: string;
-  category: DocCategory;
-  sizeMB: number;
+  alias: string;
+  document_category: DocCategory;
+  document_name: string;
+  files: DocumentFile[];
+  property: DocumentProperty;
+  tags: string;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }
 
 export interface UploadDocumentForm {
@@ -29,14 +71,43 @@ export interface UploadDocumentForm {
   tags: string;
 }
 
-export interface UploadDocumentModalProps {
+export interface UploadDocumentDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export interface UpdateDocumentForm {
+  propertyId: string;
+  propertyName: string;
+  category: DocumentCategory;
+  name: string;
+  tags: string;
+}
+
+export interface UpdateDocumentFormProps {
+  document: PropertyDocument;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export interface UpdateDocumentDialogProps {
+  document: PropertyDocument | null;
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
 export interface DocumentFilterProps {
-  filterTabs: FilterTab[];
+  filterTabs: DocumentFilterOption[];
   activeFilter: FilterTab;
   onFilterChange: (tab: FilterTab) => void;
+}
+
+export interface DeleteDocumentDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  documentAlias: string;
+  documentName: string;
 }
