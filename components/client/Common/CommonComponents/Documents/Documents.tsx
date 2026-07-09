@@ -25,6 +25,7 @@ import {
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 
 const PAGE_LIMIT = 12;
 
@@ -102,6 +103,7 @@ const Documents: React.FC = () => {
               onChange={handleSearchChange}
               className='h-8! w-64 pr-8! pl-7!'
             />
+            <HoverInfoPopover text='You can search using Property Name and Document Name.' />
           </div>
 
           <Button onClick={() => setUploadOpen(true)}>
