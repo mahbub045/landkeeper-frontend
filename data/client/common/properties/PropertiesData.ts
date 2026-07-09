@@ -1,4 +1,8 @@
-import { DetailsForm, FilterTab, Tab } from '@/types/client/Common/Properties/PropertyTypes';
+import {
+  DetailsForm,
+  FilterTab,
+  Tab,
+} from '@/types/client/Common/Properties/PropertyTypes';
 
 export const TABS: Tab[] = ['Details', 'Documents'];
 export const TAB_PRIORITY: Tab[] = ['Details', 'Documents'];
@@ -37,10 +41,16 @@ export const propertyTypeMap: Partial<Record<FilterTab, string>> = {
   'Holiday Let': 'HOLIDAY_LET',
 };
 
-export const statusMap: Partial<Record<FilterTab, string>> = {
-  Occupied: 'OCCUPIED',
-  Vacant: 'VACANT',
-  'Under Maintenance': 'UNDER_MAINTENANCE',
+export const PROPERTY_STATUS_OPTIONS = [
+  { value: 'OCCUPIED', label: 'Occupied' },
+  { value: 'VACANT', label: 'Vacant' },
+  { value: 'UNDER_MAINTENANCE', label: 'Under Maintenance' },
+];
+
+export const STATUS_STYLES: Record<string, string> = {
+  OCCUPIED: 'bg-success/70 text-white',
+  VACANT: 'bg-warning/70 text-white',
+  UNDER_MAINTENANCE: 'bg-destructive/70 text-white',
 };
 
 export const PROPERTY_TYPE_OPTIONS = [
@@ -49,12 +59,6 @@ export const PROPERTY_TYPE_OPTIONS = [
   { value: 'COMMERCIAL', label: 'Commercial' },
   { value: 'MIXED_USE', label: 'Mixed Use' },
   { value: 'HOLIDAY_LET', label: 'Holiday Let' },
-];
-
-export const PROPERTY_STATUS_OPTIONS = [
-  { value: 'OCCUPIED', label: 'Occupied' },
-  { value: 'VACANT', label: 'Vacant' },
-  { value: 'UNDER_MAINTENANCE', label: 'Under Maintenance' },
 ];
 
 export const EMPTY_DETAILS_FORM: DetailsForm = {

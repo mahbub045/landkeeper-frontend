@@ -3,6 +3,10 @@
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  PROPERTY_STATUS_OPTIONS,
+  STATUS_STYLES,
+} from '@/data/client/common/properties/PropertiesData';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { getPropertyDetailsUrl } from '@/utils/redirectPath';
@@ -23,18 +27,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     COMMERCIAL: 'Commercial',
     MIXED_USE: 'Mixed Use',
     HOLIDAY_LET: 'Holiday Let',
-  };
-
-  const STATUS_LABELS: Record<string, string> = {
-    OCCUPIED: 'Occupied',
-    VACANT: 'Vacant',
-    UNDER_MAINTENANCE: 'Under Maintenance',
-  };
-
-  const STATUS_STYLES: Record<string, string> = {
-    OCCUPIED: 'bg-success/70 text-white',
-    VACANT: 'bg-warning/70 text-white',
-    UNDER_MAINTENANCE: 'bg-destructive/70 text-white',
   };
 
   return (
@@ -69,7 +61,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             >
               <span className='inline-block size-1.5 rounded-full bg-white' />
               <span className='pt-0.5'>
-                {STATUS_LABELS[property.status] ?? property.status}
+                {PROPERTY_STATUS_OPTIONS.find(
+                  (opt) => opt.value === property.status,
+                )?.label ?? property.status}
               </span>
             </Badge>
           </div>

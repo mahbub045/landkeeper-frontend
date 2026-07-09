@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/pagination';
 import {
   filterTabs,
+  PROPERTY_STATUS_OPTIONS,
   propertyTypeMap,
-  statusMap,
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
@@ -50,7 +50,10 @@ const Properties: React.FC = () => {
     ...(propertyTypeMap[activeFilter] && {
       property_type: propertyTypeMap[activeFilter],
     }),
-    ...(statusMap[activeFilter] && { status: statusMap[activeFilter] }),
+    ...(PROPERTY_STATUS_OPTIONS.find((opt) => opt.label === activeFilter) && {
+      status: PROPERTY_STATUS_OPTIONS.find((opt) => opt.label === activeFilter)
+        ?.value,
+    }),
   };
 
   const { data, isLoading, isError } = useGetPropertiesQuery(queryParams);
