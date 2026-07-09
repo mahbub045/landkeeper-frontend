@@ -24,7 +24,7 @@ const DocumentFilter: React.FC<DocumentFilterProps> = ({
         <ToggleGroupItem
           key={tab.value}
           value={tab.value}
-          className='data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium'
+          className='data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:text-primary-foreground border-border text-muted-foreground hover:border-primary/50 hover:text-foreground rounded-full border px-4 py-1.5 text-sm font-medium cursor-pointer'
         >
           {tab.label}
         </ToggleGroupItem>
