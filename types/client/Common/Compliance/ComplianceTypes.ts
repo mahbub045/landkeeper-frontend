@@ -1,12 +1,26 @@
 export type CertStatus = 'Valid' | 'Expired' | 'Expiring Soon';
 
 export interface Certificate {
-  id: number;
+  alias: string;
   property: string;
   type: string;
+  certificateNumber: number;
   issueDate: string;
   expiryDate: string;
   status: CertStatus;
+}
+
+export interface ApiCertificate {
+  alias: string;
+  certificate_file: string | null;
+  certificate_number: number;
+  certificate_type: string;
+  created_at: string;
+  expiry_date: string;
+  issue_date: string;
+  issued_by: string;
+  property: { id: number; alias: string; property_name: string };
+  updated_at: string;
 }
 
 export interface Expiration {
@@ -34,6 +48,7 @@ export interface ComplianceScoreProps {
 
 export interface CertificateRegistryProps {
   certificates: Certificate[];
+  isLoading?: boolean;
 }
 
 export interface UpcomingExpirationsProps {
@@ -54,4 +69,18 @@ export interface AddCertificateModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   properties?: { id: string; name: string }[];
+}
+
+export interface UpdateCertificateDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  certificate: ApiCertificate;
+}
+
+export interface DeleteCertificateDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  certificateAlias: string;
 }

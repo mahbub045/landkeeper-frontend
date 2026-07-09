@@ -6,10 +6,14 @@ import {
   House,
   Landmark,
   LayoutDashboard,
+  Package,
+  Podcast,
+  ReceiptText,
   ShieldUser,
   Ticket,
   UserKey,
   UsersRound,
+  Wallet,
   Wrench,
   type LucideIcon,
 } from 'lucide-react';
@@ -33,6 +37,16 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Dashboard',
         href: '/super-admin/dashboard',
         icon: LayoutDashboard,
+      },
+      {
+        label: 'Pricing Plans',
+        href: '/super-admin/pricing-plans',
+        icon: Package,
+      },
+      {
+        label: 'Subscriptions',
+        href: '/super-admin/subscriptions',
+        icon: Podcast,
       },
       {
         label: 'Support Tickets',
@@ -92,6 +106,22 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
             label: 'Team Access',
             href: '/client/landlord/tools/team-access',
             icon: UserKey,
+          },
+        ],
+      },
+      {
+        label: 'Billing & Plans',
+        icon: Wallet,
+        children: [
+          {
+            label: 'Billing',
+            href: '/client/landlord/billing-and-plans/billing',
+            icon: ReceiptText,
+          },
+          {
+            label: 'Pricing Plans',
+            href: '/client/landlord/billing-and-plans/pricing-plans',
+            icon: Package,
           },
         ],
       },

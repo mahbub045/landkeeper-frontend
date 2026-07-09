@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,6 +18,10 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  EMPTY_FORM,
+  OVERRIDE_KEY_MAP,
+} from '@/data/client/common/tenant/TenantData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
@@ -25,42 +30,11 @@ import {
   AddTenantModalProps,
   TenantForm,
 } from '@/types/client/Common/Tenant/TenantTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-
-const EMPTY_FORM: TenantForm = {
-  propertyId: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  rentAmount: '',
-  deposit: '',
-  tenancyStart: '',
-  tenancyEnd: '',
-  employmentDetails: '',
-  guarantorName: '',
-  notes: '',
-};
-
-// Backend snake_case -> form camelCase key mapping for field-level errors
-const ERROR_KEY_MAP: Record<string, string> = {
-  avatar: 'avatar',
-  first_name: 'firstName',
-  last_name: 'lastName',
-  email: 'email',
-  phone: 'phone',
-  rent_amount: 'rentAmount',
-  deposit: 'deposit',
-  tenancy_start_date: 'tenancyStart',
-  tenancy_end_date: 'tenancyEnd',
-  employment_details: 'employmentDetails',
-  guarantor_name: 'guarantorName',
-  notes: 'notes',
-  property: 'propertyId',
-};
+import { toast } from 'sonner';
 
 const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   open,
@@ -93,6 +67,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   const [addTenant] = useAddTenantsMutation();
 
   // ── Avatar handlers ────────────────────────────────────────────────────────
+
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -105,6 +80,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Reset ───────────────────────────────────────────────────────────────────
+
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
@@ -117,19 +93,9 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (
-      form.tenancyStart &&
-      form.tenancyEnd &&
-      form.tenancyEnd < form.tenancyStart
-    ) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        tenancyEnd: 'End date cannot be before start date',
-      }));
-      return;
-    }
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
     setLoading(true);
@@ -152,6 +118,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await addTenant(formData as any).unwrap();
+      toast.success('Tenant added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err) {
@@ -160,19 +127,27 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
       if (data && typeof data === 'object') {
         const mapped: Record<string, string> = {};
+        let hasFieldErrors = false;
 
-        Object.keys(data).forEach((key) => {
-          const mappedKey = ERROR_KEY_MAP[key] ?? key;
-          const value = data[key];
-          mapped[mappedKey] = Array.isArray(value) ? value[0] : value;
-        });
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            OVERRIDE_KEY_MAP[backendKey] ?? snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
+        }
 
-        setFieldErrors(mapped);
-        setBannerError(
-          data.detail || data.message || 'Please fix the errors below.',
-        );
+        if (hasFieldErrors) {
+          setFieldErrors(mapped);
+        } else {
+          toast.error(
+            data?.detail ??
+              data?.message ??
+              'Something went wrong. Please try again.',
+          );
+        }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -180,18 +155,28 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Tenant
           </DialogTitle>
+          <DialogDescription>
+            Add a new tenant to the system.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <form
+          onSubmit={handleSubmit}
+          className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -213,6 +198,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               {/* Container — NOT a button, just positions the trigger + badge */}
               <div className='group relative h-40 w-40 shrink-0'>
                 <Button
+                  type='button'
                   variant='ghost'
                   onClick={() => fileInputRef.current?.click()}
                   className='h-40 w-40 rounded-full p-0 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-offset-2'
@@ -241,6 +227,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
                 {avatarPreview && (
                   <Button
+                    type='button'
                     variant='destructive'
                     size='icon'
                     onClick={(e) => {
@@ -305,6 +292,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                   fieldErrors.propertyId &&
                     'border-danger focus-visible:ring-danger/50',
                 )}
+                required
               />
 
               {propertyOpen && (
@@ -348,8 +336,8 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           {/* First Name + Last Name */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.firstName}>
-              <FieldLabel className='text-sm font-semibold'>
-                First Name
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                First Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
@@ -361,13 +349,14 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.firstName }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.lastName}>
-              <FieldLabel className='text-sm font-semibold'>
-                Last Name
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Last Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
@@ -379,6 +368,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.lastName }]} />
             </Field>
@@ -387,7 +377,9 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           {/* Email + Phone */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.email}>
-              <FieldLabel className='text-sm font-semibold'>Email</FieldLabel>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Email<span className='text-danger'>*</span>
+              </FieldLabel>
               <Input
                 type='email'
                 value={form.email}
@@ -398,12 +390,15 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.email }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.phone}>
-              <FieldLabel className='text-sm font-semibold'>Phone</FieldLabel>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Phone<span className='text-danger'>*</span>
+              </FieldLabel>
               <Input
                 type='tel'
                 value={form.phone}
@@ -414,6 +409,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
               <FieldError errors={[{ message: fieldErrors.phone }]} />
             </Field>
@@ -467,20 +463,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <Input
                 type='date'
                 value={form.tenancyStart}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('tenancyStart', value);
-                  setFieldErrors((prev) => {
-                    if (form.tenancyEnd && value && form.tenancyEnd < value) {
-                      return {
-                        ...prev,
-                        tenancyEnd: 'End date cannot be before start date',
-                      };
-                    }
-                    const { tenancyEnd, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('tenancyStart', e.target.value)}
                 aria-invalid={!!fieldErrors.tenancyStart}
                 className={
                   fieldErrors.tenancyStart
@@ -499,24 +482,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 type='date'
                 value={form.tenancyEnd}
                 min={form.tenancyStart || undefined}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('tenancyEnd', value);
-                  setFieldErrors((prev) => {
-                    if (
-                      form.tenancyStart &&
-                      value &&
-                      value < form.tenancyStart
-                    ) {
-                      return {
-                        ...prev,
-                        tenancyEnd: 'End date cannot be before start date',
-                      };
-                    }
-                    const { tenancyEnd, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('tenancyEnd', e.target.value)}
                 aria-invalid={!!fieldErrors.tenancyEnd}
                 className={
                   fieldErrors.tenancyEnd
@@ -585,18 +551,23 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.notes }]} />
           </Field>
-        </div>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loading className='text-white!' />}
-            Add Tenant
-          </Button>
-        </div>
+          {/* Footer */}
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Add Tenant
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

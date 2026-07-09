@@ -19,7 +19,9 @@ const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
   alt,
   sizes,
   priority = false,
+  fill = true,
   className = 'object-cover',
+  unoptimized = false,
 }) => {
   const [loaded, setLoaded] = useState(false);
 
@@ -33,9 +35,10 @@ const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({
       <Image
         src={src}
         alt={alt}
-        fill
+        fill={fill}
         sizes={sizes}
         priority={priority}
+        unoptimized={unoptimized}
         className={`transition-opacity duration-300 ${className} ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setLoaded(true)}
       />
@@ -406,14 +409,17 @@ const Lightbox: React.FC<LightboxProps> = ({
         className='relative h-[85vh] w-[90vw]'
         onClick={(e) => e.stopPropagation()}
       >
-        <ImageWithLoader
-          key={docs[index].id ?? index}
-          src={docs[index].image}
-          alt={docs[index].description ?? `Image ${index + 1}`}
-          sizes='90vw'
-          priority
-          className='object-contain'
-        />
+        <div className='bg-muted/5 relative h-full w-full overflow-hidden rounded-2xl'>
+          <ImageWithLoader
+            key={docs[index].id ?? index}
+            src={docs[index].image}
+            alt={docs[index].description ?? `Image ${index + 1}`}
+            sizes='90vw'
+            className='object-contain'
+            unoptimized
+            priority
+          />
+        </div>
         {docs[index].description && (
           <p className='absolute right-0 bottom-0 left-0 mt-2 text-center text-sm text-white/60'>
             {docs[index].description}

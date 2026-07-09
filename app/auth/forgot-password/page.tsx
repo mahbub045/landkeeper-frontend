@@ -137,14 +137,8 @@ export default function ForgotPasswordPage() {
                 disabled={forgotPasswordLoading}
                 className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
               >
-                {forgotPasswordLoading ? (
-                  <>
-                    <Loading className='text-white!' />
-                    Sending reset link...
-                  </>
-                ) : (
-                  'Send reset link'
-                )}
+                {forgotPasswordLoading && <Loading className='text-white!' />}
+                Send reset link
               </Button>
             </form>
           )}

@@ -13,7 +13,7 @@ const MainBodyShell: React.FC<{ children: React.ReactNode }> = ({
     <SidebarProvider>
       <TooltipProvider>
         <AppSidebar />
-        <SidebarInset className='flex min-h-svh flex-col'>
+        <SidebarInset className='flex min-h-svh min-w-0 flex-col'>
           <AppNavbar />
           <div className='flex-1 p-4 md:p-6'>{children}</div>
           <AppFooter />

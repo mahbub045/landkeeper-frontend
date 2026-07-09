@@ -24,6 +24,9 @@ export const TAG_TYPES = [
   'Property',
   'Mortgage',
   'Tenant',
+  'Compliance',
+  'Document',
+  'TeamAccess',
 ] as const;
 
 // ─── Mutex ────────────────────────────────────────────────────────────────────

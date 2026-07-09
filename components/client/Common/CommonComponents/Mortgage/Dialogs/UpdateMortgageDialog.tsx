@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -18,6 +19,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  EMPTY_MORTGAGE_FORM,
+  PRODUCT_TYPE_OPTIONS,
+} from '@/data/client/common/mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
@@ -27,23 +32,10 @@ import {
   UpdateMortgageDialogProps,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { useState } from 'react';
-
-const PRODUCT_TYPE_MAP: Record<string, string> = {
-  'Fixed Rate': 'FIXED_RATE',
-  'Variable Rate': 'VARIABLE_RATE',
-  Tracker: 'TRACKER',
-  'Interest Only': 'INTEREST_ONLY',
-};
-
-const PRODUCT_TYPE_REVERSE_MAP: Record<string, string> = {
-  FIXED_RATE: 'Fixed Rate',
-  VARIABLE_RATE: 'Variable Rate',
-  TRACKER: 'Tracker',
-  INTEREST_ONLY: 'Interest Only',
-};
+import { toast } from 'sonner';
 
 const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   open,
@@ -66,32 +58,13 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   const [updateMortgage] = useUpdateMortgageMutation();
 
   // ── Build initial form from the mortgage being edited ─────────────────────
-  // No useEffect needed here: the parent should remount this dialog per
-  // mortgage via `key={mortgage.alias}`, so a lazy initializer is enough.
   function buildFormFromMortgage(m: Mortgage): MortgageForm {
-    if (!m) {
-      return {
-        propertyId: '',
-        lenderName: '',
-        productType: 'Fixed Rate',
-        interestRate: '',
-        loanAmount: '',
-        outstandingBalance: '',
-        monthlyPayment: '',
-        termYears: '',
-        startDate: '',
-        endDate: '',
-        brokerNotes: '',
-      };
-    }
+    if (!m) return EMPTY_MORTGAGE_FORM;
 
     return {
       propertyId: m.property?.id ? String(m.property.id) : '',
       lenderName: m.lender_name ?? '',
-      productType:
-        PRODUCT_TYPE_REVERSE_MAP[m.product_type] ??
-        m.product_type ??
-        'Fixed Rate',
+      productType: m.product_type ?? '',
       interestRate: m.interest_rate ? String(m.interest_rate) : '',
       loanAmount: m.loan_amount ? String(m.loan_amount) : '',
       outstandingBalance: m.outstanding_balance
@@ -122,12 +95,16 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    if (form.startDate && form.endDate && form.endDate < form.startDate) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        endDate: 'End date cannot be before start date',
-      }));
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const guardErrors: Record<string, string> = {};
+    if (!form.productType)
+      guardErrors.productType = 'Please select a product type.';
+
+    if (Object.keys(guardErrors).length > 0) {
+      setFieldErrors(guardErrors);
+      setLoading(false);
       return;
     }
 
@@ -139,7 +116,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       const payload = {
         property: form.propertyId,
         lender_name: form.lenderName,
-        product_type: PRODUCT_TYPE_MAP[form.productType] ?? form.productType,
+        product_type: form.productType,
         interest_rate: form.interestRate,
         loan_amount: form.loanAmount,
         outstanding_balance: form.outstandingBalance,
@@ -154,6 +131,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
         mortgage_alias: mortgage.alias,
         payload,
       }).unwrap();
+      toast.success('Mortgage updated successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -167,44 +145,28 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       )?.data;
 
       if (data && typeof data === 'object') {
-        // Field-level errors — map backend keys back to form keys
-        const fieldMap: Record<string, keyof typeof fieldErrors> = {
-          property: 'propertyId',
-          lender_name: 'lenderName',
-          product_type: 'productType',
-          interest_rate: 'interestRate',
-          loan_amount: 'loanAmount',
-          outstanding_balance: 'outstandingBalance',
-          monthly_payment: 'monthlyPayment',
-          term: 'termYears',
-          start_date: 'startDate',
-          end_date: 'endDate',
-          broker_notes: 'brokerNotes',
-        };
-
         const mapped: Record<string, string> = {};
         let hasFieldErrors = false;
 
-        for (const [backendKey, formKey] of Object.entries(fieldMap)) {
-          if (data[backendKey]) {
-            mapped[formKey] = Array.isArray(data[backendKey])
-              ? data[backendKey][0]
-              : data[backendKey];
-            hasFieldErrors = true;
-          }
+        for (const [backendKey, value] of Object.entries(data)) {
+          if (backendKey === 'detail' || backendKey === 'message') continue;
+          const formKey =
+            backendKey === 'term' ? 'termYears' : snakeToCamel(backendKey);
+          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
+          hasFieldErrors = true;
         }
 
         if (hasFieldErrors) {
           setFieldErrors(mapped);
         } else {
-          setBannerError(
+          toast.error(
             data?.detail ??
               data?.message ??
               'Something went wrong. Please try again.',
           );
         }
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -223,10 +185,16 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Update Mortgage
           </DialogTitle>
+          <DialogDescription>
+            Update the details of this mortgage.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <form
+          onSubmit={handleSubmit}
+          className='flex-1 space-y-5 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger mb-1 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -261,6 +229,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
+                required
               />
 
               {propertyOpen && (
@@ -317,6 +286,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
+              required
             />
             <FieldError errors={[{ message: fieldErrors.lenderName }]} />
           </Field>
@@ -324,8 +294,8 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           {/* Product Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.productType}>
-              <FieldLabel className='text-sm font-semibold'>
-                Product Type
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Product Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
                 value={form.productType}
@@ -337,10 +307,11 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='Fixed Rate'>Fixed Rate</SelectItem>
-                  <SelectItem value='Variable Rate'>Variable Rate</SelectItem>
-                  <SelectItem value='Tracker'>Tracker</SelectItem>
-                  <SelectItem value='Interest Only'>Interest Only</SelectItem>
+                  {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.productType }]} />
@@ -453,6 +424,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
           {/* Start Date + End Date */}
           <div className='grid grid-cols-2 gap-4'>
+            {/* Start Date */}
             <Field data-invalid={!!fieldErrors.startDate}>
               <FieldLabel className='text-sm font-semibold'>
                 Start Date
@@ -460,20 +432,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.startDate}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('startDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.endDate && value && form.endDate < value) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('startDate', e.target.value)}
                 aria-invalid={!!fieldErrors.startDate}
                 className={
                   fieldErrors.startDate
@@ -484,6 +443,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <FieldError errors={[{ message: fieldErrors.startDate }]} />
             </Field>
 
+            {/* End Date */}
             <Field data-invalid={!!fieldErrors.endDate}>
               <FieldLabel className='text-sm font-semibold'>
                 End Date
@@ -492,20 +452,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 type='date'
                 value={form.endDate}
                 min={form.startDate || undefined}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  set('endDate', value);
-                  setFieldErrors((prev) => {
-                    if (form.startDate && value && value < form.startDate) {
-                      return {
-                        ...prev,
-                        endDate: 'End date cannot be before start date',
-                      };
-                    }
-                    const { endDate, ...rest } = prev;
-                    return rest;
-                  });
-                }}
+                onChange={(e) => set('endDate', e.target.value)}
                 aria-invalid={!!fieldErrors.endDate}
                 className={
                   fieldErrors.endDate
@@ -536,18 +483,22 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
           </Field>
-        </div>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loading className='text-white!' />}
-            Update
-          </Button>
-        </div>
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Update
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

@@ -1,4 +1,4 @@
-import { FilterTab, Tab } from '@/types/client/Common/Properties/PropertyTypes';
+import { DetailsForm, FilterTab, Tab } from '@/types/client/Common/Properties/PropertyTypes';
 
 export const TABS: Tab[] = ['Details', 'Documents'];
 export const TAB_PRIORITY: Tab[] = ['Details', 'Documents'];
@@ -10,7 +10,7 @@ export const FIELD_TAB_MAP: Record<string, Tab> = {
   purchasePrice: 'Details',
   currentValue: 'Details',
   purchaseDate: 'Details',
-  rent_per_month: 'Details',
+  rentPerMonth: 'Details',
   bedrooms: 'Details',
   bathrooms: 'Details',
   notes: 'Details',
@@ -41,4 +41,37 @@ export const statusMap: Partial<Record<FilterTab, string>> = {
   Occupied: 'OCCUPIED',
   Vacant: 'VACANT',
   'Under Maintenance': 'UNDER_MAINTENANCE',
+};
+
+export const PROPERTY_TYPE_OPTIONS = [
+  { value: 'RESIDENTIAL', label: 'Residential' },
+  { value: 'HMO', label: 'HMO' },
+  { value: 'COMMERCIAL', label: 'Commercial' },
+  { value: 'MIXED_USE', label: 'Mixed Use' },
+  { value: 'HOLIDAY_LET', label: 'Holiday Let' },
+];
+
+export const PROPERTY_STATUS_OPTIONS = [
+  { value: 'OCCUPIED', label: 'Occupied' },
+  { value: 'VACANT', label: 'Vacant' },
+  { value: 'UNDER_MAINTENANCE', label: 'Under Maintenance' },
+];
+
+export const EMPTY_DETAILS_FORM: DetailsForm = {
+  name: '',
+  type: 'RESIDENTIAL',
+  status: 'OCCUPIED',
+  address: '',
+  purchasePrice: '',
+  currentValue: '',
+  rentPerMonth: '',
+  purchaseDate: '',
+  bedrooms: '',
+  bathrooms: '',
+  notes: '',
+};
+
+export const OVERRIDE_KEY_MAP: Record<string, string> = {
+  property_name: 'name',
+  property_type: 'type',
 };

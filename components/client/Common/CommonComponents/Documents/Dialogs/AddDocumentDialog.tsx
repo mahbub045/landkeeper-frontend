@@ -1,10 +1,12 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,252 +19,345 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+import { cn } from '@/lib/utils';
+import { useAddDocumentsMutation } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
+import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import {
-  documentCategories,
-  properties,
-} from '@/data/client/common/documents/DocumentsData';
-import {
-  UploadDocumentForm,
-  UploadDocumentModalProps,
+  DocumentCategory,
+  DocumentForm,
+  initialForm,
+  UploadDocumentDialogProps,
 } from '@/types/client/Common/Documents/DocumentTypes';
+import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { snakeToCamel } from '@/utils/formatters';
 
-import { CloudUpload, Loader2, X } from 'lucide-react';
+import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-// ── Validation ───────────────────────────────────────────────────────────────
+// ── Dialog ─────────────────────────────────────────────────────────────────
 
-function validate(
-  form: UploadDocumentForm,
-  files: File[],
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-
-  if (!form.propertyId) errors.propertyId = 'Please select a property.';
-  if (!form.category) errors.category = 'Please select a document category.';
-  if (!form.name.trim()) errors.name = 'Document name is required.';
-  if (files.length === 0) errors.documents = 'Please upload at least one file.';
-
-  return errors;
-}
-
-// ── Modal ─────────────────────────────────────────────────────────────────────
-
-const AddDocumentDialog: React.FC<UploadDocumentModalProps> = ({
+const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
   open,
   onClose,
   onSuccess,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [propertyOpen, setPropertyOpen] = useState(false);
+  const [propertySearch, setPropertySearch] = useState('');
 
-  const [form, setForm] = useState<UploadDocumentForm>({
-    propertyId: '',
-    category: 'Mortgage Documents',
-    name: '',
-    tags: '',
-  });
+  const [form, setForm] = useState<DocumentForm>(initialForm);
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function set(key: keyof UploadDocumentForm, value: string) {
+  function set<K extends keyof DocumentForm>(key: K, value: DocumentForm[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => ({ ...prev, [key]: '' }));
   }
 
-  // ── Reset ───────────────────────────────────────────────────────────────────
+  // ── Reset ─────────────────────────────────────────────────────────────────
+
   function handleClose() {
-    setForm({
-      propertyId: '',
-      category: 'Mortgage Documents',
-      name: '',
-      tags: '',
-    });
+    setForm(initialForm);
     setFieldErrors({});
-    setLoading(false);
-    setFiles([]);
+    setFile(null);
+    setPropertySearch('');
     onClose();
   }
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
-  async function handleSubmit() {
-    const errors = validate(form, files);
-    setFieldErrors(errors);
+  // ── RTK Query ─────────────────────────────────────────────────────────────
 
-    if (Object.keys(errors).length > 0) return;
+  const { data, isLoading: propertiesLoading } = useFilterPropertiesQuery(
+    propertySearch ? { search: propertySearch } : {},
+    { skip: !propertyOpen },
+  );
 
-    setLoading(true);
+  const [addDocument, { isLoading: loading }] = useAddDocumentsMutation();
 
-    // will add the api call later
+  // ── File helpers ──────────────────────────────────────────────────────────
+
+  function addFile(incoming: FileList | null) {
+    if (!incoming || incoming.length === 0) return;
+    setFile(incoming[0]);
+    setFieldErrors((prev) => ({ ...prev, file: '' }));
   }
 
-  // ── File helpers ────────────────────────────────────────────────────────────
-  function addFiles(incoming: FileList | null) {
-    if (!incoming) return;
-    setFiles((prev) => {
-      const existing = new Set(prev.map((f) => f.name + f.size));
-      return [
-        ...prev,
-        ...Array.from(incoming).filter((f) => !existing.has(f.name + f.size)),
-      ];
-    });
-    setFieldErrors((prev) => ({ ...prev, documents: '' }));
-  }
-
-  function removeFile(index: number) {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  function removeFile() {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    addFiles(e.dataTransfer.files);
+    addFile(e.dataTransfer.files);
   }, []);
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+  // ── Submit ────────────────────────────────────────────────────────────────
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    // manual guard for the non-native property combobox
+    if (!form.propertyId) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        propertyId: 'Please select a property.',
+      }));
+      return;
+    }
+
+    if (!file) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        file: 'Please upload a document.',
+      }));
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append('property', form.propertyId);
+    payload.append('document_category', form.category);
+    payload.append('document_name', form.name.trim());
+    payload.append('tags', form.tags.trim());
+    // NOTE: confirm this field name against your backend serializer
+    payload.append('uploaded_files', file);
+
+    try {
+      await addDocument(payload).unwrap();
+      toast.success('Document uploaded successfully.');
+      onSuccess?.();
+      handleClose();
+    } catch (err: unknown) {
+      try {
+        const errorData = (err as { data?: Record<string, string[]> })?.data;
+        if (errorData) {
+          const mapped: Record<string, string> = {};
+          Object.entries(errorData).forEach(([key, messages]) => {
+            mapped[snakeToCamel(key)] = Array.isArray(messages)
+              ? messages[0]
+              : String(messages);
+          });
+          setFieldErrors((prev) => ({ ...prev, ...mapped }));
+        }
+      } catch {
+        toast.error('Failed to upload document. Please try again.');
+      }
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 py-6'>
           <DialogTitle className='text-foreground text-xl font-bold'>
             Upload Document
           </DialogTitle>
+          <DialogDescription>
+            Add a new document for your proprty.
+          </DialogDescription>
         </DialogHeader>
 
-        {/* Scrollable body */}
-        <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-          <Field data-invalid={!!fieldErrors.propertyId}>
-            <FieldLabel className='text-sm font-semibold'>Property</FieldLabel>
-            <Select
-              value={form.propertyId}
-              onValueChange={(v) => set('propertyId', v)}
-            >
-              <SelectTrigger
-                className={fieldErrors.propertyId ? 'border-danger' : ''}
+        <form onSubmit={handleSubmit} className='contents'>
+          {/* Scrollable body */}
+          <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+            <Field data-invalid={!!fieldErrors.propertyId}>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Property<span className='text-danger'>*</span>
+              </FieldLabel>
+              <div className='relative'>
+                <Input
+                  type='text'
+                  placeholder='Search by property name...'
+                  value={
+                    form.propertyId
+                      ? (data?.find(
+                          (p: Property) => String(p.id) === form.propertyId,
+                        )?.property_name ?? propertySearch)
+                      : propertySearch
+                  }
+                  onChange={(e) => {
+                    setPropertySearch(e.target.value);
+                    set('propertyId', '');
+                    setPropertyOpen(true);
+                  }}
+                  onClick={() => setPropertyOpen(true)}
+                  onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
+                  aria-invalid={!!fieldErrors.propertyId}
+                  className={cn(
+                    'h-10',
+                    fieldErrors.propertyId &&
+                      'border-danger focus-visible:ring-danger/50',
+                  )}
+                  required
+                />
+
+                {propertyOpen && (
+                  <div className='bg-background border-border absolute top-full left-0 z-50 mt-1 w-full rounded-md border shadow-md'>
+                    {propertiesLoading ? (
+                      <div className='flex items-center justify-center gap-2 px-4 py-3 text-sm'>
+                        <Loading />
+                      </div>
+                    ) : !data?.length ? (
+                      <p className='text-muted-foreground px-4 py-3 text-sm'>
+                        No properties found.
+                      </p>
+                    ) : (
+                      <ul className='max-h-60 overflow-y-auto py-1'>
+                        {data.map((p: Property) => (
+                          <li
+                            key={p.alias}
+                            onMouseDown={() => {
+                              set('propertyId', String(p.id));
+                              setPropertySearch('');
+                              setPropertyOpen(false);
+                            }}
+                            className={cn(
+                              'hover:bg-muted flex cursor-pointer items-center gap-3 px-4 py-2.5',
+                              form.propertyId === String(p.id) && 'bg-muted',
+                            )}
+                          >
+                            <span className='text-foreground text-sm'>
+                              {p.property_name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+              <FieldError errors={[{ message: fieldErrors.propertyId }]} />
+            </Field>
+
+            <Field data-invalid={!!fieldErrors.documentCategory}>
+              <FieldLabel className='text-sm font-semibold'>
+                Document Category
+              </FieldLabel>
+              <Select
+                value={form.category}
+                onValueChange={(v) => set('category', v as DocumentCategory)}
               >
-                <SelectValue placeholder='Select property...' />
-              </SelectTrigger>
-              <SelectContent>
-                {properties?.map((property) => (
-                  <SelectItem key={property.id} value={property.id}>
-                    {property.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FieldError errors={[{ message: fieldErrors.propertyId }]} />
-          </Field>
+                <SelectTrigger
+                  className={
+                    fieldErrors.documentCategory ? 'border-danger' : ''
+                  }
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {documentCategoryOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError
+                errors={[{ message: fieldErrors.documentCategory }]}
+              />
+            </Field>
 
-          <Field data-invalid={!!fieldErrors.category}>
-            <FieldLabel className='text-sm font-semibold'>
-              Document Category
-            </FieldLabel>
-            <Select
-              value={form.category}
-              onValueChange={(v) => set('category', v)}
-            >
-              <SelectTrigger
-                className={fieldErrors.category ? 'border-danger' : ''}
+            <Field data-invalid={!!fieldErrors.documentName}>
+              <FieldLabel className='text-sm font-semibold'>
+                Document Name<span className='text-danger'>*</span>
+              </FieldLabel>
+              <Input
+                type='text'
+                placeholder='e.g. Tenancy Agreement - Oak Street'
+                value={form.name}
+                onChange={(e) => set('name', e.target.value)}
+                aria-invalid={!!fieldErrors.documentName}
+                className={
+                  fieldErrors.documentName
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+                required
+              />
+              <FieldError errors={[{ message: fieldErrors.documentName }]} />
+            </Field>
+
+            <Field data-invalid={!!fieldErrors.tags}>
+              <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
+              <Input
+                type='text'
+                placeholder='Comma separated tags...'
+                value={form.tags}
+                onChange={(e) => set('tags', e.target.value)}
+                aria-invalid={!!fieldErrors.tags}
+                className={
+                  fieldErrors.tags
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: fieldErrors.tags }]} />
+            </Field>
+
+            {/* File upload */}
+            <div className='space-y-3'>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Document<span className='text-danger'>*</span>
+              </FieldLabel>
+              <div
+                onDrop={handleDrop}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                  fieldErrors.file
+                    ? 'border-danger bg-red-50 dark:bg-red-950/20'
+                    : dragging
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50 hover:bg-muted/40',
+                )}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {documentCategories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FieldError errors={[{ message: fieldErrors.category }]} />
-          </Field>
+                <CloudUpload
+                  className={cn(
+                    'mb-3 h-10 w-10',
+                    fieldErrors.file ? 'text-danger' : 'text-primary',
+                  )}
+                />
+                <p className='text-foreground text-sm font-semibold'>
+                  Drag &amp; Drop or Click to Upload
+                </p>
+                <p className='text-muted-foreground mt-1 text-xs'>
+                  PDF, DOC, XLS, JPG, PNG up to 50MB
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type='file'
+                  accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
+                  className='hidden'
+                  onChange={(e) => addFile(e.target.files)}
+                />
+              </div>
+              {!file && (
+                <div className='bg-warning border-2-warning rounded p-2'>
+                  <p className='text-xs text-white'>
+                    At least one document/image is required
+                  </p>
+                </div>
+              )}
+              <FieldError errors={[{ message: fieldErrors.file }]} />
 
-          <Field data-invalid={!!fieldErrors.name}>
-            <FieldLabel className='text-sm font-semibold'>
-              Document Name
-            </FieldLabel>
-            <Input
-              type='text'
-              placeholder='e.g. Tenancy Agreement - Oak Street'
-              value={form.name}
-              onChange={(e) => set('name', e.target.value)}
-              aria-invalid={!!fieldErrors.name}
-              className={
-                fieldErrors.name
-                  ? 'border-danger focus-visible:ring-danger/50'
-                  : ''
-              }
-            />
-            <FieldError errors={[{ message: fieldErrors.name }]} />
-          </Field>
-
-          <Field data-invalid={!!fieldErrors.tags}>
-            <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
-            <Input
-              type='text'
-              placeholder='Comma separated tags...'
-              value={form.tags}
-              onChange={(e) => set('tags', e.target.value)}
-              aria-invalid={!!fieldErrors.tags}
-              className={
-                fieldErrors.tags
-                  ? 'border-danger focus-visible:ring-danger/50'
-                  : ''
-              }
-            />
-            <FieldError errors={[{ message: fieldErrors.tags }]} />
-          </Field>
-
-          {/* File upload */}
-          <div className='space-y-3'>
-            <div
-              onDrop={handleDrop}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragging(true);
-              }}
-              onDragLeave={() => setDragging(false)}
-              onClick={() => fileInputRef.current?.click()}
-              className={[
-                'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
-                fieldErrors.documents
-                  ? 'border-danger bg-red-50 dark:bg-red-950/20'
-                  : dragging
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50 hover:bg-muted/40',
-              ].join(' ')}
-            >
-              <CloudUpload
-                className={[
-                  'mb-3 h-10 w-10',
-                  fieldErrors.documents ? 'text-danger' : 'text-primary',
-                ].join(' ')}
-              />
-              <p className='text-foreground text-sm font-semibold'>
-                Drag &amp; Drop or Click to Upload
-              </p>
-              <p className='text-muted-foreground mt-1 text-xs'>
-                PDF, DOC, XLS, JPG, PNG up to 50MB
-              </p>
-              <input
-                ref={fileInputRef}
-                type='file'
-                multiple
-                accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
-                className='hidden'
-                onChange={(e) => addFiles(e.target.files)}
-              />
-            </div>
-            <FieldError errors={[{ message: fieldErrors.documents }]} />
-
-            {files.length > 0 && (
-              <ul className='space-y-2'>
-                {files.map((file, i) => (
-                  <li
-                    key={i}
-                    className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
-                  >
+              {file && (
+                <ul className='space-y-2'>
+                  <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
                     <Badge
                       variant='secondary'
                       className='max-w-[80%] truncate font-normal'
@@ -273,29 +368,34 @@ const AddDocumentDialog: React.FC<UploadDocumentModalProps> = ({
                       type='button'
                       variant='ghost'
                       size='icon'
-                      onClick={() => removeFile(i)}
+                      onClick={removeFile}
                       className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
                       aria-label='Remove file'
                     >
                       <X className='h-4 w-4' />
                     </Button>
                   </li>
-                ))}
-              </ul>
-            )}
+                </ul>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Upload
-          </Button>
-        </div>
+          {/* Footer */}
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type='submit' disabled={loading}>
+              {loading && <Loading className='text-white!' />}
+              Upload
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

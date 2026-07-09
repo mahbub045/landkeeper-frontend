@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'api.landkeeper.co.uk',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.landkeeper.co.uk',
+      },
     ],
   },
 };

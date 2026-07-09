@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -12,8 +13,7 @@ import { useDeleteMortgageMutation } from '@/store/api/endpoints/client/Common/M
 import { DeleteMortgageDialogProps } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-
-
+import { toast } from 'sonner';
 
 const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
   open,
@@ -30,10 +30,11 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
     setError(null);
     try {
       await deleteMortgage({ mortgage_alias: mortgageAlias }).unwrap();
+      toast.success('Mortgage deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete mortgage. Please try again.');
+      toast.error('Failed to delete mortgage. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -47,6 +48,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
             <AlertTriangle className='text-destructive size-5' />
             Delete Mortgage
           </DialogTitle>
+          <DialogDescription>This action is irreversible.</DialogDescription>
         </DialogHeader>
 
         <div className='px-6 py-5'>

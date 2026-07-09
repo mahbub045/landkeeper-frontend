@@ -123,7 +123,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
               <Pencil className='size-4' />
               Edit
             </Button>
-            <Button variant='outline' onClick={() => setDeleteOpen(true)}>
+            <Button variant='destructive' onClick={() => setDeleteOpen(true)}>
               <Trash2 className='size-4' />
               Delete
             </Button>

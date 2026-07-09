@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TitleOptions } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import {
   useEditProfileInfoMutation,
   useGetProfileInfoQuery,
@@ -22,7 +22,7 @@ import { Camera, Pencil, RefreshCw } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Loading from '../../CustomLoader/Loading';
-import ChangePasswordDialog from './Dialogs/ChangePasswordDialog';
+import UpdatePasswordDialog from './Dialogs/UpdatePasswordDialog';
 
 const ProfileSettings: React.FC = () => {
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
@@ -32,7 +32,8 @@ const ProfileSettings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [isUpdatePasswordDialogOpen, setIsUpdatePasswordDialogOpen] =
+    useState(false);
 
   const initialFormData = useMemo(
     () => ({
@@ -171,17 +172,20 @@ const ProfileSettings: React.FC = () => {
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='grid grid-cols-2 items-center gap-4'>
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='title'>Title</Label>
+                <Label htmlFor='title'>
+                  Title<span className='text-danger'>*</span>
+                </Label>
                 <Select
                   defaultValue={profileData?.title ?? ''}
                   onValueChange={(val) => handleChange('title', val)}
                   disabled={isEditing}
+                  required
                 >
                   <SelectTrigger id='title'>
                     <SelectValue placeholder='Select title' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TitleOptions.map((option) => (
+                    {TITLE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -191,7 +195,9 @@ const ProfileSettings: React.FC = () => {
               </div>
 
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='first_name'>First Name</Label>
+                <Label htmlFor='first_name'>
+                  First Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
                   type='text'
                   id='first_name'
@@ -199,6 +205,7 @@ const ProfileSettings: React.FC = () => {
                   onChange={(e) => handleChange('first_name', e.target.value)}
                   placeholder='First Name'
                   disabled={isEditing}
+                  required
                 />
               </div>
 
@@ -215,7 +222,9 @@ const ProfileSettings: React.FC = () => {
               </div>
 
               <div className='flex flex-col items-start space-y-1.5'>
-                <Label htmlFor='last_name'>Last Name</Label>
+                <Label htmlFor='last_name'>
+                  Last Name<span className='text-danger'>*</span>
+                </Label>
                 <Input
                   type='text'
                   id='last_name'
@@ -223,6 +232,7 @@ const ProfileSettings: React.FC = () => {
                   onChange={(e) => handleChange('last_name', e.target.value)}
                   placeholder='Last Name'
                   disabled={isEditing}
+                  required
                 />
               </div>
             </div>
@@ -241,32 +251,39 @@ const ProfileSettings: React.FC = () => {
 
             <div className='flex gap-3'>
               <Button type='submit' disabled={isEditing}>
-                {isEditing ? (
-                  'Saving...'
-                ) : (
-                  <>
-                    <Pencil />
-                    Save Changes
-                  </>
-                )}
+                {isEditing ? <Loading className='text-white!' /> : <Pencil />}
+                Save Changes
               </Button>
-              <Button
-                type='button'
-                variant='destructive'
-                onClick={() => setIsPasswordDialogOpen(true)}
-              >
-                <RefreshCw />
-                Change Password
-              </Button>
+              {profileData?.is_password_available ? (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={() => setIsUpdatePasswordDialogOpen(true)}
+                >
+                  <RefreshCw />
+                  Change Password
+                </Button>
+              ) : (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={() => setIsUpdatePasswordDialogOpen(true)}
+                >
+                  <RefreshCw />
+                  Set Password
+                </Button>
+              )}
             </div>
           </form>
         </CardContent>
+        <>
+          <UpdatePasswordDialog
+            open={isUpdatePasswordDialogOpen}
+            onClose={() => setIsUpdatePasswordDialogOpen(false)}
+            profileData={profileData}
+          />
+        </>
       </Card>
-
-      <ChangePasswordDialog
-        open={isPasswordDialogOpen}
-        onClose={() => setIsPasswordDialogOpen(false)}
-      />
     </>
   );
 };

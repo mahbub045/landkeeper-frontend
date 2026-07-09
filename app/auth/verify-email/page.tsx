@@ -181,14 +181,8 @@ function VerifyEmailContent() {
             disabled={isVerifying || code.join('').length !== 6}
             className='bg-primary hover:bg-primary/80 mt-6 h-11 w-full font-medium text-white'
           >
-            {isVerifying ? (
-              <>
-                <Loading className='text-white!' />
-                Verifying...
-              </>
-            ) : (
-              'Verify Email'
-            )}
+            {isVerifying && <Loading className='text-white!' />}
+            Verify Email
           </Button>
 
           {/* Resend */}

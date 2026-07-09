@@ -1,122 +1,34 @@
-import { DocCategory, FilterTab, PropertyDocument } from '@/types/client/Common/Documents/DocumentTypes';
+import {
+  DocCategory,
+  DocumentFilterOption,
+} from '@/types/client/Common/Documents/DocumentTypes';
 
+// Single source of truth. Both AddDocumentDialog's category <Select>
+// and the list page's filter tabs derive from this.
+export const documentCategoryOptions = [
+  { value: 'MORTGAGE_DOCUMENTS', label: 'Mortgage Documents' },
+  { value: 'TENANCY_AGREEMENT', label: 'Tenancy Agreement' },
+  { value: 'CERTIFICATE', label: 'Certificate' },
+  { value: 'INSURANCE', label: 'Insurance' },
+  { value: 'INVOICE', label: 'Invoice' },
+  { value: 'TAX_DOCUMENT', label: 'Tax Document' },
+  { value: 'PROPERTY_PHOTO', label: 'Property Photo' },
+  { value: 'LEGAL_DOCUMENT', label: 'Legal Document' },
+] as const;
 
-export const filterTabs: FilterTab[] = [
-  'All',
-  'Mortgage',
-  'Tenancy',
-  'Certificates',
-  'Insurance',
-  'Legal',
-];
+// Derived lookup: DocCategory -> label. Used in DocumentList for the
+// secondary line (e.g. "Certificate").
+export const categoryLabelMap = documentCategoryOptions.reduce(
+  (acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  },
+  {} as Record<DocCategory, string>,
+);
 
-export const tabCategoryMap: Record<FilterTab, DocCategory[]> = {
-  All: [],
-  Mortgage: ['mortgage'],
-  Tenancy: ['tenancy'],
-  Certificates: ['certificate'],
-  Insurance: ['insurance'],
-  Legal: ['legal'],
-};
-
-export const documents: PropertyDocument[] = [
-  {
-    id: 1,
-    name: 'Tenancy Agreement - Sarah Johnson',
-    property: '14 Oak Street',
-    category: 'tenancy',
-    sizeMB: 1.2,
-  },
-  {
-    id: 2,
-    name: 'Mortgage Offer - Halifax',
-    property: '14 Oak Street',
-    category: 'mortgage',
-    sizeMB: 2.4,
-  },
-  {
-    id: 3,
-    name: 'HMO Licence Certificate',
-    property: '42 Maple Avenue',
-    category: 'certificate',
-    sizeMB: 0.8,
-  },
-  {
-    id: 4,
-    name: 'Property Inspection Photos',
-    property: '42 Maple Avenue',
-    category: 'photo',
-    sizeMB: 15.6,
-  },
-  {
-    id: 5,
-    name: 'Building Insurance Policy',
-    property: '8 Pine Road',
-    category: 'insurance',
-    sizeMB: 3.1,
-  },
-  {
-    id: 6,
-    name: 'Commercial Lease Agreement',
-    property: '23 Elm Drive',
-    category: 'legal',
-    sizeMB: 4.5,
-  },
-  {
-    id: 7,
-    name: 'Gas Safety Certificate 2024',
-    property: '14 Oak Street',
-    category: 'certificate',
-    sizeMB: 0.5,
-  },
-  {
-    id: 8,
-    name: 'Repair Invoice - Boiler',
-    property: '8 Pine Road',
-    category: 'invoice',
-    sizeMB: 0.3,
-  },
-  {
-    id: 9,
-    name: 'EPC Certificate',
-    property: '7 Cedar Lane',
-    category: 'certificate',
-    sizeMB: 0.6,
-  },
-  {
-    id: 10,
-    name: 'Landlord Insurance Policy',
-    property: '42 Maple Avenue',
-    category: 'insurance',
-    sizeMB: 2.8,
-  },
-  {
-    id: 11,
-    name: 'Tenancy Agreement - James Patel',
-    property: '8 Pine Road',
-    category: 'tenancy',
-    sizeMB: 1.4,
-  },
-  {
-    id: 12,
-    name: 'Mortgage Statement Q1 2024',
-    property: '23 Elm Drive',
-    category: 'mortgage',
-    sizeMB: 0.9,
-  },
-];
-
-export const properties = [
-  { id: 'oak-street', name: '14 Oak Street' },
-  { id: 'maple-avenue', name: '22 Maple Avenue' },
-  { id: 'birch-court', name: '7 Birch Court' },
-];
-
-export const documentCategories = [
-  'Mortgage Documents',
-  'Tenancy Agreements',
-  'Insurance',
-  'Invoices & Receipts',
-  'Compliance Certificates',
-  'Other',
+// Used by DocumentFilter. 'ALL' is prepended and carries no
+// document_category param when selected (see Documents.tsx).
+export const filterTabs: DocumentFilterOption[] = [
+  { value: 'ALL', label: 'All' },
+  ...documentCategoryOptions,
 ];

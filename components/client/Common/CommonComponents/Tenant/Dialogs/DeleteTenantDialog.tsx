@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -12,6 +13,7 @@ import { useDeleteTenantMutation } from '@/store/api/endpoints/client/Common/Ten
 import { DeleteTenantDialogProps } from '@/types/client/Common/Tenant/TenantTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
   open,
@@ -29,10 +31,11 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
     setError(null);
     try {
       await deleteTenant({ tenant_alias: tenantAlias }).unwrap();
+      toast.success('Tenant deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete tenant. Please try again.');
+      toast.error('Failed to delete tenant. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -46,6 +49,7 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
             <AlertTriangle className='text-destructive size-5' />
             Delete Tenant
           </DialogTitle>
+          <DialogDescription>This action is irreversible.</DialogDescription>
         </DialogHeader>
 
         <div className='px-6 py-5'>
@@ -57,8 +61,8 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
 
           <p className='text-foreground text-center'>
             Are you sure you want to delete{' '}
-            <span className='font-semibold'>{tenantName}</span>?<br /> This will
-            permanently remove the tenant and all associated data.
+            <span className='text-danger font-bold'>{tenantName}</span>?<br />{' '}
+            This will permanently remove the tenant and all associated data.
           </p>
           <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.

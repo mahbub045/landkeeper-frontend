@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TitleOptions } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import { Eye, EyeOff } from 'lucide-react';
@@ -27,6 +27,46 @@ import { toast } from 'sonner';
 function fieldError(errors: SignupFieldErrors, key: keyof SignupFieldErrors) {
   const val = errors[key];
   return val && val.length > 0 ? val[0] : null;
+}
+
+// Helper: normalize various API error shapes into a readable string
+function extractErrorMessage(data: unknown): string {
+  if (data == null) return 'An unknown error occurred';
+  if (typeof data === 'string') return data;
+  if (Array.isArray(data)) {
+    return data.map((d) => extractErrorMessage(d)).join('; ');
+  }
+  if (typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    if (obj.non_field_errors && Array.isArray(obj.non_field_errors)) {
+      return (obj.non_field_errors as unknown[])
+        .map((v) => String(v))
+        .join('; ');
+    }
+    if (typeof obj.detail === 'string') return obj.detail;
+    if (typeof obj.message === 'string') return obj.message;
+    if (typeof obj.error === 'string') return obj.error;
+
+    // Try to pick the first string-like field value (e.g. { email: ['invalid'] })
+    for (const key of Object.keys(obj)) {
+      const val = obj[key];
+      if (typeof val === 'string') return val;
+      if (Array.isArray(val) && val.length > 0) {
+        // prefer arrays of strings
+        const flattened = (val as unknown[])
+          .map((v) => (typeof v === 'string' ? v : extractErrorMessage(v)))
+          .join('; ');
+        if (flattened) return flattened;
+      }
+    }
+
+    try {
+      return JSON.stringify(obj);
+    } catch {
+      return 'An error occurred';
+    }
+  }
+  return String(data);
 }
 
 export default function SignupPage() {
@@ -46,6 +86,8 @@ export default function SignupPage() {
 
   // Per-field errors from API
   const [fieldErrors, setFieldErrors] = useState<SignupFieldErrors>({});
+  // Non-field / general errors (show at top of form)
+  const [nonFieldError, setNonFieldError] = useState<string | null>(null);
 
   const [sighUp, { isLoading }] = useSignupMutation();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -79,25 +121,20 @@ export default function SignupPage() {
       if (error && typeof error === 'object' && 'data' in error) {
         const data = (error as { data: unknown }).data;
 
-        if (data && typeof data === 'object') {
-          setFieldErrors(data as SignupFieldErrors);
+        // Normalize message for display
+        const message = extractErrorMessage(data);
 
-          const errObj = data as Record<string, unknown>;
-          if (
-            errObj.non_field_errors &&
-            Array.isArray(errObj.non_field_errors)
-          ) {
-            toast.error(errObj.non_field_errors[0] as string);
-          } else if (errObj.detail && typeof errObj.detail === 'string') {
-            toast.error(errObj.detail);
-          } else {
-            toast.error('Please fix the errors below');
-          }
-        } else {
-          toast.error('Failed to create account');
+        // If response contains per-field errors (object), keep them for field highlighting
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+          setFieldErrors(data as SignupFieldErrors);
         }
+
+        setNonFieldError(message);
+        toast.error(message);
       } else {
-        toast.error('Failed to create account');
+        const fallback = 'Failed to create account';
+        setNonFieldError(fallback);
+        toast.error(fallback);
       }
     }
   };
@@ -106,6 +143,8 @@ export default function SignupPage() {
     if (fieldErrors[key]) {
       setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
     }
+    // Clear any general non-field error when user edits
+    if (nonFieldError) setNonFieldError(null);
   };
 
   return (
@@ -130,6 +169,14 @@ export default function SignupPage() {
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
               Fill in your details to get started
             </p>
+          </div>
+
+          <div>
+            {nonFieldError && (
+              <div className='mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/40 dark:text-red-200'>
+                {nonFieldError}
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className='space-y-4'>
@@ -158,7 +205,7 @@ export default function SignupPage() {
                     <SelectValue placeholder='Select' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TitleOptions.map((option) => (
+                    {TITLE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -383,14 +430,8 @@ export default function SignupPage() {
               disabled={isLoading || isGoogleLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
-              {isLoading ? (
-                <>
-                  <Loading className='text-white!' />
-                  Creating account...
-                </>
-              ) : (
-                'Create Account'
-              )}
+              {isLoading && <Loading className='text-white!' />}
+              Create Account
             </Button>
           </form>
 

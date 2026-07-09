@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -12,6 +13,7 @@ import { useDeletePropertyMutation } from '@/store/api/endpoints/client/Common/P
 import { DeletePropertyDialogProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
   open,
@@ -29,10 +31,11 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
     setError(null);
     try {
       await deleteProperty({ property_alias: propertyAlias }).unwrap();
+      toast.success('Property deleted successfully.');
       onSuccess?.();
       onClose();
     } catch {
-      setError('Failed to delete property. Please try again.');
+      toast.error('Failed to delete property. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -46,6 +49,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
             <AlertTriangle className='text-destructive size-5' />
             Delete Property
           </DialogTitle>
+          <DialogDescription>This action is irreversible.</DialogDescription>
         </DialogHeader>
 
         <div className='px-6 py-5'>
@@ -57,8 +61,8 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
 
           <p className='text-foreground text-center'>
             Are you sure you want to delete{' '}
-            <span className='font-semibold'>{propertyName}</span>?<br /> This
-            will permanently remove the property and all associated data.
+            <span className='text-danger font-bold'>{propertyName}</span>?<br />{' '}
+            This will permanently remove the property and all associated data.
           </p>
           <p className='text-danger mt-3 text-center text-sm'>
             This action cannot be undone.

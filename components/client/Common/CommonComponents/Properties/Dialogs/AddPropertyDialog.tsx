@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -20,7 +21,11 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  EMPTY_DETAILS_FORM,
   FIELD_TAB_MAP,
+  OVERRIDE_KEY_MAP,
+  PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
@@ -31,10 +36,11 @@ import {
   DetailsForm,
   Tab,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { CloudUpload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
@@ -48,24 +54,13 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const [details, setDetails] = useState<DetailsForm>({
-    name: '',
-    type: 'Residential',
-    status: 'Occupied',
-    address: '',
-    purchasePrice: '',
-    currentValue: '',
-    rent_per_month: '',
-    purchaseDate: '',
-    bedrooms: '',
-    bathrooms: '',
-    notes: '',
-  });
+  const [details, setDetails] = useState<DetailsForm>(EMPTY_DETAILS_FORM);
 
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const propertyIdRef = useRef<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
@@ -80,19 +75,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     setLoading(false);
     setFiles([]);
     propertyIdRef.current = null;
-    setDetails({
-      name: '',
-      type: 'Residential',
-      status: 'Occupied',
-      address: '',
-      purchasePrice: '',
-      currentValue: '',
-      rent_per_month: '',
-      purchaseDate: '',
-      bedrooms: '',
-      bathrooms: '',
-      notes: '',
-    });
+    setDetails(EMPTY_DETAILS_FORM);
     onClose();
   }
 
@@ -101,25 +84,11 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   function handleApiError(body: unknown) {
     if (typeof body === 'object' && body !== null) {
       const apiError = body as Record<string, unknown>;
-
-      const keyMap: Record<string, string> = {
-        purchase_price: 'purchasePrice',
-        current_value: 'currentValue',
-        purchase_date: 'purchaseDate',
-        property_name: 'name',
-        property_type: 'type',
-        rent_per_month: 'rent_per_month',
-        address: 'address',
-        bedrooms: 'bedrooms',
-        bathrooms: 'bathrooms',
-        notes: 'notes',
-      };
-
       const normalized: Record<string, string> = {};
 
       Object.entries(apiError).forEach(([key, val]) => {
         if (key === 'message') return;
-        const mapped = keyMap[key] ?? key;
+        const mapped = OVERRIDE_KEY_MAP[key] ?? snakeToCamel(key);
         normalized[mapped] = Array.isArray(val) ? val[0] : String(val);
       });
 
@@ -129,34 +98,42 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           Object.keys(normalized).some((field) => FIELD_TAB_MAP[field] === tab),
         );
         if (targetTab) setActiveTab(targetTab);
-        setBannerError('Please fix the highlighted fields and try again.');
+        toast.error('Please fix the highlighted fields and try again.');
         return;
       }
 
       if (typeof apiError.message === 'string') {
-        setBannerError(apiError.message);
+        toast.error(apiError.message);
         return;
       }
     }
-    setBannerError('Something went wrong. Please try again.');
+    toast.error('Something went wrong. Please try again.');
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
+
+    if (files.length === 0) {
+      setFieldErrors({ documents: 'Please upload at least one image.' });
+      setActiveTab('Documents');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const formData = new FormData();
       formData.append('property_name', details.name);
-      formData.append('property_type', details.type.toUpperCase());
-      formData.append('status', details.status.toUpperCase());
+      formData.append('property_type', details.type);
+      formData.append('status', details.status);
       formData.append('address', details.address);
       formData.append('purchase_price', details.purchasePrice);
       formData.append('current_value', details.currentValue);
-      formData.append('rent_per_month', details.rent_per_month);
+      formData.append('rent_per_month', details.rentPerMonth);
       formData.append('purchase_date', details.purchaseDate);
       formData.append('bedrooms', details.bedrooms);
       formData.append('bathrooms', details.bathrooms);
@@ -164,6 +141,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       files.forEach((file) => formData.append('documents_data', file));
 
       await addProperty(formData).unwrap();
+      toast.success('Property added successfully.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -171,7 +149,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       if (rtkError?.data) {
         handleApiError(rtkError.data);
       } else {
-        setBannerError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -205,14 +183,18 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
+      <DialogContent
+        className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-0'>
-          <div className='flex items-center justify-between pb-4'>
-            <DialogTitle className='text-foreground text-xl font-bold'>
-              Add New Property
-            </DialogTitle>
-          </div>
+          <DialogTitle className='text-foreground text-xl font-bold'>
+            Add New Property
+          </DialogTitle>
+          <DialogDescription>
+            Add a new property to the system.
+          </DialogDescription>
 
           {/* Tabs */}
           <div className='flex gap-6'>
@@ -224,7 +206,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               return (
                 <button
                   key={tab}
-                  type='button'
                   onClick={() => setActiveTab(tab)}
                   className={[
                     'pb-3 text-sm font-medium transition-colors',
@@ -246,7 +227,11 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
         </DialogHeader>
 
         {/* Scrollable body */}
-        <div className='flex-1 overflow-y-auto px-6 py-5'>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className='flex-1 overflow-y-auto px-6 py-5'
+        >
           {bannerError && (
             <p className='text-danger mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
               {bannerError}
@@ -276,27 +261,39 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               onRemove={removeFile}
             />
           )}
-        </div>
 
-        {/* Footer */}
-        <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={handleClose} disabled={loading}>
-            Cancel
-          </Button>
-          {activeTab === 'Details' ? (
+          <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
             <Button
-              onClick={() => setActiveTab('Documents')}
+              type='button'
+              variant='outline'
+              onClick={handleClose}
               disabled={loading}
             >
-              Next
+              Cancel
             </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={loading}>
-              {loading && <Loading className='text-white!' />}
-              Add Property
-            </Button>
-          )}
-        </div>
+            {activeTab === 'Details' ? (
+              <Button
+                key='next-btn'
+                type='button'
+                onClick={() => {
+                  if (formRef.current?.reportValidity()) {
+                    setActiveTab('Documents');
+                  }
+                }}
+                disabled={loading}
+              >
+                Next
+              </Button>
+            ) : (
+              <Button key='submit-btn' type='submit' disabled={loading}>
+                {loading && <Loading className='text-white!' />}
+                Add Property
+              </Button>
+            )}
+          </div>
+        </form>
+
+        {/* Footer */}
       </DialogContent>
     </Dialog>
   );
@@ -327,6 +324,7 @@ const DetailsTab: React.FC<{
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
           aria-invalid={!!errors.name}
+          required
           className={
             errors.name ? 'border-danger focus-visible:ring-danger/50' : ''
           }
@@ -344,11 +342,11 @@ const DetailsTab: React.FC<{
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='Residential'>Residential</SelectItem>
-              <SelectItem value='HMO'>HMO</SelectItem>
-              <SelectItem value='Commercial'>Commercial</SelectItem>
-              <SelectItem value='MIXED_USE'>Mixed Use</SelectItem>
-              <SelectItem value='HOLIDAY_LET'>Holiday Let</SelectItem>
+              {PROPERTY_TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.type }]} />
@@ -361,11 +359,11 @@ const DetailsTab: React.FC<{
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='Occupied'>Occupied</SelectItem>
-              <SelectItem value='Vacant'>Vacant</SelectItem>
-              <SelectItem value='UNDER_MAINTENANCE '>
-                Under Maintenance
-              </SelectItem>
+              {PROPERTY_STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.status }]} />
@@ -382,6 +380,7 @@ const DetailsTab: React.FC<{
           value={form.address}
           onChange={(e) => set('address', e.target.value)}
           aria-invalid={!!errors.address}
+          required
           className={
             errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
           }
@@ -431,23 +430,23 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.rent_per_month}>
+        <Field data-invalid={!!errors.rentPerMonth}>
           <FieldLabel className='text-sm font-semibold'>
             Rent Per Month
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.rent_per_month}
-            onChange={(e) => set('rent_per_month', e.target.value)}
-            aria-invalid={!!errors.rent_per_month}
+            value={form.rentPerMonth}
+            onChange={(e) => set('rentPerMonth', e.target.value)}
+            aria-invalid={!!errors.rentPerMonth}
             className={
-              errors.rent_per_month
+              errors.rentPerMonth
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.rent_per_month }]} />
+          <FieldError errors={[{ message: errors.rentPerMonth }]} />
         </Field>
 
         <Field data-invalid={!!errors.purchaseDate}>
@@ -570,7 +569,7 @@ const DocumentsTab: React.FC<{
           Drag &amp; Drop or Click to Upload
         </p>
         <p className='text-muted-foreground mt-1 text-xs'>
-          PDF, DOC, JPG, PNG up to 50MB
+          JPG, JPEG, PNG up to 50MB
         </p>
         {errors.documents && (
           <FieldError
@@ -588,6 +587,14 @@ const DocumentsTab: React.FC<{
         />
       </div>
 
+      {files.length === 0 && (
+        <div className='bg-warning border-2-warning rounded p-2'>
+          <p className='text-xs text-white'>
+            At least one image is required to add a property
+          </p>
+        </div>
+      )}
+
       {files.length > 0 && (
         <ul className='space-y-2'>
           {files.map((file, i) => (
@@ -602,7 +609,6 @@ const DocumentsTab: React.FC<{
                 {file.name}
               </Badge>
               <Button
-                type='button'
                 variant='ghost'
                 size='icon'
                 onClick={() => onRemove(i)}
