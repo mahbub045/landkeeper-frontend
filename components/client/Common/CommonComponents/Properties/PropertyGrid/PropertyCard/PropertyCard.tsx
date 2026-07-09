@@ -70,9 +70,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         </div>
 
         <CardContent>
-          <h3 className='text-foreground truncate text-base font-bold'>
-            {property.property_name}
-          </h3>
+          <div className='flex justify-between'>
+            <h3 className='text-foreground truncate text-base font-bold'>
+              {property.property_name}
+            </h3>
+            {property.rent_per_month && (
+              <p className='text-foreground text-lg font-bold'>
+                {`${getCurrencySign()}${parseFloat(property?.rent_per_month).toLocaleString()}/mo`}
+              </p>
+            )}
+          </div>
+
           <p className='text-muted-foreground mt-1 flex items-center gap-1 truncate text-xs'>
             <MapPin className='text-primary size-3 shrink-0' />
             {property.address}
@@ -97,11 +105,6 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               </span>
             )}
           </div>
-          {property.rent_per_month && (
-            <p className='text-foreground mt-1 text-lg font-bold'>
-              {`${getCurrencySign()}${parseFloat(property?.rent_per_month).toLocaleString()}/mo`}
-            </p>
-          )}
         </CardContent>
       </Card>
     </Link>

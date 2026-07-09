@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { PropertyGridProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { Home } from 'lucide-react';
-import PropertyCard from '../PropertyCard/PropertyCard';
+import PropertyCard from './PropertyCard/PropertyCard';
 
 const PropertyGrid: React.FC<PropertyGridProps> = ({
   properties,
