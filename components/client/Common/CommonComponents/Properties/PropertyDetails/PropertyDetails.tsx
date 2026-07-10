@@ -79,10 +79,10 @@ const PropertyDetails: React.FC = () => {
 
         <div className='flex shrink-0 items-center gap-2'>
           <Badge
-            className={`gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
+            className={`gap-1.5 rounded-full text-xs font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
           >
             <span className='inline-block size-1.5 rounded-full bg-white' />
-            <span className='pt-0.5'>
+            <span>
               {PROPERTY_STATUS_OPTIONS.find(
                 (opt) => opt.value === property.status,
               )?.label ?? property.status}
