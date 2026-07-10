@@ -1,10 +1,10 @@
 export type TxCategory =
-  | "Insurance"
-  | "Repairs"
-  | "Mortgage Payment"
-  | "Rental Income"
-  | "Utilities"
-  | "Management Fee";
+  | 'Insurance'
+  | 'Repairs'
+  | 'Mortgage Payment'
+  | 'Rental Income'
+  | 'Utilities'
+  | 'Management Fee';
 
 export interface Transaction {
   id: number;
@@ -20,6 +20,11 @@ export interface TooltipProps {
   label?: string;
 }
 
+export interface TransactionCategoryOption {
+  value: string;
+  label: string;
+}
+
 export interface TransactionForm {
   type: 'Income' | 'Expense';
   propertyId: string;
@@ -33,5 +38,54 @@ export interface AddTransactionModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  properties?: { id: string; name: string }[];
+}
+
+// ── Real API shapes ─────────────────────────────────────────────────────────
+
+export interface FinancePropertyRef {
+  id: number;
+  alias: string;
+  property_name: string;
+}
+
+export type FinanceTxType = 'INCOME' | 'EXPENSE';
+
+export interface FinanceReceiptFile {
+  id?: number;
+  file: string;
+}
+
+export interface FinanceTransaction {
+  alias: string;
+  property: FinancePropertyRef;
+  type: FinanceTxType;
+  category: string;
+  amount: string;
+  date: string;
+  description: string;
+  receipt_files: FinanceReceiptFile[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FinanceListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: FinanceTransaction[];
+}
+
+export interface UpdateTransactionDialogProps {
+  transaction: FinanceTransaction | null;
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export interface DeleteTransactionDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  transactionAlias: string;
+  transactionDescription: string;
 }

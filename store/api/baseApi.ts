@@ -26,6 +26,7 @@ export const TAG_TYPES = [
   'Tenant',
   'Compliance',
   'Document',
+  'Finance',
   'TeamAccess',
 ] as const;
 
