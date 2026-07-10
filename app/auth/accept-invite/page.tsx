@@ -17,21 +17,12 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useAcceptTeamMemberInviteMutation } from '@/store/api/endpoints/auth/TeamMemberAcceptInviteApi';
 import { AcceptInviteApiError } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
-import { Eye, EyeOff } from 'lucide-react';
+import { AcceptInviteFormData } from '@/types/common/auth/AcceptInviteTypes';
+import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { toast } from 'sonner';
-
-interface AcceptInviteFormData {
-  title: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-}
 
 const initialFormData: AcceptInviteFormData = {
   title: '',
@@ -43,6 +34,20 @@ const initialFormData: AcceptInviteFormData = {
   confirmPassword: '',
 };
 
+const PASSWORD_REQUIREMENTS: {
+  label: string;
+  test: (pw: string) => boolean;
+}[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /[0-9]/.test(pw) },
+  {
+    label: 'One special character (!@#$%^&*)',
+    test: (pw) => /[!@#$%^&*]/.test(pw),
+  },
+];
+
 // ✅ Inner component uses useSearchParams
 function AcceptInviteContent() {
   const router = useRouter();
@@ -50,6 +55,7 @@ function AcceptInviteContent() {
     useState<AcceptInviteFormData>(initialFormData);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [acceptInviteMutation, { isLoading: acceptInviteLoading }] =
@@ -58,16 +64,32 @@ function AcceptInviteContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
+  const passwordChecks = PASSWORD_REQUIREMENTS.map((req) => ({
+    ...req,
+    passed: req.test(formData.password),
+  }));
+  const isPasswordValid = passwordChecks.every((c) => c.passed);
+  const showPasswordRequirements =
+    passwordFocused || formData.password.length > 0;
+
   const handleChange =
     (field: keyof AcceptInviteFormData) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+      if (fieldErrors[field]) {
+        setFieldErrors((prev) => ({ ...prev, [field]: '' }));
+      }
     };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setFieldErrors({});
+
+    if (!isPasswordValid) {
+      setFieldErrors({ password: 'Password does not meet the requirements' });
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
@@ -315,7 +337,15 @@ function AcceptInviteContent() {
                     placeholder='Enter your password'
                     value={formData.password}
                     onChange={handleChange('password')}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
                     required
+                    className={
+                      fieldErrors.password ||
+                      (formData.password.length > 0 && !isPasswordValid)
+                        ? 'border-red-500 focus-visible:ring-red-500'
+                        : ''
+                    }
                   />
                   <button
                     type='button'
@@ -348,6 +378,11 @@ function AcceptInviteContent() {
                     value={formData.confirmPassword}
                     onChange={handleChange('confirmPassword')}
                     required
+                    className={
+                      fieldErrors.confirmPassword
+                        ? 'border-red-500 focus-visible:ring-red-500'
+                        : ''
+                    }
                   />
                   <button
                     type='button'
@@ -368,6 +403,33 @@ function AcceptInviteContent() {
                 )}
               </div>
             </div>
+
+            {showPasswordRequirements && (
+              <div className='rounded-md bg-blue-50 p-3 dark:bg-blue-950/30'>
+                <p className='mb-2 text-xs font-semibold text-gray-700 dark:text-gray-300'>
+                  Password requirements:
+                </p>
+                <ul className='space-y-1'>
+                  {passwordChecks.map((check) => (
+                    <li
+                      key={check.label}
+                      className={`flex items-center gap-2 text-xs ${
+                        check.passed
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}
+                    >
+                      {check.passed ? (
+                        <Check className='h-3.5 w-3.5 text-green-600 dark:text-green-400' />
+                      ) : (
+                        <X className='h-3.5 w-3.5 text-red-500' />
+                      )}
+                      {check.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <Button
               type='submit'
