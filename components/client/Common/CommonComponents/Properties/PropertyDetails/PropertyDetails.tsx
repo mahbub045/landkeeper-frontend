@@ -61,7 +61,7 @@ const PropertyDetails: React.FC = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() => router.push('/client/landlord/properties')}
+            onClick={() => window.history.back()}
             className='text-muted-foreground hover:text-foreground shrink-0'
           >
             <ArrowLeft className='size-5' />
