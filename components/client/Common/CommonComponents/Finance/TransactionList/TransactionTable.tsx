@@ -18,8 +18,6 @@ import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import DeleteTransactionDialog from '../Dialogs/DeleteTransactionDialog';
 import UpdateTransactionDialog from '../Dialogs/UpdateTransactionDialog';
-// import DeleteTransactionDialog from '../Dialogs/DeleteTransactionDialog';
-// import UpdateTransactionDialog from '../Dialogs/UpdateTransactionDialog';
 
 function formatAmount(
   amount: string,
