@@ -20,16 +20,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  EMPTY_FORM,
-  TransactionCategoryOptions,
-} from '@/data/client/common/finance/FinanceData';
+import { TransactionCategoryOptions } from '@/data/client/common/finance/FinanceData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
-import { useAddFinanceMutation } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
+import { useUpdateFinanceMutation } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
 import {
-  AddTransactionModalProps,
   TransactionForm,
+  UpdateTransactionDialogProps,
 } from '@/types/client/Common/Finance/FinanceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
@@ -38,20 +35,52 @@ import { Paperclip, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-// ── Dialog ────────────────────────────────────────────────────────────────
+function mapToForm(
+  transaction: UpdateTransactionDialogProps['transaction'],
+): TransactionForm {
+  if (!transaction) {
+    return {
+      type: 'Income',
+      propertyId: '',
+      category: '',
+      amount: '',
+      date: '',
+      description: '',
+    };
+  }
 
-const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
+  return {
+    type: transaction.type === 'EXPENSE' ? 'Expense' : 'Income',
+    propertyId: String(transaction.property.id),
+    category: transaction.category,
+    amount: transaction.amount,
+    date: transaction.date,
+    description: transaction.description,
+  };
+}
+
+// ── Dialog ────────────────────────────────────────────────────────────────
+// Parent renders this with `key={editingTx?.alias}`, so a fresh instance
+// mounts per transaction — no need to sync state via effects.
+
+const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
+  transaction,
   open,
   onClose,
   onSuccess,
 }) => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [form, setForm] = useState<TransactionForm>(EMPTY_FORM);
+  const [form, setForm] = useState<TransactionForm>(() =>
+    mapToForm(transaction),
+  );
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [propertyOpen, setPropertyOpen] = useState(false);
   const [propertySearch, setPropertySearch] = useState('');
+  const [propertyLabel, setPropertyLabel] = useState(
+    transaction?.property.property_name ?? '',
+  );
 
   function set<K extends keyof TransactionForm>(
     key: K,
@@ -79,12 +108,9 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
     addFile(e.dataTransfer.files);
   }, []);
 
-  // ── Reset ─────────────────────────────────────────────────────────────────
   function handleClose() {
-    setForm(EMPTY_FORM);
     setFieldErrors({});
     setFile(null);
-    setPropertySearch('');
     onClose();
   }
 
@@ -94,13 +120,14 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
     { skip: !propertyOpen },
   );
 
-  const [addFinance, { isLoading: loading }] = useAddFinanceMutation();
+  const [updateFinance, { isLoading: loading }] = useUpdateFinanceMutation();
 
   // ── Submit ────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // manual guards for the non-native controls (property combobox, category select)
+    if (!transaction) return;
+
     if (!form.propertyId) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -119,16 +146,19 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
 
     const payload = new FormData();
     payload.append('property', form.propertyId);
-    payload.append('type', form.type);
+    payload.append('type', form.type.toUpperCase());
     payload.append('category', form.category);
     payload.append('amount', form.amount);
     payload.append('date', form.date);
     payload.append('description', form.description.trim());
-    if (file) payload.append('receipt_files', file);
+    if (file) payload.append('receipt', file);
 
     try {
-      await addFinance(payload).unwrap();
-      toast.success('Transaction added successfully.');
+      await updateFinance({
+        finance_alias: transaction.alias,
+        payload,
+      }).unwrap();
+      toast.success('Transaction updated.');
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -144,7 +174,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
           setFieldErrors((prev) => ({ ...prev, ...mapped }));
         }
       } catch {
-        toast.error('Failed to add transaction. Please try again.');
+        toast.error('Failed to update transaction. Please try again.');
       }
     }
   }
@@ -156,22 +186,18 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
         className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
           <DialogTitle className='text-foreground text-xl font-bold'>
-            Add Transaction
+            Update Transaction
           </DialogTitle>
           <DialogDescription>
-            Add a new transaction for your property.
+            Update the details of your transaction.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className='contents'>
-          {/* Scrollable body */}
           <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-            {/* Type + Property */}
             <div className='grid grid-cols-2 gap-4'>
-              {/* Type */}
               <Field data-invalid={!!fieldErrors.type}>
                 <FieldLabel className='text-sm font-semibold'>Type</FieldLabel>
                 <Select
@@ -186,14 +212,13 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='Income'>Income</SelectItem>
-                    <SelectItem value='Expense'>Expense</SelectItem>
+                    <SelectItem value='INCOME'>Income</SelectItem>
+                    <SelectItem value='EXPENSE'>Expense</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError errors={[{ message: fieldErrors.type }]} />
               </Field>
 
-              {/* Property */}
               <Field data-invalid={!!fieldErrors.propertyId}>
                 <FieldLabel className='gap-0 text-sm font-semibold'>
                   Property<span className='text-danger'>*</span>
@@ -202,19 +227,17 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                   <Input
                     type='text'
                     placeholder='Search by property name...'
-                    value={
-                      form.propertyId
-                        ? (data?.find(
-                            (p: Property) => String(p.id) === form.propertyId,
-                          )?.property_name ?? propertySearch)
-                        : propertySearch
-                    }
+                    value={propertyOpen ? propertySearch : propertyLabel}
                     onChange={(e) => {
                       setPropertySearch(e.target.value);
+                      setPropertyLabel(e.target.value);
                       set('propertyId', '');
                       setPropertyOpen(true);
                     }}
-                    onClick={() => setPropertyOpen(true)}
+                    onClick={() => {
+                      setPropertyOpen(true);
+                      setPropertySearch('');
+                    }}
                     onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
                     aria-invalid={!!fieldErrors.propertyId}
                     className={cn(
@@ -242,6 +265,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                               key={p.alias}
                               onMouseDown={() => {
                                 set('propertyId', String(p.id));
+                                setPropertyLabel(p.property_name);
                                 setPropertySearch('');
                                 setPropertyOpen(false);
                               }}
@@ -264,7 +288,6 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               </Field>
             </div>
 
-            {/* Category */}
             <Field data-invalid={!!fieldErrors.category}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Category<span className='text-danger'>*</span>
@@ -289,7 +312,6 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               <FieldError errors={[{ message: fieldErrors.category }]} />
             </Field>
 
-            {/* Amount + Date */}
             <div className='grid grid-cols-2 gap-4'>
               <Field data-invalid={!!fieldErrors.amount}>
                 <FieldLabel className='gap-0 text-sm font-semibold'>
@@ -333,7 +355,6 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               </Field>
             </div>
 
-            {/* Description */}
             <Field data-invalid={!!fieldErrors.description}>
               <FieldLabel className='text-sm font-semibold'>
                 Description
@@ -353,7 +374,6 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               <FieldError errors={[{ message: fieldErrors.description }]} />
             </Field>
 
-            {/* Receipt / Invoice upload */}
             <Field data-invalid={!!fieldErrors.file}>
               <FieldLabel className='text-sm font-semibold'>
                 Receipt/Invoice
@@ -414,7 +434,6 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
             </Field>
           </div>
 
-          {/* Footer */}
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
             <Button
               type='button'
@@ -426,7 +445,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
             </Button>
             <Button type='submit' disabled={loading}>
               {loading && <Loading className='text-white!' />}
-              Add Transaction
+              Save Changes
             </Button>
           </div>
         </form>
@@ -435,4 +454,4 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
   );
 };
 
-export default AddTransactionDialog;
+export default UpdateTransactionDialog;
