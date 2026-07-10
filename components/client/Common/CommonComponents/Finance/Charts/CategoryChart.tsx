@@ -21,8 +21,12 @@ const CategoryChart: React.FC = () => {
       </CardHeader>
 
       <CardContent className='flex items-center gap-6 pt-4'>
-        <div className='h-45 w-45 shrink-0'>
-          <ResponsiveContainer width='100%' height='100%'>
+        <div className='h-44 w-44 shrink-0'>
+          <ResponsiveContainer
+            width='100%'
+            height='100%'
+            initialDimension={{ width: 176, height: 176 }}
+          >
             <PieChart>
               <Pie
                 data={CATEGORY_BREAKDOWN}
