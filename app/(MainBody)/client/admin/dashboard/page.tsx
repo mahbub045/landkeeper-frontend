@@ -1,5 +1,5 @@
 import AdminDashboardContainer from '@/components/client/Admin/Dashboard';
 
-export default function AdminDashboardPage() {
+export default function DashboardPage() {
   return <AdminDashboardContainer />;
 }

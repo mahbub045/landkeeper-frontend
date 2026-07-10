@@ -1,7 +1,5 @@
-import React from 'react'
+import AdminFinanceContainer from '@/components/client/Admin/Finance';
 
 export default function FinancePage() {
-  return (
-    <div>finance</div>
-  )
+  return <AdminFinanceContainer />;
 }

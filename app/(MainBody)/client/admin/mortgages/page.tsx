@@ -1,7 +1,5 @@
-import React from 'react'
+import AdminMortgageContainer from '@/components/client/Admin/Mortgage';
 
 export default function MortgagesPage() {
-  return (
-    <div>mortgages</div>
-  )
+  return <AdminMortgageContainer />;
 }

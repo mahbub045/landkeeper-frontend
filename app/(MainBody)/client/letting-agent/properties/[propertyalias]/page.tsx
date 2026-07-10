@@ -1,5 +1,5 @@
 import LettingAgentPropertyDetailsContainer from '@/components/client/LettingAgent/Properties/PropertyAlias';
 
-export default function LettingAgentPropertyDetailsPage() {
+export default function PropertyDetailsPage() {
   return <LettingAgentPropertyDetailsContainer />;
 }

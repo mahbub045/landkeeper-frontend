@@ -1,5 +1,5 @@
 import TenantSupportTicketsContainer from '@/components/client/Tenant/SupportTickets';
 
-export default function TenantSupportTicketsPage() {
+export default function SupportTicketsPage() {
   return <TenantSupportTicketsContainer />;
 }
