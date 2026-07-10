@@ -7,6 +7,7 @@ export function getDashboardPath(role: UserRole | undefined): string {
     LANDLORD: '/client/landlord/dashboard',
     ADMIN: '/client/admin/dashboard',
     LETTING_AGENT: '/client/letting-agent/dashboard',
+    TENANT: '/client/tenant/dashboard',
   };
   return role && paths[role] ? paths[role] : '/auth/access-denied';
 }
@@ -93,7 +94,6 @@ export const getMortgageUrl = (session: Session | null) => {
   //   If no role found
   return '/auth/login';
 };
-
 
 // All users Compliance List
 export const getComplianceUrl = (session: Session | null) => {

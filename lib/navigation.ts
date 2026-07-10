@@ -206,6 +206,25 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
       },
     ];
   }
+  if (role === 'TENANT') {
+    return [
+      {
+        label: 'Dashboard',
+        href: '/client/tenant/dashboard',
+        icon: LayoutDashboard,
+      },
+      {
+        label: 'Properties',
+        href: '/client/tenant/properties',
+        icon: House,
+      },
+      {
+        label: 'Support Tickets',
+        href: '/client/tenant/support-tickets',
+        icon: Ticket,
+      },
+    ];
+  }
 
   return [];
 };
