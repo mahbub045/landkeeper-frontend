@@ -16,6 +16,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
 import AddTransactionDialog from '../Dialogs/AddTransactionDialog';
@@ -81,6 +82,7 @@ const TransactionList: React.FC = () => {
               onChange={handleSearchChange}
               className='h-8! w-64 pl-7!'
             />
+            <HoverInfoPopover text='You can search using Property Name.' />
           </div>
 
           <Button onClick={() => setAddOpen(true)}>
@@ -156,9 +158,7 @@ const TransactionList: React.FC = () => {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() =>
-                        page < totalPages && setPage((p) => p + 1)
-                      }
+                      onClick={() => page < totalPages && setPage((p) => p + 1)}
                       aria-disabled={page === totalPages}
                       className={
                         page === totalPages
