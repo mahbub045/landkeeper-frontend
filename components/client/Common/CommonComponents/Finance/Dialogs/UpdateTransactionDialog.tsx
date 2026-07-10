@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { transactionCategoryOptions } from '@/data/client/common/finance/FinanceData';
+import { TransactionCategoryOptions } from '@/data/client/common/finance/FinanceData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateFinanceMutation } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
@@ -302,7 +302,7 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {transactionCategoryOptions.map((option) => (
+                  {TransactionCategoryOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>

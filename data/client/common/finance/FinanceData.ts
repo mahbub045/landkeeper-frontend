@@ -100,7 +100,7 @@ export const categoryStyles: Record<TxCategory, string> = {
     'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
 };
 
-export const transactionCategoryOptions: TransactionCategoryOption[] = [
+export const TransactionCategoryOptions: TransactionCategoryOption[] = [
   { value: 'RENTAL_INCOME', label: 'Rental Income' },
   { value: 'MORTGAGE_PAYMENT', label: 'Mortgage Payment' },
   { value: 'REPAIRS', label: 'Repairs' },

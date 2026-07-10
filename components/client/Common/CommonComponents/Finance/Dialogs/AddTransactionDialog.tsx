@@ -22,7 +22,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_FORM,
-  transactionCategoryOptions,
+  TransactionCategoryOptions,
 } from '@/data/client/common/finance/FinanceData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
@@ -279,7 +279,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {transactionCategoryOptions.map((option) => (
+                  {TransactionCategoryOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
