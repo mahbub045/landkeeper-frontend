@@ -187,8 +187,8 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='INCOME'>Income</SelectItem>
-                    <SelectItem value='EXPENSE'>Expense</SelectItem>
+                    <SelectItem value='Income'>Income</SelectItem>
+                    <SelectItem value='Expense'>Expense</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError errors={[{ message: fieldErrors.type }]} />
