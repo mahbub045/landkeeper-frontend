@@ -123,7 +123,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
         const files = await Promise.all(
           property.documents.map(async (doc) => {
             const res = await fetch(
-              `/api/proxy-image?url=${encodeURIComponent(doc.image)}`,
+              `/api/fetch-remote-files?url=${encodeURIComponent(doc.image)}`,
             );
             const blob = await res.blob();
             const filename =
