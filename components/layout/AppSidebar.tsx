@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,6 +37,7 @@ import {
   ChevronRight,
   LogOut,
   Package,
+  Plus,
   ReceiptText,
   Settings,
   User,
@@ -231,9 +233,22 @@ const AppSidebar: React.FC = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarSeparator className='mx-0 h-px!' />
+      {/* <SidebarSeparator className='mx-0 h-px!' /> */}
 
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
+        <Button
+          type='button'
+          variant='secondary'
+          className='mb-1 w-full gap-2 rounded-xl group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+        >
+          <Plus className='size-4' />
+          <span className='group-data-[collapsible=icon]:hidden'>
+            Start New Journey
+          </span>
+        </Button>
+
+        <SidebarSeparator className='mx-0 h-px!' />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
