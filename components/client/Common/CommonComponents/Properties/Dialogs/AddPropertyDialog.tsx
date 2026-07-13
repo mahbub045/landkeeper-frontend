@@ -26,6 +26,7 @@ import {
   OVERRIDE_KEY_MAP,
   PROPERTY_STATUS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
+  TAB_LABELS,
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
@@ -119,7 +120,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
     if (files.length === 0) {
       setFieldErrors({ documents: 'Please upload at least one image.' });
-      setActiveTab('Documents');
+      setActiveTab('Property Picture');
       return;
     }
 
@@ -216,7 +217,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
                         : 'text-muted-foreground hover:text-foreground',
                   ].join(' ')}
                 >
-                  {tab}
+                  {TAB_LABELS[tab]}
                   {hasError && !isActive && (
                     <span className='bg-danger ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle' />
                   )}
@@ -245,8 +246,8 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               errors={fieldErrors}
             />
           )}
-          {activeTab === 'Documents' && (
-            <DocumentsTab
+          {activeTab === 'Property Picture' && (
+            <PropertyPictureTab
               files={files}
               dragging={dragging}
               fileInputRef={fileInputRef}
@@ -277,7 +278,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
                 type='button'
                 onClick={() => {
                   if (formRef.current?.reportValidity()) {
-                    setActiveTab('Documents');
+                    setActiveTab('Property Picture');
                   }
                 }}
                 disabled={loading}
@@ -520,9 +521,9 @@ const DetailsTab: React.FC<{
   );
 };
 
-// ── Documents Tab ─────────────────────────────────────────────────────────────
+// ── Property Picture Tab ─────────────────────────────────────────────────────
 
-const DocumentsTab: React.FC<{
+const PropertyPictureTab: React.FC<{
   files: File[];
   dragging: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;

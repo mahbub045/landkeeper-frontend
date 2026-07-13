@@ -4,8 +4,8 @@ import {
   Tab,
 } from '@/types/client/Common/Properties/PropertyTypes';
 
-export const TABS: Tab[] = ['Details', 'Documents'];
-export const TAB_PRIORITY: Tab[] = ['Details', 'Documents'];
+export const TABS: Tab[] = ['Details', 'Property Picture'];
+export const TAB_PRIORITY: Tab[] = ['Details', 'Property Picture'];
 export const FIELD_TAB_MAP: Record<string, Tab> = {
   name: 'Details',
   type: 'Details',
@@ -18,7 +18,7 @@ export const FIELD_TAB_MAP: Record<string, Tab> = {
   bedrooms: 'Details',
   bathrooms: 'Details',
   notes: 'Details',
-  documents: 'Documents',
+  documents: 'Property Picture',
 };
 
 export const filterTabs: FilterTab[] = [
@@ -78,4 +78,9 @@ export const EMPTY_DETAILS_FORM: DetailsForm = {
 export const OVERRIDE_KEY_MAP: Record<string, string> = {
   property_name: 'name',
   property_type: 'type',
+};
+
+export const TAB_LABELS: Record<string, string> = {
+  Details: 'Details',
+  'Property Picture': 'Property Picture',
 };

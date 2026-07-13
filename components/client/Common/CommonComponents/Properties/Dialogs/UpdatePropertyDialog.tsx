@@ -88,12 +88,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Track which property alias is currently seeded into local state.
-  // Using useState so the comparison is safe during render (useRef.current
-  // cannot be read during render per React's rules).
-  // When open flips true or the property alias changes we reset synchronously.
-  // This is the pattern React docs recommend for deriving state from props:
-  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
   const [seededAlias, setSeededAlias] = useState<string | null>(null);
   const incomingAlias = open ? (property?.alias ?? null) : null;
   const [cachedExistingFiles, setCachedExistingFiles] = useState<File[]>([]);
@@ -339,8 +333,8 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
             />
           )}
 
-          {activeTab === 'Documents' && (
-            <DocumentsTab
+          {activeTab === 'Property Picture' && (
+            <PropertyPictureTab
               existingDocs={existingDocs}
               newFiles={newFiles}
               dragging={dragging}
@@ -373,7 +367,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
                 key='next-btn'
                 onClick={() => {
                   if (formRef.current?.reportValidity()) {
-                    setActiveTab('Documents');
+                    setActiveTab('Property Picture');
                   }
                 }}
                 disabled={loading}
@@ -619,9 +613,9 @@ const DetailsTab: React.FC<{
   );
 };
 
-// ── Documents Tab ─────────────────────────────────────────────────────────────
+// ── Property Picture Tab ─────────────────────────────────────────────────────
 
-const DocumentsTab: React.FC<{
+const PropertyPictureTab: React.FC<{
   existingDocs: PropertyDocument[];
   newFiles: File[];
   dragging: boolean;
@@ -648,11 +642,11 @@ const DocumentsTab: React.FC<{
 }) => {
   return (
     <div className='space-y-4'>
-      {/* ── Existing Documents ── */}
+      {/* ── Existing Property Pictures ── */}
       {existingDocs.length > 0 && (
         <div className='space-y-2'>
           <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
-            Existing Documents
+            Existing Property Pictures
           </p>
           <ul className='space-y-2'>
             {existingDocs.map((doc) => (
@@ -680,7 +674,7 @@ const DocumentsTab: React.FC<{
                   size='icon'
                   onClick={() => onRemoveExisting(doc.id)}
                   className='text-muted-foreground hover:text-danger ml-auto h-6 w-6 shrink-0'
-                  aria-label='Remove document'
+                  aria-label='Remove property picture'
                 >
                   <X className='h-4 w-4' />
                 </Button>
