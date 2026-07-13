@@ -1,19 +1,22 @@
 import type { UserRole } from '@/types/next-auth';
 import {
+  BarChart3,
+  Calculator,
   ChartNoAxesCombined,
-  FileText,
+  FileSpreadsheet,
   Files,
+  Hammer,
+  Handshake,
   House,
   Landmark,
   LayoutDashboard,
+  Link2,
   Package,
   Podcast,
-  ReceiptText,
   ShieldUser,
   Ticket,
   UserKey,
   UsersRound,
-  Wallet,
   Wrench,
   type LucideIcon,
 } from 'lucide-react';
@@ -69,14 +72,19 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: House,
       },
       {
-        label: 'Mortgages',
-        href: '/client/landlord/mortgages',
-        icon: Landmark,
-      },
-      {
         label: 'Tenants',
         href: '/client/landlord/tenants',
         icon: UsersRound,
+      },
+      {
+        label: 'Property Maintenance',
+        href: '/client/landlord/property-maintenance',
+        icon: Wrench,
+      },
+      {
+        label: 'Mortgages',
+        href: '/client/landlord/mortgages',
+        icon: Landmark,
       },
       {
         label: 'Compliance',
@@ -94,34 +102,38 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ChartNoAxesCombined,
       },
       {
+        label: 'Making Tax Digital (MTD)',
+        href: '/client/landlord/making-tax-digital',
+        icon: FileSpreadsheet,
+      },
+      {
+        label: 'Reports & Analytics',
+        href: '/client/landlord/reports-and-analytics',
+        icon: BarChart3,
+      },
+      {
+        label: 'Integrations',
+        href: '/client/landlord/integrations',
+        icon: Link2,
+      },
+      {
+        label: 'Contractor Marketplace',
+        href: '/client/landlord/contractor-marketplace',
+        icon: Handshake,
+      },
+      {
         label: 'Tools',
-        icon: Wrench,
+        icon: Hammer,
         children: [
-          {
-            label: 'Reports',
-            href: '/client/landlord/tools/reports',
-            icon: FileText,
-          },
           {
             label: 'Team Access',
             href: '/client/landlord/tools/team-access',
             icon: UserKey,
           },
-        ],
-      },
-      {
-        label: 'Billing & Plans',
-        icon: Wallet,
-        children: [
           {
-            label: 'Billing',
-            href: '/client/landlord/billing-and-plans/billing',
-            icon: ReceiptText,
-          },
-          {
-            label: 'Pricing Plans',
-            href: '/client/landlord/billing-and-plans/pricing-plans',
-            icon: Package,
+            label: 'Calculators',
+            href: '/client/landlord/tools/calculators',
+            icon: Calculator,
           },
         ],
       },
@@ -146,14 +158,19 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: House,
       },
       {
-        label: 'Mortgages',
-        href: '/client/admin/mortgages',
-        icon: Landmark,
-      },
-      {
         label: 'Tenants',
         href: '/client/admin/tenants',
         icon: UsersRound,
+      },
+      {
+        label: 'Property Maintenance',
+        href: '/client/admin/property-maintenance',
+        icon: Wrench,
+      },
+      {
+        label: 'Mortgages',
+        href: '/client/admin/mortgages',
+        icon: Landmark,
       },
       {
         label: 'Compliance',
@@ -169,6 +186,37 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Finance',
         href: '/client/admin/finance',
         icon: ChartNoAxesCombined,
+      },
+      {
+        label: 'Making Tax Digital (MTD)',
+        href: '/client/admin/making-tax-digital',
+        icon: FileSpreadsheet,
+      },
+      {
+        label: 'Reports & Analytics',
+        href: '/client/admin/reports-and-analytics',
+        icon: BarChart3,
+      },
+      {
+        label: 'Integrations',
+        href: '/client/admin/integrations',
+        icon: Link2,
+      },
+      {
+        label: 'Contractor Marketplace',
+        href: '/client/admin/contractor-marketplace',
+        icon: Handshake,
+      },
+      {
+        label: 'Tools',
+        icon: Hammer,
+        children: [
+          {
+            label: 'Calculators',
+            href: '/client/admin/tools/calculators',
+            icon: Calculator,
+          },
+        ],
       },
       {
         label: 'Support Tickets',
@@ -198,6 +246,17 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Compliance',
         href: '/client/letting-agent/compliance',
         icon: ShieldUser,
+      },
+      {
+        label: 'Tools',
+        icon: Hammer,
+        children: [
+          {
+            label: 'Calculators',
+            href: '/client/letting-agent/tools/calculators',
+            icon: Calculator,
+          },
+        ],
       },
       {
         label: 'Support Tickets',

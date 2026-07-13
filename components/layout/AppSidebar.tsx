@@ -32,7 +32,14 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
+import {
+  ChevronRight,
+  LogOut,
+  Package,
+  ReceiptText,
+  Settings,
+  User,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -277,6 +284,30 @@ const AppSidebar: React.FC = () => {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
+            {userRole === 'LANDLORD' && (
+              <>
+                <Link
+                  href='/client/landlord/billing-and-plans/billing'
+                  passHref
+                >
+                  <DropdownMenuItem className='cursor-pointer'>
+                    <ReceiptText className='size-4' />
+                    Billing
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link
+                  href='/client/landlord/billing-and-plans/pricing-plans'
+                  passHref
+                >
+                  <DropdownMenuItem className='cursor-pointer'>
+                    <Package className='size-4' />
+                    Pricing Plans
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem
               variant='destructive'
               onClick={() => handleSignOut()}
