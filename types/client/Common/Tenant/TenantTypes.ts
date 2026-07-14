@@ -20,6 +20,7 @@ export interface ApiTenant {
   first_name: string;
   middle_name: string;
   last_name: string;
+  guarantor_name: string;
   notes: string;
   phone: string;
   property: {
@@ -56,7 +57,9 @@ export interface TenantRowProps {
 
 export interface TenantForm {
   propertyId: string;
+  title: string;
   firstName: string;
+  middleName: string;
   lastName: string;
   email: string;
   phone: string;
