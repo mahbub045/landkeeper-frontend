@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Eye, FileText, ImageIcon, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,7 @@ import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import DeleteTransactionDialog from '../Dialogs/DeleteTransactionDialog';
 import UpdateTransactionDialog from '../Dialogs/UpdateTransactionDialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 function formatAmount(
   amount: string,
@@ -28,6 +29,14 @@ function formatAmount(
     maximumFractionDigits: 2,
   });
   return type === 'EXPENSE' ? `-£${value}` : `+£${value}`;
+}
+
+function getFileIcon(filename: string) {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext ?? '')) {
+    return <ImageIcon className='h-4 w-4 shrink-0' />;
+  }
+  return <FileText className='h-4 w-4 shrink-0' />;
 }
 
 interface TransactionTableProps {
@@ -124,15 +133,50 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </TableCell>
 
                 <TableCell className='text-center'>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    disabled={!fileUrl}
-                    onClick={() => fileUrl && window.open(fileUrl, '_blank')}
-                  >
-                    <Eye />
-                    View
-                  </Button>
+                  {tx.receipt_files.length === 0 ? (
+                    <Button variant='outline' size='sm' disabled>
+                      <Eye />
+                      View
+                    </Button>
+                  ) : tx.receipt_files.length === 1 ? (
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => window.open(tx.receipt_files[0].file, '_blank')}
+                    >
+                      <Eye />
+                      View
+                    </Button>
+                  ) : (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant='outline' size='sm'>
+                          <Eye />
+                          View ({tx.receipt_files.length})
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-64 p-2' align='center'>
+                        <ul className='space-y-1'>
+                          {tx.receipt_files.map((r) => {
+                            const filename = r.file.split('/').pop() || `file-${r.id}`;
+                            return (
+                              <li key={r.id}>
+                                <a
+                                  href={r.file}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5 text-sm'
+                                >
+                                  {getFileIcon(filename)}
+                                  <span className='truncate'>{filename}</span>
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
+                  )}
                 </TableCell>
 
                 <TableCell className='pr-4'>

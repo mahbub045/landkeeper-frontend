@@ -32,7 +32,7 @@ import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Paperclip, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 function mapToForm(
@@ -40,7 +40,7 @@ function mapToForm(
 ): TransactionForm {
   if (!transaction) {
     return {
-      type: 'Income',
+      type: '',
       propertyId: '',
       category: '',
       amount: '',
@@ -50,7 +50,7 @@ function mapToForm(
   }
 
   return {
-    type: transaction.type === 'EXPENSE' ? 'Expense' : 'Income',
+    type: transaction.type,
     propertyId: String(transaction.property.id),
     category: transaction.category,
     amount: transaction.amount,
@@ -61,7 +61,8 @@ function mapToForm(
 
 // ── Dialog ────────────────────────────────────────────────────────────────
 // Parent renders this with `key={editingTx?.alias}`, so a fresh instance
-// mounts per transaction — no need to sync state via effects.
+// mounts per transaction — no need to sync state via effects for the form
+// fields. The receipt re-fetch below still needs an effect since it's async.
 
 const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
   transaction,
@@ -73,7 +74,9 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
   const [form, setForm] = useState<TransactionForm>(() =>
     mapToForm(transaction),
   );
-  const [file, setFile] = useState<File | null>(null);
+
+  // New files the user is adding in this edit session
+  const [newFiles, setNewFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [propertyOpen, setPropertyOpen] = useState(false);
@@ -81,6 +84,18 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
   const [propertyLabel, setPropertyLabel] = useState(
     transaction?.property.property_name ?? '',
   );
+
+  // Receipts still "kept" from the original transaction (for display + removal)
+  const [existingReceipts, setExistingReceipts] = useState(
+    transaction?.receipt_files ?? [],
+  );
+
+  // Re-fetched blobs of the ORIGINAL receipts, turned back into File objects
+  // so they can be re-uploaded — backend replaces the whole set on update.
+  const [cachedExistingFiles, setCachedExistingFiles] = useState<
+    Record<number, File>
+  >({});
+  const [receiptsLoading, setReceiptsLoading] = useState(false);
 
   function set<K extends keyof TransactionForm>(
     key: K,
@@ -90,27 +105,81 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
     setFieldErrors((prev) => ({ ...prev, [key]: '' }));
   }
 
+  // ── Prefetch existing receipts as File objects ──────────────────────────
+  useEffect(() => {
+  if (!open || !transaction?.receipt_files?.length) return;
+
+  let cancelled = false;
+
+  const prefetch = async () => {
+    setReceiptsLoading(true);
+    try {
+      const entries = await Promise.all(
+        transaction.receipt_files.map(async (r) => {
+          const res = await fetch(
+            `/api/fetch-remote-files?url=${encodeURIComponent(r.file)}`,
+          );
+          if (!res.ok) {
+            throw new Error(`Failed to fetch receipt ${r.id} (${res.status})`);
+          }
+          const blob = await res.blob();
+          const filename = r.file.split('/').pop() || `receipt-${r.id}`;
+          return [r.id, new File([blob], filename, { type: blob.type })] as const;
+        }),
+      );
+      if (!cancelled) setCachedExistingFiles(Object.fromEntries(entries));
+    } catch (err) {
+      if (!cancelled) {
+        console.error('Failed to prefetch existing receipts', err);
+        toast.error(
+          'Could not load one or more existing receipts. Removing/keeping them may not work correctly.',
+        );
+      }
+    } finally {
+      if (!cancelled) setReceiptsLoading(false);
+    }
+  };
+
+  prefetch();
+
+  return () => {
+    cancelled = true;
+  };
+}, [open, transaction?.alias, transaction?.receipt_files]);
+
   // ── File helpers ──────────────────────────────────────────────────────────
-  function addFile(incoming: FileList | null) {
+  function addFiles(incoming: FileList | null) {
     if (!incoming?.length) return;
-    setFile(incoming[0]);
+    setNewFiles((prev) => {
+      const existing = new Set(prev.map((f) => f.name + f.size));
+      return [
+        ...prev,
+        ...Array.from(incoming).filter((f) => !existing.has(f.name + f.size)),
+      ];
+    });
     setFieldErrors((prev) => ({ ...prev, file: '' }));
   }
 
-  function removeFile() {
-    setFile(null);
+  function removeNewFile(index: number) {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
     if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function removeExistingReceipt(id: number) {
+    setExistingReceipts((prev) => prev.filter((r) => r.id !== id));
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    addFile(e.dataTransfer.files);
+    addFiles(e.dataTransfer.files);
   }, []);
 
   function handleClose() {
     setFieldErrors({});
-    setFile(null);
+    setNewFiles([]);
+    setExistingReceipts(transaction?.receipt_files ?? []);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     onClose();
   }
 
@@ -120,7 +189,8 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
     { skip: !propertyOpen },
   );
 
-  const [updateFinance, { isLoading: loading }] = useUpdateFinanceMutation();
+  const [updateFinance, { isLoading: submitting }] = useUpdateFinanceMutation();
+  const loading = submitting || receiptsLoading;
 
   // ── Submit ────────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -146,12 +216,21 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
 
     const payload = new FormData();
     payload.append('property', form.propertyId);
-    payload.append('type', form.type.toUpperCase());
+    payload.append('type', form.type);
     payload.append('category', form.category);
     payload.append('amount', form.amount);
     payload.append('date', form.date);
     payload.append('description', form.description.trim());
-    if (file) payload.append('receipt', file);
+
+    // Backend replaces the whole receipt set on update, so re-send every
+    // receipt the user still wants to keep, plus any newly added ones —
+    // all under 'uploaded_receipt', which is the field the backend actually
+    // reads on write (`receipt_files` in the GET response is output-only).
+    existingReceipts.forEach((r) => {
+      const file = cachedExistingFiles[r.id];
+      if (file) payload.append('uploaded_receipt', file);
+    });
+    newFiles.forEach((file) => payload.append('uploaded_receipt', file));
 
     try {
       await updateFinance({
@@ -374,6 +453,7 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
               <FieldError errors={[{ message: fieldErrors.description }]} />
             </Field>
 
+            {/* Receipt / Invoice upload */}
             <Field data-invalid={!!fieldErrors.file}>
               <FieldLabel className='text-sm font-semibold'>
                 Receipt/Invoice
@@ -403,33 +483,82 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
                   ref={fileInputRef}
                   type='file'
                   accept='.pdf,.jpg,.jpeg,.png,.webp'
+                  multiple
                   className='hidden'
-                  onChange={(e) => addFile(e.target.files)}
+                  onChange={(e) => addFiles(e.target.files)}
                 />
               </div>
               <FieldError errors={[{ message: fieldErrors.file }]} />
 
-              {file && (
-                <ul className='space-y-2'>
-                  <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
-                    <Badge
-                      variant='secondary'
-                      className='max-w-[80%] truncate font-normal'
-                    >
-                      {file.name}
-                    </Badge>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      onClick={removeFile}
-                      className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                      aria-label='Remove file'
-                    >
-                      <X className='h-4 w-4' />
-                    </Button>
-                  </li>
-                </ul>
+              {/* Existing receipts (still-kept, re-uploaded on save) */}
+              {existingReceipts.length > 0 && (
+                <div className='space-y-2'>
+                  <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                    Existing Receipts
+                    {receiptsLoading && ' (preparing...)'}
+                  </p>
+                  <ul className='space-y-2'>
+                    {existingReceipts.map((r) => (
+                      <li
+                        key={r.id}
+                        className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                      >
+                        <a
+                          href={r.file}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='max-w-[80%] truncate text-sm underline'
+                        >
+                          {r.file.split('/').pop()}
+                        </a>
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => r.id !== undefined && removeExistingReceipt(r.id)}
+                          className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                          aria-label='Remove file'
+                        >
+                          <X className='h-4 w-4' />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Newly added files pending upload */}
+              {newFiles.length > 0 && (
+                <div className='space-y-2'>
+                  <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                    New Uploads
+                  </p>
+                  <ul className='space-y-2'>
+                    {newFiles.map((f, index) => (
+                      <li
+                        key={`${f.name}-${f.size}-${index}`}
+                        className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                      >
+                        <Badge
+                          variant='secondary'
+                          className='max-w-[80%] truncate font-normal'
+                        >
+                          {f.name}
+                        </Badge>
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => removeNewFile(index)}
+                          className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                          aria-label={`Remove ${f.name}`}
+                        >
+                          <X className='h-4 w-4' />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </Field>
           </div>

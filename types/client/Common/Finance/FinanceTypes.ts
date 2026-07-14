@@ -26,7 +26,7 @@ export interface TransactionCategoryOption {
 }
 
 export interface TransactionForm {
-  type: 'Income' | 'Expense';
+  type: string;
   propertyId: string;
   category: string;
   amount: string;
@@ -51,10 +51,10 @@ export interface FinancePropertyRef {
 export type FinanceTxType = 'INCOME' | 'EXPENSE';
 
 export interface FinanceReceiptFile {
-  id?: number;
+  id: number;
   file: string;
-}
-
+  description: string | null;
+};
 export interface FinanceTransaction {
   alias: string;
   property: FinancePropertyRef;

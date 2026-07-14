@@ -47,7 +47,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
 }) => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<TransactionForm>(EMPTY_FORM);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [propertyOpen, setPropertyOpen] = useState(false);
@@ -62,29 +62,30 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
   }
 
   // ── File helpers ──────────────────────────────────────────────────────────
-  function addFile(incoming: FileList | null) {
+  function addFiles(incoming: FileList | null) {
     if (!incoming?.length) return;
-    setFile(incoming[0]);
+    setFiles((prev) => [...prev, ...Array.from(incoming)]);
     setFieldErrors((prev) => ({ ...prev, file: '' }));
   }
 
-  function removeFile() {
-    setFile(null);
+  function removeFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    addFile(e.dataTransfer.files);
+    addFiles(e.dataTransfer.files);
   }, []);
 
   // ── Reset ─────────────────────────────────────────────────────────────────
   function handleClose() {
     setForm(EMPTY_FORM);
     setFieldErrors({});
-    setFile(null);
+    setFiles([]);
     setPropertySearch('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     onClose();
   }
 
@@ -124,7 +125,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
     payload.append('amount', form.amount);
     payload.append('date', form.date);
     payload.append('description', form.description.trim());
-    if (file) payload.append('receipt_files', file);
+    files.forEach((file) => payload.append('uploaded_receipt', file));
 
     try {
       await addFinance(payload).unwrap();
@@ -186,8 +187,8 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='Income'>Income</SelectItem>
-                    <SelectItem value='Expense'>Expense</SelectItem>
+                    <SelectItem value='INCOME'>Income</SelectItem>
+                    <SelectItem value='EXPENSE'>Expense</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError errors={[{ message: fieldErrors.type }]} />
@@ -383,32 +384,38 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                   ref={fileInputRef}
                   type='file'
                   accept='.pdf,.jpg,.jpeg,.png,.webp'
+                  multiple
                   className='hidden'
-                  onChange={(e) => addFile(e.target.files)}
+                  onChange={(e) => addFiles(e.target.files)}
                 />
               </div>
               <FieldError errors={[{ message: fieldErrors.file }]} />
 
-              {file && (
+              {files.length > 0 && (
                 <ul className='space-y-2'>
-                  <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
-                    <Badge
-                      variant='secondary'
-                      className='max-w-[80%] truncate font-normal'
+                  {files.map((file, index) => (
+                    <li
+                      key={`${file.name}-${file.size}-${index}`}
+                      className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
                     >
-                      {file.name}
-                    </Badge>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      onClick={removeFile}
-                      className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                      aria-label='Remove file'
-                    >
-                      <X className='h-4 w-4' />
-                    </Button>
-                  </li>
+                      <Badge
+                        variant='secondary'
+                        className='max-w-[80%] truncate font-normal'
+                      >
+                        {file.name}
+                      </Badge>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeFile(index)}
+                        className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                        aria-label={`Remove ${file.name}`}
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </li>
+                  ))}
                 </ul>
               )}
             </Field>
