@@ -26,7 +26,7 @@ export interface TransactionCategoryOption {
 }
 
 export interface TransactionForm {
-  type: 'Income' | 'Expense';
+  type: string;
   propertyId: string;
   category: string;
   amount: string;

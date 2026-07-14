@@ -120,7 +120,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
 
     const payload = new FormData();
     payload.append('property', form.propertyId);
-    payload.append('type', form.type.toUpperCase());
+    payload.append('type', form.type);
     payload.append('category', form.category);
     payload.append('amount', form.amount);
     payload.append('date', form.date);
@@ -187,8 +187,8 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='Income'>Income</SelectItem>
-                    <SelectItem value='Expense'>Expense</SelectItem>
+                    <SelectItem value='INCOME'>Income</SelectItem>
+                    <SelectItem value='EXPENSE'>Expense</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError errors={[{ message: fieldErrors.type }]} />

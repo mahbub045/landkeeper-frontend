@@ -40,7 +40,7 @@ function mapToForm(
 ): TransactionForm {
   if (!transaction) {
     return {
-      type: 'Income',
+      type: '',
       propertyId: '',
       category: '',
       amount: '',
@@ -50,7 +50,7 @@ function mapToForm(
   }
 
   return {
-    type: transaction.type === 'EXPENSE' ? 'Expense' : 'Income',
+    type: transaction.type,
     propertyId: String(transaction.property.id),
     category: transaction.category,
     amount: transaction.amount,
@@ -216,7 +216,7 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
 
     const payload = new FormData();
     payload.append('property', form.propertyId);
-    payload.append('type', form.type.toUpperCase());
+    payload.append('type', form.type);
     payload.append('category', form.category);
     payload.append('amount', form.amount);
     payload.append('date', form.date);
@@ -291,8 +291,8 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='Income'>Income</SelectItem>
-                    <SelectItem value='Expense'>Expense</SelectItem>
+                    <SelectItem value='INCOME'>Income</SelectItem>
+                    <SelectItem value='EXPENSE'>Expense</SelectItem>
                   </SelectContent>
                 </Select>
                 <FieldError errors={[{ message: fieldErrors.type }]} />
