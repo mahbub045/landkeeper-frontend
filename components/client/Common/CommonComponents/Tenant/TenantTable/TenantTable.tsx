@@ -14,8 +14,7 @@ import {
 } from '@/components/ui/table';
 import { TenantTableProps } from '@/types/client/Common/Tenant/TenantTypes';
 import { Search, User } from 'lucide-react';
-import { useState } from 'react';
-import TenantRow from '../TenantRow/TenantRow';
+import TenantRow from './TenantRow';
 
 const TABLE_COLUMNS = [
   'Tenant',
@@ -23,6 +22,7 @@ const TABLE_COLUMNS = [
   'Rent',
   'Start Date',
   'End Date',
+  'Status',
   'Actions',
 ];
 
@@ -33,7 +33,6 @@ const TenantTable: React.FC<TenantTableProps> = ({
   onSearchChange,
   isLoading,
 }) => {
-  const [infoOpen, setInfoOpen] = useState(false);
   const apiTenantByAlias = new Map(apiTenants.map((t) => [t.alias, t]));
 
   return (

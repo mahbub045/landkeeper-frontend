@@ -1,13 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { avatarColors } from '@/data/client/common/tenant/TenantData';
 import { TenantRowProps } from '@/types/client/Common/Tenant/TenantTypes';
-import { formatDate, getCurrencySign, getInitials } from '@/utils/formatters';
-import { Eye, Pencil, Trash } from 'lucide-react';
+import {
+  formatChoiceFieldValue,
+  formatDate,
+  getCurrencySign,
+  getInitials,
+} from '@/utils/formatters';
+import { Eye, Pencil, Send, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import DeleteTenantDialog from '../Dialogs/DeleteTenantDialog';
+import SendInvitationDialog from '../Dialogs/SendInvitationDialog';
 import UpdateTenantDialog from '../Dialogs/UpdateTenantDialog';
 import ViewTenantDialog from '../Dialogs/ViewTenantDialog';
 
@@ -17,10 +24,10 @@ function avatarColor(idx: number) {
 
 const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
   const { data: session } = useSession();
-  const isActive = tenant.status === 'Active';
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [sentInvitation, setSentInvitation] = useState(false);
 
   return (
     <>
@@ -43,21 +50,36 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             </div>
           </div>
         </TableCell>
-        <TableCell className='text-muted-foreground flex justify-start pl-15 text-sm'>
+        <TableCell className='flex justify-start pl-15 text-sm'>
           {tenant.property || 'Not Available'}
         </TableCell>
-        <TableCell className='text-foreground text-sm font-bold'>
+        <TableCell className='text-sm font-bold'>
           {getCurrencySign()}
           {tenant.rent.toLocaleString('en-GB') || 'Not Available'}
         </TableCell>
-        <TableCell className='text-muted-foreground text-sm'>
+        <TableCell className='text-sm'>
           {formatDate(tenant.startDate) || 'Not Available'}
         </TableCell>
-        <TableCell className='text-muted-foreground text-sm'>
+        <TableCell className='text-sm'>
           {formatDate(tenant.endDate) || 'Not Available'}
         </TableCell>
         <TableCell>
+          <Badge
+            className={`text-xs ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
+          >
+            {formatChoiceFieldValue(tenant.is_active ? 'Active' : 'Inactive')}
+          </Badge>
+        </TableCell>
+        <TableCell>
           <div className='flex items-center justify-center gap-2'>
+            <Button
+              variant='success'
+              size='icon'
+              className='rounded-lg'
+              onClick={() => setSentInvitation(true)}
+            >
+              <Send />
+            </Button>
             <Button
               variant='secondary'
               size='icon'
@@ -87,6 +109,12 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           </div>
         </TableCell>
       </TableRow>
+
+      <SendInvitationDialog
+        open={sentInvitation}
+        onClose={() => setSentInvitation(false)}
+        tenantData={apiTenant}
+      />
 
       <UpdateTenantDialog
         open={editOpen}

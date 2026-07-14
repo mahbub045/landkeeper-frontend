@@ -1,5 +1,3 @@
-export type TenantStatus = 'Active' | 'Renewal Due';
-
 export interface Tenant {
   alias: string;
   name: string;
@@ -9,7 +7,7 @@ export interface Tenant {
   rent: number;
   startDate: string;
   endDate: string;
-  status: TenantStatus;
+  is_active: boolean;
 }
 
 export interface ApiTenant {
@@ -18,8 +16,9 @@ export interface ApiTenant {
   deposit: string;
   email: string;
   employment_details: string;
+  title: string;
   first_name: string;
-  guarantor_name: string;
+  middle_name: string;
   last_name: string;
   notes: string;
   phone: string;
@@ -31,6 +30,7 @@ export interface ApiTenant {
   rent_amount: string;
   tenancy_end_date: string;
   tenancy_start_date: string;
+  is_active: boolean;
 }
 
 export interface TenantListResponse {
@@ -80,6 +80,12 @@ export interface ViewTenantDialogProps {
   open: boolean;
   onClose: () => void;
   tenant: ApiTenant | null;
+}
+
+export interface SendInvitationDialogProps {
+  open: boolean;
+  onClose: () => void;
+  tenantData: ApiTenant | null;
 }
 
 export interface UpdateTenantFormProps {

@@ -18,6 +18,21 @@ export const TenantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Tenant'],
     }),
+    sendInvitation: builder.mutation({
+      query: ({ tenant_alias }) => ({
+        url: `/auth/tenants/${tenant_alias}/send-invite`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Tenant'],
+    }),
+    acceptInvitation: builder.mutation({
+      query: ({ payload, token }) => ({
+        url: `/auth/tenants/${token}/accept-invite`,
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['Tenant'],
+    }),
     updateTenant: builder.mutation({
       query: ({ tenant_alias, payload }) => ({
         url: `/tenants/${tenant_alias}`,
@@ -39,6 +54,8 @@ export const TenantApi = baseApi.injectEndpoints({
 export const {
   useGetTenantsQuery,
   useAddTenantsMutation,
+  useSendInvitationMutation,
+  useAcceptInvitationMutation,
   useUpdateTenantMutation,
   useDeleteTenantMutation,
 } = TenantApi;
