@@ -17,7 +17,7 @@ const buttonVariants = cva(
       variant: {
         default: `${shimmerSolid} bg-primary/95 text-primary-foreground hover:bg-primary cursor-pointer`,
         outline: `${shimmerLight} border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 cursor-pointer`,
-        secondary: `${shimmerLight} bg-secondary/95 text-black hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground cursor-pointer`,
+        secondary: `${shimmerSolid} bg-secondary/95 text-black hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground cursor-pointer`,
         ghost: `${shimmerLight} hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 cursor-pointer`,
         destructive: `${shimmerLight} bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40 cursor-pointer`,
         link: 'text-primary underline-offset-4 hover:underline cursor-pointer',

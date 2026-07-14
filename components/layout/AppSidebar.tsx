@@ -222,6 +222,20 @@ const AppSidebar: React.FC = () => {
 
       <SidebarSeparator className='mx-0 h-px!' />
 
+      <Link href='#' passHref className='flex justify-center'>
+        <Button
+          type='button'
+          size='lg'
+          variant='secondary'
+          className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+        >
+          <Plus className='size-4' />
+          <span className='group-data-[collapsible=icon]:hidden'>
+            Start New Journey
+          </span>
+        </Button>
+      </Link>
+
       <SidebarContent className='gap-1 px-2 py-2'>
         <SidebarGroup className='p-0'>
           <SidebarGroupLabel className='px-3 text-[11px] font-semibold tracking-wider uppercase'>
@@ -233,22 +247,7 @@ const AppSidebar: React.FC = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* <SidebarSeparator className='mx-0 h-px!' /> */}
-
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
-        <Link href='#' passHref>
-          <Button
-            type='button'
-            variant='secondary'
-            className='mb-1 w-full gap-2 rounded-xl group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
-          >
-            <Plus className='size-4' />
-            <span className='group-data-[collapsible=icon]:hidden'>
-              Start New Journey
-            </span>
-          </Button>
-        </Link>
-
         <SidebarSeparator className='mx-0 h-px!' />
 
         <DropdownMenu>
