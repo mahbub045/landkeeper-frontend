@@ -72,20 +72,16 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: House,
       },
       {
-        label: 'Tenants',
-        href: '/client/landlord/tenants',
-        icon: UsersRound,
-      },
-      {
-        label: 'Property Maintenance',
-        href: '/client/landlord/property-maintenance',
-        icon: Wrench,
-      },
-      {
         label: 'Mortgages',
         href: '/client/landlord/mortgages',
         icon: Landmark,
       },
+      {
+        label: 'Tenants',
+        href: '/client/landlord/tenants',
+        icon: UsersRound,
+      },
+
       {
         label: 'Compliance',
         href: '/client/landlord/compliance',
@@ -107,6 +103,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: FileSpreadsheet,
       },
       {
+        label: 'Property Maintenance',
+        href: '/client/landlord/property-maintenance',
+        icon: Wrench,
+      },
+      {
         label: 'Reports & Analytics',
         href: '/client/landlord/reports-and-analytics',
         icon: BarChart3,
@@ -117,8 +118,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: Link2,
       },
       {
-        label: 'Contractor Marketplace',
-        href: '/client/landlord/contractor-marketplace',
+        label: 'Marketplace',
+        href: '/client/landlord/marketplace',
         icon: Handshake,
       },
       {
@@ -158,20 +159,16 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: House,
       },
       {
-        label: 'Tenants',
-        href: '/client/admin/tenants',
-        icon: UsersRound,
-      },
-      {
-        label: 'Property Maintenance',
-        href: '/client/admin/property-maintenance',
-        icon: Wrench,
-      },
-      {
         label: 'Mortgages',
         href: '/client/admin/mortgages',
         icon: Landmark,
       },
+      {
+        label: 'Tenants',
+        href: '/client/admin/tenants',
+        icon: UsersRound,
+      },
+
       {
         label: 'Compliance',
         href: '/client/admin/compliance',
@@ -193,6 +190,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: FileSpreadsheet,
       },
       {
+        label: 'Property Maintenance',
+        href: '/client/admin/property-maintenance',
+        icon: Wrench,
+      },
+      {
         label: 'Reports & Analytics',
         href: '/client/admin/reports-and-analytics',
         icon: BarChart3,
@@ -203,8 +205,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: Link2,
       },
       {
-        label: 'Contractor Marketplace',
-        href: '/client/admin/contractor-marketplace',
+        label: 'Marketplace',
+        href: '/client/admin/marketplace',
         icon: Handshake,
       },
       {
