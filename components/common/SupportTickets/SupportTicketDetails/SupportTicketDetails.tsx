@@ -31,7 +31,7 @@ function isPdf(filename: string) {
 }
 
 const SupportTicketDetails: React.FC = () => {
-  const { ticketAlias } = useParams<{ ticketAlias: string }>();
+  const { ticketalias } = useParams<{ ticketalias: string }>();
   const [editOpen, setEditOpen] = useState(false);
 
   const {
@@ -40,7 +40,7 @@ const SupportTicketDetails: React.FC = () => {
     isError,
     refetch,
     isFetching,
-  } = useGetSupportTicketDetailsQuery({ ticket_alias: ticketAlias });
+  } = useGetSupportTicketDetailsQuery({ ticket_alias: ticketalias });
 
   if (isLoading) {
     return (

@@ -24,7 +24,6 @@ import { ApiSupportTicketComment } from '@/types/common/SupportTickets/SupportTi
 import { formatDate, getInitials } from '@/utils/formatters';
 import {
   FileText,
-  Loader2,
   Paperclip,
   Pencil,
   Reply,
@@ -35,6 +34,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '../../CustomLoader/Loading';
 
 interface SupportTicketCommentsProps {
   ticketAlias: string;
@@ -44,11 +44,18 @@ function getFileName(url: string) {
   return url.split('/').pop() || 'Unknown file';
 }
 
+type CommentFile = ApiSupportTicketComment['files'][number];
+
 const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
   ticketAlias,
 }) => {
   const { data: session } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const replyFileInputRefs = useRef<Record<number, HTMLInputElement | null>>(
+    {},
+  );
+  const [editFiles, setEditFiles] = useState<Record<string, File[]>>({});
+  const editFileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const { data: comments, isLoading } = useGetSupportTicketCommentsQuery({
     ticket_alias: ticketAlias,
@@ -74,6 +81,20 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
   // Edit state, keyed by comment alias
   const [editingAlias, setEditingAlias] = useState<string | null>(null);
   const [editText, setEditText] = useState<Record<string, string>>({});
+
+  // Existing files still "kept" for a comment being edited (re-uploaded on save,
+  // since the backend replaces the whole file set on update — same pattern as
+  // UpdateSupportTicketDialog).
+  const [editExistingFiles, setEditExistingFiles] = useState<
+    Record<string, CommentFile[]>
+  >({});
+  // Re-fetched blobs of those ORIGINAL files, turned back into File objects.
+  const [editCachedFiles, setEditCachedFiles] = useState<
+    Record<string, Record<string, File>>
+  >({});
+  const [editFilesLoading, setEditFilesLoading] = useState<
+    Record<string, boolean>
+  >({});
 
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
@@ -130,9 +151,65 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
   }
 
   // ── Edit ──────────────────────────────────────────────────────────────────
+  async function prefetchExistingFiles(alias: string, files: CommentFile[]) {
+    setEditFilesLoading((prev) => ({ ...prev, [alias]: true }));
+    try {
+      const entries = await Promise.all(
+        files.map(async (f) => {
+          const res = await fetch(
+            `/api/fetch-remote-files?url=${encodeURIComponent(f.file)}`,
+          );
+          if (!res.ok) {
+            throw new Error(`Failed to fetch file ${f.alias} (${res.status})`);
+          }
+          const blob = await res.blob();
+          const filename = f.file.split('/').pop() || `file-${f.alias}`;
+          return [
+            f.alias,
+            new File([blob], filename, { type: blob.type }),
+          ] as const;
+        }),
+      );
+      setEditCachedFiles((prev) => ({
+        ...prev,
+        [alias]: Object.fromEntries(entries),
+      }));
+    } catch (err) {
+      console.error('Failed to prefetch existing files', err);
+      toast.error(
+        'Could not load one or more existing files. Removing/keeping them may not work correctly.',
+      );
+    } finally {
+      setEditFilesLoading((prev) => ({ ...prev, [alias]: false }));
+    }
+  }
+
   function startEdit(comment: ApiSupportTicketComment) {
     setEditingAlias(comment.alias);
     setEditText((prev) => ({ ...prev, [comment.alias]: comment.message }));
+    setEditFiles((prev) => ({ ...prev, [comment.alias]: [] }));
+    setEditExistingFiles((prev) => ({
+      ...prev,
+      [comment.alias]: comment.files,
+    }));
+
+    if (comment.files.length > 0) {
+      prefetchExistingFiles(comment.alias, comment.files);
+    }
+  }
+
+  function cancelEdit(alias: string) {
+    setEditingAlias(null);
+    setEditFiles((prev) => ({ ...prev, [alias]: [] }));
+    setEditExistingFiles((prev) => ({ ...prev, [alias]: [] }));
+    setEditCachedFiles((prev) => ({ ...prev, [alias]: {} }));
+  }
+
+  function removeExistingEditFile(alias: string, fileAlias: string) {
+    setEditExistingFiles((prev) => ({
+      ...prev,
+      [alias]: (prev[alias] ?? []).filter((f) => f.alias !== fileAlias),
+    }));
   }
 
   async function handleSaveEdit(alias: string) {
@@ -142,13 +219,29 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
       return;
     }
 
+    const payload = new FormData();
+    payload.append('message', message.trim());
+
+    // Re-send every existing file the user kept, using its prefetched blob...
+    (editExistingFiles[alias] ?? []).forEach((f) => {
+      const file = editCachedFiles[alias]?.[f.alias];
+      if (file) payload.append('upload_files', file);
+    });
+    // ...plus any newly added files.
+    (editFiles[alias] ?? []).forEach((file) =>
+      payload.append('upload_files', file),
+    );
+
     try {
       await updateComment({
         ticket_alias: ticketAlias,
         comment_alias: alias,
-        payload: { message: message.trim() },
+        payload,
       }).unwrap();
       setEditingAlias(null);
+      setEditFiles((prev) => ({ ...prev, [alias]: [] }));
+      setEditExistingFiles((prev) => ({ ...prev, [alias]: [] }));
+      setEditCachedFiles((prev) => ({ ...prev, [alias]: {} }));
       toast.success('Comment updated.');
     } catch {
       toast.error('Failed to update comment. Please try again.');
@@ -176,6 +269,8 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
     const canModify =
       session?.user?.email === node.author.email ||
       session?.user?.role === 'ADMIN';
+    const isEditingThis = editingAlias === node.alias;
+    const editLoading = isUpdateLoading || !!editFilesLoading[node.alias];
 
     return (
       <div key={node.alias} className={isReply ? 'ml-4' : ''}>
@@ -207,7 +302,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                 </span>
               </div>
 
-              {editingAlias === node.alias ? (
+              {isEditingThis ? (
                 <form
                   className='mt-2 space-y-2'
                   onSubmit={(e) => {
@@ -218,7 +313,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                   <Textarea
                     rows={3}
                     value={editText[node.alias] ?? ''}
-                    disabled={isUpdateLoading}
+                    disabled={editLoading}
                     onChange={(e) =>
                       setEditText((prev) => ({
                         ...prev,
@@ -226,22 +321,110 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                       }))
                     }
                   />
+
+                  {(editExistingFiles[node.alias] ?? []).length > 0 && (
+                    <div className='space-y-1'>
+                      <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                        Existing Attachments
+                        {editFilesLoading[node.alias] && ' (preparing...)'}
+                      </p>
+                      <div className='flex flex-wrap gap-2'>
+                        {(editExistingFiles[node.alias] ?? []).map((f) => (
+                          <div
+                            key={f.alias}
+                            className='bg-background flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
+                          >
+                            <FileText className='text-primary size-3.5' />
+                            {getFileName(f.file)}
+                            <button
+                              type='button'
+                              disabled={editLoading}
+                              onClick={() =>
+                                removeExistingEditFile(node.alias, f.alias)
+                              }
+                            >
+                              <X className='hover:text-danger size-3.5' />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(editFiles[node.alias] ?? []).length > 0 && (
+                    <div className='flex flex-wrap gap-2'>
+                      {(editFiles[node.alias] ?? []).map((file, index) => (
+                        <div
+                          key={`${file.name}-${index}`}
+                          className='bg-background flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
+                        >
+                          <FileText className='text-muted-foreground size-3.5' />
+                          {file.name}
+                          <button
+                            type='button'
+                            onClick={() =>
+                              setEditFiles((prev) => ({
+                                ...prev,
+                                [node.alias]: (prev[node.alias] ?? []).filter(
+                                  (_, i) => i !== index,
+                                ),
+                              }))
+                            }
+                          >
+                            <X className='hover:text-danger size-3.5' />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <input
+                    ref={(el) => {
+                      editFileInputRefs.current[node.alias] = el;
+                    }}
+                    type='file'
+                    multiple
+                    accept='image/*,.pdf,.doc,.docx'
+                    disabled={editLoading}
+                    onChange={(e) =>
+                      setEditFiles((prev) => ({
+                        ...prev,
+                        [node.alias]: [
+                          ...(prev[node.alias] ?? []),
+                          ...Array.from(e.target.files ?? []),
+                        ],
+                      }))
+                    }
+                    className='hidden'
+                  />
+
+                  <button
+                    type='button'
+                    disabled={editLoading}
+                    onClick={() =>
+                      editFileInputRefs.current[node.alias]?.click()
+                    }
+                    className='border-border bg-background hover:bg-muted flex h-10 max-w-52 items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
+                  >
+                    <Paperclip className='size-3.5' />
+                    {(editFiles[node.alias] ?? []).length > 0
+                      ? `${(editFiles[node.alias] ?? []).length} file${(editFiles[node.alias] ?? []).length > 1 ? 's' : ''} selected`
+                      : 'Add files'}
+                  </button>
                   <div className='flex gap-2'>
                     <Button
                       type='submit'
                       size='sm'
-                      disabled={
-                        isUpdateLoading || !editText[node.alias]?.trim()
-                      }
+                      disabled={editLoading || !editText[node.alias]?.trim()}
                     >
-                      {isUpdateLoading && <Loader2 className='animate-spin' />}
+                      {isUpdateLoading && <Loading className='text-white!' />}
                       Save
                     </Button>
                     <Button
                       type='button'
                       variant='outline'
                       size='sm'
-                      onClick={() => setEditingAlias(null)}
+                      onClick={() => cancelEdit(node.alias)}
                     >
                       Cancel
                     </Button>
@@ -350,8 +533,11 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                     </div>
                   )}
 
-                  <div className='flex items-center gap-2'>
+                  <div className='flex items-center gap-3'>
                     <input
+                      ref={(el) => {
+                        replyFileInputRefs.current[node.id] = el;
+                      }}
                       type='file'
                       multiple
                       accept='image/*,.pdf,.doc,.docx'
@@ -365,8 +551,23 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                           ],
                         }))
                       }
-                      className='text-muted-foreground max-w-52 text-xs'
+                      className='hidden'
                     />
+
+                    <button
+                      type='button'
+                      disabled={replyLoadingId === node.id}
+                      onClick={() =>
+                        replyFileInputRefs.current[node.id]?.click()
+                      }
+                      className='border-border bg-background hover:bg-muted flex h-10 max-w-52 items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
+                    >
+                      <Paperclip className='size-3.5' />
+                      {(replyFiles[node.id] ?? []).length > 0
+                        ? `${(replyFiles[node.id] ?? []).length} file${(replyFiles[node.id] ?? []).length > 1 ? 's' : ''} selected`
+                        : 'Choose files'}
+                    </button>
+
                     <Button
                       size='sm'
                       disabled={
@@ -375,11 +576,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                       }
                       onClick={() => handleSubmitReply(node.id)}
                     >
-                      {replyLoadingId === node.id ? (
-                        <Loader2 className='animate-spin' />
-                      ) : (
-                        <Send />
-                      )}
+                      {replyLoadingId === node.id ? <Loading /> : <Send />}
                       Send
                     </Button>
                     <Button
@@ -415,7 +612,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
         {/* New comment box */}
         <form
           onSubmit={handleSubmitComment}
-          className='border-primary rounded-xl border p-4'
+          className='border-border rounded-xl border p-4'
         >
           <div className='flex items-start gap-3'>
             <Avatar className='size-10 shrink-0'>
@@ -491,11 +688,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                   type='submit'
                   disabled={isCommentLoading || !newComment.trim()}
                 >
-                  {isCommentLoading ? (
-                    <Loader2 className='animate-spin' />
-                  ) : (
-                    <Send />
-                  )}
+                  {isCommentLoading ? <Loading /> : <Send />}
                   Post Comment
                 </Button>
               </div>
@@ -547,7 +740,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
               disabled={isDeleteLoading}
               className='bg-danger hover:bg-danger/90'
             >
-              {isDeleteLoading && <Loader2 className='animate-spin' />}
+              {isDeleteLoading && <Loading />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

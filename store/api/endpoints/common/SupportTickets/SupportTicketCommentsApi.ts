@@ -26,11 +26,7 @@ export const SupportTicketCommentsApi = baseApi.injectEndpoints({
     }),
     updateSupportTicketComment: builder.mutation<
       ApiSupportTicketComment,
-      {
-        ticket_alias: string;
-        comment_alias: string;
-        payload: { message: string };
-      }
+      { ticket_alias: string; comment_alias: string; payload: FormData }
     >({
       query: ({ ticket_alias, comment_alias, payload }) => ({
         url: `/support-tickets/${ticket_alias}/comments/${comment_alias}`,
