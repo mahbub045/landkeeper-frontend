@@ -51,17 +51,38 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           </div>
         </TableCell>
         <TableCell className='flex justify-start pl-15 text-sm'>
-          {tenant.property || 'Not Available'}
+          {tenant.property ? (
+            <p className='text-foreground text-sm font-semibold'>
+              {tenant.property}
+            </p>
+          ) : (
+            <small className='text-muted-foreground'>Not Available</small>
+          )}
         </TableCell>
         <TableCell className='text-sm font-bold'>
-          {getCurrencySign()}
-          {tenant.rent.toLocaleString('en-GB') || 'Not Available'}
+          {tenant.rent ? (
+            <>
+              {getCurrencySign()} <span> tenant.rent.toLocaleString()</span>
+            </>
+          ) : (
+            <small className='text-muted-foreground'>
+              {getCurrencySign()} 0
+            </small>
+          )}
         </TableCell>
         <TableCell className='text-sm'>
-          {formatDate(tenant.startDate) || 'Not Available'}
+          {tenant.startDate ? (
+            formatDate(tenant.startDate)
+          ) : (
+            <small className='text-muted-foreground'>Not Available</small>
+          )}
         </TableCell>
         <TableCell className='text-sm'>
-          {formatDate(tenant.endDate) || 'Not Available'}
+          {tenant.endDate ? (
+            formatDate(tenant.endDate)
+          ) : (
+            <small className='text-muted-foreground'>Not Available</small>
+          )}
         </TableCell>
         <TableCell>
           <Badge
