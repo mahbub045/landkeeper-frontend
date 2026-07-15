@@ -402,7 +402,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
         {/* Title + First Name */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!fieldErrors.firstName}>
+          <Field data-invalid={!!fieldErrors.title}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Title<span className='text-danger'>*</span>
             </FieldLabel>
@@ -424,7 +424,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                 ))}
               </SelectContent>
             </Select>
-            <FieldError errors={[{ message: fieldErrors.firstName }]} />
+            <FieldError errors={[{ message: fieldErrors.title }]} />
           </Field>
 
           <Field data-invalid={!!fieldErrors.lastName}>
