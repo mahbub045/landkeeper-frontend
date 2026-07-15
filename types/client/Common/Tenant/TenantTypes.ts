@@ -1,6 +1,9 @@
 export interface Tenant {
   alias: string;
-  name: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   avatar?: string;
   property: string;
@@ -108,6 +111,5 @@ export interface DeleteTenantDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  tenantAlias: string;
-  tenantName: string;
+  tenantData: ApiTenant | null;
 }

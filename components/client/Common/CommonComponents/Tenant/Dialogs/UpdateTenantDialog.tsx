@@ -98,7 +98,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<TenantForm>(() => tenantToForm(tenant));
@@ -126,7 +125,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     { skip: !propertyOpen },
   );
 
-  const [updateTenant] = useUpdateTenantMutation();
+  const [updateTenant, { isLoading: loading }] = useUpdateTenantMutation();
 
   // ── Avatar handlers ────────────────────────────────────────────────────────
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -165,7 +164,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
     setBannerError(null);
     setFieldErrors({});
-    setLoading(true);
 
     const formData = new FormData();
     if (avatarFile) formData.append('avatar', avatarFile);
@@ -221,8 +219,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
       } else {
         toast.error('Something went wrong. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -465,25 +461,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
               }
             />
             <FieldError errors={[{ message: fieldErrors.middleName }]} />
-          </Field>
-
-          <Field data-invalid={!!fieldErrors.lastName}>
-            <FieldLabel className='gap-0 text-sm font-semibold'>
-              Last Name<span className='text-danger'>*</span>
-            </FieldLabel>
-            <Input
-              type='text'
-              value={form.lastName}
-              onChange={(e) => set('lastName', e.target.value)}
-              aria-invalid={!!fieldErrors.lastName}
-              className={
-                fieldErrors.lastName
-                  ? 'border-danger focus-visible:ring-danger/50'
-                  : ''
-              }
-              required
-            />
-            <FieldError errors={[{ message: fieldErrors.lastName }]} />
           </Field>
 
           <Field data-invalid={!!fieldErrors.lastName}>

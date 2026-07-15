@@ -1,18 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { avatarColors } from '@/data/client/common/tenant/TenantData';
+import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
 import { TenantRowProps } from '@/types/client/Common/Tenant/TenantTypes';
-import {
-  formatChoiceFieldValue,
-  formatDate,
-  getCurrencySign,
-  getInitials,
-} from '@/utils/formatters';
+import { formatDate, getCurrencySign, getInitials } from '@/utils/formatters';
 import { Eye, Pencil, Send, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import DeleteTenantDialog from '../Dialogs/DeleteTenantDialog';
 import SendInvitationDialog from '../Dialogs/SendInvitationDialog';
 import UpdateTenantDialog from '../Dialogs/UpdateTenantDialog';
@@ -28,6 +31,26 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [sentInvitation, setSentInvitation] = useState(false);
+  const [updateTenant, { isLoading: isUpdatingStatus }] =
+    useUpdateTenantMutation();
+
+  const handleStatusChange = async (value: string) => {
+    const updatedTenant = {
+      is_active: value === 'active',
+    };
+    try {
+      await updateTenant({
+        tenant_alias: tenant.alias,
+        payload: updatedTenant,
+      });
+      toast.success(
+        `Tenant status updated to ${value === 'active' ? 'Active' : 'Deactivated'}`,
+      );
+    } catch (error) {
+      console.error('Error updating tenant status:', error);
+      toast.error('Failed to update tenant status');
+    }
+  };
 
   return (
     <>
@@ -35,16 +58,19 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         <TableCell>
           <div className='flex items-center justify-start gap-3 pl-10'>
             <Avatar className='size-9 shrink-0'>
-              <AvatarImage src={apiTenant.avatar || ''} alt={tenant.name} />
+              <AvatarImage
+                src={apiTenant.avatar || ''}
+                alt={tenant.first_name}
+              />
               <AvatarFallback
                 className={`text-xs font-bold ${avatarColor(idx)}`}
               >
-                {getInitials(tenant.name)}
+                {getInitials(tenant.first_name)}
               </AvatarFallback>
             </Avatar>
             <div className='flex flex-col items-start justify-center'>
               <p className='text-foreground text-sm font-semibold'>
-                {tenant.name}
+                {`${tenant.title} ${tenant.first_name} ${tenant.middle_name} ${tenant.last_name}`.trim()}
               </p>
               <p className='text-muted-foreground text-xs'>{tenant.email}</p>
             </div>
@@ -84,12 +110,40 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <small className='text-muted-foreground'>Not Available</small>
           )}
         </TableCell>
-        <TableCell>
-          <Badge
-            className={`text-xs ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
+        <TableCell className='flex items-center justify-center'>
+          <Select
+            value={tenant.is_active ? 'active' : 'deactivated'}
+            onValueChange={(value) => handleStatusChange(value)}
+            disabled={isUpdatingStatus}
           >
-            {formatChoiceFieldValue(tenant.is_active ? 'Active' : 'Inactive')}
-          </Badge>
+            <SelectTrigger
+              size='sm'
+              className={`h-6! w-fit cursor-pointer gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${tenant.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+            >
+              <span
+                className={`inline-block size-1.5 rounded-full ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
+              />
+              <SelectValue>
+                {tenant.is_active ? 'Active' : 'Deactivated'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                value='active'
+                className='focus:bg-success/10 cursor-pointer'
+              >
+                <span className='bg-success inline-block size-1.5 rounded-full' />
+                Active
+              </SelectItem>
+              <SelectItem
+                value='deactivated'
+                className='focus:bg-danger/10 cursor-pointer'
+              >
+                <span className='bg-danger inline-block size-1.5 rounded-full' />
+                Deactivated
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
@@ -148,8 +202,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onSuccess={() => setDeleteOpen(false)}
-        tenantAlias={tenant.alias}
-        tenantName={tenant.name}
+        tenantData={apiTenant}
       />
 
       <ViewTenantDialog

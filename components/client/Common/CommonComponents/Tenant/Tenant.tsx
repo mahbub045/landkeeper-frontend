@@ -26,7 +26,10 @@ const PAGE_LIMIT = 12;
 function mapApiTenant(apiTenant: ApiTenant): TenantModel {
   return {
     alias: apiTenant.alias,
-    name: `${formatChoiceFieldValue(apiTenant.title) || ''} ${apiTenant.first_name} ${apiTenant.middle_name || ''} ${apiTenant.last_name}`.trim(),
+    title: formatChoiceFieldValue(apiTenant.title) || '',
+    first_name: apiTenant.first_name,
+    middle_name: apiTenant.middle_name || '',
+    last_name: apiTenant.last_name,
     email: apiTenant.email,
     avatar: apiTenant.avatar ?? undefined,
     property: apiTenant.property?.property_name ?? '—',
