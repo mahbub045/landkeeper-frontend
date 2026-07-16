@@ -28,6 +28,8 @@ function mapApiTicket(apiTicket: ApiSupportTicket): SupportTicketModel {
     ticketId: apiTicket.ticket_id,
     ticketType: apiTicket.ticket_type,
     subject: apiTicket.subject,
+    status: apiTicket.status,
+    priority: apiTicket.priority,
     description: apiTicket.description,
     fileCount: apiTicket.files?.length ?? 0,
     createdAt: apiTicket.created_at,

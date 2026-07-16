@@ -5,16 +5,44 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TICKET_TYPE_STYLES } from '@/data/common/SupportTickets/SupportTicketsData';
-import { useGetSupportTicketDetailsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
+import {
+  PRIORITY_STYLES,
+  STATUS_DESCRIPTIONS,
+  STATUS_ICON_COLORS,
+  STATUS_ICONS,
+  STATUS_LABELS,
+  STATUS_STYLES,
+  StatusOptions,
+  TICKET_TYPE_STYLES,
+} from '@/data/common/SupportTickets/SupportTicketsData';
+import {
+  useGetSupportTicketDetailsQuery,
+  useUpdateSupportTicketsMutation,
+} from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import formatChoiceFieldValue, {
   formatDate,
   getInitials,
 } from '@/utils/formatters';
-import { ArrowLeft, Download, FileText, ImageIcon, Pencil } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  HelpCircle,
+  ImageIcon,
+  Pencil,
+} from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
 import SupportTicketComments from './SupportTicketComments';
 
@@ -31,8 +59,19 @@ function isPdf(filename: string) {
 }
 
 const SupportTicketDetails: React.FC = () => {
+  const { data: session } = useSession();
   const { ticketalias } = useParams<{ ticketalias: string }>();
   const [editOpen, setEditOpen] = useState(false);
+
+  const [updateSupportTickets, { isLoading: isStatusUpdating }] =
+    useUpdateSupportTicketsMutation();
+
+  const handleStatusChange = (value: string) => {
+    updateSupportTickets({
+      ticket_alias: ticketalias,
+      payload: { status: value },
+    });
+  };
 
   const {
     data: ticket,
@@ -116,6 +155,15 @@ const SupportTicketDetails: React.FC = () => {
                 {formatChoiceFieldValue(ticket.ticket_type)}
               </Badge>
             </div>
+            <div className='flex items-center gap-2 text-xs'>
+              <span className='text-muted-foreground'>Priority:</span>
+              <Badge
+                variant='secondary'
+                className={`rounded-md text-xs font-medium ${PRIORITY_STYLES[ticket.priority]}`}
+              >
+                {formatChoiceFieldValue(ticket.priority)}
+              </Badge>
+            </div>
           </div>
 
           <div className='flex items-center gap-2'>
@@ -143,6 +191,105 @@ const SupportTicketDetails: React.FC = () => {
           </div>
 
           <div className='flex flex-col items-end gap-2'>
+            <div className='flex items-center justify-center gap-2'>
+              {session?.user?.role === 'SUPER_ADMIN' ? (
+                <div className='flex justify-center'>
+                  <Select
+                    value={ticket.status}
+                    onValueChange={handleStatusChange}
+                    disabled={isStatusUpdating}
+                  >
+                    <SelectTrigger
+                      className={`h-5.5! w-fit gap-1 rounded-md border-none px-2 py-0 text-xs font-medium shadow-none focus:ring-0 focus:ring-offset-0 [&_svg]:size-3 ${STATUS_STYLES[ticket.status]} `}
+                    >
+                      <SelectValue>
+                        <span className='flex items-center gap-1.5'>
+                          {(() => {
+                            const Icon = STATUS_ICONS[ticket.status];
+                            return (
+                              <Icon
+                                className={`size-3 ${STATUS_ICON_COLORS[ticket.status]}`}
+                              />
+                            );
+                          })()}
+                          {STATUS_LABELS[ticket.status]}
+                        </span>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent align='center'>
+                      {StatusOptions.map((opt) => {
+                        const Icon = STATUS_ICONS[opt.value];
+                        return (
+                          <SelectItem
+                            key={opt.value}
+                            value={opt.value}
+                            className='text-xs'
+                          >
+                            <span className='flex items-center gap-2'>
+                              <Icon
+                                className={`size-3.5 ${STATUS_ICON_COLORS[opt.value]}`}
+                              />
+                              {opt.label}
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <Badge
+                  variant='secondary'
+                  className={`rounded-md text-xs font-medium ${STATUS_STYLES[ticket.status]}`}
+                >
+                  <span className='flex items-center gap-1.5'>
+                    {(() => {
+                      const Icon = STATUS_ICONS[ticket.status];
+                      return (
+                        <Icon
+                          className={`size-3 ${STATUS_ICON_COLORS[ticket.status]}`}
+                        />
+                      );
+                    })()}
+                    {STATUS_LABELS[ticket.status]}
+                  </span>
+                </Badge>
+              )}
+
+              <div className='bg-warning rounded-md p-0.5'>
+                <HoverInfoPopover
+                  icon={<HelpCircle className='size-3.5 text-white' />}
+                  triggerClassName='flex size-4 items-center justify-center rounded-full'
+                  contentClassName='w-80 space-y-2 p-4 normal-case'
+                  align='center'
+                  content={
+                    <>
+                      {StatusOptions.map((opt) => {
+                        const Icon = STATUS_ICONS[opt.value];
+                        return (
+                          <div
+                            key={opt.value}
+                            className='flex items-start gap-2'
+                          >
+                            <Icon
+                              className={`mt-0.5 size-3.5 shrink-0 ${STATUS_ICON_COLORS[opt.value]}`}
+                            />
+                            <p className='text-muted-foreground text-xs'>
+                              <span
+                                className={`font-semibold ${STATUS_ICON_COLORS[opt.value]}`}
+                              >
+                                {STATUS_LABELS[opt.value]}:
+                              </span>{' '}
+                              {STATUS_DESCRIPTIONS[opt.value]}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </>
+                  }
+                />
+              </div>
+            </div>
             <div className='bg-primary/10 rounded-lg px-4 py-2 text-right'>
               <p className='text-muted-foreground text-xs font-semibold'>
                 Ticket ID
