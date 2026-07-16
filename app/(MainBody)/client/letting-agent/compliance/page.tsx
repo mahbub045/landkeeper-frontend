@@ -1,3 +1,5 @@
+import LettingAgentComplianceContainer from '@/components/client/LettingAgent/Compliance';
+
 export default function CompliancePage() {
-  return <div>compliance</div>;
+  return <LettingAgentComplianceContainer />;
 }

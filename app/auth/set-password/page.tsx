@@ -9,11 +9,25 @@ import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useSetPasswordMutation } from '@/store/api/endpoints/auth/ForgotPasswordApi';
 import { SetPasswordApiError } from '@/types/common/auth/ForgotPasswordTypes';
-import { Eye, EyeOff } from 'lucide-react';
+import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { toast } from 'sonner';
+
+const PASSWORD_REQUIREMENTS: {
+  label: string;
+  test: (pw: string) => boolean;
+}[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /[0-9]/.test(pw) },
+  {
+    label: 'One special character (!@#$%^&*)',
+    test: (pw) => /[!@#$%^&*]/.test(pw),
+  },
+];
 
 // ✅ Inner component uses useSearchParams
 function SetPasswordContent() {
@@ -22,6 +36,7 @@ function SetPasswordContent() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [setPasswordMutation, { isLoading: setPasswordLoading }] =
@@ -31,10 +46,22 @@ function SetPasswordContent() {
   const token = searchParams.get('token');
   const uid = searchParams.get('uid');
 
+  const passwordChecks = PASSWORD_REQUIREMENTS.map((req) => ({
+    ...req,
+    passed: req.test(password),
+  }));
+  const isPasswordValid = passwordChecks.every((c) => c.passed);
+  const showPasswordRequirements = passwordFocused || password.length > 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setFieldErrors({});
+
+    if (!isPasswordValid) {
+      setFieldErrors({ password: 'Password does not meet the requirements' });
+      return;
+    }
 
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
@@ -114,6 +141,12 @@ function SetPasswordContent() {
             </p>
           </div>
 
+          {errorMessage && (
+            <div className='mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/40 dark:text-red-200'>
+              {errorMessage}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className='space-y-5'>
             <div className='space-y-1.5'>
               <Label
@@ -128,8 +161,21 @@ function SetPasswordContent() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter your password'
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) {
+                      setFieldErrors((prev) => ({ ...prev, password: '' }));
+                    }
+                  }}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={() => setPasswordFocused(false)}
                   required
+                  className={
+                    fieldErrors.password ||
+                    (password.length > 0 && !isPasswordValid)
+                      ? 'border-red-500 focus-visible:ring-red-500'
+                      : ''
+                  }
                 />
                 <button
                   type='button'
@@ -143,7 +189,37 @@ function SetPasswordContent() {
                   )}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className='text-xs text-red-500'>{fieldErrors.password}</p>
+              )}
             </div>
+
+            {showPasswordRequirements && (
+              <div className='rounded-md bg-blue-50 p-3 dark:bg-blue-950/30'>
+                <p className='mb-2 text-xs font-semibold text-gray-700 dark:text-gray-300'>
+                  Password requirements:
+                </p>
+                <ul className='space-y-1'>
+                  {passwordChecks.map((check) => (
+                    <li
+                      key={check.label}
+                      className={`flex items-center gap-2 text-xs ${
+                        check.passed
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}
+                    >
+                      {check.passed ? (
+                        <Check className='h-3.5 w-3.5 text-green-600 dark:text-green-400' />
+                      ) : (
+                        <X className='h-3.5 w-3.5 text-red-500' />
+                      )}
+                      {check.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className='space-y-1.5'>
               <Label
@@ -158,8 +234,21 @@ function SetPasswordContent() {
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder='Confirm your password'
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (fieldErrors.confirmPassword) {
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        confirmPassword: '',
+                      }));
+                    }
+                  }}
                   required
+                  className={
+                    fieldErrors.confirmPassword
+                      ? 'border-red-500 focus-visible:ring-red-500'
+                      : ''
+                  }
                 />
                 <button
                   type='button'
@@ -173,6 +262,11 @@ function SetPasswordContent() {
                   )}
                 </button>
               </div>
+              {fieldErrors.confirmPassword && (
+                <p className='text-xs text-red-500'>
+                  {fieldErrors.confirmPassword}
+                </p>
+              )}
             </div>
 
             <Button

@@ -1,3 +1,5 @@
+import LettingAgentPropertiesContainer from '@/components/client/LettingAgent/Properties';
+
 export default function PropertiesPage() {
-  return <div>properties</div>;
+  return <LettingAgentPropertiesContainer />;
 }

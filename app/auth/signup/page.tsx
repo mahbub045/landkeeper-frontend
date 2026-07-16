@@ -17,7 +17,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
-import { Eye, EyeOff } from 'lucide-react';
+import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -68,6 +68,19 @@ function extractErrorMessage(data: unknown): string {
   }
   return String(data);
 }
+const PASSWORD_REQUIREMENTS: {
+  label: string;
+  test: (pw: string) => boolean;
+}[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /[0-9]/.test(pw) },
+  {
+    label: 'One special character (!@#$%^&*)',
+    test: (pw) => /[!@#$%^&*]/.test(pw),
+  },
+];
 
 export default function SignupPage() {
   const router = useRouter();
@@ -83,6 +96,14 @@ export default function SignupPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const passwordChecks = PASSWORD_REQUIREMENTS.map((req) => ({
+    ...req,
+    passed: req.test(password),
+  }));
+  const isPasswordValid = passwordChecks.every((c) => c.passed);
+  const showPasswordRequirements = passwordFocused || password.length > 0;
 
   // Per-field errors from API
   const [fieldErrors, setFieldErrors] = useState<SignupFieldErrors>({});
@@ -97,11 +118,15 @@ export default function SignupPage() {
     e.preventDefault();
     setFieldErrors({});
 
+    if (!isPasswordValid) {
+      setFieldErrors({ password: ['Password does not meet the requirements'] });
+      return;
+    }
+
     if (password !== confirmPassword) {
       setFieldErrors({ password: ['Passwords do not match'] });
       return;
     }
-
     const payload = {
       title,
       first_name: firstName,
@@ -370,10 +395,13 @@ export default function SignupPage() {
                       setPassword(e.target.value);
                       clearError('password');
                     }}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
                     placeholder='Min. 8 characters'
                     required
                     className={
-                      fieldError(fieldErrors, 'password')
+                      fieldError(fieldErrors, 'password') ||
+                      (password.length > 0 && !isPasswordValid)
                         ? 'border-red-500 focus-visible:ring-red-500'
                         : ''
                     }
@@ -423,6 +451,32 @@ export default function SignupPage() {
                 </div>
               </div>
             </div>
+            {showPasswordRequirements && (
+              <div className='rounded-md bg-blue-50 p-3 dark:bg-blue-950/30'>
+                <p className='mb-2 text-xs font-semibold text-gray-700 dark:text-gray-300'>
+                  Password requirements:
+                </p>
+                <ul className='space-y-1'>
+                  {passwordChecks.map((check) => (
+                    <li
+                      key={check.label}
+                      className={`flex items-center gap-2 text-xs ${
+                        check.passed
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}
+                    >
+                      {check.passed ? (
+                        <Check className='h-3.5 w-3.5 text-green-600 dark:text-green-400' />
+                      ) : (
+                        <X className='h-3.5 w-3.5 text-red-500' />
+                      )}
+                      {check.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Submit */}
             <Button

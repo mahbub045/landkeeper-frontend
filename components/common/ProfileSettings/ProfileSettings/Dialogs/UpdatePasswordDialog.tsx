@@ -15,9 +15,23 @@ import {
   ApiError,
   UpdatePasswordDialogProps,
 } from '@/types/common/ProfileSettings/UpdatePasswordTypes';
-import { Eye, EyeOff } from 'lucide-react';
+import { Check, Eye, EyeOff, X } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+
+const PASSWORD_REQUIREMENTS: {
+  label: string;
+  test: (pw: string) => boolean;
+}[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /[0-9]/.test(pw) },
+  {
+    label: 'One special character (!@#$%^&*)',
+    test: (pw) => /[!@#$%^&*]/.test(pw),
+  },
+];
 
 const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
   open,
@@ -35,8 +49,16 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [newPasswordFocused, setNewPasswordFocused] = useState(false);
 
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
+
+  const passwordChecks = PASSWORD_REQUIREMENTS.map((req) => ({
+    ...req,
+    passed: req.test(newPassword),
+  }));
+  const isPasswordValid = passwordChecks.every((c) => c.passed);
+  const showPasswordRequirements = newPasswordFocused || newPassword.length > 0;
 
   function handleClose() {
     setCurrentPassword('');
@@ -50,6 +72,18 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
   async function handleSubmit() {
     setFieldErrors({});
     setBannerError(null);
+
+    if (!isPasswordValid) {
+      setFieldErrors({
+        newPassword: 'Password does not meet the requirements',
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setFieldErrors({ confirmPassword: 'Passwords do not match' });
+      return;
+    }
 
     try {
       await updatePassword({
@@ -186,10 +220,18 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
                   required
                   minLength={8}
                   value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (fieldErrors.newPassword) {
+                      setFieldErrors((prev) => ({ ...prev, newPassword: '' }));
+                    }
+                  }}
+                  onFocus={() => setNewPasswordFocused(true)}
+                  onBlur={() => setNewPasswordFocused(false)}
                   aria-invalid={!!fieldErrors.newPassword}
                   className={
-                    fieldErrors.newPassword
+                    fieldErrors.newPassword ||
+                    (newPassword.length > 0 && !isPasswordValid)
                       ? 'border-danger focus-visible:ring-danger/50 pr-10'
                       : 'pr-10'
                   }
@@ -210,6 +252,33 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
                 </button>
               </div>
               <FieldError errors={[{ message: fieldErrors.newPassword }]} />
+
+              {showPasswordRequirements && (
+                <div className='bg-muted/50 mt-2 rounded-md p-3'>
+                  <p className='text-foreground mb-2 text-xs font-semibold'>
+                    Password requirements:
+                  </p>
+                  <ul className='space-y-1'>
+                    {passwordChecks.map((check) => (
+                      <li
+                        key={check.label}
+                        className={`flex items-center gap-2 text-xs ${
+                          check.passed
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-muted-foreground'
+                        }`}
+                      >
+                        {check.passed ? (
+                          <Check className='h-3.5 w-3.5 text-green-600 dark:text-green-400' />
+                        ) : (
+                          <X className='text-danger h-3.5 w-3.5' />
+                        )}
+                        {check.label}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </Field>
 
             <Field data-invalid={!!fieldErrors.confirmPassword}>
@@ -221,7 +290,15 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (fieldErrors.confirmPassword) {
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        confirmPassword: '',
+                      }));
+                    }
+                  }}
                   aria-invalid={!!fieldErrors.confirmPassword}
                   className={
                     fieldErrors.confirmPassword

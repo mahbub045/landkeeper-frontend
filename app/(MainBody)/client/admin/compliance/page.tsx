@@ -1,7 +1,5 @@
-import React from 'react'
+import AdminComplianceContainer from '@/components/client/Admin/Compliance';
 
 export default function CompliancePage() {
-  return (
-    <div>compliance</div>
-  )
+  return <AdminComplianceContainer />;
 }

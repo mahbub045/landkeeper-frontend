@@ -25,6 +25,7 @@ function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
     LANDLORD: '/client/landlord/',
     ADMIN: '/client/admin/',
     LETTING_AGENT: '/client/letting-agent/',
+    TENANT: '/client/tenant/',
   };
 
   const allowedPath = rolePathMap[role];

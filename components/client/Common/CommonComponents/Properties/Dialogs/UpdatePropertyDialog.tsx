@@ -36,7 +36,7 @@ import {
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
-import { CloudUpload, X } from 'lucide-react';
+import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -48,6 +48,20 @@ function cleanDecimal(val: string | null | undefined): string {
   if (!val) return '';
   const n = parseFloat(val);
   return isNaN(n) ? '' : String(n);
+}
+
+/**
+ * Derives a property name from an address:
+ * - Takes the segment before the first comma
+ * - Strips digits and special characters, keeping only letters and spaces
+ * - Collapses extra whitespace
+ */
+function deriveNameFromAddress(address: string): string {
+  const firstSegment = address.split(',')[0] ?? '';
+  return firstSegment
+    .replace(/[^a-zA-Z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -79,7 +93,18 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     notes: property?.notes ?? '',
   });
 
+  /**
+   * A saved property already has a name. We only treat the name as
+   * "auto" (and keep re-deriving it as the address changes) if it still
+   * matches what auto-fill would produce today — otherwise the user (or
+   * a previous save) has set a deliberate custom name, so we preserve it.
+   */
+  const buildInitialIsNameCustom = (): boolean => false;
+
   const [details, setDetails] = useState<DetailsForm>(buildInitialDetails);
+  const [isNameCustom, setIsNameCustom] = useState<boolean>(
+    buildInitialIsNameCustom,
+  );
   const [existingDocs, setExistingDocs] = useState<PropertyDocument[]>(
     property?.documents ?? [],
   );
@@ -88,12 +113,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Track which property alias is currently seeded into local state.
-  // Using useState so the comparison is safe during render (useRef.current
-  // cannot be read during render per React's rules).
-  // When open flips true or the property alias changes we reset synchronously.
-  // This is the pattern React docs recommend for deriving state from props:
-  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
   const [seededAlias, setSeededAlias] = useState<string | null>(null);
   const incomingAlias = open ? (property?.alias ?? null) : null;
   const [cachedExistingFiles, setCachedExistingFiles] = useState<File[]>([]);
@@ -103,6 +122,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     setSeededAlias(incomingAlias);
     if (incomingAlias !== null) {
       setDetails(buildInitialDetails());
+      setIsNameCustom(buildInitialIsNameCustom());
       setExistingDocs(property?.documents ?? []);
       setNewFiles([]);
       setCachedExistingFiles([]); // ← add this
@@ -123,7 +143,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
         const files = await Promise.all(
           property.documents.map(async (doc) => {
             const res = await fetch(
-              `/api/proxy-image?url=${encodeURIComponent(doc.image)}`,
+              `/api/fetch-remote-files?url=${encodeURIComponent(doc.image)}`,
             );
             const blob = await res.blob();
             const filename =
@@ -336,11 +356,13 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
               form={details}
               onChange={setDetails}
               errors={fieldErrors}
+              isNameCustom={isNameCustom}
+              onToggleNameCustom={setIsNameCustom}
             />
           )}
 
-          {activeTab === 'Documents' && (
-            <DocumentsTab
+          {activeTab === 'Property Picture' && (
+            <PropertyPictureTab
               existingDocs={existingDocs}
               newFiles={newFiles}
               dragging={dragging}
@@ -373,7 +395,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
                 key='next-btn'
                 onClick={() => {
                   if (formRef.current?.reportValidity()) {
-                    setActiveTab('Documents');
+                    setActiveTab('Property Picture');
                   }
                 }}
                 disabled={loading}
@@ -407,29 +429,114 @@ const DetailsTab: React.FC<{
   form: DetailsForm;
   onChange: (f: DetailsForm) => void;
   errors: Record<string, string>;
-}> = ({ form, onChange, errors }) => {
+  isNameCustom: boolean;
+  onToggleNameCustom: (v: boolean) => void;
+}> = ({ form, onChange, errors, isNameCustom, onToggleNameCustom }) => {
   function set(key: keyof DetailsForm, value: string) {
     onChange({ ...form, [key]: value });
   }
 
+  // Auto-fill the property name from the address whenever the address
+  // changes, unless the user has opted into custom (manual) naming.
+  useEffect(() => {
+    if (isNameCustom) return;
+    const derived = deriveNameFromAddress(form.address);
+    if (derived !== form.name) {
+      onChange({ ...form, name: derived });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.address, isNameCustom]);
+
+  function handleToggleCustom() {
+    if (isNameCustom) {
+      // Switching back to auto: re-derive immediately from current address.
+      onToggleNameCustom(false);
+      onChange({ ...form, name: deriveNameFromAddress(form.address) });
+    } else {
+      onToggleNameCustom(true);
+    }
+  }
+
   return (
     <div className='space-y-5'>
-      <Field data-invalid={!!errors.name}>
+      <div className='flex justify-center'>
+        <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
+          <Field data-invalid={!!errors.name}>
+            <div className='mb-1.5 flex items-center justify-between'>
+              <FieldLabel className='gap-1.5 text-sm font-semibold'>
+                Property Name
+                {!isNameCustom && (
+                  <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
+                    <Sparkles className='h-2.5 w-2.5' />
+                    Auto
+                  </span>
+                )}
+              </FieldLabel>
+
+              <button
+                type='button'
+                onClick={handleToggleCustom}
+                className={[
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  isNameCustom
+                    ? 'bg-primary/10 text-primary hover:bg-primary/15'
+                    : 'bg-background text-muted-foreground hover:text-primary border shadow-sm',
+                ].join(' ')}
+              >
+                {isNameCustom ? 'Use Auto-fill' : 'Edit manually'}
+              </button>
+            </div>
+
+            <div className='relative'>
+              <Input
+                type='text'
+                placeholder='e.g. 14 Oak Street'
+                value={form.name}
+                onChange={(e) => set('name', e.target.value)}
+                readOnly={!isNameCustom}
+                aria-invalid={!!errors.name}
+                className={[
+                  'bg-background transition-shadow',
+                  errors.name
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : '',
+                  !isNameCustom
+                    ? 'text-muted-foreground cursor-default pr-9 shadow-none'
+                    : 'shadow-sm',
+                ].join(' ')}
+              />
+              {!isNameCustom && (
+                <Lock className='text-muted-foreground/50 pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2' />
+              )}
+            </div>
+
+            {!isNameCustom && (
+              <p className='text-muted-foreground mt-1.5 text-xs leading-relaxed'>
+                Derived from your address. Tap{' '}
+                <span className='text-primary font-medium'>Edit manually</span>{' '}
+                to set a custom name.
+              </p>
+            )}
+            <FieldError errors={[{ message: errors.name }]} />
+          </Field>
+        </div>
+      </div>
+      <Field data-invalid={!!errors.address}>
         <FieldLabel className='gap-0 text-sm font-semibold'>
-          Property Name<span className='text-danger'>*</span>
+          Property Address<span className='text-danger'>*</span>
         </FieldLabel>
         <Input
           type='text'
-          placeholder='e.g. 14 Oak Street'
-          value={form.name}
-          onChange={(e) => set('name', e.target.value)}
-          aria-invalid={!!errors.name}
+          placeholder='Full address'
+          value={form.address}
+          onChange={(e) => set('address', e.target.value)}
+          aria-invalid={!!errors.address}
           required
           className={
-            errors.name ? 'border-danger focus-visible:ring-danger/50' : ''
+            errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
           }
         />
-        <FieldError errors={[{ message: errors.name }]} />
+        <FieldError errors={[{ message: errors.address }]} />
       </Field>
 
       <div className='grid grid-cols-2 gap-4'>
@@ -469,24 +576,6 @@ const DetailsTab: React.FC<{
           <FieldError errors={[{ message: errors.status }]} />
         </Field>
       </div>
-
-      <Field data-invalid={!!errors.address}>
-        <FieldLabel className='gap-0 text-sm font-semibold'>
-          Address<span className='text-danger'>*</span>
-        </FieldLabel>
-        <Input
-          type='text'
-          placeholder='Full address'
-          value={form.address}
-          onChange={(e) => set('address', e.target.value)}
-          aria-invalid={!!errors.address}
-          required
-          className={
-            errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
-          }
-        />
-        <FieldError errors={[{ message: errors.address }]} />
-      </Field>
 
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.purchasePrice}>
@@ -619,9 +708,9 @@ const DetailsTab: React.FC<{
   );
 };
 
-// ── Documents Tab ─────────────────────────────────────────────────────────────
+// ── Property Picture Tab ─────────────────────────────────────────────────────
 
-const DocumentsTab: React.FC<{
+const PropertyPictureTab: React.FC<{
   existingDocs: PropertyDocument[];
   newFiles: File[];
   dragging: boolean;
@@ -648,11 +737,11 @@ const DocumentsTab: React.FC<{
 }) => {
   return (
     <div className='space-y-4'>
-      {/* ── Existing Documents ── */}
+      {/* ── Existing Property Pictures ── */}
       {existingDocs.length > 0 && (
         <div className='space-y-2'>
           <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
-            Existing Documents
+            Existing Property Pictures
           </p>
           <ul className='space-y-2'>
             {existingDocs.map((doc) => (
@@ -680,7 +769,7 @@ const DocumentsTab: React.FC<{
                   size='icon'
                   onClick={() => onRemoveExisting(doc.id)}
                   className='text-muted-foreground hover:text-danger ml-auto h-6 w-6 shrink-0'
-                  aria-label='Remove document'
+                  aria-label='Remove property picture'
                 >
                   <X className='h-4 w-4' />
                 </Button>

@@ -17,8 +17,16 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { OVERRIDE_KEY_MAP } from '@/data/client/common/tenant/TenantData';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
@@ -38,7 +46,9 @@ import { toast } from 'sonner';
 function tenantToForm(tenant: ApiTenant): TenantForm {
   return {
     propertyId: tenant.property ? String(tenant.property.id) : '',
+    title: tenant.title ?? '',
     firstName: tenant.first_name ?? '',
+    middleName: tenant.middle_name ?? '',
     lastName: tenant.last_name ?? '',
     email: tenant.email ?? '',
     phone: tenant.phone ?? '',
@@ -88,7 +98,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<TenantForm>(() => tenantToForm(tenant));
@@ -116,7 +125,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     { skip: !propertyOpen },
   );
 
-  const [updateTenant] = useUpdateTenantMutation();
+  const [updateTenant, { isLoading: loading }] = useUpdateTenantMutation();
 
   // ── Avatar handlers ────────────────────────────────────────────────────────
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -155,11 +164,12 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
 
     setBannerError(null);
     setFieldErrors({});
-    setLoading(true);
 
     const formData = new FormData();
     if (avatarFile) formData.append('avatar', avatarFile);
+    formData.append('title', form.title);
     formData.append('first_name', form.firstName);
+    formData.append('middle_name', form.middleName);
     formData.append('last_name', form.lastName);
     formData.append('email', form.email);
     formData.append('phone', form.phone);
@@ -209,8 +219,6 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
       } else {
         toast.error('Something went wrong. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -388,9 +396,34 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           <FieldError errors={[{ message: fieldErrors.propertyId }]} />
         </Field>
 
-        {/* First Name + Last Name */}
+        {/* Title + First Name */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!fieldErrors.firstName}>
+          <Field data-invalid={!!fieldErrors.title}>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Title<span className='text-danger'>*</span>
+            </FieldLabel>
+            <Select
+              value={form.title}
+              onValueChange={(val) => {
+                set('title', val);
+              }}
+              required
+            >
+              <SelectTrigger id='title'>
+                <SelectValue placeholder='Select' />
+              </SelectTrigger>
+              <SelectContent>
+                {TITLE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[{ message: fieldErrors.title }]} />
+          </Field>
+
+          <Field data-invalid={!!fieldErrors.lastName}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               First Name<span className='text-danger'>*</span>
             </FieldLabel>
@@ -407,6 +440,27 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
               required
             />
             <FieldError errors={[{ message: fieldErrors.firstName }]} />
+          </Field>
+        </div>
+
+        {/* Middle Name + Last Name */}
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!fieldErrors.middleName}>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Middle Name
+            </FieldLabel>
+            <Input
+              type='text'
+              value={form.middleName}
+              onChange={(e) => set('middleName', e.target.value)}
+              aria-invalid={!!fieldErrors.middleName}
+              className={
+                fieldErrors.middleName
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: fieldErrors.middleName }]} />
           </Field>
 
           <Field data-invalid={!!fieldErrors.lastName}>

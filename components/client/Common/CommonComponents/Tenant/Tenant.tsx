@@ -14,8 +14,8 @@ import { useGetTenantsQuery } from '@/store/api/endpoints/client/Common/Tenant/T
 import {
   ApiTenant,
   Tenant as TenantModel,
-  TenantStatus,
 } from '@/types/client/Common/Tenant/TenantTypes';
+import formatChoiceFieldValue from '@/utils/formatters';
 import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import AddTenantDialog from './Dialogs/AddTenantDialog';
@@ -23,25 +23,20 @@ import TenantTable from './TenantTable/TenantTable';
 
 const PAGE_LIMIT = 12;
 
-const RENEWAL_WINDOW_DAYS = 60;
-
-function getStatus(endDate: string): TenantStatus {
-  const end = new Date(endDate);
-  const diffDays = (end.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
-  return diffDays <= RENEWAL_WINDOW_DAYS ? 'Renewal Due' : 'Active';
-}
-
 function mapApiTenant(apiTenant: ApiTenant): TenantModel {
   return {
     alias: apiTenant.alias,
-    name: `${apiTenant.first_name} ${apiTenant.last_name}`.trim(),
+    title: formatChoiceFieldValue(apiTenant.title) || '',
+    first_name: apiTenant.first_name,
+    middle_name: apiTenant.middle_name || '',
+    last_name: apiTenant.last_name,
     email: apiTenant.email,
     avatar: apiTenant.avatar ?? undefined,
     property: apiTenant.property?.property_name ?? '—',
     rent: Number(apiTenant.rent_amount) || 0,
     startDate: apiTenant.tenancy_start_date,
     endDate: apiTenant.tenancy_end_date,
-    status: getStatus(apiTenant.tenancy_end_date),
+    is_active: apiTenant.is_active,
   };
 }
 
@@ -112,7 +107,7 @@ const Tenant: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-sm'>
+        <p className='text-danger text-center text-sm'>
           Failed to load tenants. Please try again.
         </p>
       ) : (

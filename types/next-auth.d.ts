@@ -2,10 +2,11 @@ import 'next-auth';
 import 'next-auth/jwt';
 
 export type UserRole =
-  | "SUPER_ADMIN"
-  | "LANDLORD"
-  | "ADMIN"
-  | "LETTING_AGENT";
+  | 'SUPER_ADMIN'
+  | 'LANDLORD'
+  | 'ADMIN'
+  | 'LETTING_AGENT'
+  | 'TENANT';
 
 declare module 'next-auth' {
   interface User {

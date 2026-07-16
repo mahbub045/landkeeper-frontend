@@ -1,0 +1,186 @@
+'use client';
+
+import { Plus, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
+import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
+import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
+import AddTransactionDialog from '../Dialogs/AddTransactionDialog';
+import TransactionTable from './TransactionTable';
+
+const PAGE_LIMIT = 10;
+
+const TransactionList: React.FC = () => {
+  const [addOpen, setAddOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const queryParams = {
+    page,
+    page_size: PAGE_LIMIT,
+    ...(debouncedSearch && { search: debouncedSearch }),
+  };
+
+  const { data, isLoading, isError } = useGetFinanceQuery(queryParams);
+
+  const transactions: FinanceTransaction[] = data?.results ?? [];
+  const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+    setPage(1);
+  }
+
+  const getPageNumbers = () => {
+    if (totalPages <= 5)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (page <= 3) return [1, 2, 3, 4, '...', totalPages];
+    if (page >= totalPages - 2)
+      return [
+        1,
+        '...',
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    return [1, '...', page - 1, page, page + 1, '...', totalPages];
+  };
+
+  return (
+    <div className='space-y-4'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <h2 className='text-foreground text-lg font-semibold'>Transactions</h2>
+
+        <div className='flex items-center gap-2'>
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search transactions...'
+              value={search}
+              onChange={handleSearchChange}
+              className='h-8! w-64 pl-7!'
+            />
+            <HoverInfoPopover text='You can search using Property Name.' />
+          </div>
+
+          <Button onClick={() => setAddOpen(true)}>
+            <Plus />
+            Add Transaction
+          </Button>
+        </div>
+      </div>
+
+      {isError ? (
+        <p className='text-danger text-center text-sm'>
+          Failed to load transactions. Please try again.
+        </p>
+      ) : (
+        <>
+          <Card className='gap-0 overflow-hidden'>
+            <CardHeader className='flex flex-row items-center justify-between border-b py-3'>
+              <h3 className='text-foreground text-sm font-semibold'>
+                All Transactions
+              </h3>
+              <span className='text-muted-foreground text-sm'>
+                {data?.count ?? 0} transactions
+              </span>
+            </CardHeader>
+
+            <CardContent className='p-0'>
+              <TransactionTable
+                transactions={transactions}
+                isLoading={isLoading}
+              />
+            </CardContent>
+          </Card>
+
+          {totalPages > 1 && (
+            <div className='flex items-center justify-between'>
+              <p className='text-muted-foreground text-sm whitespace-nowrap'>
+                Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
+                {data?.count ?? 0} transactions
+              </p>
+
+              <Pagination className='justify-end'>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => page > 1 && setPage((p) => p - 1)}
+                      aria-disabled={page === 1}
+                      className={
+                        page === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
+                    />
+                  </PaginationItem>
+
+                  {getPageNumbers().map((p, i) =>
+                    p === '...' ? (
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          isActive={p === page}
+                          onClick={() => setPage(p as number)}
+                          className='cursor-pointer'
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => page < totalPages && setPage((p) => p + 1)}
+                      aria-disabled={page === totalPages}
+                      className={
+                        page === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
+      )}
+
+      <AddTransactionDialog
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSuccess={() => setAddOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default TransactionList;

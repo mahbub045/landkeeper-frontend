@@ -19,6 +19,8 @@ export const TAG_TYPES = [
   'FormLayout',
   'Network',
   'Organisation',
+  'SupportTickets',
+  'SupportTicketComments',
 
   // Common Tags
   'Property',
@@ -26,6 +28,7 @@ export const TAG_TYPES = [
   'Tenant',
   'Compliance',
   'Document',
+  'Finance',
   'TeamAccess',
 ] as const;
 

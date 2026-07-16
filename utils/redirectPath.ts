@@ -7,6 +7,7 @@ export function getDashboardPath(role: UserRole | undefined): string {
     LANDLORD: '/client/landlord/dashboard',
     ADMIN: '/client/admin/dashboard',
     LETTING_AGENT: '/client/letting-agent/dashboard',
+    TENANT: '/client/tenant/dashboard',
   };
   return role && paths[role] ? paths[role] : '/auth/access-denied';
 }
@@ -94,7 +95,6 @@ export const getMortgageUrl = (session: Session | null) => {
   return '/auth/login';
 };
 
-
 // All users Compliance List
 export const getComplianceUrl = (session: Session | null) => {
   if (!session) {
@@ -120,5 +120,33 @@ export const getComplianceUrl = (session: Session | null) => {
   }
 
   //   If no role found
+  return '/auth/login';
+};
+
+
+// All users Property Details Page
+export const getSupportTicketDetailsUrl = (
+  session: Session | null,
+  ticketalias: string,
+) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (role === 'LANDLORD') {
+    return `/client/landlord/support-tickets/${ticketalias}`;
+  }
+
+  if (role === 'ADMIN') {
+    return `/client/admin/support-tickets/${ticketalias}`;
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return `/client/letting-agent/support-tickets/${ticketalias}`;
+  }
+
   return '/auth/login';
 };

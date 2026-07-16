@@ -1,7 +1,5 @@
-import React from 'react'
+import AdminPropertiesContainer from '@/components/client/Admin/Properties';
 
 export default function PropertiesPage() {
-  return (
-    <div>properties</div>
-  )
+  return <AdminPropertiesContainer />;
 }

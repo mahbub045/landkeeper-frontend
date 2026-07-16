@@ -170,6 +170,8 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
         <form onSubmit={handleSubmit} className='contents'>
           {/* Scrollable body */}
           <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+
+            {/* Property */}
             <Field data-invalid={!!fieldErrors.propertyId}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Property<span className='text-danger'>*</span>

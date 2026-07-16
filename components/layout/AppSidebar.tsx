@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,15 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
+import {
+  ChevronRight,
+  LogOut,
+  Package,
+  Plus,
+  ReceiptText,
+  Settings,
+  User,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -213,6 +222,20 @@ const AppSidebar: React.FC = () => {
 
       <SidebarSeparator className='mx-0 h-px!' />
 
+      <Link href='#' passHref className='flex justify-center'>
+        <Button
+          type='button'
+          size='lg'
+          variant='secondary'
+          className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+        >
+          <Plus className='size-4' />
+          <span className='group-data-[collapsible=icon]:hidden'>
+            Start New Journey
+          </span>
+        </Button>
+      </Link>
+
       <SidebarContent className='gap-1 px-2 py-2'>
         <SidebarGroup className='p-0'>
           <SidebarGroupLabel className='px-3 text-[11px] font-semibold tracking-wider uppercase'>
@@ -224,9 +247,9 @@ const AppSidebar: React.FC = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarSeparator className='mx-0 h-px!' />
-
       <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
+        <SidebarSeparator className='mx-0 h-px!' />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -277,6 +300,30 @@ const AppSidebar: React.FC = () => {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
+            {userRole === 'LANDLORD' && (
+              <>
+                <Link
+                  href='/client/landlord/billing-and-plans/billing'
+                  passHref
+                >
+                  <DropdownMenuItem className='cursor-pointer'>
+                    <ReceiptText className='size-4' />
+                    Billing
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link
+                  href='/client/landlord/billing-and-plans/pricing-plans'
+                  passHref
+                >
+                  <DropdownMenuItem className='cursor-pointer'>
+                    <Package className='size-4' />
+                    Pricing Plans
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem
               variant='destructive'
               onClick={() => handleSignOut()}

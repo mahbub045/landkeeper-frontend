@@ -3,8 +3,12 @@
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  PROPERTY_STATUS_OPTIONS,
+  STATUS_STYLES,
+} from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import formatChoiceFieldValue from '@/utils/formatters';
+import { getPropertiesUrl } from '@/utils/redirectPath';
 import { ArrowLeft, MapPin, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
@@ -16,7 +20,6 @@ import PropertyFinancials from './PropertyFinancials/PropertyFinancials';
 import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
-import { getPropertiesUrl } from '@/utils/redirectPath';
 
 const PropertyDetails: React.FC = () => {
   const params = useParams();
@@ -58,7 +61,7 @@ const PropertyDetails: React.FC = () => {
           <Button
             variant='ghost'
             size='icon'
-            onClick={() => router.push('/client/landlord/properties')}
+            onClick={() => window.history.back()}
             className='text-muted-foreground hover:text-foreground shrink-0'
           >
             <ArrowLeft className='size-5' />
@@ -76,18 +79,14 @@ const PropertyDetails: React.FC = () => {
 
         <div className='flex shrink-0 items-center gap-2'>
           <Badge
-            className={`gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold ${
-              isOccupied
-                ? 'bg-success/90 text-white'
-                : 'bg-muted text-muted-foreground'
-            }`}
+            className={`gap-1.5 rounded-full text-xs font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
           >
-            <span
-              className={`inline-block size-1.5 rounded-full ${
-                isOccupied ? 'bg-white' : 'bg-muted-foreground/60'
-              }`}
-            />
-            {formatChoiceFieldValue(property.status)}
+            <span className='inline-block size-1.5 rounded-full bg-white' />
+            <span>
+              {PROPERTY_STATUS_OPTIONS.find(
+                (opt) => opt.value === property.status,
+              )?.label ?? property.status}
+            </span>
           </Badge>
           <Button size='sm' variant='outline' onClick={() => setEditOpen(true)}>
             <Pencil className='mr-1.5 size-3.5' />

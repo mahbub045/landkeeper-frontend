@@ -11,7 +11,7 @@ export type FilterTab =
   | 'Vacant'
   | 'Under Maintenance';
 
-export type Tab = 'Details' | 'Mortgage' | 'Documents';
+export type Tab = 'Details' | 'Mortgage' | 'Property Picture';
 export interface PropertyDocument {
   id: number;
   image: string;

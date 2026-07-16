@@ -17,11 +17,19 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_FORM,
   OVERRIDE_KEY_MAP,
 } from '@/data/client/common/tenant/TenantData';
+import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
@@ -102,7 +110,9 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
     const formData = new FormData();
     if (avatarFile) formData.append('avatar', avatarFile);
+    formData.append('title', form.title);
     formData.append('first_name', form.firstName);
+    formData.append('middle_name', form.middleName);
     formData.append('last_name', form.lastName);
     formData.append('email', form.email);
     formData.append('phone', form.phone);
@@ -167,9 +177,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
           <DialogTitle className='text-foreground text-xl font-bold'>
             Add Tenant
           </DialogTitle>
-          <DialogDescription>
-            Add a new tenant to the system.
-          </DialogDescription>
+          <DialogDescription>Add a new tenant to the system.</DialogDescription>
         </DialogHeader>
 
         {/* Scrollable body */}
@@ -335,6 +343,31 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
           {/* First Name + Last Name */}
           <div className='grid grid-cols-2 gap-4'>
+            <Field data-invalid={!!fieldErrors.title}>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Title<span className='text-danger'>*</span>
+              </FieldLabel>
+              <Select
+                value={form.title}
+                onValueChange={(val) => {
+                  set('title', val);
+                }}
+                required
+              >
+                <SelectTrigger id='title'>
+                  <SelectValue placeholder='Select' />
+                </SelectTrigger>
+                <SelectContent>
+                  {TITLE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[{ message: fieldErrors.title }]} />
+            </Field>
+
             <Field data-invalid={!!fieldErrors.firstName}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 First Name<span className='text-danger'>*</span>
@@ -352,6 +385,27 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 required
               />
               <FieldError errors={[{ message: fieldErrors.firstName }]} />
+            </Field>
+          </div>
+
+          {/* Middle Name + Last Name */}
+          <div className='grid grid-cols-2 gap-4'>
+            <Field data-invalid={!!fieldErrors.middleName}>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Middle Name
+              </FieldLabel>
+              <Input
+                type='text'
+                value={form.middleName}
+                onChange={(e) => set('middleName', e.target.value)}
+                aria-invalid={!!fieldErrors.middleName}
+                className={
+                  fieldErrors.middleName
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: fieldErrors.middleName }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.lastName}>
