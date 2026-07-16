@@ -1,9 +1,4 @@
-export type SupportTicketType =
-  | 'BUG_REPORT'
-  | 'FEATURE_REQUEST'
-  | 'GENERAL_INQUIRY'
-  | 'COMPLAINT'
-  | 'OTHER';
+export type SupportTicketType = 'FEEDBACK' | 'BUG_REPORT' | 'FEATURE_REQUEST';
 
 export interface ApiSupportTicketFile {
   alias: string;
