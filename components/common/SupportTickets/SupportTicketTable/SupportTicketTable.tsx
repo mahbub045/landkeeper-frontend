@@ -35,6 +35,7 @@ import {
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import DeleteSupportTicketDialog from '../Dialogs/DeleteSupportTicketDialog';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
 
@@ -160,6 +161,7 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
               onChange={(e) => onSearchChange(e.target.value)}
               className='h-9! w-64 rounded-xl pr-8! pl-7!'
             />
+            <HoverInfoPopover text='You can search using Ticket ID, Ticket creator Name, Email and Phone.' />
           </div>
         </div>
       </div>
