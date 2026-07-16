@@ -42,6 +42,7 @@ import {
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
 import SupportTicketComments from './SupportTicketComments';
@@ -66,15 +67,21 @@ const SupportTicketDetails: React.FC = () => {
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
 
-  const handleStatusChange = (value: string) => {
-    updateSupportTickets({
-      ticket_alias: ticketalias,
-      payload: { status: value },
-    });
+  const handleStatusChange = async (value: string) => {
+    try {
+      await updateSupportTickets({
+        ticket_alias: ticketalias,
+        payload: { status: value },
+      }).unwrap();
+      toast.success('Ticket status updated successfully.');
+    } catch (error) {
+      // console.error('Error updating ticket status:', error);
+      toast.error('Failed to update ticket status. Please try again.');
+    }
   };
 
   const {
-    data: ticket,
+    data: ticketDetails,
     isLoading,
     isError,
     refetch,
@@ -93,7 +100,7 @@ const SupportTicketDetails: React.FC = () => {
     );
   }
 
-  if (isError || !ticket) {
+  if (isError || !ticketDetails) {
     return (
       <p className='text-danger text-sm'>
         Failed to load support ticket. Please try again.
@@ -143,25 +150,25 @@ const SupportTicketDetails: React.FC = () => {
               <span className='text-muted-foreground font-semibold'>
                 Subject:
               </span>{' '}
-              {ticket.subject}
+              {ticketDetails.subject}
             </h2>
 
             <div className='flex items-center gap-2 text-sm'>
               <span className='text-muted-foreground'>Ticket Type:</span>
               <Badge
                 variant='secondary'
-                className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticket_type]}`}
+                className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticketDetails.ticket_type]}`}
               >
-                {formatChoiceFieldValue(ticket.ticket_type)}
+                {formatChoiceFieldValue(ticketDetails.ticket_type)}
               </Badge>
             </div>
             <div className='flex items-center gap-2 text-xs'>
               <span className='text-muted-foreground'>Priority:</span>
               <Badge
                 variant='secondary'
-                className={`rounded-md text-xs font-medium ${PRIORITY_STYLES[ticket.priority]}`}
+                className={`rounded-md text-xs font-medium ${PRIORITY_STYLES[ticketDetails.priority]}`}
               >
-                {formatChoiceFieldValue(ticket.priority)}
+                {formatChoiceFieldValue(ticketDetails.priority)}
               </Badge>
             </div>
           </div>
@@ -169,23 +176,23 @@ const SupportTicketDetails: React.FC = () => {
           <div className='flex items-center gap-2'>
             <Avatar className='size-12'>
               <AvatarImage
-                src={ticket.created_by.profile_image || ''}
-                alt={ticket.created_by.name}
+                src={ticketDetails.created_by.profile_image || ''}
+                alt={ticketDetails.created_by.name}
               />
               <AvatarFallback className='text-sm font-bold'>
-                {getInitials(ticket.created_by.name)}
+                {getInitials(ticketDetails.created_by.name)}
               </AvatarFallback>
             </Avatar>
             <div className='flex flex-col items-start'>
               <p className='text-muted-foreground text-xs'>Created by</p>
               <p className='text-foreground text-sm font-semibold'>
-                {ticket.created_by.name}
+                {ticketDetails.created_by.name}
               </p>
               <p className='text-muted-foreground text-xs'>
-                {ticket.created_by.email}
+                {ticketDetails.created_by.email}
               </p>
               <p className='text-muted-foreground text-xs'>
-                Created: {formatDate(ticket.created_at)}
+                Created: {formatDate(ticketDetails.created_at)}
               </p>
             </div>
           </div>
@@ -195,24 +202,24 @@ const SupportTicketDetails: React.FC = () => {
               {session?.user?.role === 'SUPER_ADMIN' ? (
                 <div className='flex justify-center'>
                   <Select
-                    value={ticket.status}
+                    value={ticketDetails.status}
                     onValueChange={handleStatusChange}
                     disabled={isStatusUpdating}
                   >
                     <SelectTrigger
-                      className={`h-5.5! w-fit gap-1 rounded-md border-none px-2 py-0 text-xs font-medium shadow-none focus:ring-0 focus:ring-offset-0 [&_svg]:size-3 ${STATUS_STYLES[ticket.status]} `}
+                      className={`h-5.5! w-fit gap-1 rounded-md border-none px-2 py-0 text-xs font-medium shadow-none focus:ring-0 focus:ring-offset-0 [&_svg]:size-3 ${STATUS_STYLES[ticketDetails.status]} `}
                     >
                       <SelectValue>
                         <span className='flex items-center gap-1.5'>
                           {(() => {
-                            const Icon = STATUS_ICONS[ticket.status];
+                            const Icon = STATUS_ICONS[ticketDetails.status];
                             return (
                               <Icon
-                                className={`size-3 ${STATUS_ICON_COLORS[ticket.status]}`}
+                                className={`size-3 ${STATUS_ICON_COLORS[ticketDetails.status]}`}
                               />
                             );
                           })()}
-                          {STATUS_LABELS[ticket.status]}
+                          {STATUS_LABELS[ticketDetails.status]}
                         </span>
                       </SelectValue>
                     </SelectTrigger>
@@ -240,18 +247,18 @@ const SupportTicketDetails: React.FC = () => {
               ) : (
                 <Badge
                   variant='secondary'
-                  className={`rounded-md text-xs font-medium ${STATUS_STYLES[ticket.status]}`}
+                  className={`rounded-md text-xs font-medium ${STATUS_STYLES[ticketDetails.status]}`}
                 >
                   <span className='flex items-center gap-1.5'>
                     {(() => {
-                      const Icon = STATUS_ICONS[ticket.status];
+                      const Icon = STATUS_ICONS[ticketDetails.status];
                       return (
                         <Icon
-                          className={`size-3 ${STATUS_ICON_COLORS[ticket.status]}`}
+                          className={`size-3 ${STATUS_ICON_COLORS[ticketDetails.status]}`}
                         />
                       );
                     })()}
-                    {STATUS_LABELS[ticket.status]}
+                    {STATUS_LABELS[ticketDetails.status]}
                   </span>
                 </Badge>
               )}
@@ -295,7 +302,7 @@ const SupportTicketDetails: React.FC = () => {
                 Ticket ID
               </p>
               <p className='text-primary text-sm font-bold'>
-                {ticket.ticket_id}
+                {ticketDetails.ticket_id}
               </p>
             </div>
           </div>
@@ -312,21 +319,21 @@ const SupportTicketDetails: React.FC = () => {
           </div>
           <div className='border-primary max-h-72 overflow-y-auto border-l-2 pl-4'>
             <p className='text-foreground text-sm whitespace-pre-line'>
-              {ticket.description}
+              {ticketDetails.description}
             </p>
           </div>
         </Card>
 
         <Card className='border-border rounded-2xl p-6 shadow-sm'>
           <h2 className='text-foreground mb-4 text-base font-semibold'>
-            Attachments ({ticket.files.length})
+            Attachments ({ticketDetails.files.length})
           </h2>
 
-          {ticket.files.length === 0 ? (
+          {ticketDetails.files.length === 0 ? (
             <p className='text-muted-foreground text-sm'>No attachments.</p>
           ) : (
             <ul className='space-y-3'>
-              {ticket.files.map((f) => {
+              {ticketDetails.files.map((f) => {
                 const filename = getFileName(f.file);
                 return (
                   <li
@@ -374,14 +381,14 @@ const SupportTicketDetails: React.FC = () => {
         </Card>
       </div>
 
-      <SupportTicketComments ticketAlias={ticket.alias} />
+      <SupportTicketComments ticketAlias={ticketDetails.alias} />
 
       <UpdateSupportTicketDialog
-        key={ticket.alias}
+        key={ticketDetails.alias}
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onSuccess={() => setEditOpen(false)}
-        ticket={ticket}
+        ticket={ticketDetails}
       />
     </div>
   );

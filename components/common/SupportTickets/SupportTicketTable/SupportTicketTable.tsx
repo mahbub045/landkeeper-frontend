@@ -51,6 +51,7 @@ import {
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import DeleteSupportTicketDialog from '../Dialogs/DeleteSupportTicketDialog';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
@@ -66,11 +67,17 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
 
-  const handleStatusChange = (value: string) => {
-    updateSupportTickets({
-      ticket_alias: ticket.alias,
-      payload: { status: value },
-    });
+  const handleStatusChange = async (value: string) => {
+    try {
+      await updateSupportTickets({
+        ticket_alias: ticket.alias,
+        payload: { status: value },
+      }).unwrap();
+      toast.success('Ticket status updated successfully.');
+    } catch (error) {
+      // console.error('Error updating ticket status:', error);
+      toast.error('Failed to update ticket status. Please try again.');
+    }
   };
 
   return (
