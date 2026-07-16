@@ -39,9 +39,25 @@ import {
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
-import { CloudUpload, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { CloudUpload, Pencil, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Derives a property name from an address:
+ * - Takes the segment before the first comma
+ * - Strips digits and special characters, keeping only letters and spaces
+ * - Collapses extra whitespace
+ */
+function deriveNameFromAddress(address: string): string {
+  const firstSegment = address.split(',')[0] ?? '';
+  return firstSegment
+    .replace(/[^a-zA-Z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 
@@ -56,6 +72,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [details, setDetails] = useState<DetailsForm>(EMPTY_DETAILS_FORM);
+  const [isNameCustom, setIsNameCustom] = useState(false);
 
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -77,6 +94,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     setFiles([]);
     propertyIdRef.current = null;
     setDetails(EMPTY_DETAILS_FORM);
+    setIsNameCustom(false);
     onClose();
   }
 
@@ -244,6 +262,8 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               form={details}
               onChange={setDetails}
               errors={fieldErrors}
+              isNameCustom={isNameCustom}
+              onToggleNameCustom={setIsNameCustom}
             />
           )}
           {activeTab === 'Property Picture' && (
@@ -308,29 +328,89 @@ const DetailsTab: React.FC<{
   form: DetailsForm;
   onChange: (f: DetailsForm) => void;
   errors: Record<string, string>;
-}> = ({ form, onChange, errors }) => {
+  isNameCustom: boolean;
+  onToggleNameCustom: (v: boolean) => void;
+}> = ({ form, onChange, errors, isNameCustom, onToggleNameCustom }) => {
   function set(key: keyof DetailsForm, value: string) {
     onChange({ ...form, [key]: value });
   }
 
+  // Auto-fill the property name from the address whenever the address
+  // changes, unless the user has opted into custom (manual) naming.
+  useEffect(() => {
+    if (isNameCustom) return;
+    const derived = deriveNameFromAddress(form.address);
+    if (derived !== form.name) {
+      onChange({ ...form, name: derived });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.address, isNameCustom]);
+
+  function handleToggleCustom() {
+    if (isNameCustom) {
+      // Switching back to auto: re-derive immediately from current address.
+      onToggleNameCustom(false);
+      onChange({ ...form, name: deriveNameFromAddress(form.address) });
+    } else {
+      onToggleNameCustom(true);
+    }
+  }
+
   return (
     <div className='space-y-5'>
-      <Field data-invalid={!!errors.name}>
+      <div className='flex justify-center items-center'>
+        <div className='bg-primary/10'>
+          <Field data-invalid={!!errors.name}>
+            <div className='flex items-center justify-between'>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Property Name
+              </FieldLabel>
+              <button
+                type='button'
+                onClick={handleToggleCustom}
+                className='text-muted-foreground hover:text-primary flex items-center gap-1 text-xs font-medium transition-colors'
+              >
+                <Pencil className='h-3 w-3' />
+                {isNameCustom ? 'Use Auto-fill' : 'Custom'}
+              </button>
+            </div>
+            <Input
+              type='text'
+              placeholder=''
+              value={form.name}
+              onChange={(e) => set('name', e.target.value)}
+              readOnly={!isNameCustom}
+              aria-invalid={!!errors.name}
+              className={[
+                errors.name ? 'border-danger focus-visible:ring-danger/50' : '',
+                !isNameCustom ? 'bg-muted cursor-default' : '',
+              ].join(' ')}
+            />
+            {!isNameCustom && (
+              <p className='text-muted-foreground mt-1 text-xs'>
+                Auto-filled from address. Click &quot;Custom&quot; to edit manually.
+              </p>
+            )}
+            <FieldError errors={[{ message: errors.name }]} />
+          </Field>
+        </div>
+      </div>
+      <Field data-invalid={!!errors.address}>
         <FieldLabel className='gap-0 text-sm font-semibold'>
-          Property Name<span className='text-danger'>*</span>
+          Property Address<span className='text-danger'>*</span>
         </FieldLabel>
         <Input
           type='text'
           placeholder='e.g. 14 Oak Street'
-          value={form.name}
-          onChange={(e) => set('name', e.target.value)}
-          aria-invalid={!!errors.name}
+          value={form.address}
+          onChange={(e) => set('address', e.target.value)}
+          aria-invalid={!!errors.address}
           required
           className={
-            errors.name ? 'border-danger focus-visible:ring-danger/50' : ''
+            errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
           }
         />
-        <FieldError errors={[{ message: errors.name }]} />
+        <FieldError errors={[{ message: errors.address }]} />
       </Field>
 
       <div className='grid grid-cols-2 gap-4'>
@@ -370,24 +450,6 @@ const DetailsTab: React.FC<{
           <FieldError errors={[{ message: errors.status }]} />
         </Field>
       </div>
-
-      <Field data-invalid={!!errors.address}>
-        <FieldLabel className='gap-0 text-sm font-semibold'>
-          Address<span className='text-danger'>*</span>
-        </FieldLabel>
-        <Input
-          type='text'
-          placeholder='Full address'
-          value={form.address}
-          onChange={(e) => set('address', e.target.value)}
-          aria-invalid={!!errors.address}
-          required
-          className={
-            errors.address ? 'border-danger focus-visible:ring-danger/50' : ''
-          }
-        />
-        <FieldError errors={[{ message: errors.address }]} />
-      </Field>
 
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.purchasePrice}>
