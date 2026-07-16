@@ -26,7 +26,7 @@ const AuthPageLeftPanel: React.FC = () => {
 
       <div className='relative'>
         <h1 className='mb-4 text-4xl leading-tight font-bold text-white'>
-          Manage your land,
+          Manage your property,
           <br />
           <span className='text-secondary'>effortlessly.</span>
         </h1>
