@@ -33,6 +33,8 @@ import formatChoiceFieldValue, {
 } from '@/utils/formatters';
 import {
   ArrowLeft,
+  Check,
+  Copy,
   Download,
   FileText,
   HelpCircle,
@@ -63,6 +65,7 @@ const SupportTicketDetails: React.FC = () => {
   const { data: session } = useSession();
   const { ticketalias } = useParams<{ ticketalias: string }>();
   const [editOpen, setEditOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
@@ -84,8 +87,20 @@ const SupportTicketDetails: React.FC = () => {
     data: ticketDetails,
     isLoading,
     isError,
-    refetch,
   } = useGetSupportTicketDetailsQuery({ ticket_alias: ticketalias });
+
+  const handleCopyTicketId = async () => {
+    if (!ticketDetails) return;
+
+    try {
+      await navigator.clipboard.writeText(ticketDetails.ticket_id);
+      setCopied(true);
+      toast.success('Ticket ID copied to clipboard.');
+      setTimeout(() => setCopied(false), 1500);
+    } catch (error) {
+      toast.error('Failed to copy Ticket ID.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -297,13 +312,26 @@ const SupportTicketDetails: React.FC = () => {
                 />
               </div>
             </div>
+
             <div className='bg-primary/10 rounded-lg px-4 py-2 text-right'>
               <p className='text-muted-foreground text-xs font-semibold'>
                 Ticket ID
               </p>
-              <p className='text-primary text-sm font-bold'>
-                {ticketDetails.ticket_id}
-              </p>
+              <div className='flex items-center justify-end gap-1'>
+                <span className='text-primary text-xs font-bold'>
+                  {ticketDetails.ticket_id}
+                </span>
+                <button
+                  className='shrink-0 cursor-pointer rounded-md transition-colors'
+                  onClick={handleCopyTicketId}
+                >
+                  {copied ? (
+                    <Check className='text-success size-3' />
+                  ) : (
+                    <Copy className='text-primary size-3' />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

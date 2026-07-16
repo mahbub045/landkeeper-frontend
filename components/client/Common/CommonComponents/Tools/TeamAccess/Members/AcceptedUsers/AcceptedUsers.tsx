@@ -184,7 +184,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
               >
                 <SelectTrigger
                   size='sm'
-                  className={`absolute -top-2 right-2 h-6! w-fit cursor-pointer gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+                  className={`absolute -top-2 right-2 h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
                 >
                   <span
                     className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-danger'}`}
@@ -194,16 +194,13 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    value='active'
-                    className='focus:bg-success/10 cursor-pointer'
-                  >
+                  <SelectItem value='active' className='focus:bg-success/10'>
                     <span className='bg-success inline-block size-1.5 rounded-full' />
                     Active
                   </SelectItem>
                   <SelectItem
                     value='deactivated'
-                    className='focus:bg-danger/10 cursor-pointer'
+                    className='focus:bg-danger/10'
                   >
                     <span className='bg-danger inline-block size-1.5 rounded-full' />
                     Deactivated
