@@ -123,7 +123,6 @@ export const getComplianceUrl = (session: Session | null) => {
   return '/auth/login';
 };
 
-
 // All users Property Details Page
 export const getSupportTicketDetailsUrl = (
   session: Session | null,
@@ -136,6 +135,9 @@ export const getSupportTicketDetailsUrl = (
   const role = session?.user?.role;
   if (!role) return '/auth/login';
 
+  if (role === 'SUPER_ADMIN') {
+    return `/super-admin/support-tickets/${ticketalias}`;
+  }
   if (role === 'LANDLORD') {
     return `/client/landlord/support-tickets/${ticketalias}`;
   }
