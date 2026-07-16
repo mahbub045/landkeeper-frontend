@@ -190,3 +190,33 @@ select,
 textarea {
   @apply focus:ring-primary/70 h-10 w-full rounded-md border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 shadow-inner transition-shadow focus:ring-1 focus:outline-none dark:border-white/12 dark:bg-white/6 dark:text-white dark:placeholder-white/60;
 }
+
+.text_decoration_hover {
+  text-decoration: none;
+  color: var(--primary) !important;
+  position: relative;
+  opacity: 1 !important;
+}
+
+.text_decoration_hover::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  height: 0.095rem;
+  width: 100%;
+  transform: scaleX(0);
+  border-radius: 6px;
+  background-color: var(--primary);
+  transition: transform 500ms;
+}
+
+.text_decoration_hover:hover::after {
+  transform: scaleX(1);
+}
+
+.text_decoration_hover:focus::after,
+.text_decoration_hover:active::after,
+.text_decoration_hover:focus-visible::after {
+  transform: scaleX(1);
+}
