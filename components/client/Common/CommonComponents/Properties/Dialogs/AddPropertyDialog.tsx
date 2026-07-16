@@ -39,7 +39,7 @@ import {
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
-import { CloudUpload, Pencil, X } from 'lucide-react';
+import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -358,37 +358,64 @@ const DetailsTab: React.FC<{
 
   return (
     <div className='space-y-5'>
-      <div className='flex justify-center items-center'>
-        <div className='bg-primary/10'>
+      <div className='flex justify-center'>
+        <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
           <Field data-invalid={!!errors.name}>
-            <div className='flex items-center justify-between'>
-              <FieldLabel className='gap-0 text-sm font-semibold'>
+            <div className='mb-1.5 flex items-center justify-between'>
+              <FieldLabel className='gap-1.5 text-sm font-semibold'>
                 Property Name
+                {!isNameCustom && (
+                  <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
+                    <Sparkles className='h-2.5 w-2.5' />
+                    Auto
+                  </span>
+                )}
               </FieldLabel>
+
               <button
                 type='button'
                 onClick={handleToggleCustom}
-                className='text-muted-foreground hover:text-primary flex items-center gap-1 text-xs font-medium transition-colors'
+                className={[
+                  'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                  isNameCustom
+                    ? 'bg-primary/10 text-primary hover:bg-primary/15'
+                    : 'bg-background text-muted-foreground hover:text-primary border shadow-sm',
+                ].join(' ')}
               >
-                <Pencil className='h-3 w-3' />
-                {isNameCustom ? 'Use Auto-fill' : 'Custom'}
+                {isNameCustom ? 'Use Auto-fill' : 'Edit manually'}
               </button>
             </div>
-            <Input
-              type='text'
-              placeholder=''
-              value={form.name}
-              onChange={(e) => set('name', e.target.value)}
-              readOnly={!isNameCustom}
-              aria-invalid={!!errors.name}
-              className={[
-                errors.name ? 'border-danger focus-visible:ring-danger/50' : '',
-                !isNameCustom ? 'bg-muted cursor-default' : '',
-              ].join(' ')}
-            />
+
+            <div className='relative'>
+              <Input
+                type='text'
+                placeholder='e.g. 14 Oak Street'
+                value={form.name}
+                onChange={(e) => set('name', e.target.value)}
+                readOnly={!isNameCustom}
+                aria-invalid={!!errors.name}
+                className={[
+                  'bg-background transition-shadow',
+                  errors.name
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : '',
+                  !isNameCustom
+                    ? 'text-muted-foreground cursor-default pr-9 shadow-none'
+                    : 'shadow-sm',
+                ].join(' ')}
+              />
+              {!isNameCustom && (
+                <Lock className='text-muted-foreground/50 pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2' />
+              )}
+            </div>
+
             {!isNameCustom && (
-              <p className='text-muted-foreground mt-1 text-xs'>
-                Auto-filled from address. Click &quot;Custom&quot; to edit manually.
+              <p className='text-muted-foreground mt-1.5 text-xs leading-relaxed'>
+                Derived from your address. Tap{' '}
+                <span className='text-primary font-medium'>
+                  Edit manually
+                </span>{' '}
+                to set a custom name.
               </p>
             )}
             <FieldError errors={[{ message: errors.name }]} />
@@ -401,7 +428,7 @@ const DetailsTab: React.FC<{
         </FieldLabel>
         <Input
           type='text'
-          placeholder='e.g. 14 Oak Street'
+          placeholder='Full address'
           value={form.address}
           onChange={(e) => set('address', e.target.value)}
           aria-invalid={!!errors.address}
