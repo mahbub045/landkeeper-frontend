@@ -468,7 +468,7 @@ const DetailsTab: React.FC<{
                 {!isNameCustom && (
                   <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                     <Sparkles className='h-2.5 w-2.5' />
-                    Auto
+                    Auto From Address
                   </span>
                 )}
               </FieldLabel>
