@@ -1,5 +1,18 @@
 export type SupportTicketType = 'FEEDBACK' | 'BUG_REPORT' | 'FEATURE_REQUEST';
 
+export type SupportTicketPriority =
+  | 'URGENT'
+  | 'MEDIUM'
+  | 'NORMAL'
+  | 'WHEN_POSSIBLE';
+
+export type SupportTicketStatus =
+  | 'OPEN'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'RESOLVED'
+  | 'CLOSED';
+
 export interface ApiSupportTicketFile {
   alias: string;
   file: string;
@@ -21,6 +34,8 @@ export interface ApiSupportTicket {
   ticket_id: string;
   ticket_type: SupportTicketType;
   subject: string;
+  status: SupportTicketStatus;
+  priority: SupportTicketPriority;
   description: string;
   files: ApiSupportTicketFile[];
   created_at: string;
@@ -34,6 +49,8 @@ export interface SupportTicket {
   ticketId: string;
   ticketType: SupportTicketType;
   subject: string;
+  status: SupportTicketStatus;
+  priority: SupportTicketPriority;
   description: string;
   fileCount: number;
   createdAt: string;
@@ -59,6 +76,7 @@ export interface SupportTicketTableProps {
 
 export interface SupportTicketForm {
   ticketType: SupportTicketType | '';
+  priority: SupportTicketPriority | '';
   subject: string;
   description: string;
 }
