@@ -12,14 +12,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
 import SummaryCards from './SummaryCards/SummaryCards';
-
-const PAGE_LIMIT = 12;
 
 const Mortgage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -104,14 +103,15 @@ const Mortgage: React.FC = () => {
         <>
           <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Mortgages
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -157,8 +157,8 @@ const Mortgage: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

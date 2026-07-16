@@ -17,6 +17,7 @@ import {
   PROPERTY_STATUS_OPTIONS,
   propertyTypeMap,
 } from '@/data/client/common/properties/PropertiesData';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
   FilterTab,
@@ -27,8 +28,6 @@ import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
-
-const PAGE_LIMIT = 12;
 
 const Properties: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
@@ -136,14 +135,16 @@ const Properties: React.FC = () => {
             activeFilter={activeFilter}
             isLoading={isLoading}
           />
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Properties
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -189,8 +190,8 @@ const Properties: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

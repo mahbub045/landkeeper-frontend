@@ -10,6 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetTenantsQuery } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
 import {
   ApiTenant,
@@ -20,8 +21,6 @@ import { Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import AddTenantDialog from './Dialogs/AddTenantDialog';
 import TenantTable from './TenantTable/TenantTable';
-
-const PAGE_LIMIT = 12;
 
 function mapApiTenant(apiTenant: ApiTenant): TenantModel {
   return {
@@ -120,14 +119,15 @@ const Tenant: React.FC = () => {
             isLoading={isLoading}
           />
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Tenants
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -173,8 +173,8 @@ const Tenant: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

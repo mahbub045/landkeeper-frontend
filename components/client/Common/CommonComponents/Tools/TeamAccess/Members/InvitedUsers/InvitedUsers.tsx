@@ -11,6 +11,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/InvitedUsersTypes';
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
@@ -33,11 +34,8 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
   refetchInvites,
   page,
   onPageChange,
-  hasNext,
-  hasPrevious,
   totalCount,
 }) => {
-  const PAGE_LIMIT = 12;
   const [
     isResendEmailInvitedUserDialogOpen,
     setIsResendEmailInvitedUserDialogOpen,
@@ -194,14 +192,15 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
           );
         })}
 
-      {totalPages > 1 && (
-        <div className='mt-3 flex items-center justify-between'>
+      <div className='mt-3 flex items-center justify-between'>
+        {totalCount > 0 && (
           <p className='text-muted-foreground text-sm whitespace-nowrap'>
             Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
             {Math.min(page * PAGE_LIMIT, totalCount ?? 0)} of {totalCount ?? 0}{' '}
             Invites
           </p>
-
+        )}
+        {totalPages > 1 && (
           <Pagination className='justify-end'>
             <PaginationContent>
               <PaginationItem>
@@ -247,8 +246,8 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Dialogs  */}
       <ResendEmailInvitedUserDialog

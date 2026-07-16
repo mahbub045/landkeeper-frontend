@@ -13,6 +13,7 @@ import {
   complianceBreakdown,
   upcomingExpirations,
 } from '@/data/client/common/compliance/ComplianceData';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetCompliancesQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import {
   ApiCertificate,
@@ -26,7 +27,6 @@ import AddCertificateDialog from './Dialogs/AddCertificateDialog';
 import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
 
 const COMPLIANCE_SCORE = 87;
-const PAGE_LIMIT = 12;
 
 const humanizeCertType = (type: string) =>
   type
@@ -133,7 +133,7 @@ const Compliance: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-center text-danger text-sm'>
+        <p className='text-danger text-center text-sm'>
           Failed to load certificates. Please try again.
         </p>
       ) : (
@@ -147,14 +147,15 @@ const Compliance: React.FC = () => {
             onAddClick={() => setModalOpen(true)}
           />
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Certificates
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -200,8 +201,8 @@ const Compliance: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

@@ -10,6 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 import {
   ApiSupportTicket,
@@ -20,8 +21,6 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
-
-const PAGE_LIMIT = 12;
 
 function mapApiTicket(apiTicket: ApiSupportTicket): SupportTicketModel {
   return {
@@ -122,14 +121,15 @@ const SupportTicket: React.FC = () => {
             isLoading={isLoading}
           />
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Tickets
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -175,8 +175,8 @@ const SupportTicket: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

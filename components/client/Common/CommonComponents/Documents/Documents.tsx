@@ -16,7 +16,9 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { filterTabs } from '@/data/client/common/documents/DocumentsData';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetDocumentsQuery } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
 import {
   FilterTab,
@@ -25,9 +27,6 @@ import {
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
-import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
-
-const PAGE_LIMIT = 12;
 
 const Documents: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');
@@ -147,14 +146,15 @@ const Documents: React.FC = () => {
             </CardContent>
           </Card>
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} Documents
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -189,9 +189,7 @@ const Documents: React.FC = () => {
 
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() =>
-                        page < totalPages && setPage((p) => p + 1)
-                      }
+                      onClick={() => page < totalPages && setPage((p) => p + 1)}
                       aria-disabled={page === totalPages}
                       className={
                         page === totalPages
@@ -202,8 +200,8 @@ const Documents: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 
