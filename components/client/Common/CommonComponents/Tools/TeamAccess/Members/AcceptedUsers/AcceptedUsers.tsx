@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { AcceptedUsersProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
 import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
@@ -49,7 +50,6 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
   onPageChange,
   totalCount,
 }) => {
-  const PAGE_LIMIT = 12;
   const [isEditAcceptedUserDialogOpen, setIsEditAcceptedUserDialogOpen] =
     useState(false);
   const [isDeleteAcceptedUserDialogOpen, setIsDeleteAcceptedUserDialogOpen] =
@@ -275,14 +275,16 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
           </Card>
         ))}
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className='mt-3 flex items-center justify-between'>
+
+      <div className='mt-3 flex items-center justify-between'>
+        {totalCount > 0 && (
           <p className='text-muted-foreground text-sm whitespace-nowrap'>
             Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
             {Math.min(page * PAGE_LIMIT, totalCount ?? 0)} of {totalCount ?? 0}{' '}
-            Members
+            Invites
           </p>
-
+        )}
+        {totalPages > 1 && (
           <Pagination className='justify-end'>
             <PaginationContent>
               <PaginationItem>
@@ -328,8 +330,9 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>
-      )}
+        )}
+      </div>
+
       {/* Dialogs  */}
       <EditAcceptedUserDialog
         isOpen={isEditAcceptedUserDialogOpen}

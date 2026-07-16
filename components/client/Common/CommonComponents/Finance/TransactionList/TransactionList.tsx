@@ -17,12 +17,11 @@ import {
 } from '@/components/ui/pagination';
 
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
 import AddTransactionDialog from '../Dialogs/AddTransactionDialog';
 import TransactionTable from './TransactionTable';
-
-const PAGE_LIMIT = 10;
 
 const TransactionList: React.FC = () => {
   const [addOpen, setAddOpen] = useState(false);
@@ -116,14 +115,15 @@ const TransactionList: React.FC = () => {
             </CardContent>
           </Card>
 
-          {totalPages > 1 && (
-            <div className='flex items-center justify-between'>
+          <div className='flex items-center justify-between'>
+            {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
                 {data?.count ?? 0} transactions
               </p>
-
+            )}
+            {totalPages > 1 && (
               <Pagination className='justify-end'>
                 <PaginationContent>
                   <PaginationItem>
@@ -169,8 +169,8 @@ const TransactionList: React.FC = () => {
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 

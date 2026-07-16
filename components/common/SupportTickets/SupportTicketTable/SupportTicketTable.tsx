@@ -41,7 +41,6 @@ import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
 const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
   ticket,
   apiTicket,
-  idx,
 }) => {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
@@ -52,7 +51,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
       <TableCell className='text-primary'>
         <Link
           href={getSupportTicketDetailsUrl(session, ticket.alias)}
-          className='underline-offset-4 hover:underline'
+          className='text_decoration_hover'
         >
           {ticket.ticketId}
         </Link>
