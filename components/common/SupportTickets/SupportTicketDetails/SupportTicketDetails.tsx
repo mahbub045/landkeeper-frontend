@@ -5,13 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  TICKET_TYPE_LABELS,
-  TICKET_TYPE_STYLES,
-} from '@/data/common/SupportTickets/SupportTicketsData';
+import { TICKET_TYPE_STYLES } from '@/data/common/SupportTickets/SupportTicketsData';
 import { useGetSupportTicketDetailsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 
-import { formatDate, getInitials } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  formatDate,
+  getInitials,
+} from '@/utils/formatters';
 import { ArrowLeft, Download, FileText, ImageIcon, Pencil } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
@@ -39,7 +39,6 @@ const SupportTicketDetails: React.FC = () => {
     isLoading,
     isError,
     refetch,
-    isFetching,
   } = useGetSupportTicketDetailsQuery({ ticket_alias: ticketalias });
 
   if (isLoading) {
@@ -67,7 +66,7 @@ const SupportTicketDetails: React.FC = () => {
     <div className='space-y-6'>
       {/* Header */}
       <div className='flex items-start justify-between'>
-        <div className='flex justify-centre items-center gap-2'>
+        <div className='justify-centre flex items-center gap-2'>
           <div>
             <Button
               variant='ghost'
@@ -112,9 +111,9 @@ const SupportTicketDetails: React.FC = () => {
               <span className='text-muted-foreground'>Ticket Type:</span>
               <Badge
                 variant='secondary'
-                className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticket_type] ?? TICKET_TYPE_STYLES.OTHER}`}
+                className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticket_type]}`}
               >
-                {TICKET_TYPE_LABELS[ticket.ticket_type] ?? ticket.ticket_type}
+                {formatChoiceFieldValue(ticket.ticket_type)}
               </Badge>
             </div>
           </div>

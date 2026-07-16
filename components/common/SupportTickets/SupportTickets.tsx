@@ -16,6 +16,7 @@ import {
   SupportTicket as SupportTicketModel,
 } from '@/types/common/SupportTickets/SupportTicketTypes';
 import { Plus } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useEffect, useMemo, useState } from 'react';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
@@ -39,6 +40,7 @@ function mapApiTicket(apiTicket: ApiSupportTicket): SupportTicketModel {
 }
 
 const SupportTicket: React.FC = () => {
+  const { data: session } = useSession();
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -98,11 +100,12 @@ const SupportTicket: React.FC = () => {
             View and manage submitted support tickets
           </p>
         </div>
-
-        <Button onClick={() => setModalOpen(true)}>
-          <Plus />
-          Add Ticket
-        </Button>
+        {session?.user?.role !== 'SUPER_ADMIN' && (
+          <Button onClick={() => setModalOpen(true)}>
+            <Plus />
+            Add Ticket
+          </Button>
+        )}
       </div>
 
       {isError ? (

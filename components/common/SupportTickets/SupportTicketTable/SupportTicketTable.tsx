@@ -20,10 +20,9 @@ import {
 
 import {
   TABLE_COLUMNS,
-  TICKET_TYPE_LABELS,
   TICKET_TYPE_STYLES,
 } from '@/data/common/SupportTickets/SupportTicketsData';
-import { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import { getSupportTicketDetailsUrl } from '@/utils/redirectPath';
 import {
   MessageSquareWarning,
@@ -61,16 +60,13 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
       <TableCell>
         <Badge
           variant='secondary'
-          className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticketType] ?? TICKET_TYPE_STYLES.OTHER}`}
+          className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticketType]}`}
         >
-          {TICKET_TYPE_LABELS[ticket.ticketType] ?? ticket.ticketType}
+          {formatChoiceFieldValue(ticket.ticketType)}
         </Badge>
       </TableCell>
       <TableCell className='text-foreground max-w-45 truncate text-center text-sm font-medium'>
         {ticket.subject}
-      </TableCell>
-      <TableCell className='text-foreground max-w-45 truncate text-center text-sm font-medium'>
-        {ticket.organisation}
       </TableCell>
       <TableCell>
         <div className='flex items-center justify-center gap-3'>
