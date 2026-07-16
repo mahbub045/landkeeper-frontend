@@ -122,3 +122,31 @@ export const getComplianceUrl = (session: Session | null) => {
   //   If no role found
   return '/auth/login';
 };
+
+
+// All users Property Details Page
+export const getSupportTicketDetailsUrl = (
+  session: Session | null,
+  ticketalias: string,
+) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (role === 'LANDLORD') {
+    return `/client/landlord/support-tickets/${ticketalias}`;
+  }
+
+  if (role === 'ADMIN') {
+    return `/client/admin/support-tickets/${ticketalias}`;
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return `/client/letting-agent/support-tickets/${ticketalias}`;
+  }
+
+  return '/auth/login';
+};
