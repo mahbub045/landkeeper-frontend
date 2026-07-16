@@ -12,7 +12,7 @@ import {
 import { useGetSupportTicketDetailsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 
 import { formatDate, getInitials } from '@/utils/formatters';
-import { Download, FileText, ImageIcon, Pencil } from 'lucide-react';
+import { ArrowLeft, Download, FileText, ImageIcon, Pencil } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
@@ -67,13 +67,26 @@ const SupportTicketDetails: React.FC = () => {
     <div className='space-y-6'>
       {/* Header */}
       <div className='flex items-start justify-between'>
-        <div>
-          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-            Support Ticket Details
-          </h1>
-          <p className='text-muted-foreground text-sm'>
-            This is the support ticket details page
-          </p>
+        <div className='flex justify-centre items-center gap-2'>
+          <div>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={() => window.history.back()}
+              className='text-muted-foreground hover:text-foreground shrink-0'
+            >
+              <ArrowLeft className='size-5' />
+            </Button>
+          </div>
+
+          <div>
+            <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+              Support Ticket Details
+            </h1>
+            <p className='text-muted-foreground text-sm'>
+              This is the support ticket details page
+            </p>
+          </div>
         </div>
         {/* Edit button */}
         <div className='flex justify-end'>
