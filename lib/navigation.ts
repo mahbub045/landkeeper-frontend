@@ -1,9 +1,12 @@
 import type { UserRole } from '@/types/next-auth';
 import {
+  Banknote,
   BarChart3,
   Calculator,
+  Calendar,
   ChartNoAxesCombined,
   FileSpreadsheet,
+  FileText,
   Files,
   Hammer,
   Handshake,
@@ -11,13 +14,16 @@ import {
   Landmark,
   LayoutDashboard,
   Link2,
+  MessageCircle,
   Package,
   Podcast,
+  RotateCw,
   ShieldUser,
   Ticket,
   UserKey,
   UsersRound,
   Wrench,
+  Zap,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -275,14 +281,39 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: LayoutDashboard,
       },
       {
-        label: 'Properties',
-        href: '/client/tenant/properties',
-        icon: House,
+        label: 'Rent & Payments',
+        href: '/client/tenant/rent-and-payments',
+        icon: Banknote,
       },
       {
-        label: 'Support Tickets',
-        href: '/client/tenant/support-tickets',
-        icon: Ticket,
+        label: 'Maintenance Requests',
+        href: '/client/tenant/maintenance-requests',
+        icon: Wrench,
+      },
+      {
+        label: 'Documents',
+        href: '/client/tenant/documents',
+        icon: FileText,
+      },
+      {
+        label: 'Messages',
+        href: '/client/tenant/messages',
+        icon: MessageCircle,
+      },
+      {
+        label: 'Inspections',
+        href: '/client/tenant/inspections',
+        icon: Calendar,
+      },
+      {
+        label: 'Tenancy Renewals',
+        href: '/client/tenant/tenancy-renewals',
+        icon: RotateCw,
+      },
+      {
+        label: 'Utilities',
+        href: '/client/tenant/utilities',
+        icon: Zap,
       },
     ];
   }
