@@ -96,7 +96,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                   onClick={() => toggleOpen(item.label)}
                   isActive={isActive}
                   tooltip={item.label}
-                  className='h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                  className='data-active:text-primary data-active:hover:text-primary h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
                 >
                   <item.icon />
                   <span>{item.label}</span>
@@ -118,15 +118,17 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                               ? isNavActive(pathname, child.href)
                               : false
                           }
-                          className='h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                          className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                         >
                           <Link href={child.href || '#'}>
                             <child.icon
-                              className={cn(
-                                'h-4 w-4',
-                                isNavActive(pathname, child.href || ''),
-                              )}
+                              data-active={
+                                isNavActive(pathname, child.href || '') ||
+                                undefined
+                              }
+                              className='data-active:text-primary! h-4 w-4'
                             />
+
                             <span>{child.label}</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -142,7 +144,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                     asChild
                     isActive={isNavActive(pathname, item.href)}
                     tooltip={item.label}
-                    className='h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                    className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                   >
                     <Link href={item.href}>
                       <item.icon />
