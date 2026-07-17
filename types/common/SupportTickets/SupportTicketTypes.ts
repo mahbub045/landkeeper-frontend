@@ -18,18 +18,16 @@ export interface ApiSupportTicketFile {
   file: string;
 }
 
-export interface ApiSupportTicketUser {
+export interface ApiSupportTicketCreatedBy {
   id: number;
   alias: string;
   profile_image: string;
   name: string;
-  first_name: string;
-  last_name: string;
   email: string;
-  user_type: string;
+  role: string;
 }
 
-export interface ApiSupportTicket {
+export interface ApiSupportTicketType {
   alias: string;
   ticket_id: string;
   ticket_type: SupportTicketType;
@@ -39,36 +37,20 @@ export interface ApiSupportTicket {
   description: string;
   files: ApiSupportTicketFile[];
   created_at: string;
-  created_by: ApiSupportTicketUser;
-  organisation: string;
+  created_by: ApiSupportTicketCreatedBy;
+  fileCount: number;
 }
 
 // Display/UI shape mapped from ApiSupportTicket
-export interface SupportTicket {
-  alias: string;
-  ticketId: string;
-  ticketType: SupportTicketType;
-  subject: string;
-  status: SupportTicketStatus;
-  priority: SupportTicketPriority;
-  description: string;
-  fileCount: number;
-  createdAt: string;
-  createdByName: string;
-  createdByEmail: string;
-  createdByAvatar?: string;
-  organisation: string;
-}
 
 export interface SupportTicketRowProps {
-  ticket: SupportTicket;
-  apiTicket: ApiSupportTicket;
+  ticket: ApiSupportTicketType;
+  apiTicket: ApiSupportTicketType;
   idx: number;
 }
 
 export interface SupportTicketTableProps {
-  tickets: SupportTicket[];
-  apiTickets: ApiSupportTicket[];
+  supportTicketsData: ApiSupportTicketType[];
   search: string;
   onSearchChange: (value: string) => void;
   isLoading: boolean;
@@ -88,7 +70,7 @@ export interface AddSupportTicketModalProps {
 }
 
 export interface UpdateSupportTicketDialogProps {
-  ticket?: ApiSupportTicket;
+  ticket?: ApiSupportTicketType;
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -106,7 +88,7 @@ export interface ApiSupportTicketComment {
   alias: string;
   message: string;
   parent: number | null;
-  author: ApiSupportTicketUser;
+  author: ApiSupportTicketCreatedBy;
   files: ApiSupportTicketFile[];
   replies: ApiSupportTicketComment[];
   created_at: string;

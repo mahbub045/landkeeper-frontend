@@ -12,33 +12,11 @@ import {
 } from '@/components/ui/pagination';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
-import {
-  ApiSupportTicket,
-  SupportTicket as SupportTicketModel,
-} from '@/types/common/SupportTickets/SupportTicketTypes';
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
-
-function mapApiTicket(apiTicket: ApiSupportTicket): SupportTicketModel {
-  return {
-    alias: apiTicket.alias,
-    ticketId: apiTicket.ticket_id,
-    ticketType: apiTicket.ticket_type,
-    subject: apiTicket.subject,
-    status: apiTicket.status,
-    priority: apiTicket.priority,
-    description: apiTicket.description,
-    fileCount: apiTicket.files?.length ?? 0,
-    createdAt: apiTicket.created_at,
-    createdByName: apiTicket.created_by?.name?.trim() || 'Unknown',
-    createdByEmail: apiTicket.created_by?.email,
-    createdByAvatar: apiTicket.created_by?.profile_image ?? undefined,
-    organisation: apiTicket.organisation,
-  };
-}
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();
@@ -58,16 +36,15 @@ const SupportTicket: React.FC = () => {
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
-  const { data, isLoading, isError } = useGetSupportTicketsQuery(queryParams);
+  const {
+    data: supportTicketData,
+    isLoading,
+    isError,
+  } = useGetSupportTicketsQuery(queryParams);
 
-  const tickets = useMemo(
-    () => (data?.results ?? []).map(mapApiTicket),
-    [data?.results],
-  );
+  const apiTickets = supportTicketData?.results ?? [];
 
-  const apiTickets = data?.results ?? [];
-
-  const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
+  const totalPages = Math.ceil((supportTicketData?.count ?? 0) / PAGE_LIMIT);
 
   function handleSearchChange(value: string) {
     setSearch(value);
@@ -116,19 +93,18 @@ const SupportTicket: React.FC = () => {
       ) : (
         <>
           <SupportTicketTable
-            tickets={tickets}
-            apiTickets={apiTickets}
+            supportTicketsData={apiTickets}
             search={search}
             onSearchChange={handleSearchChange}
             isLoading={isLoading}
           />
 
           <div className='flex items-center justify-between'>
-            {(data?.count ?? 0) > 0 && (
+            {(supportTicketData?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
-                {data?.count ?? 0} Tickets
+                {Math.min(page * PAGE_LIMIT, supportTicketData?.count ?? 0)} of{' '}
+                {supportTicketData?.count ?? 0} Tickets
               </p>
             )}
             {totalPages > 1 && (

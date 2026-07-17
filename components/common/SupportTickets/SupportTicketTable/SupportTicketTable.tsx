@@ -28,6 +28,7 @@ import {
 import {
   PRIORITY_LABELS,
   PRIORITY_STYLES,
+  PriorityOptions,
   STATUS_DESCRIPTIONS,
   STATUS_ICON_COLORS,
   STATUS_ICONS,
@@ -36,6 +37,7 @@ import {
   StatusOptions,
   TABLE_COLUMNS,
   TICKET_TYPE_STYLES,
+  TicketTypeOptions,
 } from '@/data/common/SupportTickets/SupportTicketsData';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
@@ -87,15 +89,15 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
           href={getSupportTicketDetailsUrl(session, ticket.alias)}
           className='text_decoration_hover'
         >
-          {ticket.ticketId}
+          {ticket.ticket_id}
         </Link>
       </TableCell>
       <TableCell>
         <Badge
           variant='secondary'
-          className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticketType]}`}
+          className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticket_type]}`}
         >
-          {formatChoiceFieldValue(ticket.ticketType)}
+          {formatChoiceFieldValue(ticket.ticket_type)}
         </Badge>
       </TableCell>
 
@@ -181,11 +183,16 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         <div className='flex items-center justify-center gap-3'>
           <div className='flex flex-col items-center justify-center'>
             <p className='text-foreground text-sm font-semibold'>
-              {ticket.createdByName}
+              {ticket.created_by.name}
             </p>
             <p className='text-muted-foreground text-xs'>
-              {ticket.createdByEmail}
+              {ticket.created_by.email}
             </p>
+            {ticket.created_by.role && (
+              <p className='text-muted-foreground text-xs'>
+                ({formatChoiceFieldValue(ticket.created_by.role)})
+              </p>
+            )}
           </div>
         </div>
       </TableCell>
@@ -200,7 +207,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         )}
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatDate(ticket.createdAt) || 'Not Available'}
+        {formatDate(ticket.created_at) || 'Not Available'}
       </TableCell>
       <TableCell>
         <div className='flex items-center justify-center gap-2'>
@@ -242,29 +249,71 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
 };
 
 const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
-  tickets,
-  apiTickets,
+  supportTicketsData,
   search,
   onSearchChange,
   isLoading,
 }) => {
-  const apiTicketByAlias = new Map(apiTickets.map((t) => [t.alias, t]));
+  const apiTicketByAlias = new Map(supportTicketsData.map((t) => [t.alias, t]));
 
   return (
     <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
-      <div className='border-border flex items-center justify-between gap-1 border-b px-6 py-4'>
+      <div className='border-border flex flex-col gap-3 border-b px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-1'>
         <h2 className='text-foreground text-base font-semibold'>
           All Support Tickets
         </h2>
-        <div className='flex items-center gap-1'>
-          <div className='relative w-64'>
+
+        <div className='flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end'>
+          {/* Filters: 2-col grid on mobile, row on larger screens */}
+          <div className='grid grid-cols-2 gap-2 lg:flex lg:items-center'>
+            <Select>
+              <SelectTrigger className='h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:w-40 xl:w-44'>
+                <SelectValue placeholder='Filter by ticket type' />
+              </SelectTrigger>
+              <SelectContent>
+                {TicketTypeOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select>
+              <SelectTrigger className='h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:w-40 xl:w-44'>
+                <SelectValue placeholder='Filter by priority' />
+              </SelectTrigger>
+              <SelectContent>
+                {PriorityOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select>
+              <SelectTrigger className='col-span-2 h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:col-span-1 lg:w-40 xl:w-44'>
+                <SelectValue placeholder='Filter by status' />
+              </SelectTrigger>
+              <SelectContent>
+                {StatusOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className='relative w-full lg:w-56 xl:w-64'>
             <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
             <Input
               type='text'
               placeholder='Search tickets...'
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              className='h-9! w-64 rounded-xl pr-8! pl-7!'
+              className='h-9! w-full rounded-xl pr-8! pl-7!'
             />
             <HoverInfoPopover text='You can search using Ticket ID, Ticket creator Name, Email and Phone.' />
           </div>
@@ -333,8 +382,8 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
                   </div>
                 </TableCell>
               </TableRow>
-            ) : tickets.length > 0 ? (
-              tickets.map((ticket, idx) => {
+            ) : supportTicketsData.length > 0 ? (
+              supportTicketsData.map((ticket, idx) => {
                 const apiTicket = apiTicketByAlias.get(ticket.alias);
                 if (!apiTicket) return null;
                 return (
