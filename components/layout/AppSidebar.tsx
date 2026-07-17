@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
+import { getStartNewJourneyUrl } from '@/utils/redirectPath';
 import {
   ChevronRight,
   LogOut,
@@ -222,19 +223,26 @@ const AppSidebar: React.FC = () => {
 
       <SidebarSeparator className='mx-0 h-px!' />
 
-      <Link href='#' passHref className='flex justify-center'>
-        <Button
-          type='button'
-          size='lg'
-          variant='secondary'
-          className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+      {(session?.user?.role === 'LANDLORD' ||
+        session?.user?.role === 'ADMIN') && (
+        <Link
+          href={getStartNewJourneyUrl(session)}
+          passHref
+          className='flex justify-center'
         >
-          <Plus className='size-4' />
-          <span className='group-data-[collapsible=icon]:hidden'>
-            Start New Journey
-          </span>
-        </Button>
-      </Link>
+          <Button
+            type='button'
+            size='lg'
+            variant='secondary'
+            className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+          >
+            <Plus className='size-4' />
+            <span className='group-data-[collapsible=icon]:hidden'>
+              Start New Journey
+            </span>
+          </Button>
+        </Link>
+      )}
 
       <SidebarContent className='gap-1 px-2 py-2'>
         <SidebarGroup className='p-0'>

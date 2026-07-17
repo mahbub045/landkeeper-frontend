@@ -152,3 +152,26 @@ export const getSupportTicketDetailsUrl = (
 
   return '/auth/login';
 };
+
+export const getStartNewJourneyUrl = (session: Session | null) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (role === 'LANDLORD') {
+    return '/client/landlord/start-new-journey';
+  }
+
+  if (role === 'ADMIN') {
+    return '/client/admin/start-new-journey';
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return '/client/letting-agent/start-new-journey';
+  }
+
+  return '/auth/login';
+};
