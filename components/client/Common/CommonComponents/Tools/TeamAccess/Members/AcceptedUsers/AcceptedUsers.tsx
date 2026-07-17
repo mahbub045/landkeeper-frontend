@@ -1,3 +1,4 @@
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,15 +28,7 @@ import {
   formatDate,
   getInitials,
 } from '@/utils/formatters';
-import {
-  AlertCircle,
-  Mail,
-  Pencil,
-  Phone,
-  ShieldUser,
-  Trash2,
-  Users,
-} from 'lucide-react';
+import { Mail, Pencil, Phone, ShieldUser, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import DeleteAcceptedUserDialog from './Dialogs/DeleteAcceptedUserDialog';
@@ -136,24 +129,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
         </div>
       )}
 
-      {!isLoading && isError && (
-        <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
-          <div className='bg-danger/10 flex size-12 items-center justify-center rounded-full'>
-            <AlertCircle className='text-danger size-6' />
-          </div>
-          <div>
-            <p className='text-foreground text-sm font-semibold'>
-              Failed to load team members
-            </p>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              Something went wrong while fetching the team. Please try again.
-            </p>
-          </div>
-          <Button variant='outline' size='sm' onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
-      )}
+      {!isLoading && isError && <CustomErrorMessage title='team members' />}
 
       {!isLoading && !isError && members.length === 0 && (
         <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>

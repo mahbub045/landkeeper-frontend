@@ -15,6 +15,7 @@ import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportT
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import CustomErrorMessage from '../CustomErrorMessage/CustomErrorMessage';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
 
@@ -110,9 +111,7 @@ const SupportTicket: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-sm'>
-          Failed to load support tickets. Please try again.
-        </p>
+        <CustomErrorMessage title='support tickets' />
       ) : (
         <>
           <SupportTicketTable

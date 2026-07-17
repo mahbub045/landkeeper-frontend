@@ -26,6 +26,7 @@ import {
 import React, { useState } from 'react';
 import DeleteInvitedUserDialog from './Dialogs/DeleteInvitedUserDialog';
 import ResendEmailInvitedUserDialog from './Dialogs/ResendEmailInvitedUserDialog';
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const InvitedUsers: React.FC<InvitedUsersProps> = ({
   invites,
@@ -96,22 +97,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
       )}
 
       {!isInviteLoading && isInviteError && (
-        <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
-          <div className='bg-danger/10 flex size-12 items-center justify-center rounded-full'>
-            <AlertCircle className='text-danger size-6' />
-          </div>
-          <div>
-            <p className='text-foreground text-sm font-semibold'>
-              Failed to load invited users
-            </p>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              Something went wrong while fetching invites. Please try again.
-            </p>
-          </div>
-          <Button variant='outline' size='sm' onClick={() => refetchInvites()}>
-            Retry
-          </Button>
-        </div>
+       <CustomErrorMessage title='invited users' />
       )}
 
       {!isInviteLoading && !isInviteError && invites.length === 0 && (

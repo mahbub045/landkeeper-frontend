@@ -23,11 +23,12 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { Plus, Search } from 'lucide-react';
+import { AlertCircle, Plus, RefreshCcw, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const Properties: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
@@ -125,9 +126,7 @@ const Properties: React.FC = () => {
       />
 
       {isError ? (
-        <p className='text-danger text-center text-sm'>
-          Failed to load properties. Please try again.
-        </p>
+        <CustomErrorMessage title='properties' />
       ) : (
         <>
           <PropertyGrid

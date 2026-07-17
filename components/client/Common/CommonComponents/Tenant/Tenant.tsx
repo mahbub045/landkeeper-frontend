@@ -1,5 +1,6 @@
 'use client';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Button } from '@/components/ui/button';
 import {
   Pagination,
@@ -106,9 +107,7 @@ const Tenant: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-center text-sm'>
-          Failed to load tenants. Please try again.
-        </p>
+        <CustomErrorMessage title='tenants' />
       ) : (
         <>
           <TenantTable
