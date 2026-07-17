@@ -211,14 +211,13 @@ const AppSidebar: React.FC = () => {
             loading='eager'
           />
         </div>
-        <span
-          className={cn(
-            'bg-warning text-warning-foreground inline-flex w-fit items-center rounded-full px-3 py-0.5 text-xs font-semibold',
-            'group-data-[collapsible=icon]:hidden',
-          )}
+
+        <Badge
+          variant='secondary'
+          className='group-data-[collapsible=icon]:hidden'
         >
           Premium Plan
-        </span>
+        </Badge>
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />
