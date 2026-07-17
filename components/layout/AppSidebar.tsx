@@ -224,6 +224,7 @@ const AppSidebar: React.FC = () => {
       <SidebarSeparator className='mx-0 h-px!' />
 
       {(session?.user?.role === 'LANDLORD' ||
+        session?.user?.role === 'LETTING_AGENT' ||
         session?.user?.role === 'ADMIN') && (
         <Link
           href={getStartNewJourneyUrl(session)}
