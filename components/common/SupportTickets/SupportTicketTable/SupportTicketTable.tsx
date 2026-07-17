@@ -92,11 +92,6 @@ const MultiSelectFilter: React.FC<MultiSelectFilterProps> = ({
     }
   };
 
-  const clearAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange([]);
-  };
-
   const summaryLabel =
     selected.length === 0
       ? label
@@ -305,10 +300,10 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         </div>
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {ticket.fileCount > 0 ? (
+        {ticket.files.length > 0 ? (
           <span className='inline-flex items-center gap-1'>
             <Paperclip className='size-3.5' />
-            {ticket.fileCount}
+            {ticket.files.length}
           </span>
         ) : (
           '—'

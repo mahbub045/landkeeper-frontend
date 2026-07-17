@@ -38,7 +38,6 @@ export interface ApiSupportTicketType {
   files: ApiSupportTicketFile[];
   created_at: string;
   created_by: ApiSupportTicketCreatedBy;
-  fileCount: number;
 }
 
 export interface SupportTicketRowProps {

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { useDeleteAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { DeleteAcceptedUserDialogProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
+import formatChoiceFieldValue from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { AlertCircle } from 'lucide-react';
@@ -26,6 +27,7 @@ const DeleteAcceptedUserDialog: React.FC<DeleteAcceptedUserDialogProps> = ({
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const fullName = [
+    formatChoiceFieldValue(member?.user?.title),
     member?.user?.first_name,
     member?.user?.middle_name,
     member?.user?.last_name,
