@@ -28,9 +28,9 @@ const AuthPageLeftPanel: React.FC = () => {
         <h1 className='mb-4 text-4xl leading-tight font-bold text-white'>
           Manage your property,
           <br />
-          <span className='text-secondary'>effortlessly.</span>
+          <span className='text-warning'>effortlessly.</span>
         </h1>
-        <p className='text-secondary max-w-sm text-lg leading-relaxed'>
+        <p className='text-warning max-w-sm text-lg leading-relaxed'>
           Track parcels, monitor applications, and stay on top of every land
           management task — all in one place.
         </p>
@@ -44,14 +44,14 @@ const AuthPageLeftPanel: React.FC = () => {
           ].map((stat) => (
             <div key={stat.label}>
               <p className='text-2xl font-bold text-white'>{stat.value}</p>
-              <p className='text-secondary mt-1 text-sm'>{stat.label}</p>
+              <p className='text-warning mt-1 text-sm'>{stat.label}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className='border-secondary relative border-l-2 pl-4'>
-        <p className='text-secondary text-sm italic'>
+      <div className='border-warning relative border-l-2 pl-4'>
+        <p className='text-warning text-sm italic'>
           Landkeeper transformed how we handle our portfolio of 2,000+ parcels.
         </p>
         <p className='mt-2 text-xs text-white'>
