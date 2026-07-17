@@ -3,7 +3,13 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -14,7 +20,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  MultiSelectFilterProps,
   SupportTicketRowProps,
+  SupportTicketStatus,
   SupportTicketTableProps,
 } from '@/types/common/SupportTickets/SupportTicketTypes';
 
@@ -43,6 +51,7 @@ import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/Su
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import { getSupportTicketDetailsUrl } from '@/utils/redirectPath';
 import {
+  ChevronDown,
   HelpCircle,
   MessageSquareWarning,
   Paperclip,
@@ -57,6 +66,106 @@ import { toast } from 'sonner';
 import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import DeleteSupportTicketDialog from '../Dialogs/DeleteSupportTicketDialog';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
+
+const STATUS_CONTROL_OPTIONS: Array<{
+  value: SupportTicketStatus;
+  label: string;
+}> = Object.entries(STATUS_LABELS).map(([value, label]) => ({
+  value: value as SupportTicketStatus,
+  label,
+}));
+
+const MultiSelectFilter: React.FC<MultiSelectFilterProps> = ({
+  label,
+  options,
+  selected,
+  onChange,
+  widthClassName = 'lg:w-40 xl:w-44',
+}) => {
+  const [open, setOpen] = useState(false);
+
+  const toggleValue = (value: string) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter((v) => v !== value));
+    } else {
+      onChange([...selected, value]);
+    }
+  };
+
+  const clearAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange([]);
+  };
+
+  const summaryLabel =
+    selected.length === 0
+      ? label
+      : selected.length === 1
+        ? (options.find((o) => o.value === selected[0])?.label ?? label)
+        : `${label.replace('Filter by ', '')} (${selected.length})`;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant='outline'
+          role='combobox'
+          aria-expanded={open}
+          className={`h-9! w-full justify-between rounded-md font-normal ring-offset-0 focus:ring-0 focus:ring-offset-0 ${widthClassName} ${
+            selected.length > 0 ? 'border-primary/40' : ''
+          }`}
+        >
+          <span
+            className={`truncate ${
+              selected.length === 0
+                ? 'text-muted-foreground'
+                : 'text-foreground'
+            }`}
+          >
+            <span className='capitalize'>{summaryLabel}</span>
+          </span>
+
+          <ChevronDown className='text-muted-foreground size-4 shrink-0' />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align='start'
+        className='w-56 p-2'
+        onCloseAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className='max-h-64 space-y-0.5 overflow-y-auto'>
+          {options.map((opt) => {
+            const checked = selected.includes(opt.value);
+            return (
+              <label
+                key={opt.value}
+                className='hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm'
+              >
+                <Checkbox
+                  checked={checked}
+                  onCheckedChange={() => toggleValue(opt.value)}
+                />
+                <span className='truncate'>{opt.label}</span>
+              </label>
+            );
+          })}
+        </div>
+        {selected.length > 0 && (
+          <div className='border-border mt-2 flex justify-end border-t pt-2'>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='h-7 text-xs'
+              onClick={() => onChange([])}
+            >
+              Clear all
+            </Button>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
   ticket,
@@ -77,7 +186,6 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
       }).unwrap();
       toast.success('Ticket status updated successfully.');
     } catch (error) {
-      // console.error('Error updating ticket status:', error);
       toast.error('Failed to update ticket status. Please try again.');
     }
   };
@@ -136,7 +244,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent align='center'>
-                {StatusOptions.map((opt) => {
+                {STATUS_CONTROL_OPTIONS.map((opt) => {
                   const Icon = STATUS_ICONS[opt.value];
                   return (
                     <SelectItem
@@ -252,6 +360,12 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
   supportTicketsData,
   search,
   onSearchChange,
+  ticketTypeFilter,
+  onTicketTypeFilterChange,
+  priorityFilter,
+  onPriorityFilterChange,
+  statusFilter,
+  onStatusFilterChange,
   isLoading,
 }) => {
   const apiTicketByAlias = new Map(supportTicketsData.map((t) => [t.alias, t]));
@@ -266,44 +380,28 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
         <div className='flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center lg:justify-end'>
           {/* Filters: 2-col grid on mobile, row on larger screens */}
           <div className='grid grid-cols-2 gap-2 lg:flex lg:items-center'>
-            <Select>
-              <SelectTrigger className='h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:w-40 xl:w-44'>
-                <SelectValue placeholder='Filter by ticket type' />
-              </SelectTrigger>
-              <SelectContent>
-                {TicketTypeOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelectFilter
+              label='Filter by ticket type'
+              options={TicketTypeOptions}
+              selected={ticketTypeFilter}
+              onChange={onTicketTypeFilterChange}
+            />
 
-            <Select>
-              <SelectTrigger className='h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:w-40 xl:w-44'>
-                <SelectValue placeholder='Filter by priority' />
-              </SelectTrigger>
-              <SelectContent>
-                {PriorityOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelectFilter
+              label='Filter by priority'
+              options={PriorityOptions}
+              selected={priorityFilter}
+              onChange={onPriorityFilterChange}
+            />
 
-            <Select>
-              <SelectTrigger className='col-span-2 h-9! w-full ring-offset-0 focus:ring-0 focus:ring-offset-0 lg:col-span-1 lg:w-40 xl:w-44'>
-                <SelectValue placeholder='Filter by status' />
-              </SelectTrigger>
-              <SelectContent>
-                {StatusOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className='col-span-2 lg:col-span-1'>
+              <MultiSelectFilter
+                label='Filter by status'
+                options={StatusOptions}
+                selected={statusFilter}
+                onChange={onStatusFilterChange}
+              />
+            </div>
           </div>
 
           <div className='relative w-full lg:w-56 xl:w-64'>
@@ -333,15 +431,13 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
                     {col}
                     {col === 'Status' && (
                       <HoverInfoPopover
-                        icon={
-                          <HelpCircle className='size-3.5 text-purple-500' />
-                        }
+                        icon={<HelpCircle className='text-secondary size-4' />}
                         triggerClassName='flex size-4 items-center justify-center rounded-full'
                         contentClassName='w-80 space-y-2 p-4 normal-case'
                         align='center'
                         content={
                           <>
-                            {StatusOptions.map((opt) => {
+                            {STATUS_CONTROL_OPTIONS.map((opt) => {
                               const Icon = STATUS_ICONS[opt.value];
                               return (
                                 <div

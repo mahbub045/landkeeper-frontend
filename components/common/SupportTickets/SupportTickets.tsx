@@ -24,6 +24,9 @@ const SupportTicket: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [ticketTypeFilter, setTicketTypeFilter] = useState<string[]>([]);
+  const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -34,6 +37,11 @@ const SupportTicket: React.FC = () => {
     page,
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
+    ...(ticketTypeFilter.length > 0 && {
+      ticket_type: ticketTypeFilter.join(','),
+    }),
+    ...(priorityFilter.length > 0 && { priority: priorityFilter.join(',') }),
+    ...(statusFilter.length > 0 && { status: statusFilter.join(',') }),
   };
 
   const {
@@ -48,6 +56,21 @@ const SupportTicket: React.FC = () => {
 
   function handleSearchChange(value: string) {
     setSearch(value);
+    setPage(1);
+  }
+
+  function handleTicketTypeFilterChange(values: string[]) {
+    setTicketTypeFilter(values);
+    setPage(1);
+  }
+
+  function handlePriorityFilterChange(values: string[]) {
+    setPriorityFilter(values);
+    setPage(1);
+  }
+
+  function handleStatusFilterChange(values: string[]) {
+    setStatusFilter(values);
     setPage(1);
   }
 
@@ -96,6 +119,12 @@ const SupportTicket: React.FC = () => {
             supportTicketsData={apiTickets}
             search={search}
             onSearchChange={handleSearchChange}
+            ticketTypeFilter={ticketTypeFilter}
+            onTicketTypeFilterChange={handleTicketTypeFilterChange}
+            priorityFilter={priorityFilter}
+            onPriorityFilterChange={handlePriorityFilterChange}
+            statusFilter={statusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
             isLoading={isLoading}
           />
 

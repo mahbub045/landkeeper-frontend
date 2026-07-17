@@ -41,8 +41,6 @@ export interface ApiSupportTicketType {
   fileCount: number;
 }
 
-// Display/UI shape mapped from ApiSupportTicket
-
 export interface SupportTicketRowProps {
   ticket: ApiSupportTicketType;
   apiTicket: ApiSupportTicketType;
@@ -53,7 +51,22 @@ export interface SupportTicketTableProps {
   supportTicketsData: ApiSupportTicketType[];
   search: string;
   onSearchChange: (value: string) => void;
+  ticketTypeFilter: string[];
+  onTicketTypeFilterChange: (values: string[]) => void;
+  priorityFilter: string[];
+  onPriorityFilterChange: (values: string[]) => void;
+  statusFilter: string[];
+  onStatusFilterChange: (values: string[]) => void;
   isLoading: boolean;
+}
+
+type FilterOption = { value: string; label: string };
+export interface MultiSelectFilterProps {
+  label: string;
+  options: readonly FilterOption[];
+  selected: string[];
+  onChange: (values: string[]) => void;
+  widthClassName?: string;
 }
 
 export interface SupportTicketForm {
