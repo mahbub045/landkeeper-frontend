@@ -4,7 +4,7 @@ export const StartNewJourneyApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     addNewJourney: builder.mutation({
       query: (payload) => ({
-        url: '/mortgage',
+        url: '/properties/onboarding',
         method: 'POST',
         body: payload,
       }),

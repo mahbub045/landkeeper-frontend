@@ -1,16 +1,4 @@
-// const StartNewJourney: React.FC = () => {
-//   return (
-//     <div>
-//       Test
-//     </div>
-//   );
-// };
-
-// export default StartNewJourney;
-
 'use client';
-
-// components/StartNewJourney/StartNewJourneyWizard.tsx
 
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
@@ -216,130 +204,177 @@ const StartNewJourney: React.FC = () => {
   }
 
   async function handleSave() {
-  setBannerError(null);
+    setBannerError(null);
 
-  for (const tab of WIZARD_TABS) {
-    if (!validateTab(tab)) {
-      setActiveTab(tab);
-      setPendingValidateTab(tab);
-      toast.error(
-        `Please complete the required fields in "${WIZARD_TAB_LABELS[tab]}".`,
-      );
-      return;
+    for (const tab of WIZARD_TABS) {
+      if (!validateTab(tab)) {
+        setActiveTab(tab);
+        setPendingValidateTab(tab);
+        toast.error(
+          `Please complete the required fields in "${WIZARD_TAB_LABELS[tab]}".`,
+        );
+        return;
+      }
+    }
+
+    function appendIfPresent(fd: FormData, key: string, value: unknown) {
+      if (value === '' || value == null) return;
+      fd.append(key, String(value));
+    }
+
+    function toDateOnly(value: unknown): string {
+      if (!value) return '';
+
+      if (value instanceof Date) {
+        if (isNaN(value.getTime())) return '';
+        const y = value.getFullYear();
+        const mo = String(value.getMonth() + 1).padStart(2, '0');
+        const d = String(value.getDate()).padStart(2, '0');
+        return `${y}-${mo}-${d}`;
+      }
+
+      const str = String(value).trim();
+
+      // already YYYY-MM-DD (or starts with it, e.g. ISO timestamp)
+      if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0, 10);
+
+      // fallback: let the Date constructor try to parse it
+      const parsed = new Date(str);
+      if (!isNaN(parsed.getTime())) {
+        const y = parsed.getFullYear();
+        const mo = String(parsed.getMonth() + 1).padStart(2, '0');
+        const d = String(parsed.getDate()).padStart(2, '0');
+        return `${y}-${mo}-${d}`;
+      }
+
+      return '';
+    }
+
+    function appendDateIfPresent(fd: FormData, key: string, value: unknown) {
+      const formatted = toDateOnly(value);
+      if (formatted === '') return;
+      fd.append(key, formatted);
+    }
+
+    const fd = new FormData();
+
+    // ── Property ──
+    const p = state.property;
+    fd.append('property_property_name', p.name ?? '');
+    fd.append('property_property_type', p.type ?? '');
+    fd.append('property_status', p.status ?? '');
+    fd.append('property_address', p.address ?? '');
+    fd.append('property_purchase_price', String(p.purchasePrice ?? ''));
+    fd.append('property_current_value', String(p.currentValue ?? ''));
+    fd.append('property_rent_per_month', String(p.rentPerMonth ?? ''));
+    // fd.append('property_purchase_date', toDateOnly(p.purchaseDate));
+    appendDateIfPresent(fd, 'property_purchase_date', p.purchaseDate);
+    appendIfPresent(fd, 'property_bedrooms', p.bedrooms);
+    appendIfPresent(fd, 'property_bathrooms', p.bathrooms);
+    fd.append('property_notes', p.notes ?? '');
+    state.propertyFiles.forEach((file) =>
+      fd.append('property_documents_data', file),
+    );
+
+    // ── Mortgage ──
+    const m = state.mortgage;
+    fd.append('mortgage_lender_name', m.lenderName ?? '');
+    fd.append('mortgage_product_type', m.productType ?? '');
+    appendIfPresent(fd, 'mortgage_interest_rate', m.interestRate);
+    appendIfPresent(fd, 'mortgage_loan_amount', m.loanAmount);
+    appendIfPresent(fd, 'mortgage_outstanding_balance', m.outstandingBalance);
+    appendIfPresent(fd, 'mortgage_monthly_payment', m.monthlyPayment);
+    appendIfPresent(fd, 'mortgage_term', m.termYears);
+    appendDateIfPresent(fd, 'mortgage_start_date', m.startDate);
+    appendDateIfPresent(fd, 'mortgage_end_date', m.endDate);
+    fd.append('mortgage_broker_notes', m.brokerNotes ?? '');
+    state.mortgageFiles.forEach((file) =>
+      fd.append('mortgage_mortgage_documents', file),
+    );
+
+    // ── Tenant ──
+    const t = state.tenant;
+    fd.append('tenant_title', t.title ?? '');
+    fd.append('tenant_first_name', t.firstName ?? '');
+    fd.append('tenant_last_name', t.lastName ?? '');
+    fd.append('tenant_email', t.email ?? '');
+    fd.append('tenant_phone', t.phone ?? '');
+    appendIfPresent(fd, 'tenant_rent_amount', t.rentAmount);
+    appendIfPresent(fd, 'tenant_deposit', t.deposit);
+    appendDateIfPresent(fd, 'tenant_tenancy_start_date', t.tenancyStart);
+    appendDateIfPresent(fd, 'tenant_tenancy_end_date', t.tenancyEnd);
+    fd.append('tenant_employment_details', t.employmentDetails ?? '');
+    fd.append('tenant_guarantor_name', t.guarantorName ?? '');
+    fd.append('tenant_notes', t.notes ?? '');
+    fd.append('tenant_is_active', 'true');
+    if (state.tenantAvatar) fd.append('tenant_avatar', state.tenantAvatar);
+    // TODO: 'tenant_image' is a new field in the backend spec — no matching
+    // state yet. Let me know which upload this should come from.
+
+    // ── Compliance ──
+    const c = state.compliance;
+    fd.append('compliance_certificate_type', c.certificateType ?? '');
+    appendDateIfPresent(fd, 'compliance_issue_date', c.issueDate);
+    appendDateIfPresent(fd, 'compliance_expiry_date', c.expiryDate);
+    fd.append('compliance_certificate_number', c.certificateNumber ?? '');
+    fd.append('compliance_issued_by', c.issuedBy ?? '');
+    if (state.complianceFile)
+      fd.append('compliance_certificate_file', state.complianceFile);
+
+    // ── Document ──
+    const d = state.document;
+    fd.append('upload_document_document_category', d.category ?? '');
+    fd.append('upload_document_document_name', d.name.trim());
+    fd.append('upload_document_tags', d.tags.trim());
+    if (state.documentFile)
+      fd.append('upload_document_uploaded_files', state.documentFile);
+
+    try {
+      await addNewJourney(fd).unwrap();
+      toast.success('Property created successfully.');
+      resetWizard();
+    } catch (err) {
+      handleApiError(err);
     }
   }
-
-  const fd = new FormData();
-
-const p = state.property;
-fd.append('property', JSON.stringify({
-  property_name: p.name,
-  property_type: p.type,
-  status: p.status,
-  address: p.address,
-  purchase_price: p.purchasePrice,
-  current_value: p.currentValue,
-  rent_per_month: p.rentPerMonth,
-  purchase_date: p.purchaseDate,
-  bedrooms: p.bedrooms,
-  bathrooms: p.bathrooms,
-  notes: p.notes,
-}));
-state.propertyFiles.forEach((file) => fd.append('documents_data', file));
-
-const m = state.mortgage;
-fd.append('mortgage', JSON.stringify({
-  lender_name: m.lenderName,
-  product_type: m.productType,
-  interest_rate: m.interestRate,
-  loan_amount: m.loanAmount,
-  outstanding_balance: m.outstandingBalance,
-  monthly_payment: m.monthlyPayment,
-  term: m.termYears,
-  start_date: m.startDate || null,
-  end_date: m.endDate || null,
-  broker_notes: m.brokerNotes,
-}));
-state.mortgageFiles.forEach((file) => fd.append('mortgage_documents', file));
-
-const t = state.tenant;
-fd.append('tenant', JSON.stringify({
-  title: t.title,
-  first_name: t.firstName,
-  middle_name: t.middleName,
-  last_name: t.lastName,
-  email: t.email,
-  phone: t.phone,
-  rent_amount: t.rentAmount,
-  deposit: t.deposit,
-  tenancy_start_date: t.tenancyStart,
-  tenancy_end_date: t.tenancyEnd || null,
-  employment_details: t.employmentDetails,
-  guarantor_name: t.guarantorName,
-  notes: t.notes,
-  is_active: true,
-}));
-if (state.tenantAvatar) fd.append('avatar', state.tenantAvatar);
-
-const c = state.compliance;
-fd.append('compliance', JSON.stringify({
-  certificate_type: c.certificateType,
-  issue_date: c.issueDate,
-  expiry_date: c.expiryDate,
-  certificate_number: c.certificateNumber,
-  issued_by: c.issuedBy,
-}));
-if (state.complianceFile) fd.append('certificate_file', state.complianceFile);
-
-const d = state.document;
-fd.append('upload_document', JSON.stringify({
-  document_category: d.category,
-  document_name: d.name.trim(),
-  tags: d.tags.trim(),
-}));
-if (state.documentFile) fd.append('uploaded_files', state.documentFile);
-
-  // ── Document ──
- 
-
-  try {
-    await addNewJourney(fd).unwrap();
-    toast.success('Property created successfully.');
-    resetWizard();
-  } catch (err) {
-    handleApiError(err);
-  }
-}
 
   const isLastTab = activeTab === WIZARD_TABS[WIZARD_TABS.length - 1];
   const isFirstTab = activeTab === WIZARD_TABS[0];
 
   return (
     <div className='mx-auto flex w-full max-w-4xl flex-col overflow-hidden rounded-xl border'>
+      {/* Heading */}
+      <div className='border-b px-6 pt-6 pb-5'>
+        <h2 className='text-xl font-semibold'>Start Your Journey Here</h2>
+        <p className='text-muted-foreground mt-1 text-sm'>
+          Fill up the sections below to add your property, mortgage, tenant, and
+          compliance details.
+        </p>
+      </div>
+
       {/* Tab strip */}
-      <div className='flex gap-6 border-b px-6 pt-6'>
+      <div className='flex flex-wrap justify-center gap-3 border-b px-6 py-5'>
         {WIZARD_TABS.map((tab) => {
           const hasError = Object.keys(errors[tab]).length > 0;
           const isActive = activeTab === tab;
           return (
-            <button
+            <Button
               key={tab}
               type='button'
+              variant={isActive ? 'default' : 'outline'}
               onClick={() => handleTabClick(tab)}
               className={[
-                'pb-3 text-sm font-medium transition-colors',
-                isActive
-                  ? 'text-primary border-primary border-b-2'
-                  : hasError
-                    ? 'text-danger'
-                    : 'text-muted-foreground hover:text-foreground',
+                'rounded-md px-5 font-semibold',
+                !isActive && hasError
+                  ? 'border-danger text-danger hover:bg-danger/5'
+                  : '',
               ].join(' ')}
             >
               {WIZARD_TAB_LABELS[tab]}
               {hasError && !isActive && (
                 <span className='bg-danger ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle' />
               )}
-            </button>
+            </Button>
           );
         })}
       </div>
