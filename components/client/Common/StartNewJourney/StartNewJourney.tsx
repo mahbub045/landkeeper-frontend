@@ -218,45 +218,6 @@ const StartNewJourney: React.FC = () => {
       }
     }
 
-    function appendIfPresent(fd: FormData, key: string, value: unknown) {
-      if (value === '' || value == null) return;
-      fd.append(key, String(value));
-    }
-
-    function toDateOnly(value: unknown): string {
-      if (!value) return '';
-
-      if (value instanceof Date) {
-        if (isNaN(value.getTime())) return '';
-        const y = value.getFullYear();
-        const mo = String(value.getMonth() + 1).padStart(2, '0');
-        const d = String(value.getDate()).padStart(2, '0');
-        return `${y}-${mo}-${d}`;
-      }
-
-      const str = String(value).trim();
-
-      // already YYYY-MM-DD (or starts with it, e.g. ISO timestamp)
-      if (/^\d{4}-\d{2}-\d{2}/.test(str)) return str.slice(0, 10);
-
-      // fallback: let the Date constructor try to parse it
-      const parsed = new Date(str);
-      if (!isNaN(parsed.getTime())) {
-        const y = parsed.getFullYear();
-        const mo = String(parsed.getMonth() + 1).padStart(2, '0');
-        const d = String(parsed.getDate()).padStart(2, '0');
-        return `${y}-${mo}-${d}`;
-      }
-
-      return '';
-    }
-
-    function appendDateIfPresent(fd: FormData, key: string, value: unknown) {
-      const formatted = toDateOnly(value);
-      if (formatted === '') return;
-      fd.append(key, formatted);
-    }
-
     const fd = new FormData();
 
     // ── Property ──
@@ -268,10 +229,9 @@ const StartNewJourney: React.FC = () => {
     fd.append('property_purchase_price', String(p.purchasePrice ?? ''));
     fd.append('property_current_value', String(p.currentValue ?? ''));
     fd.append('property_rent_per_month', String(p.rentPerMonth ?? ''));
-    // fd.append('property_purchase_date', toDateOnly(p.purchaseDate));
-    appendDateIfPresent(fd, 'property_purchase_date', p.purchaseDate);
-    appendIfPresent(fd, 'property_bedrooms', p.bedrooms);
-    appendIfPresent(fd, 'property_bathrooms', p.bathrooms);
+    fd.append('property_purchase_date', p.purchaseDate);
+    fd.append('property_bedrooms', p.bedrooms);
+    fd.append('property_bathrooms', p.bathrooms);
     fd.append('property_notes', p.notes ?? '');
     state.propertyFiles.forEach((file) =>
       fd.append('property_documents_data', file),
@@ -281,13 +241,13 @@ const StartNewJourney: React.FC = () => {
     const m = state.mortgage;
     fd.append('mortgage_lender_name', m.lenderName ?? '');
     fd.append('mortgage_product_type', m.productType ?? '');
-    appendIfPresent(fd, 'mortgage_interest_rate', m.interestRate);
-    appendIfPresent(fd, 'mortgage_loan_amount', m.loanAmount);
-    appendIfPresent(fd, 'mortgage_outstanding_balance', m.outstandingBalance);
-    appendIfPresent(fd, 'mortgage_monthly_payment', m.monthlyPayment);
-    appendIfPresent(fd, 'mortgage_term', m.termYears);
-    appendDateIfPresent(fd, 'mortgage_start_date', m.startDate);
-    appendDateIfPresent(fd, 'mortgage_end_date', m.endDate);
+    fd.append('mortgage_interest_rate', m.interestRate ?? '');
+    fd.append('mortgage_loan_amount', m.loanAmount ?? '');
+    fd.append('mortgage_outstanding_balance', m.outstandingBalance ?? '');
+    fd.append('mortgage_monthly_payment', m.monthlyPayment ?? '');
+    fd.append('mortgage_term', m.termYears ?? '');
+    fd.append('mortgage_start_date', m.startDate);
+    fd.append('mortgage_end_date', m.endDate);
     fd.append('mortgage_broker_notes', m.brokerNotes ?? '');
     state.mortgageFiles.forEach((file) =>
       fd.append('mortgage_mortgage_documents', file),
@@ -301,23 +261,21 @@ const StartNewJourney: React.FC = () => {
     fd.append('tenant_last_name', t.lastName ?? '');
     fd.append('tenant_email', t.email ?? '');
     fd.append('tenant_phone', t.phone ?? '');
-    appendIfPresent(fd, 'tenant_rent_amount', t.rentAmount);
-    appendIfPresent(fd, 'tenant_deposit', t.deposit);
-    appendDateIfPresent(fd, 'tenant_tenancy_start_date', t.tenancyStart);
-    appendDateIfPresent(fd, 'tenant_tenancy_end_date', t.tenancyEnd);
+    fd.append('tenant_rent_amount', t.rentAmount ?? '');
+    fd.append('tenant_deposit', t.deposit ?? '');
+    fd.append('tenant_tenancy_start_date', t.tenancyStart ?? '');
+    fd.append('tenant_tenancy_end_date', t.tenancyEnd ?? '');
     fd.append('tenant_employment_details', t.employmentDetails ?? '');
     fd.append('tenant_guarantor_name', t.guarantorName ?? '');
     fd.append('tenant_notes', t.notes ?? '');
     fd.append('tenant_is_active', 'true');
     if (state.tenantAvatar) fd.append('tenant_avatar', state.tenantAvatar);
-    // TODO: 'tenant_image' is a new field in the backend spec — no matching
-    // state yet. Let me know which upload this should come from.
 
     // ── Compliance ──
     const c = state.compliance;
     fd.append('compliance_certificate_type', c.certificateType ?? '');
-    appendDateIfPresent(fd, 'compliance_issue_date', c.issueDate);
-    appendDateIfPresent(fd, 'compliance_expiry_date', c.expiryDate);
+    fd.append('compliance_issue_date', c.issueDate ?? '');
+    fd.append('compliance_expiry_date', c.expiryDate ?? '');
     fd.append('compliance_certificate_number', c.certificateNumber ?? '');
     fd.append('compliance_issued_by', c.issuedBy ?? '');
     state.complianceFiles.forEach((file) =>
@@ -368,7 +326,7 @@ const StartNewJourney: React.FC = () => {
               variant={isActive ? 'secondary' : 'outline'}
               onClick={() => handleTabClick(tab)}
               className={[
-                'rounded-md px-5 font-semibold cursor-pointer',
+                'cursor-pointer rounded-md px-5 font-semibold',
                 !isActive && hasError
                   ? 'border-danger text-danger hover:bg-danger/5'
                   : '',
