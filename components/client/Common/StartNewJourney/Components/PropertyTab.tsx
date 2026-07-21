@@ -112,7 +112,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     type='button'
                     onClick={handleToggleCustom}
                     className={[
-                      'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                      'inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors',
                       isNameCustom
                         ? 'bg-primary/10 text-primary hover:bg-primary/15'
                         : 'bg-background text-muted-foreground hover:text-primary border shadow-sm',
