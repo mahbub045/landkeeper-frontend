@@ -356,7 +356,7 @@ const DetailsTab: React.FC<{
           <Field data-invalid={!!errors.name}>
             <div className='mb-1.5 flex items-center justify-between'>
               <FieldLabel className='gap-1.5 text-sm font-semibold'>
-                Property Name
+                Property Name<span className='text-danger'>*</span>
                 {!isNameCustom && (
                   <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                     <Sparkles className='h-2.5 w-2.5' />
@@ -387,6 +387,7 @@ const DetailsTab: React.FC<{
                 onChange={(e) => set('name', e.target.value)}
                 readOnly={!isNameCustom}
                 aria-invalid={!!errors.name}
+                required
                 className={[
                   'bg-background transition-shadow',
                   errors.name
