@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/common/tenant/TenantData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';
+import { TenantStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { Upload, User, X } from 'lucide-react';
 import { forwardRef, useRef } from 'react';
@@ -33,18 +34,19 @@ export const EMPTY_TENANT_STEP_FORM: TenantStepValue = (() => {
   return rest;
 })();
 
-interface TenantStepProps {
-  active: boolean;
-  value: TenantStepValue;
-  onChange: (v: TenantStepValue) => void;
-  avatarFile: File | null;
-  avatarPreview: string | null;
-  onAvatarChange: (file: File | null, preview: string | null) => void;
-  errors: Record<string, string>;
-}
-
 const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
-  ({ active, value, onChange, avatarFile, avatarPreview, onAvatarChange, errors }, ref) => {
+  (
+    {
+      active,
+      value,
+      onChange,
+      avatarFile,
+      avatarPreview,
+      onAvatarChange,
+      errors,
+    },
+    ref,
+  ) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     function set(key: keyof TenantStepValue, v: string) {
@@ -92,7 +94,10 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
                       : 'border-border group-hover:border-primary/50 border-dashed'
                   }`}
                 >
-                  <AvatarImage src={avatarPreview ?? undefined} alt='Avatar preview' />
+                  <AvatarImage
+                    src={avatarPreview ?? undefined}
+                    alt='Avatar preview'
+                  />
                   <AvatarFallback className='bg-muted'>
                     <User className='text-muted-foreground h-7 w-7' />
                   </AvatarFallback>
@@ -124,7 +129,9 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
                 <Upload className='mr-2 h-4 w-4' />
                 {avatarFile ? 'Change Photo' : 'Upload Photo'}
               </Button>
-              <FieldDescription className='text-xs'>PNG or JPG, up to 5MB</FieldDescription>
+              <FieldDescription className='text-xs'>
+                PNG or JPG, up to 5MB
+              </FieldDescription>
             </div>
           </div>
           <FieldError errors={[{ message: errors.avatar }]} />
@@ -139,7 +146,11 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               <SelectTrigger
                 id='title'
                 aria-invalid={!!errors.title}
-                className={errors.title ? 'border-danger focus-visible:ring-danger/50' : ''}
+                className={
+                  errors.title
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
               >
                 <SelectValue placeholder='Select' />
               </SelectTrigger>
@@ -163,7 +174,11 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               value={value.firstName}
               onChange={(e) => set('firstName', e.target.value)}
               aria-invalid={!!errors.firstName}
-              className={errors.firstName ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.firstName
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
               required
             />
             <FieldError errors={[{ message: errors.firstName }]} />
@@ -172,13 +187,19 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
 
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.middleName}>
-            <FieldLabel className='gap-0 text-sm font-semibold'>Middle Name</FieldLabel>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Middle Name
+            </FieldLabel>
             <Input
               type='text'
               value={value.middleName}
               onChange={(e) => set('middleName', e.target.value)}
               aria-invalid={!!errors.middleName}
-              className={errors.middleName ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.middleName
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
             />
             <FieldError errors={[{ message: errors.middleName }]} />
           </Field>
@@ -192,7 +213,11 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               value={value.lastName}
               onChange={(e) => set('lastName', e.target.value)}
               aria-invalid={!!errors.lastName}
-              className={errors.lastName ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.lastName
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
               required
             />
             <FieldError errors={[{ message: errors.lastName }]} />
@@ -209,7 +234,9 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               value={value.email}
               onChange={(e) => set('email', e.target.value)}
               aria-invalid={!!errors.email}
-              className={errors.email ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.email ? 'border-danger focus-visible:ring-danger/50' : ''
+              }
               required
             />
             <FieldError errors={[{ message: errors.email }]} />
@@ -224,7 +251,9 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               value={value.phone}
               onChange={(e) => set('phone', e.target.value)}
               aria-invalid={!!errors.phone}
-              className={errors.phone ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.phone ? 'border-danger focus-visible:ring-danger/50' : ''
+              }
               required
             />
             <FieldError errors={[{ message: errors.phone }]} />
@@ -233,14 +262,20 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
 
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.rentAmount}>
-            <FieldLabel className='text-sm font-semibold'>Rent Amount</FieldLabel>
+            <FieldLabel className='text-sm font-semibold'>
+              Rent Amount
+            </FieldLabel>
             <Input
               type='number'
               placeholder={`${getCurrencySign()} per month`}
               value={value.rentAmount}
               onChange={(e) => set('rentAmount', e.target.value)}
               aria-invalid={!!errors.rentAmount}
-              className={errors.rentAmount ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.rentAmount
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
             />
             <FieldError errors={[{ message: errors.rentAmount }]} />
           </Field>
@@ -253,7 +288,11 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
               value={value.deposit}
               onChange={(e) => set('deposit', e.target.value)}
               aria-invalid={!!errors.deposit}
-              className={errors.deposit ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.deposit
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
             />
             <FieldError errors={[{ message: errors.deposit }]} />
           </Field>
@@ -261,53 +300,77 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
 
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.tenancyStart}>
-            <FieldLabel className='text-sm font-semibold'>Tenancy Start</FieldLabel>
+            <FieldLabel className='text-sm font-semibold'>
+              Tenancy Start
+            </FieldLabel>
             <Input
               type='date'
               value={value.tenancyStart}
               onChange={(e) => set('tenancyStart', e.target.value)}
               aria-invalid={!!errors.tenancyStart}
-              className={errors.tenancyStart ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.tenancyStart
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
             />
             <FieldError errors={[{ message: errors.tenancyStart }]} />
           </Field>
 
           <Field data-invalid={!!errors.tenancyEnd}>
-            <FieldLabel className='text-sm font-semibold'>Tenancy End</FieldLabel>
+            <FieldLabel className='text-sm font-semibold'>
+              Tenancy End
+            </FieldLabel>
             <Input
               type='date'
               value={value.tenancyEnd}
               min={value.tenancyStart || undefined}
               onChange={(e) => set('tenancyEnd', e.target.value)}
               aria-invalid={!!errors.tenancyEnd}
-              className={errors.tenancyEnd ? 'border-danger focus-visible:ring-danger/50' : ''}
+              className={
+                errors.tenancyEnd
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
             />
             <FieldError errors={[{ message: errors.tenancyEnd }]} />
           </Field>
         </div>
 
         <Field data-invalid={!!errors.employmentDetails}>
-          <FieldLabel className='text-sm font-semibold'>Employment Details</FieldLabel>
+          <FieldLabel className='text-sm font-semibold'>
+            Employment Details
+          </FieldLabel>
           <Input
             type='text'
             placeholder='Employer name and role'
             value={value.employmentDetails}
             onChange={(e) => set('employmentDetails', e.target.value)}
             aria-invalid={!!errors.employmentDetails}
-            className={errors.employmentDetails ? 'border-danger focus-visible:ring-danger/50' : ''}
+            className={
+              errors.employmentDetails
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
           />
           <FieldError errors={[{ message: errors.employmentDetails }]} />
         </Field>
 
         <Field data-invalid={!!errors.guarantorName}>
-          <FieldLabel className='text-sm font-semibold'>Guarantor Name</FieldLabel>
+          <FieldLabel className='text-sm font-semibold'>
+            Guarantor Name
+          </FieldLabel>
           <Input
             type='text'
             placeholder='Optional'
             value={value.guarantorName}
             onChange={(e) => set('guarantorName', e.target.value)}
             aria-invalid={!!errors.guarantorName}
-            className={errors.guarantorName ? 'border-danger focus-visible:ring-danger/50' : ''}
+            className={
+              errors.guarantorName
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
           />
           <FieldError errors={[{ message: errors.guarantorName }]} />
         </Field>
@@ -320,7 +383,9 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
             value={value.notes}
             onChange={(e) => set('notes', e.target.value)}
             aria-invalid={!!errors.notes}
-            className={errors.notes ? 'border-danger focus-visible:ring-danger/50' : ''}
+            className={
+              errors.notes ? 'border-danger focus-visible:ring-danger/50' : ''
+            }
           />
           <FieldError errors={[{ message: errors.notes }]} />
         </Field>
@@ -336,7 +401,9 @@ export default TenantTab;
 // Title uses shadcn Select, which doesn't enforce native `required` the way
 // a real <select> would — guard it manually like the other Select fields
 // across the codebase already do.
-export function validateTenantStep(value: TenantStepValue): Record<string, string> {
+export function validateTenantStep(
+  value: TenantStepValue,
+): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!value.title) errors.title = 'Please select a title.';
   return errors;

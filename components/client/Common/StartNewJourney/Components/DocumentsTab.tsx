@@ -20,6 +20,7 @@ import {
   DocumentForm,
   initialForm as INITIAL_DOCUMENT_DIALOG_FORM,
 } from '@/types/client/Common/Documents/DocumentTypes';
+import { DocumentStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
 
@@ -29,15 +30,6 @@ export const EMPTY_DOCUMENT_STEP_FORM: DocumentStepValue = (() => {
   const { propertyId: _propertyId, ...rest } = INITIAL_DOCUMENT_DIALOG_FORM;
   return rest;
 })();
-
-interface DocumentStepProps {
-  active: boolean;
-  value: DocumentStepValue;
-  onChange: (v: DocumentStepValue) => void;
-  files: File[];
-  onFilesChange: (files: File[]) => void;
-  errors: Record<string, string>;
-}
 
 const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
   ({ active, value, onChange, files, onFilesChange, errors }, ref) => {

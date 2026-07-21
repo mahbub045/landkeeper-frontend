@@ -19,6 +19,7 @@ import {
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
+import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
@@ -34,15 +35,6 @@ function deriveNameFromAddress(address: string): string {
     .replace(/[^a-zA-Z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-interface PropertyDetailsStepProps {
-  active: boolean;
-  value: DetailsForm;
-  onChange: (v: DetailsForm) => void;
-  files: File[];
-  onFilesChange: (files: File[]) => void;
-  errors: Record<string, string>;
 }
 
 const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(

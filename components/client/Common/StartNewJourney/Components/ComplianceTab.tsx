@@ -18,6 +18,7 @@ import {
   EMPTY_FORM as EMPTY_COMPLIANCE_DIALOG_FORM,
 } from '@/data/client/common/compliance/ComplianceData';
 import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
+import { ComplianceStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
 
@@ -27,15 +28,6 @@ export const EMPTY_COMPLIANCE_STEP_FORM: ComplianceStepValue = (() => {
   const { propertyId: _propertyId, ...rest } = EMPTY_COMPLIANCE_DIALOG_FORM;
   return rest;
 })();
-
-interface ComplianceStepProps {
-  active: boolean;
-  value: ComplianceStepValue;
-  onChange: (v: ComplianceStepValue) => void;
-  files: File[];
-  onFilesChange: (files: File[]) => void;
-  errors: Record<string, string>;
-}
 
 const ComplianceTab = forwardRef<HTMLFormElement, ComplianceStepProps>(
   ({ active, value, onChange, files, onFilesChange, errors }, ref) => {

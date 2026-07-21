@@ -19,6 +19,7 @@ import {
   PRODUCT_TYPE_OPTIONS,
 } from '@/data/client/common/mortgage/MortgageData';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { MortgageStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
@@ -29,15 +30,6 @@ export const EMPTY_MORTGAGE_STEP_FORM: MortgageStepValue = (() => {
   const { propertyId: _propertyId, ...rest } = EMPTY_MORTGAGE_FORM;
   return rest;
 })();
-
-interface MortgageStepProps {
-  active: boolean;
-  value: MortgageStepValue;
-  onChange: (v: MortgageStepValue) => void;
-  files: File[];
-  onFilesChange: (files: File[]) => void;
-  errors: Record<string, string>;
-}
 
 const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
   ({ active, value, onChange, files, onFilesChange, errors }, ref) => {

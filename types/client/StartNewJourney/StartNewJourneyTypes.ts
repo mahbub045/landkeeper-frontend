@@ -1,10 +1,14 @@
 // types/client/Common/StartNewJourney/WizardTypes.ts
 
-import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
-import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
-import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';
+import { ComplianceStepValue } from '@/components/client/Common/StartNewJourney/Components/ComplianceTab';
+import { DocumentStepValue } from '@/components/client/Common/StartNewJourney/Components/DocumentsTab';
+import { MortgageStepValue } from '@/components/client/Common/StartNewJourney/Components/MortgageTab';
+import { TenantStepValue } from '@/components/client/Common/StartNewJourney/Components/TenantTab';
 import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { DocumentForm } from '@/types/client/Common/Documents/DocumentTypes';
+import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
+import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';
 
 export type WizardTab =
   | 'property'
@@ -57,3 +61,49 @@ export const EMPTY_WIZARD_ERRORS: WizardErrors = {
   compliance: {},
   document: {},
 };
+
+export interface PropertyDetailsStepProps {
+  active: boolean;
+  value: DetailsForm;
+  onChange: (v: DetailsForm) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  errors: Record<string, string>;
+}
+
+export interface TenantStepProps {
+  active: boolean;
+  value: TenantStepValue;
+  onChange: (v: TenantStepValue) => void;
+  avatarFile: File | null;
+  avatarPreview: string | null;
+  onAvatarChange: (file: File | null, preview: string | null) => void;
+  errors: Record<string, string>;
+}
+
+export interface ComplianceStepProps {
+  active: boolean;
+  value: ComplianceStepValue;
+  onChange: (v: ComplianceStepValue) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  errors: Record<string, string>;
+}
+
+export interface DocumentStepProps {
+  active: boolean;
+  value: DocumentStepValue;
+  onChange: (v: DocumentStepValue) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  errors: Record<string, string>;
+}
+
+export interface MortgageStepProps {
+  active: boolean;
+  value: MortgageStepValue;
+  onChange: (v: MortgageStepValue) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  errors: Record<string, string>;
+}
