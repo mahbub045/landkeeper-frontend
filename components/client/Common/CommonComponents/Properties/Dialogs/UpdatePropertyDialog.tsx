@@ -52,14 +52,13 @@ function cleanDecimal(val: string | null | undefined): string {
 
 /**
  * Derives a property name from an address:
- * - Takes the segment before the first comma
- * - Strips digits and special characters, keeping only letters and spaces
+ * - Uses the full address (not just the segment before the first comma)
+ * - Strips special characters, keeping letters, numbers, and spaces
  * - Collapses extra whitespace
  */
 function deriveNameFromAddress(address: string): string {
-  const firstSegment = address.split(',')[0] ?? '';
-  return firstSegment
-    .replace(/[^a-zA-Z\s]/g, '')
+  return address
+    .replace(/[^a-zA-Z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }

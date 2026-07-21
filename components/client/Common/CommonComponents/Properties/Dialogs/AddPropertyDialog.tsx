@@ -47,14 +47,13 @@ import { toast } from 'sonner';
 
 /**
  * Derives a property name from an address:
- * - Takes the segment before the first comma
- * - Strips digits and special characters, keeping only letters and spaces
+ * - Uses the full address (not just the segment before the first comma)
+ * - Strips special characters, keeping letters, numbers, and spaces
  * - Collapses extra whitespace
  */
 function deriveNameFromAddress(address: string): string {
-  const firstSegment = address.split(',')[0] ?? '';
-  return firstSegment
-    .replace(/[^a-zA-Z\s]/g, '')
+  return address
+    .replace(/[^a-zA-Z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -135,12 +134,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     e.preventDefault();
     setBannerError(null);
     setFieldErrors({});
-
-    if (files.length === 0) {
-      setFieldErrors({ documents: 'Please upload at least one image.' });
-      setActiveTab('Property Picture');
-      return;
-    }
 
     setLoading(true);
 
@@ -227,7 +220,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={[
-                    'pb-3 text-sm font-medium transition-colors',
+                    'cursor-pointer pb-3 text-sm font-medium transition-colors',
                     isActive
                       ? 'text-primary border-primary border-b-2'
                       : hasError
@@ -412,9 +405,7 @@ const DetailsTab: React.FC<{
             {!isNameCustom && (
               <p className='text-muted-foreground mt-1.5 text-xs leading-relaxed'>
                 Derived from your address. Tap{' '}
-                <span className='text-primary font-medium'>
-                  Edit manually
-                </span>{' '}
+                <span className='text-primary font-medium'>Edit manually</span>{' '}
                 to set a custom name.
               </p>
             )}
@@ -676,14 +667,6 @@ const PropertyPictureTab: React.FC<{
           onChange={onFileChange}
         />
       </div>
-
-      {files.length === 0 && (
-        <div className='bg-warning border-2-warning rounded p-2'>
-          <p className='text-xs text-white'>
-            At least one image is required to add a property
-          </p>
-        </div>
-      )}
 
       {files.length > 0 && (
         <ul className='space-y-2'>
