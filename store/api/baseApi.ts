@@ -21,6 +21,7 @@ export const TAG_TYPES = [
   'Organisation',
   'SupportTickets',
   'SupportTicketComments',
+  'NewJourney',
 
   // Common Tags
   'Property',

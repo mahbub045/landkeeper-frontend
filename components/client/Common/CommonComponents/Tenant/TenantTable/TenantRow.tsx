@@ -86,9 +86,9 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           )}
         </TableCell>
         <TableCell className='text-sm font-bold'>
-          {tenant.rent ? (
+          {apiTenant.rent_amount ? (
             <>
-              {getCurrencySign()} <span> tenant.rent.toLocaleString()</span>
+              {getCurrencySign()} <span> {apiTenant.rent_amount}</span>
             </>
           ) : (
             <small className='text-muted-foreground'>
