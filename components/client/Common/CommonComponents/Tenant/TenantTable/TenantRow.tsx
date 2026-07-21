@@ -144,6 +144,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='success'
               size='icon'
+              title='Send Invitation'
               className='rounded-lg'
               onClick={() => setSentInvitation(true)}
             >
@@ -152,6 +153,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='secondary'
               size='icon'
+              title='View Tenant Details'
               className='rounded-lg'
               onClick={() => setViewOpen(true)}
             >
@@ -160,6 +162,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='default'
               size='icon'
+              title='Edit Tenant Details'
               className='rounded-lg'
               onClick={() => setEditOpen(true)}
             >
@@ -169,6 +172,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
               <Button
                 variant='danger'
                 size='icon'
+                title='Delete Tenant'
                 className='rounded-lg'
                 onClick={() => setDeleteOpen(true)}
               >
