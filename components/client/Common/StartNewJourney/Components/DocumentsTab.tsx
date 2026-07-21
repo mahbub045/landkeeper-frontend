@@ -34,43 +34,80 @@ interface DocumentStepProps {
   active: boolean;
   value: DocumentStepValue;
   onChange: (v: DocumentStepValue) => void;
-  file: File | null;
-  onFileChange: (file: File | null) => void;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
   errors: Record<string, string>;
 }
 
 const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
-  ({ active, value, onChange, file, onFileChange, errors }, ref) => {
+  ({ active, value, onChange, files, onFilesChange, errors }, ref) => {
     const [dragging, setDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    function set<K extends keyof DocumentStepValue>(key: K, v: DocumentStepValue[K]) {
+    function set<K extends keyof DocumentStepValue>(
+      key: K,
+      v: DocumentStepValue[K],
+    ) {
       onChange({ ...value, [key]: v });
     }
 
-    function addFile(incoming: FileList | null) {
+    function addFiles(incoming: FileList | null) {
       if (!incoming || incoming.length === 0) return;
-      onFileChange(incoming[0]);
+      const existing = new Set(files.map((f) => f.name + f.size));
+      onFilesChange([
+        ...files,
+        ...Array.from(incoming).filter((f) => !existing.has(f.name + f.size)),
+      ]);
     }
 
-    function removeFile() {
-      onFileChange(null);
+    function removeFile(index: number) {
+      onFilesChange(files.filter((_, i) => i !== index));
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
-      e.preventDefault();
-      setDragging(false);
-      addFile(e.dataTransfer.files);
+    const handleDrop = useCallback(
+      (e: React.DragEvent) => {
+        e.preventDefault();
+        setDragging(false);
+        addFiles(e.dataTransfer.files);
+      },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      [files],
+    );
 
     return (
       <form ref={ref} hidden={!active} className='space-y-5'>
+        <Field data-invalid={!!errors.documentName}>
+          <FieldLabel className='gap-0 text-sm font-semibold'>
+            Document Name<span className='text-danger'>*</span>
+          </FieldLabel>
+          <Input
+            type='text'
+            placeholder='e.g. Tenancy Agreement - Oak Street'
+            value={value.name}
+            onChange={(e) => set('name', e.target.value)}
+            aria-invalid={!!errors.documentName}
+            className={
+              errors.documentName
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+            required
+          />
+          <FieldError errors={[{ message: errors.documentName }]} />
+        </Field>
+
         <Field data-invalid={!!errors.documentCategory}>
-          <FieldLabel className='text-sm font-semibold'>Document Category</FieldLabel>
-          <Select value={value.category} onValueChange={(v) => set('category', v as DocumentCategory)}>
-            <SelectTrigger className={errors.documentCategory ? 'border-danger' : ''}>
+          <FieldLabel className='text-sm font-semibold'>
+            Document Category
+          </FieldLabel>
+          <Select
+            value={value.category}
+            onValueChange={(v) => set('category', v as DocumentCategory)}
+          >
+            <SelectTrigger
+              className={errors.documentCategory ? 'border-danger' : ''}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -84,22 +121,6 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
           <FieldError errors={[{ message: errors.documentCategory }]} />
         </Field>
 
-        <Field data-invalid={!!errors.documentName}>
-          <FieldLabel className='text-sm font-semibold'>
-            Document Name<span className='text-danger'>*</span>
-          </FieldLabel>
-          <Input
-            type='text'
-            placeholder='e.g. Tenancy Agreement - Oak Street'
-            value={value.name}
-            onChange={(e) => set('name', e.target.value)}
-            aria-invalid={!!errors.documentName}
-            className={errors.documentName ? 'border-danger focus-visible:ring-danger/50' : ''}
-            required
-          />
-          <FieldError errors={[{ message: errors.documentName }]} />
-        </Field>
-
         <Field data-invalid={!!errors.tags}>
           <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
           <Input
@@ -108,14 +129,16 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
             value={value.tags}
             onChange={(e) => set('tags', e.target.value)}
             aria-invalid={!!errors.tags}
-            className={errors.tags ? 'border-danger focus-visible:ring-danger/50' : ''}
+            className={
+              errors.tags ? 'border-danger focus-visible:ring-danger/50' : ''
+            }
           />
           <FieldError errors={[{ message: errors.tags }]} />
         </Field>
 
         <div className='space-y-3'>
           <FieldLabel className='gap-0 text-sm font-semibold'>
-            Document<span className='text-danger'>*</span>
+            Documents
           </FieldLabel>
           <div
             onDrop={handleDrop}
@@ -134,41 +157,61 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
                   : 'border-border hover:border-primary/50 hover:bg-muted/40',
             )}
           >
-            <CloudUpload className={cn('mb-3 h-10 w-10', errors.file ? 'text-danger' : 'text-primary')} />
-            <p className='text-foreground text-sm font-semibold'>Drag &amp; Drop or Click to Upload</p>
-            <p className='text-muted-foreground mt-1 text-xs'>PDF, DOC, XLS, JPG, PNG up to 50MB</p>
+            <CloudUpload
+              className={cn(
+                'mb-3 h-10 w-10',
+                errors.file ? 'text-danger' : 'text-primary',
+              )}
+            />
+            <p className='text-foreground text-sm font-semibold'>
+              Drag &amp; Drop or Click to Upload
+            </p>
+            <p className='text-muted-foreground mt-1 text-xs'>
+              PDF, DOC, XLS, JPG, PNG up to 50MB each, multiple files allowed
+            </p>
             <input
               ref={fileInputRef}
               type='file'
+              multiple
               accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
               className='hidden'
-              onChange={(e) => addFile(e.target.files)}
+              onChange={(e) => addFiles(e.target.files)}
             />
           </div>
-          {!file && (
+          {files.length === 0 && (
             <div className='bg-warning border-2-warning rounded p-2'>
-              <p className='text-xs text-white'>At least one document/image is required</p>
+              <p className='text-xs text-white'>
+                At least one document/image is required
+              </p>
             </div>
           )}
           <FieldError errors={[{ message: errors.file }]} />
 
-          {file && (
+          {files.length > 0 && (
             <ul className='space-y-2'>
-              <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
-                <Badge variant='secondary' className='max-w-[80%] truncate font-normal'>
-                  {file.name}
-                </Badge>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  onClick={removeFile}
-                  className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                  aria-label='Remove file'
+              {files.map((file, i) => (
+                <li
+                  key={i}
+                  className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
                 >
-                  <X className='h-4 w-4' />
-                </Button>
-              </li>
+                  <Badge
+                    variant='secondary'
+                    className='max-w-[80%] truncate font-normal'
+                  >
+                    {file.name}
+                  </Badge>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => removeFile(i)}
+                    className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                    aria-label='Remove file'
+                  >
+                    <X className='h-4 w-4' />
+                  </Button>
+                </li>
+              ))}
             </ul>
           )}
         </div>
@@ -181,8 +224,9 @@ DocumentsTab.displayName = 'DocumentStep';
 
 export default DocumentsTab;
 
-export function validateDocumentStep(file: File | null): Record<string, string> {
+export function validateDocumentStep(files: File[]): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (!file) errors.file = 'Please upload a document.';
+  // if (!files || files.length === 0)
+  //   errors.file = 'Please upload at least one document.';
   return errors;
 }

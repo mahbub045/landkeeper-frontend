@@ -23,10 +23,15 @@ import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
+/**
+ * Derives a property name from an address:
+ * - Uses the full address (not just the segment before the first comma)
+ * - Strips special characters, keeping letters, numbers, and spaces
+ * - Collapses extra whitespace
+ */
 function deriveNameFromAddress(address: string): string {
-  const firstSegment = address.split(',')[0] ?? '';
-  return firstSegment
-    .replace(/[^a-zA-Z\s]/g, '')
+  return address
+    .replace(/[^a-zA-Z0-9\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -101,7 +106,9 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               <Field data-invalid={!!errors.name}>
                 <div className='mb-1.5 flex items-center justify-between'>
                   <FieldLabel className='gap-1.5 text-sm font-semibold'>
-                    Property Name
+                    <div className='gap-0'>
+                      Property Name<span className='text-danger'>*</span>
+                    </div>
                     {!isNameCustom && (
                       <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                         <Sparkles className='h-2.5 w-2.5' />
@@ -347,7 +354,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
         {/* ── Pictures ── */}
         <div className='space-y-4'>
           <FieldLabel className='gap-0 text-sm font-semibold'>
-            Property Pictures<span className='text-danger'>*</span>
+            Property Pictures
           </FieldLabel>
           <div
             onDrop={handleDrop}
@@ -394,14 +401,6 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             />
           </div>
 
-          {files.length === 0 && (
-            <div className='bg-warning border-2-warning rounded p-2'>
-              <p className='text-xs text-white'>
-                At least one image is required to add a property
-              </p>
-            </div>
-          )}
-
           {files.length > 0 && (
             <ul className='space-y-2'>
               {files.map((file, i) => (
@@ -444,8 +443,5 @@ export default PropertyTab;
 // dropzone, which isn't a native form control).
 export function validatePropertyStep(files: File[]): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (files.length === 0) {
-    errors.documents = 'Please upload at least one image.';
-  }
   return errors;
 }

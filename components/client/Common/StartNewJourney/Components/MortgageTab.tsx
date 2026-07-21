@@ -96,7 +96,7 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.productType}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
-              Product Type<span className='text-danger'>*</span>
+              Product Type
             </FieldLabel>
             <Select
               value={value.productType}
@@ -358,6 +358,5 @@ export function validateMortgageStep(
   value: MortgageStepValue,
 ): Record<string, string> {
   const errors: Record<string, string> = {};
-  if (!value.productType) errors.productType = 'Please select a product type.';
   return errors;
 }

@@ -42,10 +42,10 @@ export interface WizardState {
   tenantAvatar: File | null;
 
   compliance: Omit<CertificateForm, 'propertyId'>;
-  complianceFile: File | null;
+  complianceFiles: File[];
 
   document: Omit<DocumentForm, 'propertyId'>;
-  documentFile: File | null;
+  documentFiles: File[];
 }
 
 export type WizardErrors = Record<WizardTab, Record<string, string>>;

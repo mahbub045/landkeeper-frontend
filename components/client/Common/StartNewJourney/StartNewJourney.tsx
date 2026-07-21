@@ -44,9 +44,9 @@ const EMPTY_STATE: WizardState = {
   tenant: EMPTY_TENANT_STEP_FORM,
   tenantAvatar: null,
   compliance: EMPTY_COMPLIANCE_STEP_FORM,
-  complianceFile: null,
+  complianceFiles: [],
   document: EMPTY_DOCUMENT_STEP_FORM,
-  documentFile: null,
+  documentFiles: [],
 };
 
 // Maps a top-level payload section key (from a possible backend error
@@ -94,6 +94,7 @@ const StartNewJourney: React.FC = () => {
 
     return () => cancelAnimationFrame(rafId);
   }, [activeTab, pendingValidateTab]);
+
   function getManualErrors(tab: WizardTab): Record<string, string> {
     switch (tab) {
       case 'property':
@@ -105,7 +106,7 @@ const StartNewJourney: React.FC = () => {
       case 'compliance':
         return validateComplianceStep(state.compliance);
       case 'document':
-        return validateDocumentStep(state.documentFile);
+        return validateDocumentStep(state.documentFiles);
     }
   }
 
@@ -318,16 +319,18 @@ const StartNewJourney: React.FC = () => {
     appendDateIfPresent(fd, 'compliance_expiry_date', c.expiryDate);
     fd.append('compliance_certificate_number', c.certificateNumber ?? '');
     fd.append('compliance_issued_by', c.issuedBy ?? '');
-    if (state.complianceFile)
-      fd.append('compliance_certificate_file', state.complianceFile);
+    state.complianceFiles.forEach((file) =>
+      fd.append('compliance_certificate_file', file),
+    );
 
     // ── Document ──
     const d = state.document;
     fd.append('upload_document_document_category', d.category ?? '');
     fd.append('upload_document_document_name', d.name.trim());
     fd.append('upload_document_tags', d.tags.trim());
-    if (state.documentFile)
-      fd.append('upload_document_uploaded_files', state.documentFile);
+    state.documentFiles.forEach((file) =>
+      fd.append('upload_document_uploaded_files', file),
+    );
 
     try {
       await addNewJourney(fd).unwrap();
@@ -361,7 +364,7 @@ const StartNewJourney: React.FC = () => {
             <Button
               key={tab}
               type='button'
-              variant={isActive ? 'default' : 'outline'}
+              variant={isActive ? 'secondary' : 'outline'}
               onClick={() => handleTabClick(tab)}
               className={[
                 'rounded-md px-5 font-semibold',
@@ -438,9 +441,9 @@ const StartNewJourney: React.FC = () => {
           active={activeTab === 'compliance'}
           value={state.compliance}
           onChange={(v) => setState((s) => ({ ...s, compliance: v }))}
-          file={state.complianceFile}
-          onFileChange={(file) =>
-            setState((s) => ({ ...s, complianceFile: file }))
+          files={state.complianceFiles}
+          onFilesChange={(files) =>
+            setState((s) => ({ ...s, complianceFiles: files }))
           }
           errors={errors.compliance}
         />
@@ -452,9 +455,9 @@ const StartNewJourney: React.FC = () => {
           active={activeTab === 'document'}
           value={state.document}
           onChange={(v) => setState((s) => ({ ...s, document: v }))}
-          file={state.documentFile}
-          onFileChange={(file) =>
-            setState((s) => ({ ...s, documentFile: file }))
+          files={state.documentFiles}
+          onFilesChange={(files) =>
+            setState((s) => ({ ...s, documentFiles: files }))
           }
           errors={errors.document}
         />
