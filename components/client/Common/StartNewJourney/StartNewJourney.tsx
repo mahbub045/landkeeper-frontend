@@ -297,6 +297,7 @@ const StartNewJourney: React.FC = () => {
     const t = state.tenant;
     fd.append('tenant_title', t.title ?? '');
     fd.append('tenant_first_name', t.firstName ?? '');
+    fd.append('tenant_middle_name', t.middleName ?? '');
     fd.append('tenant_last_name', t.lastName ?? '');
     fd.append('tenant_email', t.email ?? '');
     fd.append('tenant_phone', t.phone ?? '');
@@ -367,7 +368,7 @@ const StartNewJourney: React.FC = () => {
               variant={isActive ? 'secondary' : 'outline'}
               onClick={() => handleTabClick(tab)}
               className={[
-                'rounded-md px-5 font-semibold',
+                'rounded-md px-5 font-semibold cursor-pointer',
                 !isActive && hasError
                   ? 'border-danger text-danger hover:bg-danger/5'
                   : '',
