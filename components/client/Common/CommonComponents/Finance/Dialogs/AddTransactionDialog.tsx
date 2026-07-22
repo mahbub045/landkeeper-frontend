@@ -341,7 +341,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               </FieldLabel>
               <Textarea
                 placeholder='Brief description...'
-                rows={2}
+                rows={6}
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}
                 aria-invalid={!!fieldErrors.description}
@@ -368,7 +368,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                 onDragLeave={() => setDragging(false)}
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-2 transition-colors',
                   fieldErrors.file
                     ? 'border-danger bg-red-50 dark:bg-red-950/20'
                     : dragging
