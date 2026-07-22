@@ -24,19 +24,6 @@ import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
-/**
- * Derives a property name from an address:
- * - Uses the full address (not just the segment before the first comma)
- * - Strips special characters, keeping letters, numbers, and spaces
- * - Collapses extra whitespace
- */
-function deriveNameFromAddress(address: string): string {
-  return address
-    .replace(/[^a-zA-Z0-9\s]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
   ({ active, value, onChange, files, onFilesChange, errors }, ref) => {
     const [isNameCustom, setIsNameCustom] = useState(false);
@@ -49,7 +36,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
 
     useEffect(() => {
       if (isNameCustom) return;
-      const derived = deriveNameFromAddress(value.address);
+      const derived = value.address;
       if (derived !== value.name) {
         onChange({ ...value, name: derived });
       }
@@ -59,7 +46,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     function handleToggleCustom() {
       if (isNameCustom) {
         setIsNameCustom(false);
-        onChange({ ...value, name: deriveNameFromAddress(value.address) });
+        onChange({ ...value, name: value.address });
       } else {
         setIsNameCustom(true);
       }

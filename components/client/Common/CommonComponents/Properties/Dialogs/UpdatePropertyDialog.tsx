@@ -50,19 +50,6 @@ function cleanDecimal(val: string | null | undefined): string {
   return isNaN(n) ? '' : String(n);
 }
 
-/**
- * Derives a property name from an address:
- * - Uses the full address (not just the segment before the first comma)
- * - Strips special characters, keeping letters, numbers, and spaces
- * - Collapses extra whitespace
- */
-function deriveNameFromAddress(address: string): string {
-  return address
-    .replace(/[^a-zA-Z0-9\s]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
@@ -439,7 +426,7 @@ const DetailsTab: React.FC<{
   // changes, unless the user has opted into custom (manual) naming.
   useEffect(() => {
     if (isNameCustom) return;
-    const derived = deriveNameFromAddress(form.address);
+    const derived = form.address;
     if (derived !== form.name) {
       onChange({ ...form, name: derived });
     }
@@ -450,7 +437,7 @@ const DetailsTab: React.FC<{
     if (isNameCustom) {
       // Switching back to auto: re-derive immediately from current address.
       onToggleNameCustom(false);
-      onChange({ ...form, name: deriveNameFromAddress(form.address) });
+      onChange({ ...form, name: form.address });
     } else {
       onToggleNameCustom(true);
     }
