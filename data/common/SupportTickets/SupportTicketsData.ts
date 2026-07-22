@@ -11,7 +11,6 @@ export const TABLE_COLUMNS = [
   'Type',
   'Priority',
   'Status',
-  'Subject',
   'Created By',
   'Files',
   'Created At',
