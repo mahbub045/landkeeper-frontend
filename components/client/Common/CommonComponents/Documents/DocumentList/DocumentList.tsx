@@ -2,6 +2,8 @@
 
 import {
   Download,
+  Eye,
+  File,
   FileImage,
   Files,
   FileText,
@@ -13,6 +15,11 @@ import { useState } from 'react';
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { categoryLabelMap } from '@/data/client/common/documents/DocumentsData';
 import {
@@ -156,6 +163,53 @@ const DocumentList: React.FC<DocumentListProps> = ({
                     <Download />
                   )}
                 </Button>
+                <div className='text-center'>
+                  {doc.files.length === 0 ? (
+                    <Button variant='outline' size='sm' disabled>
+                      <Eye />
+                      View
+                    </Button>
+                  ) : doc.files.length === 1 ? (
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => window.open(doc.files[0].file, '_blank')}
+                    >
+                      <Eye />
+                      View
+                    </Button>
+                  ) : (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant='outline' size='sm'>
+                          <Eye />
+                          View ({doc.files.length})
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-64 p-2' align='center'>
+                        <ul className='space-y-1'>
+                          {doc.files.map((d) => {
+                            const filename =
+                              d.file.split('/').pop() || `file-${d.id}`;
+                            return (
+                              <li key={d.id}>
+                                <a
+                                  href={d.file}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='hover:bg-muted flex items-center gap-1 rounded-md px-2 py-1.5 text-sm'
+                                >
+                                  <File size='14' />
+                                  <span className='truncate'>{filename}</span>
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </div>
 
                 <Button
                   variant='outline'

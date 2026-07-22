@@ -49,7 +49,8 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
 
   const [form, setForm] = useState<DocumentForm>(initialForm);
 
-  const [file, setFile] = useState<File | null>(null);
+  // multiple files now
+  const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,7 +64,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
   function handleClose() {
     setForm(initialForm);
     setFieldErrors({});
-    setFile(null);
+    setFiles([]);
     setPropertySearch('');
     onClose();
   }
@@ -79,21 +80,34 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
 
   // ── File helpers ──────────────────────────────────────────────────────────
 
-  function addFile(incoming: FileList | null) {
+  function addFiles(incoming: FileList | null) {
     if (!incoming || incoming.length === 0) return;
-    setFile(incoming[0]);
+
+    const newFiles = Array.from(incoming);
+
+    setFiles((prev) => {
+      // avoid duplicate entries (same name + size)
+      const existingKeys = new Set(prev.map((f) => `${f.name}-${f.size}`));
+      const deduped = newFiles.filter(
+        (f) => !existingKeys.has(`${f.name}-${f.size}`),
+      );
+      return [...prev, ...deduped];
+    });
+
     setFieldErrors((prev) => ({ ...prev, file: '' }));
+
+    // allow re-selecting the same file(s) again later
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function removeFile() {
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  function removeFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    addFile(e.dataTransfer.files);
+    addFiles(e.dataTransfer.files);
   }, []);
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -110,10 +124,10 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
       return;
     }
 
-    if (!file) {
+    if (files.length === 0) {
       setFieldErrors((prev) => ({
         ...prev,
-        file: 'Please upload a document.',
+        file: 'Please upload at least one document.',
       }));
       return;
     }
@@ -123,11 +137,17 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
     payload.append('document_category', form.category);
     payload.append('document_name', form.name.trim());
     // NOTE: confirm this field name against your backend serializer
-    payload.append('uploaded_files', file);
+    files.forEach((file) => {
+      payload.append('uploaded_files', file);
+    });
 
     try {
       await addDocument(payload).unwrap();
-      toast.success('Document uploaded successfully.');
+      toast.success(
+        files.length > 1
+          ? 'Documents uploaded successfully.'
+          : 'Document uploaded successfully.',
+      );
       onSuccess?.();
       handleClose();
     } catch (err: unknown) {
@@ -162,7 +182,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
             Upload Document
           </DialogTitle>
           <DialogDescription>
-            Add a new document for your proprty.
+            Add new documents for your property.
           </DialogDescription>
         </DialogHeader>
 
@@ -290,7 +310,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
             {/* File upload */}
             <div className='space-y-3'>
               <FieldLabel className='gap-0 text-sm font-semibold'>
-                Document<span className='text-danger'>*</span>
+                Documents<span className='text-danger'>*</span>
               </FieldLabel>
               <div
                 onDrop={handleDrop}
@@ -319,45 +339,46 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
                   Drag &amp; Drop or Click to Upload
                 </p>
                 <p className='text-muted-foreground mt-1 text-xs'>
-                  PDF, DOC, XLS, JPG, PNG up to 50MB
+                  PDF, DOC, XLS, JPG, PNG up to 50MB each. You can select
+                  multiple files.
                 </p>
                 <input
                   ref={fileInputRef}
                   type='file'
+                  multiple
                   accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
                   className='hidden'
-                  onChange={(e) => addFile(e.target.files)}
+                  onChange={(e) => addFiles(e.target.files)}
                 />
               </div>
-              {!file && (
-                <div className='bg-warning border-2-warning rounded p-2'>
-                  <p className='text-xs text-white'>
-                    At least one document/image is required
-                  </p>
-                </div>
-              )}
+
               <FieldError errors={[{ message: fieldErrors.file }]} />
 
-              {file && (
+              {files.length > 0 && (
                 <ul className='space-y-2'>
-                  <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
-                    <Badge
-                      variant='secondary'
-                      className='max-w-[80%] truncate font-normal'
+                  {files.map((file, index) => (
+                    <li
+                      key={`${file.name}-${file.size}-${index}`}
+                      className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
                     >
-                      {file.name}
-                    </Badge>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='icon'
-                      onClick={removeFile}
-                      className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                      aria-label='Remove file'
-                    >
-                      <X className='h-4 w-4' />
-                    </Button>
-                  </li>
+                      <Badge
+                        variant='secondary'
+                        className='max-w-[80%] truncate font-normal'
+                      >
+                        {file.name}
+                      </Badge>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeFile(index)}
+                        className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                        aria-label={`Remove ${file.name}`}
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
