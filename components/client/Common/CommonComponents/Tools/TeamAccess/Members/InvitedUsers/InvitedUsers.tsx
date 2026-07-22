@@ -1,3 +1,4 @@
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,7 +17,6 @@ import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/Invite
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import {
-  AlertCircle,
   Mail,
   MessagesSquare,
   RefreshCw,
@@ -26,7 +26,6 @@ import {
 import React, { useState } from 'react';
 import DeleteInvitedUserDialog from './Dialogs/DeleteInvitedUserDialog';
 import ResendEmailInvitedUserDialog from './Dialogs/ResendEmailInvitedUserDialog';
-import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const InvitedUsers: React.FC<InvitedUsersProps> = ({
   invites,
@@ -97,7 +96,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
       )}
 
       {!isInviteLoading && isInviteError && (
-       <CustomErrorMessage title='invited users' />
+        <CustomErrorMessage title='invited users' />
       )}
 
       {!isInviteLoading && !isInviteError && invites.length === 0 && (
@@ -166,8 +165,8 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   <Button
                     variant='destructive'
                     size='sm'
-                    onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
                     title='Delete invite'
+                    onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
                   >
                     <Trash2 />
                     Delete

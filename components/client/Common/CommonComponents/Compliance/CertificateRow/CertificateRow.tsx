@@ -56,7 +56,9 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
         <TableCell className='text-muted-foreground px-6 text-sm'>
           <div className='flex flex-col gap-0.5'>
             <span>Issue: {formatDate(cert.issueDate) || 'Not Available'}</span>
-            <span>Expiry: {formatDate(cert.expiryDate) || 'Not Available'}</span>
+            <span>
+              Expiry: {formatDate(cert.expiryDate) || 'Not Available'}
+            </span>
           </div>
         </TableCell>
         <TableCell className='px-6'>
@@ -88,6 +90,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
               variant='default'
               size='icon'
               className='rounded-lg'
+              title='Edit Certificate'
               onClick={() => setEditOpen(true)}
             >
               <Pencil />
@@ -96,6 +99,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
               variant='danger'
               size='icon'
               className='rounded-lg'
+              title='Delete Certificate'
               onClick={() => setDeleteOpen(true)}
             >
               <Trash />

@@ -229,6 +229,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   aria-label='Edit'
                   variant='outline'
                   size='icon'
+                  title='Edit User'
                   className='rounded-lg'
                   onClick={() => handleEditAcceptedUserDialogOpen(member)}
                 >
@@ -238,6 +239,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   aria-label='Remove'
                   variant='danger'
                   size='icon'
+                  title='Delete User'
                   className='rounded-lg'
                   onClick={() => handleDeleteAcceptedUserDialogOpen(member)}
                 >

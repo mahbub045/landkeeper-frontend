@@ -55,7 +55,7 @@ function getFileName(url: string): string {
 
 function parseTags(tags: string): string[] {
   return tags
-    .split(',')
+    ?.split(',')
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
@@ -148,9 +148,9 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   file{doc.files.length === 1 ? '' : 's'}
                 </p>
 
-                {tags.length > 0 && (
+                {tags?.length > 0 && (
                   <div className='mt-2 flex flex-wrap gap-1.5'>
-                    {tags.map((tag) => (
+                    {tags?.map((tag) => (
                       <Badge
                         key={tag}
                         className='rounded-full bg-gray-200/70 px-2.5 py-0.5 text-xs text-black'
@@ -167,6 +167,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   variant='outline'
                   size='icon'
                   aria-label='Download'
+                  title='Download Document'
                   onClick={() => handleDownload(doc)}
                   disabled={
                     doc.files.length === 0 || downloadingAlias === doc.alias
@@ -183,6 +184,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   variant='outline'
                   size='icon'
                   aria-label='Edit'
+                  title='Edit Document'
                   onClick={() => setEditingDoc(doc)}
                 >
                   <Pencil />
@@ -192,6 +194,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   variant='destructive'
                   size='icon'
                   aria-label='Delete'
+                  title='Delete Document'
                   onClick={() => setDeletingDoc(doc)}
                 >
                   <Trash2 />
