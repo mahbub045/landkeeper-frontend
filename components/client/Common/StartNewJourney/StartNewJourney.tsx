@@ -304,41 +304,42 @@ const StartNewJourney: React.FC = () => {
   const isFirstTab = activeTab === WIZARD_TABS[0];
 
   return (
-    <div className='mx-auto flex w-full max-w-4xl flex-col overflow-hidden rounded-xl border'>
-      {/* Heading */}
-      <div className='border-b px-6 pt-6 pb-5'>
-        <h2 className='text-xl font-semibold'>Start Your Journey Here</h2>
-        <p className='text-muted-foreground mt-1 text-sm'>
-          Fill up the sections below to add your property, mortgage, tenant, and
-          compliance details.
-        </p>
-      </div>
-
-      {/* Tab strip */}
-      <div className='flex flex-wrap justify-center gap-3 border-b px-6 py-5'>
-        {WIZARD_TABS.map((tab) => {
-          const hasError = Object.keys(errors[tab]).length > 0;
-          const isActive = activeTab === tab;
-          return (
-            <Button
-              key={tab}
-              type='button'
-              variant={isActive ? 'secondary' : 'outline'}
-              onClick={() => handleTabClick(tab)}
-              className={[
-                'cursor-pointer rounded-md px-5 font-semibold',
-                !isActive && hasError
-                  ? 'border-danger text-danger hover:bg-danger/5'
-                  : '',
-              ].join(' ')}
-            >
-              {WIZARD_TAB_LABELS[tab]}
-              {hasError && !isActive && (
-                <span className='bg-danger ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle' />
-              )}
-            </Button>
-          );
-        })}
+    <div className='relatives mx-auto flex w-full flex-col rounded-xl border'>
+      <div className='bg-background sticky top-10 z-10 shrink-0'>
+        {/* Heading */}
+        <div className='border-b px-6 pt-6 pb-5'>
+          <h2 className='text-xl font-semibold'>Start Your Journey Here</h2>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            Fill up the sections below to add your property, mortgage, tenant,
+            and compliance details.
+          </p>
+        </div>
+        {/* Tab strip */}
+        <div className='flex flex-wrap justify-center gap-3 border-b px-6 py-5'>
+          {WIZARD_TABS.map((tab) => {
+            const hasError = Object.keys(errors[tab]).length > 0;
+            const isActive = activeTab === tab;
+            return (
+              <Button
+                key={tab}
+                type='button'
+                variant={isActive ? 'secondary' : 'outline'}
+                onClick={() => handleTabClick(tab)}
+                className={[
+                  'cursor-pointer rounded-md px-5 font-semibold',
+                  !isActive && hasError
+                    ? 'border-danger text-danger hover:bg-danger/5'
+                    : '',
+                ].join(' ')}
+              >
+                {WIZARD_TAB_LABELS[tab]}
+                {hasError && !isActive && (
+                  <span className='bg-danger ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle' />
+                )}
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Body */}
