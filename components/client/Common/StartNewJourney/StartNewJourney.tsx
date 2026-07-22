@@ -305,7 +305,7 @@ const StartNewJourney: React.FC = () => {
 
   return (
     <div className='relatives mx-auto flex w-full flex-col rounded-xl border'>
-      <div className='bg-background sticky top-10 z-10 shrink-0'>
+      <div className='bg-background sticky top-10 z-10 shrink-0 rounded-2xl'>
         {/* Heading */}
         <div className='border-b px-6 pt-6 pb-5'>
           <h2 className='text-xl font-semibold'>Start Your Journey Here</h2>
