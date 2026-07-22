@@ -11,7 +11,6 @@ import {
 import { useState } from 'react';
 
 import Loading from '@/components/common/CustomLoader/Loading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,13 +50,6 @@ function getFileName(url: string): string {
   } catch {
     return 'document';
   }
-}
-
-function parseTags(tags: string): string[] {
-  return tags
-    ?.split(',')
-    .map((tag) => tag.trim())
-    .filter(Boolean);
 }
 
 interface DocumentListProps {
@@ -127,8 +119,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
   return (
     <div className='space-y-3 px-4 py-2'>
       {documents.map((doc) => {
-        const tags = parseTags(doc.tags);
-
         return (
           <Card
             key={doc.alias}
@@ -147,19 +137,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   {categoryLabelMap[doc.document_category]} • {doc.files.length}{' '}
                   file{doc.files.length === 1 ? '' : 's'}
                 </p>
-
-                {tags?.length > 0 && (
-                  <div className='mt-2 flex flex-wrap gap-1.5'>
-                    {tags?.map((tag) => (
-                      <Badge
-                        key={tag}
-                        className='rounded-full bg-gray-200/70 px-2.5 py-0.5 text-xs text-black'
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className='flex shrink-0 items-center gap-2'>

@@ -17,14 +17,12 @@ export interface DocumentForm {
   propertyId: string;
   category: DocumentCategory;
   name: string;
-  tags: string;
 }
 
 export const initialForm: DocumentForm = {
   propertyId: '',
   category: 'MORTGAGE_DOCUMENTS',
   name: '',
-  tags: '',
 };
 
 // 'ALL' means "no category filter applied" -- everything else maps
@@ -54,7 +52,6 @@ export interface PropertyDocument {
   document_name: string;
   files: DocumentFile[];
   property: DocumentProperty;
-  tags: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -68,7 +65,6 @@ export interface UploadDocumentForm {
   propertyId: string;
   category: string;
   name: string;
-  tags: string;
 }
 
 export interface UploadDocumentDialogProps {
@@ -82,7 +78,6 @@ export interface UpdateDocumentForm {
   propertyName: string;
   category: DocumentCategory;
   name: string;
-  tags: string;
 }
 
 export interface UpdateDocumentFormProps {

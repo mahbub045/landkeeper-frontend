@@ -55,7 +55,6 @@ function toFormState(document: PropertyDocument): UpdateDocumentForm {
     propertyName: document.property.property_name,
     category: document.document_category as DocumentCategory,
     name: document.document_name,
-    tags: document.tags ?? '',
   };
 }
 
@@ -142,7 +141,6 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
     payload.append('property', form.propertyId);
     payload.append('document_category', form.category);
     payload.append('document_name', form.name.trim());
-    payload.append('tags', form.tags.trim());
     // Only send a file if the user actually picked a new one -- this is
     // a PATCH, so omitting it leaves the existing file untouched.
     if (file) {
@@ -295,23 +293,6 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
             required
           />
           <FieldError errors={[{ message: fieldErrors.documentName }]} />
-        </Field>
-
-        <Field data-invalid={!!fieldErrors.tags}>
-          <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
-          <Input
-            type='text'
-            placeholder='Comma separated tags...'
-            value={form.tags}
-            onChange={(e) => set('tags', e.target.value)}
-            aria-invalid={!!fieldErrors.tags}
-            className={
-              fieldErrors.tags
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
-          />
-          <FieldError errors={[{ message: fieldErrors.tags }]} />
         </Field>
 
         {/* File Upload */}

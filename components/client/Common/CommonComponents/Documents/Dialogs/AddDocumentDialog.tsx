@@ -122,7 +122,6 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
     payload.append('property', form.propertyId);
     payload.append('document_category', form.category);
     payload.append('document_name', form.name.trim());
-    payload.append('tags', form.tags.trim());
     // NOTE: confirm this field name against your backend serializer
     payload.append('uploaded_files', file);
 
@@ -170,7 +169,6 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
         <form onSubmit={handleSubmit} className='contents'>
           {/* Scrollable body */}
           <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-
             {/* Property */}
             <Field data-invalid={!!fieldErrors.propertyId}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
@@ -287,23 +285,6 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
                 required
               />
               <FieldError errors={[{ message: fieldErrors.documentName }]} />
-            </Field>
-
-            <Field data-invalid={!!fieldErrors.tags}>
-              <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
-              <Input
-                type='text'
-                placeholder='Comma separated tags...'
-                value={form.tags}
-                onChange={(e) => set('tags', e.target.value)}
-                aria-invalid={!!fieldErrors.tags}
-                className={
-                  fieldErrors.tags
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: fieldErrors.tags }]} />
             </Field>
 
             {/* File upload */}
