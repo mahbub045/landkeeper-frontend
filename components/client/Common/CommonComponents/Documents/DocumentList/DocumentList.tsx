@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Download,
   Eye,
   File,
   FileImage,
@@ -12,7 +11,6 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -147,22 +145,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
               </div>
 
               <div className='flex shrink-0 items-center gap-2'>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  aria-label='Download'
-                  title='Download Document'
-                  onClick={() => handleDownload(doc)}
-                  disabled={
-                    doc.files.length === 0 || downloadingAlias === doc.alias
-                  }
-                >
-                  {downloadingAlias === doc.alias ? (
-                    <Loading className='text-black!' />
-                  ) : (
-                    <Download />
-                  )}
-                </Button>
                 <div className='text-center'>
                   {doc.files.length === 0 ? (
                     <Button variant='outline' size='sm' disabled>
