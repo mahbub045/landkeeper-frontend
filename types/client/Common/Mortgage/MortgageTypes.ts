@@ -22,6 +22,11 @@ export interface Mortgage {
   notes: string;
   created_at: string;
   updated_at: string;
+  uploaded_documents: {
+    id: number;
+    file: string;
+    description: string | null;
+  }[];
 }
 export interface SummaryStat {
   label: string;

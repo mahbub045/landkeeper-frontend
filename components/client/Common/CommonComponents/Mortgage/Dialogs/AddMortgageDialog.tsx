@@ -1,6 +1,7 @@
 'use client';
 
 import Loading from '@/components/common/CustomLoader/Loading';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -33,7 +34,8 @@ import {
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
-import { useState } from 'react';
+import { Paperclip, X } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
@@ -47,6 +49,11 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
   const [propertyOpen, setPropertyOpen] = useState(false);
   const [propertySearch, setPropertySearch] = useState('');
 
+  // ── File upload state ───────────────────────────────────────────────────────
+  const [files, setFiles] = useState<File[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { data, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
     { skip: !propertyOpen },
@@ -59,6 +66,24 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  // ── File helpers ──────────────────────────────────────────────────────────
+  function addFiles(incoming: FileList | null) {
+    if (!incoming?.length) return;
+    setFiles((prev) => [...prev, ...Array.from(incoming)]);
+    setFieldErrors((prev) => ({ ...prev, file: '' }));
+  }
+
+  function removeFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
+  }, []);
+
   // ── Reset ───────────────────────────────────────────────────────────────────
 
   function handleClose() {
@@ -66,6 +91,9 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     setFieldErrors({});
     setLoading(false);
     setForm(EMPTY_MORTGAGE_FORM);
+    setFiles([]);
+    setPropertySearch('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
     onClose();
   }
 
@@ -88,19 +116,22 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     setLoading(true);
 
     try {
-      const payload = {
-        property: form.propertyId,
-        lender_name: form.lenderName,
-        interest_rate_type: form.interestRateType,
-        interest_rate: form.interestRate,
-        interest_rate_expiry_date: form.interestRateExpiryDate,
-        outstanding_balance: form.outstandingBalance,
-        monthly_payment: form.monthlyPayment,
-        remaining_mortgage: form.remainingMortgage,
-        epc_rating: form.epcRating || null,
-        epc_certificate_expiry_date: form.epcCertificateExpiryDate,
-        notes: form.notes,
-      };
+      const payload = new FormData();
+      payload.append('property', form.propertyId);
+      payload.append('lender_name', form.lenderName);
+      payload.append('interest_rate_type', form.interestRateType);
+      payload.append('interest_rate', form.interestRate);
+      payload.append('interest_rate_expiry_date', form.interestRateExpiryDate);
+      payload.append('outstanding_balance', form.outstandingBalance);
+      payload.append('monthly_payment', form.monthlyPayment);
+      payload.append('remaining_mortgage', form.remainingMortgage);
+      if (form.epcRating) payload.append('epc_rating', form.epcRating);
+      payload.append(
+        'epc_certificate_expiry_date',
+        form.epcCertificateExpiryDate,
+      );
+      payload.append('notes', form.notes);
+      files.forEach((file) => payload.append('mortgage_documents', file));
 
       await addMortgage(payload).unwrap();
       toast.success('Mortgage added successfully.');
@@ -453,7 +484,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           <Field data-invalid={!!fieldErrors.brokerNotes}>
             <FieldLabel className='text-sm font-semibold'>Notes</FieldLabel>
             <Textarea
-              placeholder='Notes from mortgage adviser...'
+              placeholder='Add notes...'
               rows={4}
               value={form.notes}
               onChange={(e) => set('notes', e.target.value)}
@@ -465,6 +496,72 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               }
             />
             <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
+          </Field>
+
+          {/* Document(s) upload */}
+          <Field data-invalid={!!fieldErrors.file}>
+            <FieldLabel className='text-sm font-semibold'>
+              Mortgage Documents
+            </FieldLabel>
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                fieldErrors.file
+                  ? 'border-danger bg-red-50 dark:bg-red-950/20'
+                  : dragging
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/40',
+              )}
+            >
+              <Paperclip className='text-primary mb-3 h-9 w-9' />
+              <p className='text-muted-foreground text-sm'>
+                Attach mortgage documents
+              </p>
+              <input
+                ref={fileInputRef}
+                type='file'
+                accept='.pdf,.jpg,.jpeg,.png,.webp'
+                multiple
+                className='hidden'
+                onChange={(e) => addFiles(e.target.files)}
+              />
+            </div>
+            <FieldError errors={[{ message: fieldErrors.file }]} />
+
+            {files.length > 0 && (
+              <ul className='space-y-2'>
+                {files.map((file, index) => (
+                  <li
+                    key={`${file.name}-${file.size}-${index}`}
+                    className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                  >
+                    <Badge
+                      variant='secondary'
+                      className='max-w-[80%] truncate font-normal'
+                    >
+                      {file.name}
+                    </Badge>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      onClick={() => removeFile(index)}
+                      className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                      aria-label={`Remove ${file.name}`}
+                    >
+                      <X className='h-4 w-4' />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Field>
 
           {/* Footer */}

@@ -240,15 +240,15 @@ const StartNewJourney: React.FC = () => {
     // ── Mortgage ──
     const m = state.mortgage;
     fd.append('mortgage_lender_name', m.lenderName ?? '');
-    fd.append('mortgage_product_type', m.productType ?? '');
+    fd.append('mortgage_interest_rate_type', m.interestRateType ?? '');
     fd.append('mortgage_interest_rate', m.interestRate ?? '');
-    fd.append('mortgage_loan_amount', m.loanAmount ?? '');
+    fd.append('mortgage_interest_rate_expiry_date', m.interestRateExpiryDate ?? '');
     fd.append('mortgage_outstanding_balance', m.outstandingBalance ?? '');
     fd.append('mortgage_monthly_payment', m.monthlyPayment ?? '');
-    fd.append('mortgage_term', m.termYears ?? '');
-    fd.append('mortgage_start_date', m.startDate);
-    fd.append('mortgage_end_date', m.endDate);
-    fd.append('mortgage_broker_notes', m.brokerNotes ?? '');
+    fd.append('mortgage_remaining_mortgage', m.remainingMortgage ?? '');
+    fd.append('mortgage_epc_rating', m.epcRating);
+    fd.append('mortgage_epc_certificate_expiry_date', m.epcCertificateExpiryDate);
+    fd.append('mortgage_notes', m.notes ?? '');
     state.mortgageFiles.forEach((file) =>
       fd.append('mortgage_mortgage_documents', file),
     );
@@ -286,7 +286,6 @@ const StartNewJourney: React.FC = () => {
     const d = state.document;
     fd.append('upload_document_document_category', d.category ?? '');
     fd.append('upload_document_document_name', d.name.trim());
-    fd.append('upload_document_tags', d.tags.trim());
     state.documentFiles.forEach((file) =>
       fd.append('upload_document_uploaded_files', file),
     );

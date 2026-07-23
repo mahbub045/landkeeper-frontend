@@ -2,13 +2,18 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import formatChoiceFieldValue, {
   formatDate,
   getCurrencySign,
 } from '@/utils/formatters';
 import { getMortgageUrl } from '@/utils/redirectPath';
-import { Pencil, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Pencil, Trash2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -20,6 +25,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
 
   return (
     <Card className='group py-0 shadow-lg transition-all hover:-translate-y-1'>
@@ -50,16 +56,69 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
           </div>
         </div>
 
-        <div>
-          <p className='text-3xl font-bold'>
-            {getCurrencySign()}
-            {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
-              'en-GB',
+        {/* Balance + View Documents */}
+        <div className='flex items-end justify-between'>
+          <div>
+            <p className='text-3xl font-bold'>
+              {getCurrencySign()}
+              {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
+                'en-GB',
+              )}
+            </p>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              Outstanding Balance
+            </p>
+          </div>
+
+          <div className='shrink-0'>
+            {mortgage.uploaded_documents.length === 0 ? (
+              <Button variant='outline' size='sm' disabled>
+                <Eye />
+                View Documents
+              </Button>
+            ) : mortgage.uploaded_documents.length === 1 ? (
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() =>
+                  window.open(mortgage.uploaded_documents[0].file, '_blank')
+                }
+              >
+                <Eye />
+                View Documents
+              </Button>
+            ) : (
+              <Popover open={docsOpen} onOpenChange={setDocsOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant='outline' size='sm'>
+                    <Eye />
+                    View Documents
+                    {docsOpen ? <ChevronUp /> : <ChevronDown />}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className='w-64 p-2' align='center'>
+                  <ul className='space-y-1'>
+                    {mortgage.uploaded_documents.map((doc) => {
+                      const filename =
+                        doc.file.split('/').pop() || `file-${doc.id}`;
+                      return (
+                        <li key={doc.id}>
+                          <a
+                            href={doc.file}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5 text-sm'
+                          >
+                            <span className='truncate'>{filename}</span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </PopoverContent>
+              </Popover>
             )}
-          </p>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            Outstanding Balance
-          </p>
+          </div>
         </div>
 
         <div className='border-border border-t' />
@@ -97,7 +156,9 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             </p>
           </div>
           <div>
-            <p className='text-muted-foreground text-xs'>Remaining Mortgage Term(Years)</p>
+            <p className='text-muted-foreground text-xs'>
+              Remaining Mortgage Term(Years)
+            </p>
             <p className='mt-1 text-base font-semibold'>
               {mortgage.remaining_mortgage}
             </p>
@@ -117,6 +178,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
               </small>
             )}
           </div>
+
           <div className='flex items-center gap-2 opacity-100 md:translate-y-1 md:scale-95 md:opacity-0 md:transition-all md:duration-300 md:ease-out md:group-hover:translate-y-0 md:group-hover:opacity-100'>
             <Button variant='outline' onClick={() => setEditOpen(true)}>
               <Pencil className='size-4' />

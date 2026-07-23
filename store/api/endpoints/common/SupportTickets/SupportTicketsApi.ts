@@ -1,5 +1,5 @@
 import { baseApi } from '@/store/api/baseApi';
-import { ApiSupportTicket } from '@/types/common/SupportTickets/SupportTicketTypes';
+import { ApiSupportTicketType } from '@/types/common/SupportTickets/SupportTicketTypes';
 
 export const SupportTicketsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,7 +20,7 @@ export const SupportTicketsApi = baseApi.injectEndpoints({
       invalidatesTags: ['SupportTickets'],
     }),
     getSupportTicketDetails: builder.query<
-      ApiSupportTicket,
+      ApiSupportTicketType,
       { ticket_alias: string }
     >({
       query: ({ ticket_alias }) => ({
