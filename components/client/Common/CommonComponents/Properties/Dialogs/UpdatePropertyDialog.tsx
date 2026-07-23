@@ -23,8 +23,11 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   FIELD_TAB_MAP,
   OVERRIDE_KEY_MAP,
+  PROPERTY_OWNER_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
+  TAB_LABELS,
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
@@ -36,7 +39,7 @@ import {
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
-import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
+import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -48,6 +51,10 @@ function cleanDecimal(val: string | null | undefined): string {
   if (!val) return '';
   const n = parseFloat(val);
   return isNaN(n) ? '' : String(n);
+}
+
+function toStr(val: number | string | null | undefined): string {
+  return val != null ? String(val) : '';
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -67,10 +74,24 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   const buildInitialDetails = (): DetailsForm => ({
     property_name: property?.property_name ?? '',
     address: property?.address ?? '',
-    ownerships: property?.ownerships ?? [],
-    shareholders: property?.shareholders ?? [], 
-    property_type: property?.property_type ?? 'RESIDENTIAL',
     property_owner: property?.property_owner ?? '',
+
+    // ── Shareholder / Owner rows ────────────────────────────────────────────
+    // The API already returns a single unified `shareholder` list, but each
+    // row can be shaped either as an owner row ({owner_name}) or a
+    // shareholder row ({shareholder_name, share_percentage}). Detect the
+    // shape per-row rather than trusting the top-level property_owner flag,
+    // so we never silently misclassify or drop a row's real fields.
+    shareholder: (property?.shareholder ?? []).map((item) =>
+      'shareholder_name' in item || 'share_percentage' in item
+        ? {
+            shareholder_name: item.shareholder_name ?? '',
+            share_percentage: toStr(item.share_percentage),
+          }
+        : { owner_name: item.owner_name ?? '' },
+    ),
+
+    property_type: property?.property_type ?? 'RESIDENTIAL',
     status: property?.status ?? 'VACANT',
     purchase_price: cleanDecimal(property?.purchase_price),
     current_value: cleanDecimal(property?.current_value),
@@ -78,6 +99,16 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     purchase_date: property?.purchase_date ?? '',
     bedrooms: property?.bedrooms != null ? String(property.bedrooms) : '',
     bathrooms: property?.bathrooms != null ? String(property.bathrooms) : '',
+    year_built: property?.year_built != null ? String(property.year_built) : '',
+    property_tenure: property?.property_tenure ?? '',
+    remaining_lease_term:
+      property?.remaining_lease_term != null
+        ? String(property.remaining_lease_term)
+        : '',
+    monthly_service_charge: cleanDecimal(property?.monthly_service_charge),
+    annual_ground_rent: cleanDecimal(property?.annual_ground_rent),
+    council_tax_band: property?.council_tax_band ?? '',
+    local_authority: property?.local_authority ?? '',
     notes: property?.notes ?? '',
   });
 
@@ -113,7 +144,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       setIsNameCustom(buildInitialIsNameCustom());
       setExistingDocs(property?.documents ?? []);
       setNewFiles([]);
-      setCachedExistingFiles([]); // ← add this
+      setCachedExistingFiles([]);
       setActiveTab('Details');
       setBannerError(null);
       setFieldErrors({});
@@ -202,24 +233,61 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       const formData = new FormData();
       formData.append('property_name', details.property_name);
       formData.append('address', details.address);
-      formData.append('property_type', details.property_type);
       formData.append('property_owner', details.property_owner);
-      formData.append('status', details.status);
-      formData.append('purchase_price', details.purchase_price);
-      formData.append('current_value', details.current_value);
-      formData.append('year_built', details.year_built);
-      formData.append('property_tenure', details.property_tenure);
-      formData.append('remaining_lease_term', details.remaining_lease_term);
-      formData.append('monthly_service_charge', details.monthly_service_charge);
-      formData.append('annual_ground_rent', details.annual_ground_rent);
-      formData.append('council_tax_band', details.council_tax_band);
-      formData.append('local_authority', details.local_authority);
-      formData.append('monthly_rental_income', details.monthly_rental_income);
-      formData.append('purchase_date', details.purchase_date);
-      formData.append('bedrooms', details.bedrooms);
-      formData.append('bathrooms', details.bathrooms);
-      formData.append('notes', details.notes);
 
+      // ── Shareholder / Owner rows ────────────────────────────────────────────
+      // The API expects indexed form fields (shareholder[i].field), not a
+      // single JSON blob. Each row is either an "owner" row (OWNER flow) or a
+      // "shareholder" row (COMPANY flow) — only append whichever keys exist.
+      details.shareholder.forEach((item, i) => {
+        if ('owner_name' in item && item.owner_name !== undefined) {
+          formData.append(`shareholder[${i}].owner_name`, item.owner_name);
+        }
+        if ('shareholder_name' in item && item.shareholder_name !== undefined) {
+          formData.append(
+            `shareholder[${i}].shareholder_name`,
+            item.shareholder_name,
+          );
+        }
+        if ('share_percentage' in item && item.share_percentage !== undefined) {
+          formData.append(
+            `shareholder[${i}].share_percentage`,
+            item.share_percentage,
+          );
+        }
+      });
+
+      formData.append('property_type', details.property_type);
+      formData.append('status', details.status);
+
+      // ── Optional fields ──────────────────────────────────────────────────
+      // DRF rejects '' for IntegerField/DateField/DecimalField ("A valid
+      // integer is required.", "Date has wrong format."). Omit the key
+      // entirely when blank so the backend treats it as null instead.
+      const appendIfPresent = (key: string, value: string) => {
+        if (value !== '' && value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      };
+
+      appendIfPresent('purchase_price', details.purchase_price);
+      appendIfPresent('current_value', details.current_value);
+      appendIfPresent('monthly_rental_income', details.monthly_rental_income);
+      appendIfPresent('purchase_date', details.purchase_date);
+      appendIfPresent('bedrooms', details.bedrooms);
+      appendIfPresent('bathrooms', details.bathrooms);
+      appendIfPresent('year_built', details.year_built);
+      appendIfPresent('property_tenure', details.property_tenure);
+      appendIfPresent('remaining_lease_term', details.remaining_lease_term);
+      appendIfPresent('monthly_service_charge', details.monthly_service_charge);
+      appendIfPresent('annual_ground_rent', details.annual_ground_rent);
+      appendIfPresent('council_tax_band', details.council_tax_band);
+      appendIfPresent('local_authority', details.local_authority);
+      appendIfPresent('notes', details.notes);
+
+      // ── Documents ───────────────────────────────────────────────────────
+      // Re-attach whichever pre-fetched existing docs the user kept, plus
+      // any newly added files.
       const seen = new Set<string>();
       const filesToKeep = cachedExistingFiles.filter((file) => {
         if (seen.has(file.name)) return false;
@@ -228,15 +296,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
           (doc) => doc.image.split('/').pop() === file.name,
         );
       });
-
-      console.log(
-        'filesToKeep',
-        filesToKeep.map((f) => f.name),
-      );
-      console.log(
-        'existingDocs at submit',
-        existingDocs.map((d) => d.image.split('/').pop()),
-      );
 
       filesToKeep.forEach((file) => formData.append('documents_data', file));
       newFiles.forEach((file) => formData.append('documents_data', file));
@@ -314,7 +373,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={[
-                    'pb-3 text-sm font-medium transition-colors',
+                    'cursor-pointer pb-3 text-sm font-medium transition-colors',
                     isActive
                       ? 'text-primary border-primary border-b-2'
                       : hasError
@@ -322,7 +381,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
                         : 'text-muted-foreground hover:text-foreground',
                   ].join(' ')}
                 >
-                  {tab}
+                  {TAB_LABELS[tab]}
                   {hasError && !isActive && (
                     <span className='bg-danger ml-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle' />
                   )}
@@ -450,6 +509,63 @@ const DetailsTab: React.FC<{
     }
   }
 
+  // ── Owners (property_owner === 'OWNER') ─────────────────────────────────────
+
+  function addOwner() {
+    onChange({
+      ...form,
+      shareholder: [...form.shareholder, { owner_name: '' }],
+    });
+  }
+
+  function updateOwner(index: number, value: string) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.map((o, i) =>
+        i === index ? { ...o, owner_name: value } : o,
+      ),
+    });
+  }
+
+  function removeOwner(index: number) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.filter((_, i) => i !== index),
+    });
+  }
+
+  // ── Shareholders (property_owner === 'COMPANY') ─────────────────────────────
+
+  function addShareholder() {
+    onChange({
+      ...form,
+      shareholder: [
+        ...form.shareholder,
+        { shareholder_name: '', share_percentage: '' },
+      ],
+    });
+  }
+
+  function updateShareholder(
+    index: number,
+    key: 'shareholder_name' | 'share_percentage',
+    value: string,
+  ) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.map((s, i) =>
+        i === index ? { ...s, [key]: value } : s,
+      ),
+    });
+  }
+
+  function removeShareholder(index: number) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.filter((_, i) => i !== index),
+    });
+  }
+
   return (
     <div className='space-y-5'>
       <div className='flex justify-center'>
@@ -515,6 +631,7 @@ const DetailsTab: React.FC<{
           </Field>
         </div>
       </div>
+
       <Field data-invalid={!!errors.address}>
         <FieldLabel className='gap-0 text-sm font-semibold'>
           Property Address<span className='text-danger'>*</span>
@@ -532,6 +649,149 @@ const DetailsTab: React.FC<{
         />
         <FieldError errors={[{ message: errors.address }]} />
       </Field>
+
+      <Field data-invalid={!!errors.property_owner}>
+        <FieldLabel className='text-sm font-semibold'>
+          Property Owner
+        </FieldLabel>
+        <Select
+          value={form.property_owner}
+          onValueChange={(v) => {
+            // Switching flows leaves stale rows shaped for the other flow
+            // (e.g. shareholder_name/share_percentage items when moving to
+            // OWNER), which renders owner_name as undefined and trips
+            // React's uncontrolled→controlled input warning once typed
+            // into. Reset the rows whenever the owner type changes.
+            if (v === form.property_owner) return;
+            onChange({ ...form, property_owner: v, shareholder: [] });
+          }}
+        >
+          <SelectTrigger
+            className={errors.property_owner ? 'border-danger' : ''}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PROPERTY_OWNER_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FieldError errors={[{ message: errors.property_owner }]} />
+      </Field>
+
+      {form.property_owner === 'OWNER' && (
+        <Field data-invalid={!!errors.ownerships}>
+          <div className='mb-1.5 flex items-center justify-between'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={addOwner}
+            >
+              <Plus className='h-3.5 w-3.5' />
+              Add Owner
+            </Button>
+          </div>
+
+          {form.shareholder.length > 0 && (
+            <div className='space-y-2'>
+              {form.shareholder.map((owner, i) => (
+                <div key={i} className='flex items-center gap-2'>
+                  <Input
+                    type='text'
+                    placeholder='Owner name'
+                    value={owner.owner_name ?? ''}
+                    onChange={(e) => updateOwner(i, e.target.value)}
+                    className='flex-1'
+                  />
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => removeOwner(i)}
+                    className='text-muted-foreground hover:text-danger shrink-0'
+                    aria-label='Remove owner'
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <FieldError errors={[{ message: errors.ownerships }]} />
+        </Field>
+      )}
+
+      {form.property_owner === 'COMPANY' && (
+        <Field data-invalid={!!errors.shareholder}>
+          <div className='mb-1.5 flex items-center justify-between'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={addShareholder}
+            >
+              <Plus className='h-3.5 w-3.5' />
+              Add Shareholders
+            </Button>
+          </div>
+
+          {form.shareholder.length > 0 && (
+            <div className='space-y-2'>
+              {/* Column headers — rendered once */}
+              <div className='flex items-center gap-2'>
+                <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                  <FieldLabel className='text-sm font-semibold'>
+                    Name
+                  </FieldLabel>
+                  <FieldLabel className='text-sm font-semibold'>
+                    % Share
+                  </FieldLabel>
+                </div>
+                {/* spacer to match trash button width so headers align with inputs above */}
+                <div className='w-9 shrink-0' />
+              </div>
+
+              {form.shareholder.map((sh, i) => (
+                <div key={i} className='flex items-center gap-2'>
+                  <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                    <Input
+                      type='text'
+                      placeholder='Shareholder name'
+                      value={sh.shareholder_name ?? ''}
+                      onChange={(e) =>
+                        updateShareholder(i, 'shareholder_name', e.target.value)
+                      }
+                    />
+                    <Input
+                      type='number'
+                      placeholder='% share'
+                      value={sh.share_percentage ?? ''}
+                      onChange={(e) =>
+                        updateShareholder(i, 'share_percentage', e.target.value)
+                      }
+                    />
+                  </div>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => removeShareholder(i)}
+                    className='text-muted-foreground hover:text-danger shrink-0'
+                    aria-label='Remove shareholder'
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <FieldError errors={[{ message: errors.shareholder }]} />
+        </Field>
+      )}
 
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.property_type}>
@@ -577,13 +837,14 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.purchase_price}>
+        <Field data-invalid={!!errors.purchasePrice}>
           <FieldLabel className='text-sm font-semibold'>
             Purchase Price
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
+            maxLength={10}
             value={form.purchase_price}
             onChange={(e) => set('purchase_price', e.target.value)}
             aria-invalid={!!errors.purchase_price}
@@ -617,18 +878,18 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.rent_per_month}>
+        <Field data-invalid={!!errors.monthly_rental_income}>
           <FieldLabel className='text-sm font-semibold'>
-            Rent Per Month
+            Monthly Rental Income
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.rent_per_month}
-            onChange={(e) => set('rent_per_month', e.target.value)}
-            aria-invalid={!!errors.rent_per_month}
+            value={form.monthly_rental_income}
+            onChange={(e) => set('monthly_rental_income', e.target.value)}
+            aria-invalid={!!errors.monthly_rental_income}
             className={
-              errors.rent_per_month
+              errors.monthly_rental_income
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
@@ -663,6 +924,7 @@ const DetailsTab: React.FC<{
             value={form.bedrooms}
             onChange={(e) => set('bedrooms', e.target.value)}
             aria-invalid={!!errors.bedrooms}
+            placeholder='e.g. 3'
             className={
               errors.bedrooms
                 ? 'border-danger focus-visible:ring-danger/50'
@@ -679,6 +941,7 @@ const DetailsTab: React.FC<{
             value={form.bathrooms}
             onChange={(e) => set('bathrooms', e.target.value)}
             aria-invalid={!!errors.bathrooms}
+            placeholder='e.g. 2'
             className={
               errors.bathrooms
                 ? 'border-danger focus-visible:ring-danger/50'
@@ -686,6 +949,148 @@ const DetailsTab: React.FC<{
             }
           />
           <FieldError errors={[{ message: errors.bathrooms }]} />
+        </Field>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.year_built}>
+          <FieldLabel className='text-sm font-semibold'>Year Built</FieldLabel>
+          <Input
+            type='number'
+            value={form.year_built}
+            onChange={(e) => set('year_built', e.target.value)}
+            aria-invalid={!!errors.year_built}
+            placeholder='e.g. 1995'
+            className={
+              errors.year_built
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.year_built }]} />
+        </Field>
+
+        <Field data-invalid={!!errors.property_tenure}>
+          <FieldLabel className='text-sm font-semibold'>
+            Property Tenure
+          </FieldLabel>
+          <Select
+            value={form.property_tenure}
+            onValueChange={(v) => set('property_tenure', v)}
+          >
+            <SelectTrigger
+              className={errors.property_tenure ? 'border-danger' : ''}
+            >
+              <SelectValue placeholder='Select tenure' />
+            </SelectTrigger>
+            <SelectContent>
+              {PROPERTY_TENURE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldError errors={[{ message: errors.property_tenure }]} />
+        </Field>
+      </div>
+
+      {form.property_tenure === 'LEASEHOLD' && (
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.remaining_lease_term}>
+            <FieldLabel className='text-sm font-semibold'>
+              Remaining Lease Term (yrs)
+            </FieldLabel>
+            <Input
+              type='number'
+              value={form.remaining_lease_term}
+              onChange={(e) => set('remaining_lease_term', e.target.value)}
+              aria-invalid={!!errors.remaining_lease_term}
+              placeholder='e.g. 25'
+              className={
+                errors.remaining_lease_term
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.remaining_lease_term }]} />
+          </Field>
+
+          <Field data-invalid={!!errors.monthly_service_charge}>
+            <FieldLabel className='text-sm font-semibold'>
+              Monthly Service Charge
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={form.monthly_service_charge}
+              onChange={(e) => set('monthly_service_charge', e.target.value)}
+              aria-invalid={!!errors.monthly_service_charge}
+              className={
+                errors.monthly_service_charge
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.monthly_service_charge }]} />
+          </Field>
+          <Field data-invalid={!!errors.annual_ground_rent}>
+            <FieldLabel className='text-sm font-semibold'>
+              Annual Ground Rent
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={form.annual_ground_rent}
+              onChange={(e) => set('annual_ground_rent', e.target.value)}
+              aria-invalid={!!errors.annual_ground_rent}
+              className={
+                errors.annual_ground_rent
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.annual_ground_rent }]} />
+          </Field>
+        </div>
+      )}
+
+      <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.council_tax_band}>
+          <FieldLabel className='text-sm font-semibold'>
+            Council Tax Band
+          </FieldLabel>
+          <Input
+            type='text'
+            placeholder='e.g. A, B, C...'
+            value={form.council_tax_band}
+            onChange={(e) => set('council_tax_band', e.target.value)}
+            aria-invalid={!!errors.council_tax_band}
+            className={
+              errors.council_tax_band
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.council_tax_band }]} />
+        </Field>
+        <Field data-invalid={!!errors.local_authority}>
+          <FieldLabel className='text-sm font-semibold'>
+            Local Authority
+          </FieldLabel>
+          <Input
+            type='text'
+            value={form.local_authority}
+            onChange={(e) => set('local_authority', e.target.value)}
+            aria-invalid={!!errors.local_authority}
+            placeholder='e.g. London Borough of Camden'
+            className={
+              errors.local_authority
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.local_authority }]} />
         </Field>
       </div>
 

@@ -25,7 +25,7 @@ export interface Property {
   address: string;
 
   property_owner: string;
-  shareholders: [
+  shareholder: [
     {
       owner_name?: string;
       shareholder_name?: string;
