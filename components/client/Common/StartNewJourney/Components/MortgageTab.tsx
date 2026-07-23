@@ -24,10 +24,10 @@ import { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
 
-export type MortgageStepValue = Omit<MortgageForm, 'propertyId'>;
+export type MortgageStepValue = Omit<MortgageForm, 'property'>;
 
 export const EMPTY_MORTGAGE_STEP_FORM: MortgageStepValue = (() => {
-  const { propertyId: _propertyId, ...rest } = EMPTY_MORTGAGE_FORM;
+  const { property: _propertyId, ...rest } = EMPTY_MORTGAGE_FORM;
   return rest;
 })();
 
@@ -66,40 +66,40 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
     return (
       <form ref={ref} hidden={!active} className='space-y-5'>
         {/* Lender Name */}
-        <Field data-invalid={!!errors.lenderName}>
+        <Field data-invalid={!!errors.lender_name}>
           <FieldLabel className='gap-0 text-sm font-semibold'>
             Lender Name<span className='text-danger'>*</span>
           </FieldLabel>
           <Input
             type='text'
             placeholder='e.g. Halifax, Nationwide'
-            value={value.lenderName}
-            onChange={(e) => set('lenderName', e.target.value)}
-            aria-invalid={!!errors.lenderName}
+            value={value.lender_name}
+            onChange={(e) => set('lender_name', e.target.value)}
+            aria-invalid={!!errors.lender_name}
             className={
-              errors.lenderName
+              errors.lender_name
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
             required
           />
-          <FieldError errors={[{ message: errors.lenderName }]} />
+          <FieldError errors={[{ message: errors.lender_name }]} />
         </Field>
 
         {/*  Interest Rate Type + Interest Rate */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.interestRateType}>
+          <Field data-invalid={!!errors.interest_rate_type}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Interest Rate Type<span className='text-danger'>*</span>
             </FieldLabel>
             <Select
-              value={value.interestRateType}
-              onValueChange={(v) => set('interestRateType', v)}
+              value={value.interest_rate_type}
+              onValueChange={(v) => set('interest_rate_type', v)}
             >
               <SelectTrigger
-                aria-invalid={!!errors.interestRateType}
+                aria-invalid={!!errors.interest_rate_type}
                 className={
-                  errors.interestRateType
+                  errors.interest_rate_type
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
@@ -114,10 +114,10 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
                 ))}
               </SelectContent>
             </Select>
-            <FieldError errors={[{ message: errors.interestRateType }]} />
+            <FieldError errors={[{ message: errors.interest_rate_type }]} />
           </Field>
 
-          <Field data-invalid={!!errors.interestRate}>
+          <Field data-invalid={!!errors.interest_rate}>
             <FieldLabel className='text-sm font-semibold'>
               Interest Rate (%)
             </FieldLabel>
@@ -125,137 +125,141 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
               type='number'
               placeholder='e.g. 3.2'
               step='0.01'
-              value={value.interestRate}
-              onChange={(e) => set('interestRate', e.target.value)}
-              aria-invalid={!!errors.interestRate}
+              value={value.interest_rate}
+              onChange={(e) => set('interest_rate', e.target.value)}
+              aria-invalid={!!errors.interest_rate}
               className={
-                errors.interestRate
+                errors.interest_rate
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.interestRate }]} />
+            <FieldError errors={[{ message: errors.interest_rate }]} />
           </Field>
         </div>
 
         {/* Interest Rate Expiry Date + Outstanding Balance */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.interestRateExpiryDate}>
+          <Field data-invalid={!!errors.interest_rate_expiry_date}>
             <FieldLabel className='text-sm font-semibold'>
               Interest Rate Expiry Date
             </FieldLabel>
             <Input
               type='date'
-              value={value.interestRateExpiryDate}
-              onChange={(e) => set('interestRateExpiryDate', e.target.value)}
-              aria-invalid={!!errors.interestRateExpiryDate}
+              value={value.interest_rate_expiry_date}
+              onChange={(e) => set('interest_rate_expiry_date', e.target.value)}
+              aria-invalid={!!errors.interest_rate_expiry_date}
               className={
-                errors.interestRateExpiryDate
+                errors.interest_rate_expiry_date
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.interestRateExpiryDate }]} />
+            <FieldError
+              errors={[{ message: errors.interest_rate_expiry_date }]}
+            />
           </Field>
 
-          <Field data-invalid={!!errors.outstandingBalance}>
+          <Field data-invalid={!!errors.outstanding_balance}>
             <FieldLabel className='text-sm font-semibold'>
               Outstanding Balance
             </FieldLabel>
             <Input
               type='number'
               placeholder={getCurrencySign()}
-              value={value.outstandingBalance}
-              onChange={(e) => set('outstandingBalance', e.target.value)}
-              aria-invalid={!!errors.outstandingBalance}
+              value={value.outstanding_balance}
+              onChange={(e) => set('outstanding_balance', e.target.value)}
+              aria-invalid={!!errors.outstanding_balance}
               className={
-                errors.outstandingBalance
+                errors.outstanding_balance
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.outstandingBalance }]} />
+            <FieldError errors={[{ message: errors.outstanding_balance }]} />
           </Field>
         </div>
 
         {/* Monthly Payment + Remaining Mortgage Term(Years) */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.monthlyPayment}>
+          <Field data-invalid={!!errors.monthly_payment}>
             <FieldLabel className='text-sm font-semibold'>
               Monthly Payment
             </FieldLabel>
             <Input
               type='number'
               placeholder={getCurrencySign()}
-              value={value.monthlyPayment}
-              onChange={(e) => set('monthlyPayment', e.target.value)}
-              aria-invalid={!!errors.monthlyPayment}
+              value={value.monthly_payment}
+              onChange={(e) => set('monthly_payment', e.target.value)}
+              aria-invalid={!!errors.monthly_payment}
               className={
-                errors.monthlyPayment
+                errors.monthly_payment
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.monthlyPayment }]} />
+            <FieldError errors={[{ message: errors.monthly_payment }]} />
           </Field>
 
-          <Field data-invalid={!!errors.termYears}>
+          <Field data-invalid={!!errors.remaining_mortgage}>
             <FieldLabel className='text-sm font-semibold'>
               Remaining Mortgage Term(Years)
             </FieldLabel>
             <Input
               type='number'
               placeholder='e.g. 25'
-              value={value.remainingMortgage}
-              onChange={(e) => set('remainingMortgage', e.target.value)}
-              aria-invalid={!!errors.remainingMortgage}
+              value={value.remaining_mortgage}
+              onChange={(e) => set('remaining_mortgage', e.target.value)}
+              aria-invalid={!!errors.remaining_mortgage}
               className={
-                errors.remainingMortgage
+                errors.remaining_mortgage
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.remainingMortgage }]} />
+            <FieldError errors={[{ message: errors.remaining_mortgage }]} />
           </Field>
         </div>
 
         {/* EPC Rating + EPC Certificate Expiry Date */}
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.epcRating}>
+          <Field data-invalid={!!errors.epc_rating}>
             <FieldLabel className='text-sm font-semibold'>
               EPC Rating
             </FieldLabel>
             <Input
               type='text'
-              value={value.epcRating}
-              onChange={(e) => set('epcRating', e.target.value)}
-              aria-invalid={!!errors.epcRating}
+              value={value.epc_rating}
+              onChange={(e) => set('epc_rating', e.target.value)}
+              aria-invalid={!!errors.epc_rating}
               className={
-                errors.epcRating
+                errors.epc_rating
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.epcRating }]} />
+            <FieldError errors={[{ message: errors.epc_rating }]} />
           </Field>
 
-          <Field data-invalid={!!errors.epcCertificateExpiryDate}>
+          <Field data-invalid={!!errors.epc_certificate_expiry_date}>
             <FieldLabel className='text-sm font-semibold'>
               EPC Certificate Expiry Date
             </FieldLabel>
             <Input
               type='date'
-              value={value.epcCertificateExpiryDate}
-              onChange={(e) => set('epcCertificateExpiryDate', e.target.value)}
-              aria-invalid={!!errors.epcCertificateExpiryDate}
+              value={value.epc_certificate_expiry_date}
+              onChange={(e) =>
+                set('epc_certificate_expiry_date', e.target.value)
+              }
+              aria-invalid={!!errors.epc_certificate_expiry_date}
               className={
-                errors.epcCertificateExpiryDate
+                errors.epc_certificate_expiry_date
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
             <FieldError
-              errors={[{ message: errors.epcCertificateExpiryDate }]}
+              errors={[{ message: errors.epc_certificate_expiry_date }]}
             />
           </Field>
         </div>

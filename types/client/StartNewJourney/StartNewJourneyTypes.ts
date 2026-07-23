@@ -39,7 +39,7 @@ export interface WizardState {
   property: DetailsForm;
   propertyFiles: File[];
 
-  mortgage: Omit<MortgageForm, 'propertyId'>;
+  mortgage: Omit<MortgageForm, 'property'>;
   mortgageFiles: File[];
 
   tenant: Omit<TenantForm, 'propertyId'>;

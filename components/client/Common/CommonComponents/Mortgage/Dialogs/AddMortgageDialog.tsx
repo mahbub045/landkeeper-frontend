@@ -103,8 +103,8 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
     e.preventDefault();
 
     const guardErrors: Record<string, string> = {};
-    if (!form.interestRateType)
-      guardErrors.interestRateType = 'Please select a product type.';
+    if (!form.interest_rate_type)
+      guardErrors.interest_rate_type = 'Please select a product type.';
 
     if (Object.keys(guardErrors).length > 0) {
       setFieldErrors(guardErrors);
@@ -117,18 +117,18 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
 
     try {
       const payload = new FormData();
-      payload.append('property', form.propertyId);
-      payload.append('lender_name', form.lenderName);
-      payload.append('interest_rate_type', form.interestRateType);
-      payload.append('interest_rate', form.interestRate);
-      payload.append('interest_rate_expiry_date', form.interestRateExpiryDate);
-      payload.append('outstanding_balance', form.outstandingBalance);
-      payload.append('monthly_payment', form.monthlyPayment);
-      payload.append('remaining_mortgage', form.remainingMortgage);
-      if (form.epcRating) payload.append('epc_rating', form.epcRating);
+      payload.append('property', form.property);
+      payload.append('lender_name', form.lender_name);
+      payload.append('interest_rate_type', form.interest_rate_type);
+      payload.append('interest_rate', form.interest_rate);
+      payload.append('interest_rate_expiry_date', form.interest_rate_expiry_date);
+      payload.append('outstanding_balance', form.outstanding_balance);
+      payload.append('monthly_payment', form.monthly_payment);
+      payload.append('remaining_mortgage', form.remaining_mortgage);
+      if (form.epc_rating) payload.append('epc_rating', form.epc_rating);
       payload.append(
         'epc_certificate_expiry_date',
-        form.epcCertificateExpiryDate,
+        form.epc_certificate_expiry_date,
       );
       payload.append('notes', form.notes);
       files.forEach((file) => payload.append('mortgage_documents', file));
@@ -206,7 +206,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
           )}
 
           {/* Property */}
-          <Field data-invalid={!!fieldErrors.propertyId}>
+          <Field data-invalid={!!fieldErrors.property}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Property<span className='text-danger'>*</span>
             </FieldLabel>
@@ -215,23 +215,23 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 type='text'
                 placeholder='Search by property name...'
                 value={
-                  form.propertyId
+                  form.property
                     ? (data?.find(
-                        (p: Property) => String(p.id) === form.propertyId,
+                        (p: Property) => String(p.id) === form.property,
                       )?.property_name ?? propertySearch)
                     : propertySearch
                 }
                 onChange={(e) => {
                   setPropertySearch(e.target.value);
-                  set('propertyId', ''); // clear selection when user types
+                  set('property', ''); // clear selection when user types
                   setPropertyOpen(true);
                 }}
                 onClick={() => setPropertyOpen(true)}
                 onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
-                aria-invalid={!!fieldErrors.propertyId}
+                aria-invalid={!!fieldErrors.property}
                 className={cn(
                   'h-10',
-                  fieldErrors.propertyId &&
+                  fieldErrors.property &&
                     'border-danger focus-visible:ring-danger/50',
                 )}
                 required
@@ -253,13 +253,13 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                         <li
                           key={p.alias}
                           onMouseDown={() => {
-                            set('propertyId', String(p.id));
+                            set('property', String(p.id));
                             setPropertySearch('');
                             setPropertyOpen(false);
                           }}
                           className={cn(
                             'hover:bg-muted flex cursor-pointer items-center gap-3 px-4 py-2.5',
-                            form.propertyId === String(p.id) && 'bg-muted',
+                            form.property === String(p.id) && 'bg-muted',
                           )}
                         >
                           <span className='text-foreground text-sm'>
@@ -272,44 +272,44 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 </div>
               )}
             </div>
-            <FieldError errors={[{ message: fieldErrors.propertyId }]} />
+            <FieldError errors={[{ message: fieldErrors.property }]} />
           </Field>
 
           {/* Lender Name */}
-          <Field data-invalid={!!fieldErrors.lenderName}>
+          <Field data-invalid={!!fieldErrors.lender_name}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Lender Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               type='text'
               placeholder='e.g. Halifax, Nationwide'
-              value={form.lenderName}
-              onChange={(e) => set('lenderName', e.target.value)}
-              aria-invalid={!!fieldErrors.lenderName}
+              value={form.lender_name}
+              onChange={(e) => set('lender_name', e.target.value)}
+              aria-invalid={!!fieldErrors.lender_name}
               className={
-                fieldErrors.lenderName
+                fieldErrors.lender_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
               required
             />
-            <FieldError errors={[{ message: fieldErrors.lenderName }]} />
+            <FieldError errors={[{ message: fieldErrors.lender_name }]} />
           </Field>
 
           {/*  Interest Rate Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.interestRateType}>
+            <Field data-invalid={!!fieldErrors.interest_rate_type}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Interest Rate Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
-                value={form.interestRateType}
-                onValueChange={(v) => set('interestRateType', v)}
+                value={form.interest_rate_type}
+                onValueChange={(v) => set('interest_rate_type', v)}
               >
                 <SelectTrigger
-                  aria-invalid={!!fieldErrors.interestRateType}
+                  aria-invalid={!!fieldErrors.interest_rate_type}
                   className={
-                    fieldErrors.interestRateType
+                    fieldErrors.interest_rate_type
                       ? 'border-danger focus-visible:ring-danger/50'
                       : ''
                   }
@@ -325,11 +325,11 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 </SelectContent>
               </Select>
               <FieldError
-                errors={[{ message: fieldErrors.interestRateType }]}
+                errors={[{ message: fieldErrors.interest_rate_type }]}
               />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.interestRate}>
+            <Field data-invalid={!!fieldErrors.interest_rate}>
               <FieldLabel className='text-sm font-semibold'>
                 Interest Rate (%)
               </FieldLabel>
@@ -337,145 +337,145 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 type='number'
                 placeholder='e.g. 3.2'
                 step='0.01'
-                value={form.interestRate}
-                onChange={(e) => set('interestRate', e.target.value)}
-                aria-invalid={!!fieldErrors.interestRate}
+                value={form.interest_rate}
+                onChange={(e) => set('interest_rate', e.target.value)}
+                aria-invalid={!!fieldErrors.interest_rate}
                 className={
-                  fieldErrors.interestRate
+                  fieldErrors.interest_rate
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.interestRate }]} />
+              <FieldError errors={[{ message: fieldErrors.interest_rate }]} />
             </Field>
           </div>
 
           {/* Interest Rate Expiry Date + Outstanding Balance */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.interestRateExpiryDate}>
+            <Field data-invalid={!!fieldErrors.interest_rate_expiry_date}>
               <FieldLabel className='text-sm font-semibold'>
                 Interest Rate Expiry Date
               </FieldLabel>
               <Input
                 type='date'
-                value={form.interestRateExpiryDate}
-                onChange={(e) => set('interestRateExpiryDate', e.target.value)}
-                aria-invalid={!!fieldErrors.interestRateExpiryDate}
+                value={form.interest_rate_expiry_date}
+                onChange={(e) => set('interest_rate_expiry_date', e.target.value)}
+                aria-invalid={!!fieldErrors.interest_rate_expiry_date}
                 className={
-                  fieldErrors.interestRateExpiryDate
+                  fieldErrors.interest_rate_expiry_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.interestRateExpiryDate }]}
+                errors={[{ message: fieldErrors.interest_rate_expiry_date }]}
               />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.outstandingBalance}>
+            <Field data-invalid={!!fieldErrors.outstanding_balance}>
               <FieldLabel className='text-sm font-semibold'>
                 Outstanding Balance
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={form.outstandingBalance}
-                onChange={(e) => set('outstandingBalance', e.target.value)}
-                aria-invalid={!!fieldErrors.outstandingBalance}
+                value={form.outstanding_balance}
+                onChange={(e) => set('outstanding_balance', e.target.value)}
+                aria-invalid={!!fieldErrors.outstanding_balance}
                 className={
-                  fieldErrors.outstandingBalance
+                  fieldErrors.outstanding_balance
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.outstandingBalance }]}
+                errors={[{ message: fieldErrors.outstanding_balance }]}
               />
             </Field>
           </div>
 
           {/* Monthly Payment + Remaining Mortgage Term(Years) */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.monthlyPayment}>
+            <Field data-invalid={!!fieldErrors.monthly_payment}>
               <FieldLabel className='text-sm font-semibold'>
                 Monthly Payment
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={form.monthlyPayment}
-                onChange={(e) => set('monthlyPayment', e.target.value)}
-                aria-invalid={!!fieldErrors.monthlyPayment}
+                value={form.monthly_payment}
+                onChange={(e) => set('monthly_payment', e.target.value)}
+                aria-invalid={!!fieldErrors.monthly_payment}
                 className={
-                  fieldErrors.monthlyPayment
+                  fieldErrors.monthly_payment
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.monthlyPayment }]} />
+              <FieldError errors={[{ message: fieldErrors.monthly_payment }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.remainingMortgage}>
+            <Field data-invalid={!!fieldErrors.remaining_mortgage}>
               <FieldLabel className='text-sm font-semibold'>
                 Remaining Mortgage Term(Years)
               </FieldLabel>
               <Input
                 type='number'
                 placeholder='e.g. 2'
-                value={form.remainingMortgage}
-                onChange={(e) => set('remainingMortgage', e.target.value)}
-                aria-invalid={!!fieldErrors.remainingMortgage}
+                value={form.remaining_mortgage}
+                onChange={(e) => set('remaining_mortgage', e.target.value)}
+                aria-invalid={!!fieldErrors.remaining_mortgage}
                 className={
-                  fieldErrors.remainingMortgage
+                  fieldErrors.remaining_mortgage
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.remainingMortgage }]}
+                errors={[{ message: fieldErrors.remaining_mortgage }]}
               />
             </Field>
           </div>
 
           {/* EPC Rating + EPC Certificate Expiry Date */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.epcRating}>
+            <Field data-invalid={!!fieldErrors.epc_rating}>
               <FieldLabel className='text-sm font-semibold'>
                 EPC Rating
               </FieldLabel>
               <Input
                 type='text'
-                value={form.epcRating}
-                onChange={(e) => set('epcRating', e.target.value)}
-                aria-invalid={!!fieldErrors.epcRating}
+                value={form.epc_rating}
+                onChange={(e) => set('epc_rating', e.target.value)}
+                aria-invalid={!!fieldErrors.epc_rating}
                 className={
-                  fieldErrors.epcRating
+                  fieldErrors.epc_rating
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.epcRating }]} />
+              <FieldError errors={[{ message: fieldErrors.epc_rating }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.epcCertificateExpiryDate}>
+            <Field data-invalid={!!fieldErrors.epc_certificate_expiry_date}>
               <FieldLabel className='text-sm font-semibold'>
                 EPC Certificate Expiry Date
               </FieldLabel>
               <Input
                 type='date'
-                value={form.epcCertificateExpiryDate}
+                value={form.epc_certificate_expiry_date}
                 onChange={(e) =>
-                  set('epcCertificateExpiryDate', e.target.value)
+                  set('epc_certificate_expiry_date', e.target.value)
                 }
-                aria-invalid={!!fieldErrors.epcCertificateExpiryDate}
+                aria-invalid={!!fieldErrors.epc_certificate_expiry_date}
                 className={
-                  fieldErrors.epcCertificateExpiryDate
+                  fieldErrors.epc_certificate_expiry_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.epcCertificateExpiryDate }]}
+                errors={[{ message: fieldErrors.epc_certificate_expiry_date }]}
               />
             </Field>
           </div>

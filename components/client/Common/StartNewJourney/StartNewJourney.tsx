@@ -239,15 +239,15 @@ const StartNewJourney: React.FC = () => {
 
     // ── Mortgage ──
     const m = state.mortgage;
-    fd.append('mortgage_lender_name', m.lenderName ?? '');
-    fd.append('mortgage_interest_rate_type', m.interestRateType ?? '');
-    fd.append('mortgage_interest_rate', m.interestRate ?? '');
-    fd.append('mortgage_interest_rate_expiry_date', m.interestRateExpiryDate ?? '');
-    fd.append('mortgage_outstanding_balance', m.outstandingBalance ?? '');
-    fd.append('mortgage_monthly_payment', m.monthlyPayment ?? '');
-    fd.append('mortgage_remaining_mortgage', m.remainingMortgage ?? '');
-    fd.append('mortgage_epc_rating', m.epcRating);
-    fd.append('mortgage_epc_certificate_expiry_date', m.epcCertificateExpiryDate);
+    fd.append('mortgage_lender_name', m.lender_name ?? '');
+    fd.append('mortgage_interest_rate_type', m.interest_rate_type ?? '');
+    fd.append('mortgage_interest_rate', m.interest_rate ?? '');
+    fd.append('mortgage_interest_rate_expiry_date', m.interest_rate_expiry_date ?? '');
+    fd.append('mortgage_outstanding_balance', m.outstanding_balance ?? '');
+    fd.append('mortgage_monthly_payment', m.monthly_payment ?? '');
+    fd.append('mortgage_remaining_mortgage', m.remaining_mortgage ?? '');
+    fd.append('mortgage_epc_rating', m.epc_rating);
+    fd.append('mortgage_epc_certificate_expiry_date', m.epc_certificate_expiry_date);
     fd.append('mortgage_notes', m.notes ?? '');
     state.mortgageFiles.forEach((file) =>
       fd.append('mortgage_mortgage_documents', file),
