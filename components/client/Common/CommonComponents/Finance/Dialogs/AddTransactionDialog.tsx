@@ -184,7 +184,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                   <SelectTrigger
                     className={fieldErrors.type ? 'border-danger' : ''}
                   >
-                    <SelectValue />
+                    <SelectValue placeholder='Select type...' />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value='INCOME'>Income</SelectItem>
@@ -277,7 +277,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                 <SelectTrigger
                   className={fieldErrors.category ? 'border-danger' : ''}
                 >
-                  <SelectValue />
+                  <SelectValue placeholder='Select category...' />
                 </SelectTrigger>
                 <SelectContent>
                   {TransactionCategoryOptions.map((option) => (

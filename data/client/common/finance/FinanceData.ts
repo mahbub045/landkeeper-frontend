@@ -113,9 +113,9 @@ export const TransactionCategoryOptions: TransactionCategoryOption[] = [
 ];
 
 export const EMPTY_FORM: TransactionForm = {
-  type: 'Income',
+  type: '',
   propertyId: '',
-  category: 'Rental Income',
+  category: '',
   amount: '',
   date: '',
   description: '',
