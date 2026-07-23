@@ -222,16 +222,44 @@ const StartNewJourney: React.FC = () => {
 
     // ── Property ──
     const p = state.property;
-    fd.append('property_property_name', p.name ?? '');
-    fd.append('property_property_type', p.type ?? '');
+    fd.append('property_property_name', p.property_name ?? '');
+    fd.append('property_property_type', p.property_type ?? '');
     fd.append('property_status', p.status ?? '');
     fd.append('property_address', p.address ?? '');
-    fd.append('property_purchase_price', String(p.purchasePrice ?? ''));
-    fd.append('property_current_value', String(p.currentValue ?? ''));
-    fd.append('property_rent_per_month', String(p.rentPerMonth ?? ''));
-    fd.append('property_purchase_date', p.purchaseDate);
-    fd.append('property_bedrooms', p.bedrooms);
-    fd.append('property_bathrooms', p.bathrooms);
+    fd.append('property_owner', p.property_owner ?? '');
+    (p.shareholder ?? []).forEach((item, i) => {
+      if ('owner_name' in item && item.owner_name !== undefined) {
+        fd.append(`property_shareholder[${i}].owner_name`, item.owner_name);
+      }
+      if ('shareholder_name' in item && item.shareholder_name !== undefined) {
+        fd.append(
+          `property_shareholder[${i}].shareholder_name`,
+          item.shareholder_name,
+        );
+      }
+      if ('share_percentage' in item && item.share_percentage !== undefined) {
+        fd.append(
+          `property_shareholder[${i}].share_percentage`,
+          item.share_percentage,
+        );
+      }
+    });
+    fd.append('property_purchase_price', p.purchase_price ?? '');
+    fd.append('property_current_value', p.current_value ?? '');
+    fd.append('property_monthly_rental_income', p.monthly_rental_income ?? '');
+    fd.append('property_purchase_date', p.purchase_date ?? '');
+    fd.append('property_year_built', p.year_built ?? '');
+    fd.append('property_property_tenure', p.property_tenure ?? '');
+    fd.append('property_remaining_lease_term', p.remaining_lease_term ?? '');
+    fd.append(
+      'property_monthly_service_charge',
+      p.monthly_service_charge ?? '',
+    );
+    fd.append('property_annual_ground_rent', p.annual_ground_rent ?? '');
+    fd.append('property_council_tax_band', p.council_tax_band ?? '');
+    fd.append('property_local_authority', p.local_authority ?? '');
+    fd.append('property_bedrooms', p.bedrooms ?? '');
+    fd.append('property_bathrooms', p.bathrooms ?? '');
     fd.append('property_notes', p.notes ?? '');
     state.propertyFiles.forEach((file) =>
       fd.append('property_documents_data', file),
@@ -242,12 +270,18 @@ const StartNewJourney: React.FC = () => {
     fd.append('mortgage_lender_name', m.lender_name ?? '');
     fd.append('mortgage_interest_rate_type', m.interest_rate_type ?? '');
     fd.append('mortgage_interest_rate', m.interest_rate ?? '');
-    fd.append('mortgage_interest_rate_expiry_date', m.interest_rate_expiry_date ?? '');
+    fd.append(
+      'mortgage_interest_rate_expiry_date',
+      m.interest_rate_expiry_date ?? '',
+    );
     fd.append('mortgage_outstanding_balance', m.outstanding_balance ?? '');
     fd.append('mortgage_monthly_payment', m.monthly_payment ?? '');
     fd.append('mortgage_remaining_mortgage', m.remaining_mortgage ?? '');
     fd.append('mortgage_epc_rating', m.epc_rating);
-    fd.append('mortgage_epc_certificate_expiry_date', m.epc_certificate_expiry_date);
+    fd.append(
+      'mortgage_epc_certificate_expiry_date',
+      m.epc_certificate_expiry_date,
+    );
     fd.append('mortgage_notes', m.notes ?? '');
     state.mortgageFiles.forEach((file) =>
       fd.append('mortgage_mortgage_documents', file),
