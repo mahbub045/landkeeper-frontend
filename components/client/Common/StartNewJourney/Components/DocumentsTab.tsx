@@ -113,21 +113,6 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
           <FieldError errors={[{ message: errors.documentCategory }]} />
         </Field>
 
-        <Field data-invalid={!!errors.tags}>
-          <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
-          <Input
-            type='text'
-            placeholder='Comma separated tags...'
-            value={value.tags}
-            onChange={(e) => set('tags', e.target.value)}
-            aria-invalid={!!errors.tags}
-            className={
-              errors.tags ? 'border-danger focus-visible:ring-danger/50' : ''
-            }
-          />
-          <FieldError errors={[{ message: errors.tags }]} />
-        </Field>
-
         <div className='space-y-3'>
           <FieldLabel className='gap-0 text-sm font-semibold'>
             Documents
@@ -170,13 +155,6 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
               onChange={(e) => addFiles(e.target.files)}
             />
           </div>
-          {files.length === 0 && (
-            <div className='bg-warning border-2-warning rounded p-2'>
-              <p className='text-xs text-white'>
-                At least one document/image is required
-              </p>
-            </div>
-          )}
           <FieldError errors={[{ message: errors.file }]} />
 
           {files.length > 0 && (

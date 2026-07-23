@@ -8,15 +8,15 @@ export const INTEREST_RATE_TYPE_OPTIONS = [
 ];
 
 export const EMPTY_MORTGAGE_FORM: MortgageForm = {
-  propertyId: '',
-  lenderName: '',
-  interestRateType: '',
-  interestRate: '',
-  interestRateExpiryDate: '',
-  outstandingBalance: '',
-  monthlyPayment: '',
-  remainingMortgage: '',
-  epcRating: '',
-  epcCertificateExpiryDate: '',
+  property: '',
+  lender_name: '',
+  interest_rate_type: '',
+  interest_rate: '',
+  interest_rate_expiry_date: '',
+  outstanding_balance: '',
+  monthly_payment: '',
+  remaining_mortgage: '',
+  epc_rating: '',
+  epc_certificate_expiry_date: '',
   notes: '',
 };

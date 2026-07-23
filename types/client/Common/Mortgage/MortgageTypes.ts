@@ -22,6 +22,11 @@ export interface Mortgage {
   notes: string;
   created_at: string;
   updated_at: string;
+  uploaded_documents: {
+    id: number;
+    file: string;
+    description: string | null;
+  }[];
 }
 export interface SummaryStat {
   label: string;
@@ -36,16 +41,16 @@ export interface MortgageCardProps {
 }
 
 export interface MortgageForm {
-  propertyId: string;
-  lenderName: string;
-  interestRateType: string;
-  interestRate: string;
-  interestRateExpiryDate: string;
-  outstandingBalance: string;
-  monthlyPayment: string;
-  remainingMortgage: string;
-  epcRating: string;
-  epcCertificateExpiryDate: string;
+  property: string;
+  lender_name: string;
+  interest_rate_type: string;
+  interest_rate: string;
+  interest_rate_expiry_date: string;
+  outstanding_balance: string;
+  monthly_payment: string;
+  remaining_mortgage: string;
+  epc_rating: string;
+  epc_certificate_expiry_date: string;
   notes: string;
 }
 

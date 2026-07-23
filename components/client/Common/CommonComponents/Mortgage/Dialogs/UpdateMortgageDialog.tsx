@@ -1,6 +1,7 @@
 'use client';
 
 import Loading from '@/components/common/CustomLoader/Loading';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -34,7 +35,8 @@ import {
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
-import { useState } from 'react';
+import { Paperclip, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
@@ -43,7 +45,6 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   onSuccess,
   mortgage,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [propertyOpen, setPropertyOpen] = useState(false);
@@ -55,27 +56,48 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     propertySearch ? { search: propertySearch } : {},
     { skip: !propertyOpen },
   );
-  const [updateMortgage] = useUpdateMortgageMutation();
+  const [updateMortgage, { isLoading: submitting }] =
+    useUpdateMortgageMutation();
+
+  // ── Document state ──────────────────────────────────────────────────────
+  // New files the user is adding in this edit session
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Documents still "kept" from the original mortgage (for display + removal)
+  const [existingDocuments, setExistingDocuments] = useState(
+    mortgage?.uploaded_documents ?? [],
+  );
+
+  // Re-fetched blobs of the ORIGINAL documents, turned back into File objects
+  // so they can be re-uploaded — backend replaces the whole set on update.
+  const [cachedExistingFiles, setCachedExistingFiles] = useState<
+    Record<number, File>
+  >({});
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+
+  const loading = submitting || documentsLoading;
 
   // ── Build initial form from the mortgage being edited ─────────────────────
   function buildFormFromMortgage(m: Mortgage): MortgageForm {
     if (!m) return EMPTY_MORTGAGE_FORM;
 
     return {
-      propertyId: m.property?.id ? String(m.property.id) : '',
-      lenderName: m.lender_name ?? '',
-      interestRateType: m.interest_rate_type ?? '',
-      interestRate: m.interest_rate ? String(m.interest_rate) : '',
-      interestRateExpiryDate: m.interest_rate_expiry_date ?? '',
-      outstandingBalance: m.outstanding_balance
+      property: m.property?.id ? String(m.property.id) : '',
+      lender_name: m.lender_name ?? '',
+      interest_rate_type: m.interest_rate_type ?? '',
+      interest_rate: m.interest_rate ? String(m.interest_rate) : '',
+      interest_rate_expiry_date: m.interest_rate_expiry_date ?? '',
+      outstanding_balance: m.outstanding_balance
         ? String(m.outstanding_balance)
         : '',
-      monthlyPayment: m.monthly_payment ? String(m.monthly_payment) : '',
-      remainingMortgage: m.remaining_mortgage
+      monthly_payment: m.monthly_payment ? String(m.monthly_payment) : '',
+      remaining_mortgage: m.remaining_mortgage
         ? String(m.remaining_mortgage)
         : '',
-      epcRating: m.epc_rating ?? '',
-      epcCertificateExpiryDate: m.epc_certificate_expiry_date ?? '',
+      epc_rating: m.epc_rating ?? '',
+      epc_certificate_expiry_date: m.epc_certificate_expiry_date ?? '',
       notes: m.notes ?? '',
     };
   }
@@ -88,11 +110,88 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  // ── Prefetch existing documents as File objects ─────────────────────────
+  useEffect(() => {
+    if (!open || !mortgage?.uploaded_documents?.length) return;
+
+    let cancelled = false;
+
+    const prefetch = async () => {
+      setDocumentsLoading(true);
+      try {
+        const entries = await Promise.all(
+          mortgage.uploaded_documents.map(async (doc) => {
+            const res = await fetch(
+              `/api/fetch-remote-files?url=${encodeURIComponent(doc.file)}`,
+            );
+            if (!res.ok) {
+              throw new Error(
+                `Failed to fetch document ${doc.id} (${res.status})`,
+              );
+            }
+            const blob = await res.blob();
+            const filename = doc.file.split('/').pop() || `document-${doc.id}`;
+            return [
+              doc.id,
+              new File([blob], filename, { type: blob.type }),
+            ] as const;
+          }),
+        );
+        if (!cancelled) setCachedExistingFiles(Object.fromEntries(entries));
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to prefetch existing documents', err);
+          toast.error(
+            'Could not load one or more existing documents. Removing/keeping them may not work correctly.',
+          );
+        }
+      } finally {
+        if (!cancelled) setDocumentsLoading(false);
+      }
+    };
+
+    prefetch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, mortgage?.alias, mortgage?.uploaded_documents]);
+
+  // ── File helpers ──────────────────────────────────────────────────────────
+  function addFiles(incoming: FileList | null) {
+    if (!incoming?.length) return;
+    setNewFiles((prev) => {
+      const existing = new Set(prev.map((f) => f.name + f.size));
+      return [
+        ...prev,
+        ...Array.from(incoming).filter((f) => !existing.has(f.name + f.size)),
+      ];
+    });
+    setFieldErrors((prev) => ({ ...prev, file: '' }));
+  }
+
+  function removeNewFile(index: number) {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function removeExistingDocument(id: number) {
+    setExistingDocuments((prev) => prev.filter((d) => d.id !== id));
+  }
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
+  }, []);
+
   // ── Reset ───────────────────────────────────────────────────────────────────
   function handleClose() {
     setBannerError(null);
     setFieldErrors({});
-    setLoading(false);
+    setNewFiles([]);
+    setExistingDocuments(mortgage?.uploaded_documents ?? []);
+    if (fileInputRef.current) fileInputRef.current.value = '';
     onClose();
   }
 
@@ -101,33 +200,45 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     e.preventDefault();
 
     const guardErrors: Record<string, string> = {};
-    if (!form.interestRateType)
-      guardErrors.interestRateType = 'Please select an interest rate type.';
+    if (!form.interest_rate_type)
+      guardErrors.interest_rate_type = 'Please select an interest rate type.';
 
     if (Object.keys(guardErrors).length > 0) {
       setFieldErrors(guardErrors);
-      setLoading(false);
       return;
     }
 
     setBannerError(null);
     setFieldErrors({});
-    setLoading(true);
 
     try {
-      const payload = {
-        property: form.propertyId,
-        lender_name: form.lenderName,
-        interest_rate_type: form.interestRateType,
-        interest_rate: form.interestRate,
-        interest_rate_expiry_date: form.interestRateExpiryDate,
-        outstanding_balance: form.outstandingBalance,
-        monthly_payment: form.monthlyPayment,
-        remaining_mortgage: form.remainingMortgage,
-        epc_rating: form.epcRating,
-        epc_certificate_expiry_date: form.epcCertificateExpiryDate,
-        notes: form.notes,
-      };
+      const payload = new FormData();
+      payload.append('property', form.property);
+      payload.append('lender_name', form.lender_name);
+      payload.append('interest_rate_type', form.interest_rate_type);
+      payload.append('interest_rate', form.interest_rate);
+      payload.append(
+        'interest_rate_expiry_date',
+        form.interest_rate_expiry_date,
+      );
+      payload.append('outstanding_balance', form.outstanding_balance);
+      payload.append('monthly_payment', form.monthly_payment);
+      payload.append('remaining_mortgage', form.remaining_mortgage);
+      if (form.epc_rating) payload.append('epc_rating', form.epc_rating);
+      payload.append(
+        'epc_certificate_expiry_date',
+        form.epc_certificate_expiry_date,
+      );
+      payload.append('notes', form.notes);
+
+      // Backend replaces the whole document set on update, so re-send every
+      // document the user still wants to keep, plus any newly added ones —
+      // all under 'uploaded_documents'.
+      existingDocuments.forEach((d) => {
+        const file = cachedExistingFiles[d.id];
+        if (file) payload.append('mortgage_documents', file);
+      });
+      newFiles.forEach((file) => payload.append('mortgage_documents', file));
 
       await updateMortgage({
         mortgage_alias: mortgage.alias,
@@ -161,7 +272,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
         if (hasFieldErrors) {
           setFieldErrors(mapped);
         } else {
-          toast.error(
+          setBannerError(
             data?.detail ??
               data?.message ??
               'Something went wrong. Please try again.',
@@ -170,8 +281,6 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       } else {
         toast.error('Something went wrong. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -204,7 +313,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           )}
 
           {/* Property */}
-          <Field data-invalid={!!fieldErrors.propertyId}>
+          <Field data-invalid={!!fieldErrors.property}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Property<span className='text-danger'>*</span>
             </FieldLabel>
@@ -212,22 +321,22 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <Input
                 placeholder='Search by property name...'
                 value={
-                  form.propertyId
+                  form.property
                     ? (data?.find(
-                        (p: Property) => String(p.id) === form.propertyId,
+                        (p: Property) => String(p.id) === form.property,
                       )?.property_name ?? propertySearch)
                     : propertySearch
                 }
                 onChange={(e) => {
                   setPropertySearch(e.target.value);
-                  set('propertyId', ''); // clear selection when user types
+                  set('property', ''); // clear selection when user types
                   setPropertyOpen(true);
                 }}
                 onClick={() => setPropertyOpen(true)}
                 onBlur={() => setTimeout(() => setPropertyOpen(false), 150)}
-                aria-invalid={!!fieldErrors.propertyId}
+                aria-invalid={!!fieldErrors.property}
                 className={
-                  fieldErrors.propertyId
+                  fieldErrors.property
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
@@ -251,13 +360,13 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                         <li
                           key={p.alias}
                           onMouseDown={() => {
-                            set('propertyId', String(p.id));
+                            set('property', String(p.id));
                             setPropertySearch('');
                             setPropertyOpen(false);
                           }}
                           className={cn(
                             'hover:bg-muted flex cursor-pointer items-center gap-3 px-4 py-2.5',
-                            form.propertyId === String(p.id) && 'bg-muted',
+                            form.property === String(p.id) && 'bg-muted',
                           )}
                         >
                           <span className='text-foreground text-sm'>
@@ -270,42 +379,42 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 </div>
               )}
             </div>
-            <FieldError errors={[{ message: fieldErrors.propertyId }]} />
+            <FieldError errors={[{ message: fieldErrors.property }]} />
           </Field>
 
           {/* Lender Name */}
-          <Field data-invalid={!!fieldErrors.lenderName}>
+          <Field data-invalid={!!fieldErrors.lender_name}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Lender Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               placeholder='e.g. Halifax, Nationwide'
-              value={form.lenderName}
-              onChange={(e) => set('lenderName', e.target.value)}
-              aria-invalid={!!fieldErrors.lenderName}
+              value={form.lender_name}
+              onChange={(e) => set('lender_name', e.target.value)}
+              aria-invalid={!!fieldErrors.lender_name}
               className={
-                fieldErrors.lenderName
+                fieldErrors.lender_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
               required
             />
-            <FieldError errors={[{ message: fieldErrors.lenderName }]} />
+            <FieldError errors={[{ message: fieldErrors.lender_name }]} />
           </Field>
 
           {/* Interest Rate Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.interestRateType}>
+            <Field data-invalid={!!fieldErrors.interest_rate_type}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Interest Rate Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
-                value={form.interestRateType}
-                onValueChange={(v) => set('interestRateType', v)}
+                value={form.interest_rate_type}
+                onValueChange={(v) => set('interest_rate_type', v)}
               >
                 <SelectTrigger
                   className={
-                    fieldErrors.interestRateType ? 'border-danger' : ''
+                    fieldErrors.interest_rate_type ? 'border-danger' : ''
                   }
                 >
                   <SelectValue />
@@ -319,11 +428,11 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 </SelectContent>
               </Select>
               <FieldError
-                errors={[{ message: fieldErrors.interestRateType }]}
+                errors={[{ message: fieldErrors.interest_rate_type }]}
               />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.interestRate}>
+            <Field data-invalid={!!fieldErrors.interest_rate}>
               <FieldLabel className='text-sm font-semibold'>
                 Interest Rate (%)
               </FieldLabel>
@@ -331,102 +440,102 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
                 type='number'
                 placeholder='e.g. 3.2'
                 step='0.01'
-                value={form.interestRate}
-                onChange={(e) => set('interestRate', e.target.value)}
-                aria-invalid={!!fieldErrors.interestRate}
+                value={form.interest_rate}
+                onChange={(e) => set('interest_rate', e.target.value)}
+                aria-invalid={!!fieldErrors.interest_rate}
                 className={
-                  fieldErrors.interestRate
+                  fieldErrors.interest_rate
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.interestRate }]} />
+              <FieldError errors={[{ message: fieldErrors.interest_rate }]} />
             </Field>
           </div>
 
           {/* Interest Rate Expiry Date + Outstanding Balance */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.interestRateExpiryDate}>
+            <Field data-invalid={!!fieldErrors.interest_rate_expiry_date}>
               <FieldLabel className='text-sm font-semibold'>
                 Interest Rate Expiry Date
               </FieldLabel>
               <Input
                 type='date'
-                value={form.interestRateExpiryDate}
-                onChange={(e) => set('interestRateExpiryDate', e.target.value)}
-                aria-invalid={!!fieldErrors.interestRateExpiryDate}
+                value={form.interest_rate_expiry_date}
+                onChange={(e) => set('interest_rate_expiry_date', e.target.value)}
+                aria-invalid={!!fieldErrors.interest_rate_expiry_date}
                 className={
-                  fieldErrors.interestRateExpiryDate
+                  fieldErrors.interest_rate_expiry_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.interestRateExpiryDate }]}
+                errors={[{ message: fieldErrors.interest_rate_expiry_date }]}
               />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.outstandingBalance}>
+            <Field data-invalid={!!fieldErrors.outstanding_balance}>
               <FieldLabel className='text-sm font-semibold'>
                 Outstanding Balance
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={form.outstandingBalance}
-                onChange={(e) => set('outstandingBalance', e.target.value)}
-                aria-invalid={!!fieldErrors.outstandingBalance}
+                value={form.outstanding_balance}
+                onChange={(e) => set('outstanding_balance', e.target.value)}
+                aria-invalid={!!fieldErrors.outstanding_balance}
                 className={
-                  fieldErrors.outstandingBalance
+                  fieldErrors.outstanding_balance
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.outstandingBalance }]}
+                errors={[{ message: fieldErrors.outstanding_balance }]}
               />
             </Field>
           </div>
 
           {/* Monthly Payment + Remaining Mortgage Term(Years) */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.monthlyPayment}>
+            <Field data-invalid={!!fieldErrors.monthly_payment}>
               <FieldLabel className='text-sm font-semibold'>
                 Monthly Payment
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={form.monthlyPayment}
-                onChange={(e) => set('monthlyPayment', e.target.value)}
-                aria-invalid={!!fieldErrors.monthlyPayment}
+                value={form.monthly_payment}
+                onChange={(e) => set('monthly_payment', e.target.value)}
+                aria-invalid={!!fieldErrors.monthly_payment}
                 className={
-                  fieldErrors.monthlyPayment
+                  fieldErrors.monthly_payment
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.monthlyPayment }]} />
+              <FieldError errors={[{ message: fieldErrors.monthly_payment }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.remainingMortgage}>
+            <Field data-invalid={!!fieldErrors.remaining_mortgage}>
               <FieldLabel className='text-sm font-semibold'>
                 Remaining Mortgage Term(Years)
               </FieldLabel>
               <Input
                 type='number'
                 placeholder='e.g. 25'
-                value={form.remainingMortgage}
-                onChange={(e) => set('remainingMortgage', e.target.value)}
-                aria-invalid={!!fieldErrors.remainingMortgage}
+                value={form.remaining_mortgage}
+                onChange={(e) => set('remaining_mortgage', e.target.value)}
+                aria-invalid={!!fieldErrors.remaining_mortgage}
                 className={
-                  fieldErrors.remainingMortgage
+                  fieldErrors.remaining_mortgage
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.remainingMortgage }]}
+                errors={[{ message: fieldErrors.remaining_mortgage }]}
               />
             </Field>
           </div>
@@ -434,44 +543,44 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           {/* EPC Rating + EPC Certificate Expiry Date */}
           <div className='grid grid-cols-2 gap-4'>
             {/* EPC Rating */}
-            <Field data-invalid={!!fieldErrors.epcRating}>
+            <Field data-invalid={!!fieldErrors.epc_rating}>
               <FieldLabel className='text-sm font-semibold'>
                 EPC Rating
               </FieldLabel>
               <Input
                 type='text'
-                value={form.epcRating}
-                onChange={(e) => set('epcRating', e.target.value)}
-                aria-invalid={!!fieldErrors.epcRating}
+                value={form.epc_rating}
+                onChange={(e) => set('epc_rating', e.target.value)}
+                aria-invalid={!!fieldErrors.epc_rating}
                 className={
-                  fieldErrors.epcRating
+                  fieldErrors.epc_rating
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.epcRating }]} />
+              <FieldError errors={[{ message: fieldErrors.epc_rating }]} />
             </Field>
 
             {/* EPC Certificate Expiry Date */}
-            <Field data-invalid={!!fieldErrors.epcCertificateExpiryDate}>
+            <Field data-invalid={!!fieldErrors.epc_certificate_expiry_date}>
               <FieldLabel className='text-sm font-semibold'>
                 EPC Certificate Expiry Date
               </FieldLabel>
               <Input
                 type='date'
-                value={form.epcCertificateExpiryDate}
+                value={form.epc_certificate_expiry_date}
                 onChange={(e) =>
-                  set('epcCertificateExpiryDate', e.target.value)
+                  set('epc_certificate_expiry_date', e.target.value)
                 }
-                aria-invalid={!!fieldErrors.epcCertificateExpiryDate}
+                aria-invalid={!!fieldErrors.epc_certificate_expiry_date}
                 className={
-                  fieldErrors.epcCertificateExpiryDate
+                  fieldErrors.epc_certificate_expiry_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
               <FieldError
-                errors={[{ message: fieldErrors.epcCertificateExpiryDate }]}
+                errors={[{ message: fieldErrors.epc_certificate_expiry_date }]}
               />
             </Field>
           </div>
@@ -480,7 +589,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           <Field data-invalid={!!fieldErrors.notes}>
             <FieldLabel className='text-sm font-semibold'>Notes</FieldLabel>
             <Textarea
-              placeholder='Notes from mortgage adviser...'
+              placeholder='Add notes...'
               rows={4}
               value={form.notes}
               onChange={(e) => set('notes', e.target.value)}
@@ -492,6 +601,115 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               }
             />
             <FieldError errors={[{ message: fieldErrors.notes }]} />
+          </Field>
+
+          {/* Document upload */}
+          <Field data-invalid={!!fieldErrors.file}>
+            <FieldLabel className='text-sm font-semibold'>
+              Mortgage Documents
+            </FieldLabel>
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                fieldErrors.file
+                  ? 'border-danger bg-red-50 dark:bg-red-950/20'
+                  : dragging
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/40',
+              )}
+            >
+              <Paperclip className='text-primary mb-3 h-9 w-9' />
+              <p className='text-muted-foreground text-sm'>
+                Attach mortgage documents
+              </p>
+              <input
+                ref={fileInputRef}
+                type='file'
+                accept='.pdf,.jpg,.jpeg,.png,.webp'
+                multiple
+                className='hidden'
+                onChange={(e) => addFiles(e.target.files)}
+              />
+            </div>
+            <FieldError errors={[{ message: fieldErrors.file }]} />
+
+            {/* Existing documents (still-kept, re-uploaded on save) */}
+            {existingDocuments.length > 0 && (
+              <div className='space-y-2'>
+                <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                  Existing Documents
+                  {documentsLoading && ' (preparing...)'}
+                </p>
+                <ul className='space-y-2'>
+                  {existingDocuments.map((doc) => (
+                    <li
+                      key={doc.id}
+                      className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                    >
+                      <a
+                        href={doc.file}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='max-w-[80%] truncate text-sm underline'
+                      >
+                        {doc.file.split('/').pop()}
+                      </a>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeExistingDocument(doc.id)}
+                        className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                        aria-label='Remove file'
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Newly added files pending upload */}
+            {newFiles.length > 0 && (
+              <div className='space-y-2'>
+                <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                  New Uploads
+                </p>
+                <ul className='space-y-2'>
+                  {newFiles.map((f, index) => (
+                    <li
+                      key={`${f.name}-${f.size}-${index}`}
+                      className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                    >
+                      <Badge
+                        variant='secondary'
+                        className='max-w-[80%] truncate font-normal'
+                      >
+                        {f.name}
+                      </Badge>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeNewFile(index)}
+                        className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                        aria-label={`Remove ${f.name}`}
+                      >
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </Field>
 
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>
