@@ -96,10 +96,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
                 {property.property_name}
               </h3>
 
-              {property.rent_per_month && (
+              {property.monthly_rental_income && (
                 <p className='text-foreground shrink-0 text-lg font-bold'>
                   {`${getCurrencySign()}${parseFloat(
-                    property.rent_per_month,
+                    property.monthly_rental_income,
                   ).toLocaleString()}/mo`}
                 </p>
               )}
