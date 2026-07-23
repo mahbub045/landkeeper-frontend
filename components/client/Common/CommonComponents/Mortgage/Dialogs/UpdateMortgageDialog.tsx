@@ -21,7 +21,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_MORTGAGE_FORM,
-  PRODUCT_TYPE_OPTIONS,
+  INTEREST_RATE_TYPE_OPTIONS,
 } from '@/data/client/common/mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
@@ -64,17 +64,19 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     return {
       propertyId: m.property?.id ? String(m.property.id) : '',
       lenderName: m.lender_name ?? '',
-      productType: m.product_type ?? '',
+      interestRateType: m.interest_rate_type ?? '',
       interestRate: m.interest_rate ? String(m.interest_rate) : '',
-      loanAmount: m.loan_amount ? String(m.loan_amount) : '',
+      interestRateExpiryDate: m.interest_rate_expiry_date ?? '',
       outstandingBalance: m.outstanding_balance
         ? String(m.outstanding_balance)
         : '',
       monthlyPayment: m.monthly_payment ? String(m.monthly_payment) : '',
-      termYears: m.term ? String(m.term) : '',
-      startDate: m.start_date ?? '',
-      endDate: m.end_date ?? '',
-      brokerNotes: m.broker_notes ?? '',
+      remainingMortgage: m.remaining_mortgage
+        ? String(m.remaining_mortgage)
+        : '',
+      epcRating: m.epc_rating ?? '',
+      epcCertificateExpiryDate: m.epc_certificate_expiry_date ?? '',
+      notes: m.notes ?? '',
     };
   }
 
@@ -99,8 +101,8 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
     e.preventDefault();
 
     const guardErrors: Record<string, string> = {};
-    if (!form.productType)
-      guardErrors.productType = 'Please select a product type.';
+    if (!form.interestRateType)
+      guardErrors.interestRateType = 'Please select an interest rate type.';
 
     if (Object.keys(guardErrors).length > 0) {
       setFieldErrors(guardErrors);
@@ -116,15 +118,15 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
       const payload = {
         property: form.propertyId,
         lender_name: form.lenderName,
-        product_type: form.productType,
+        interest_rate_type: form.interestRateType,
         interest_rate: form.interestRate,
-        loan_amount: form.loanAmount,
+        interest_rate_expiry_date: form.interestRateExpiryDate,
         outstanding_balance: form.outstandingBalance,
         monthly_payment: form.monthlyPayment,
-        term: Number(form.termYears),
-        start_date: form.startDate || null,
-        end_date: form.endDate || null,
-        broker_notes: form.brokerNotes,
+        remaining_mortgage: form.remainingMortgage,
+        epc_rating: form.epcRating,
+        epc_certificate_expiry_date: form.epcCertificateExpiryDate,
+        notes: form.notes,
       };
 
       await updateMortgage({
@@ -291,30 +293,34 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             <FieldError errors={[{ message: fieldErrors.lenderName }]} />
           </Field>
 
-          {/* Product Type + Interest Rate */}
+          {/* Interest Rate Type + Interest Rate */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.productType}>
+            <Field data-invalid={!!fieldErrors.interestRateType}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
-                Product Type<span className='text-danger'>*</span>
+                Interest Rate Type<span className='text-danger'>*</span>
               </FieldLabel>
               <Select
-                value={form.productType}
-                onValueChange={(v) => set('productType', v)}
+                value={form.interestRateType}
+                onValueChange={(v) => set('interestRateType', v)}
               >
                 <SelectTrigger
-                  className={fieldErrors.productType ? 'border-danger' : ''}
+                  className={
+                    fieldErrors.interestRateType ? 'border-danger' : ''
+                  }
                 >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PRODUCT_TYPE_OPTIONS.map((opt) => (
+                  {INTEREST_RATE_TYPE_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError errors={[{ message: fieldErrors.productType }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.interestRateType }]}
+              />
             </Field>
 
             <Field data-invalid={!!fieldErrors.interestRate}>
@@ -338,25 +344,26 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             </Field>
           </div>
 
-          {/* Loan Amount + Outstanding Balance */}
+          {/* Interest Rate Expiry Date + Outstanding Balance */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.loanAmount}>
+            <Field data-invalid={!!fieldErrors.interestRateExpiryDate}>
               <FieldLabel className='text-sm font-semibold'>
-                Loan Amount
+                Interest Rate Expiry Date
               </FieldLabel>
               <Input
-                type='number'
-                placeholder={getCurrencySign()}
-                value={form.loanAmount}
-                onChange={(e) => set('loanAmount', e.target.value)}
-                aria-invalid={!!fieldErrors.loanAmount}
+                type='date'
+                value={form.interestRateExpiryDate}
+                onChange={(e) => set('interestRateExpiryDate', e.target.value)}
+                aria-invalid={!!fieldErrors.interestRateExpiryDate}
                 className={
-                  fieldErrors.loanAmount
+                  fieldErrors.interestRateExpiryDate
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.loanAmount }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.interestRateExpiryDate }]}
+              />
             </Field>
 
             <Field data-invalid={!!fieldErrors.outstandingBalance}>
@@ -381,7 +388,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
             </Field>
           </div>
 
-          {/* Monthly Payment + Term */}
+          {/* Monthly Payment + Remaining Mortgage Term(Years) */}
           <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!fieldErrors.monthlyPayment}>
               <FieldLabel className='text-sm font-semibold'>
@@ -402,86 +409,89 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               <FieldError errors={[{ message: fieldErrors.monthlyPayment }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.termYears}>
+            <Field data-invalid={!!fieldErrors.remainingMortgage}>
               <FieldLabel className='text-sm font-semibold'>
-                Term (Years)
+                Remaining Mortgage Term(Years)
               </FieldLabel>
               <Input
                 type='number'
                 placeholder='e.g. 25'
-                value={form.termYears}
-                onChange={(e) => set('termYears', e.target.value)}
-                aria-invalid={!!fieldErrors.termYears}
+                value={form.remainingMortgage}
+                onChange={(e) => set('remainingMortgage', e.target.value)}
+                aria-invalid={!!fieldErrors.remainingMortgage}
                 className={
-                  fieldErrors.termYears
+                  fieldErrors.remainingMortgage
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.termYears }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.remainingMortgage }]}
+              />
             </Field>
           </div>
 
-          {/* Start Date + End Date */}
+          {/* EPC Rating + EPC Certificate Expiry Date */}
           <div className='grid grid-cols-2 gap-4'>
-            {/* Start Date */}
-            <Field data-invalid={!!fieldErrors.startDate}>
+            {/* EPC Rating */}
+            <Field data-invalid={!!fieldErrors.epcRating}>
               <FieldLabel className='text-sm font-semibold'>
-                Start Date
+                EPC Rating
               </FieldLabel>
               <Input
-                type='date'
-                value={form.startDate}
-                onChange={(e) => set('startDate', e.target.value)}
-                aria-invalid={!!fieldErrors.startDate}
+                type='text'
+                value={form.epcRating}
+                onChange={(e) => set('epcRating', e.target.value)}
+                aria-invalid={!!fieldErrors.epcRating}
                 className={
-                  fieldErrors.startDate
+                  fieldErrors.epcRating
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.startDate }]} />
+              <FieldError errors={[{ message: fieldErrors.epcRating }]} />
             </Field>
 
-            {/* End Date */}
-            <Field data-invalid={!!fieldErrors.endDate}>
+            {/* EPC Certificate Expiry Date */}
+            <Field data-invalid={!!fieldErrors.epcCertificateExpiryDate}>
               <FieldLabel className='text-sm font-semibold'>
-                End Date
+                EPC Certificate Expiry Date
               </FieldLabel>
               <Input
                 type='date'
-                value={form.endDate}
-                min={form.startDate || undefined}
-                onChange={(e) => set('endDate', e.target.value)}
-                aria-invalid={!!fieldErrors.endDate}
+                value={form.epcCertificateExpiryDate}
+                onChange={(e) =>
+                  set('epcCertificateExpiryDate', e.target.value)
+                }
+                aria-invalid={!!fieldErrors.epcCertificateExpiryDate}
                 className={
-                  fieldErrors.endDate
+                  fieldErrors.epcCertificateExpiryDate
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.endDate }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.epcCertificateExpiryDate }]}
+              />
             </Field>
           </div>
 
-          {/* Broker Notes */}
-          <Field data-invalid={!!fieldErrors.brokerNotes}>
-            <FieldLabel className='text-sm font-semibold'>
-              Broker Notes
-            </FieldLabel>
+          {/*  Notes */}
+          <Field data-invalid={!!fieldErrors.notes}>
+            <FieldLabel className='text-sm font-semibold'>Notes</FieldLabel>
             <Textarea
               placeholder='Notes from mortgage adviser...'
               rows={4}
-              value={form.brokerNotes}
-              onChange={(e) => set('brokerNotes', e.target.value)}
-              aria-invalid={!!fieldErrors.brokerNotes}
+              value={form.notes}
+              onChange={(e) => set('notes', e.target.value)}
+              aria-invalid={!!fieldErrors.notes}
               className={
-                fieldErrors.brokerNotes
+                fieldErrors.notes
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: fieldErrors.brokerNotes }]} />
+            <FieldError errors={[{ message: fieldErrors.notes }]} />
           </Field>
 
           <div className='flex shrink-0 items-center justify-end gap-3 border-t px-6 py-4'>

@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Landmark } from 'lucide-react';
-import MortgageCard from '../MortgageCard/MortgageCard';
+import MortgageCard from './MortgageCard/MortgageCard';
 
 const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
   mortgages,

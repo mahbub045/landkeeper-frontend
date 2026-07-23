@@ -6,15 +6,20 @@ export interface Mortgage {
     property_name: string;
   };
   lender_name: string;
-  product_type: 'FIXED_RATE' | 'VARIABLE_RATE' | 'INTEREST_ONLY' | 'TRACKER';
+  interest_rate_type:
+    | 'FIXED_RATE'
+    | 'VARIABLE_RATE'
+    | 'INTEREST_ONLY'
+    | 'TRACKER';
   interest_rate: string | null;
+  interest_rate_expiry_date: string;
   loan_amount: string | null;
   outstanding_balance: string | null;
   monthly_payment: string | null;
-  term: number;
-  start_date: string;
-  end_date: string;
-  broker_notes: string;
+  remaining_mortgage: string;
+  epc_rating: string | null;
+  epc_certificate_expiry_date: string;
+  notes: string;
   created_at: string;
   updated_at: string;
 }
@@ -33,15 +38,15 @@ export interface MortgageCardProps {
 export interface MortgageForm {
   propertyId: string;
   lenderName: string;
-  productType: string;
+  interestRateType: string;
   interestRate: string;
-  loanAmount: string;
+  interestRateExpiryDate: string;
   outstandingBalance: string;
   monthlyPayment: string;
-  termYears: string;
-  startDate: string;
-  endDate: string;
-  brokerNotes: string;
+  remainingMortgage: string;
+  epcRating: string;
+  epcCertificateExpiryDate: string;
+  notes: string;
 }
 
 export interface AddMortgageDialogProps {
