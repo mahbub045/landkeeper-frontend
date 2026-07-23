@@ -197,6 +197,20 @@ const ProfileSettings: React.FC = () => {
                   </div>
 
                   <div className='flex flex-col items-start space-y-1'>
+                    <Label htmlFor='middle_name'>Middle Name</Label>
+                    <Input
+                      type='text'
+                      id='middle_name'
+                      defaultValue={profileData?.middle_name ?? ''}
+                      onChange={(e) =>
+                        handleChange('middle_name', e.target.value)
+                      }
+                      placeholder='Middle Name'
+                      disabled={isEditing}
+                    />
+                  </div>
+
+                  <div className='flex flex-col items-start space-y-1'>
                     <Label htmlFor='last_name'>
                       Last Name<span className='text-danger'>*</span>
                     </Label>
@@ -210,20 +224,6 @@ const ProfileSettings: React.FC = () => {
                       placeholder='Last Name'
                       disabled={isEditing}
                       required
-                    />
-                  </div>
-
-                  <div className='flex flex-col items-start space-y-1'>
-                    <Label htmlFor='middle_name'>Middle Name</Label>
-                    <Input
-                      type='text'
-                      id='middle_name'
-                      defaultValue={profileData?.middle_name ?? ''}
-                      onChange={(e) =>
-                        handleChange('middle_name', e.target.value)
-                      }
-                      placeholder='Middle Name'
-                      disabled={isEditing}
                     />
                   </div>
                 </div>
