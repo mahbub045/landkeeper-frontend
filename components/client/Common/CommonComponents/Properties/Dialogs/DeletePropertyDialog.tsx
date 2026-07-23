@@ -23,14 +23,14 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
   propertyName,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [deleteProperty] = useDeletePropertyMutation();
 
   async function handleDelete() {
     setLoading(true);
-    setError(null);
+
     try {
       await deleteProperty({ property_alias: propertyAlias }).unwrap();
+
       toast.success('Property deleted successfully.');
       onSuccess?.();
       onClose();
@@ -43,38 +43,60 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className='w-full p-0 sm:max-w-md'>
-        <DialogHeader className='border-b px-6 pt-6 pb-4'>
-          <DialogTitle className='text-foreground flex items-center gap-2 text-xl font-bold'>
-            <AlertTriangle className='text-destructive size-5' />
+      <DialogContent className='overflow-hidden rounded-2xl border-0 p-0 shadow-2xl sm:max-w-md'>
+        {/* Header */}
+        <DialogHeader className='to-background flex flex-col items-center bg-linear-to-b from-red-50 px-6 pt-8 pb-6 dark:from-red-950/30'>
+          <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30'>
+            <AlertTriangle className='h-8 w-8 text-red-600' />
+          </div>
+
+          <DialogTitle className='text-center text-2xl font-bold'>
             Delete Property
           </DialogTitle>
-          <DialogDescription>This action is irreversible.</DialogDescription>
+
+          <DialogDescription className='mt-2 text-center text-sm'>
+            This action is permanent and cannot be undone.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className='px-6 py-5'>
-          {error && (
-            <p className='text-danger mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm dark:border-red-900/40 dark:bg-red-950/30'>
-              {error}
-            </p>
-          )}
+        {/* Body */}
+        <div className='space-y-5 px-6 py-6'>
+          <p className='text-muted-foreground text-center text-sm leading-7'>
+            You&rsquo;re about to permanently delete
+          </p>
 
-          <p className='text-foreground text-center'>
-            Are you sure you want to delete{' '}
-            <span className='text-danger font-bold'>{propertyName}</span>?<br />{' '}
-            This will permanently remove the property and all associated data.
-          </p>
-          <p className='text-danger mt-3 text-center text-sm'>
-            This action cannot be undone.
-          </p>
+          <div className='rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center dark:border-red-900/50 dark:bg-red-950/30'>
+            <span className='text-lg font-semibold text-red-600'>
+              {propertyName}
+            </span>
+          </div>
+
+          <div className='rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20'>
+            <p className='text-center text-sm leading-6 text-amber-700 dark:text-amber-300'>
+              All associated tenants, documents, and related data will be
+              permanently removed.
+            </p>
+          </div>
         </div>
 
-        <div className='flex items-center justify-end gap-3 border-t px-6 py-4'>
-          <Button variant='outline' onClick={onClose} disabled={loading}>
+        {/* Footer */}
+        <div className='bg-muted/20 flex justify-end gap-3 border-t px-6 py-5'>
+          <Button
+            variant='outline'
+            onClick={onClose}
+            disabled={loading}
+            className='min-w-24'
+          >
             Cancel
           </Button>
-          <Button variant='danger' onClick={handleDelete} disabled={loading}>
-            {loading && <Loading className='text-white!' />}
+
+          <Button
+            variant='destructive'
+            onClick={handleDelete}
+            disabled={loading}
+            className='min-w-36'
+          >
+            {loading && <Loading className='mr-2 text-white!' />}
             Delete Property
           </Button>
         </div>

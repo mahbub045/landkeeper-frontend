@@ -72,57 +72,78 @@ const DeleteInvitedUserDialog: React.FC<DeleteInvitedUserDialogProps> = ({
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className='sm:max-w-md'>
-        <DialogHeader>
-          <DialogTitle>Delete Invitation</DialogTitle>
+ return (
+  <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+    <DialogContent className="overflow-hidden rounded-2xl border-0 p-0 shadow-2xl sm:max-w-md">
+      {/* Header */}
+      <DialogHeader className="flex flex-col items-center bg-linear-to-b from-red-50 to-background px-6 pt-8 pb-6 dark:from-red-950/30">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+          <AlertCircle className="h-8 w-8 text-red-600" />
+        </div>
 
-          <DialogDescription>
-            {inviteUserData ? (
-              <>
-                Are you sure you want to delete the invitation sent to{' '}
-                <span className='text-danger font-medium'>
-                  {inviteUserData.email}
-                </span>
-                ? This action cannot be undone.
-              </>
-            ) : (
-              'Are you sure you want to delete this invitation? This action cannot be undone.'
-            )}
-          </DialogDescription>
-        </DialogHeader>
+        <DialogTitle className="text-center text-2xl font-bold">
+          Delete Invitation
+        </DialogTitle>
 
-        {generalError && (
-          <div className='bg-danger/10 text-danger flex items-center gap-2 rounded-md px-3 py-2 text-xs'>
-            <AlertCircle className='size-4 shrink-0' />
-            {generalError}
+        <DialogDescription className="mt-2 text-center text-sm">
+          This action is permanent and cannot be undone.
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Body */}
+      <div className="space-y-5 px-6 py-6">
+        <p className="text-center text-sm leading-7 text-muted-foreground">
+          You&rsquo;re about to permanently delete this invitation.
+        </p>
+
+        {inviteUserData?.email && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center dark:border-red-900/50 dark:bg-red-950/30">
+            <span className="break-all text-base font-semibold text-red-600">
+              {inviteUserData.email}
+            </span>
           </div>
         )}
 
-        <DialogFooter className='gap-2 sm:gap-2'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={handleClose}
-            disabled={isLoading}
-          >
-            Cancel
-          </Button>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/20">
+          <p className="text-center text-sm leading-6 text-amber-700 dark:text-amber-300">
+            The invitation will be permanently removed and the recipient will no
+            longer be able to use it to join your team.
+          </p>
+        </div>
 
-          <Button
-            type='button'
-            variant='danger'
-            onClick={handleDelete}
-            disabled={isLoading || !inviteUserData}
-          >
-            {isLoading && <Loading className='text-white!' />}
-            Delete
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+        {generalError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/30">
+            <p className="text-center text-sm text-red-600">
+              {generalError}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <DialogFooter className="border-t bg-muted/20 px-6 pb-8">
+        <Button
+          variant="outline"
+          onClick={handleClose}
+          disabled={isLoading}
+          className="min-w-24"
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="destructive"
+          onClick={handleDelete}
+          disabled={isLoading || !inviteUserData}
+          className="min-w-40"
+        >
+          {isLoading && <Loading className="mr-2 text-white!" />}
+          Delete Invitation
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+);
 };
 
 export default DeleteInvitedUserDialog;
