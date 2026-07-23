@@ -24,7 +24,9 @@ import {
   EMPTY_DETAILS_FORM,
   FIELD_TAB_MAP,
   OVERRIDE_KEY_MAP,
+  PROPERTY_OWNER_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
   TAB_LABELS,
   TAB_PRIORITY,
@@ -39,7 +41,7 @@ import {
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
-import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
+import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -121,16 +123,58 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     try {
       const formData = new FormData();
       formData.append('property_name', details.property_name);
+      formData.append('address', details.address);
+      formData.append('property_owner', details.property_owner);
+
+      // ── Shareholder / Owner rows ────────────────────────────────────────────
+      // The API expects indexed form fields (shareholder[i].field), not a
+      // single JSON blob. Each row is either an "owner" row (OWNER flow) or a
+      // "shareholder" row (COMPANY flow) — only append whichever keys exist.
+      details.shareholder.forEach((item, i) => {
+        if ('owner_name' in item && item.owner_name !== undefined) {
+          formData.append(`shareholder[${i}].owner_name`, item.owner_name);
+        }
+        if ('shareholder_name' in item && item.shareholder_name !== undefined) {
+          formData.append(
+            `shareholder[${i}].shareholder_name`,
+            item.shareholder_name,
+          );
+        }
+        if ('share_percentage' in item && item.share_percentage !== undefined) {
+          formData.append(
+            `shareholder[${i}].share_percentage`,
+            item.share_percentage,
+          );
+        }
+      });
+
       formData.append('property_type', details.property_type);
       formData.append('status', details.status);
-      formData.append('address', details.address);
-      formData.append('purchase_price', details.purchasePrice);
-      formData.append('current_value', details.currentValue);
-      formData.append('rent_per_month', details.rentPerMonth);
-      formData.append('purchase_date', details.purchaseDate);
-      formData.append('bedrooms', details.bedrooms);
-      formData.append('bathrooms', details.bathrooms);
-      formData.append('notes', details.notes);
+
+      // ── Optional fields ──────────────────────────────────────────────────
+      // DRF rejects '' for IntegerField/DateField/DecimalField ("A valid
+      // integer is required.", "Date has wrong format."). Omit the key
+      // entirely when blank so the backend treats it as null instead.
+      const appendIfPresent = (key: string, value: string) => {
+        if (value !== '' && value !== null && value !== undefined) {
+          formData.append(key, value);
+        }
+      };
+
+      appendIfPresent('purchase_price', details.purchase_price);
+      appendIfPresent('current_value', details.current_value);
+      appendIfPresent('monthly_rental_income', details.monthly_rental_income);
+      appendIfPresent('purchase_date', details.purchase_date);
+      appendIfPresent('bedrooms', details.bedrooms);
+      appendIfPresent('bathrooms', details.bathrooms);
+      appendIfPresent('year_built', details.year_built);
+      appendIfPresent('property_tenure', details.property_tenure);
+      appendIfPresent('remaining_lease_term', details.remaining_lease_term);
+      appendIfPresent('monthly_service_charge', details.monthly_service_charge);
+      appendIfPresent('annual_ground_rent', details.annual_ground_rent);
+      appendIfPresent('council_tax_band', details.council_tax_band);
+      appendIfPresent('local_authority', details.local_authority);
+      appendIfPresent('notes', details.notes);
       files.forEach((file) => formData.append('documents_data', file));
 
       await addProperty(formData).unwrap();
@@ -328,6 +372,63 @@ const DetailsTab: React.FC<{
     }
   }
 
+  // ── Owners (property_owner === 'OWNER') ─────────────────────────────────────
+
+  function addOwner() {
+    onChange({
+      ...form,
+      shareholder: [...form.shareholder, { owner_name: '' }],
+    });
+  }
+
+  function updateOwner(index: number, value: string) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.map((o, i) =>
+        i === index ? { ...o, owner_name: value } : o,
+      ),
+    });
+  }
+
+  function removeOwner(index: number) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.filter((_, i) => i !== index),
+    });
+  }
+
+  // ── Shareholders (property_owner === 'COMPANY') ─────────────────────────────
+
+  function addShareholder() {
+    onChange({
+      ...form,
+      shareholder: [
+        ...form.shareholder,
+        { shareholder_name: '', share_percentage: '' },
+      ],
+    });
+  }
+
+  function updateShareholder(
+    index: number,
+    key: 'shareholder_name' | 'share_percentage',
+    value: string,
+  ) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.map((s, i) =>
+        i === index ? { ...s, [key]: value } : s,
+      ),
+    });
+  }
+
+  function removeShareholder(index: number) {
+    onChange({
+      ...form,
+      shareholder: form.shareholder.filter((_, i) => i !== index),
+    });
+  }
+
   return (
     <div className='space-y-5'>
       <div className='flex justify-center'>
@@ -393,6 +494,7 @@ const DetailsTab: React.FC<{
           </Field>
         </div>
       </div>
+
       <Field data-invalid={!!errors.address}>
         <FieldLabel className='gap-0 text-sm font-semibold'>
           Property Address<span className='text-danger'>*</span>
@@ -411,6 +513,141 @@ const DetailsTab: React.FC<{
         <FieldError errors={[{ message: errors.address }]} />
       </Field>
 
+      <Field data-invalid={!!errors.property_owner}>
+        <FieldLabel className='text-sm font-semibold'>
+          Property Owner
+        </FieldLabel>
+        <Select
+          value={form.property_owner}
+          onValueChange={(v) => set('property_owner', v)}
+        >
+          <SelectTrigger
+            className={errors.property_owner ? 'border-danger' : ''}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PROPERTY_OWNER_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FieldError errors={[{ message: errors.property_owner }]} />
+      </Field>
+
+      {form.property_owner === 'OWNER' && (
+        <Field data-invalid={!!errors.ownerships}>
+          <div className='mb-1.5 flex items-center justify-between'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={addOwner}
+            >
+              <Plus className='h-3.5 w-3.5' />
+              Add Owner
+            </Button>
+          </div>
+
+          {form.shareholder.length > 0 && (
+            <div className='space-y-2'>
+              {form.shareholder.map((owner, i) => (
+                <div key={i} className='flex items-center gap-2'>
+                  <Input
+                    type='text'
+                    placeholder='Owner name'
+                    value={owner.owner_name}
+                    onChange={(e) => updateOwner(i, e.target.value)}
+                    className='flex-1'
+                  />
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => removeOwner(i)}
+                    className='text-muted-foreground hover:text-danger shrink-0'
+                    aria-label='Remove owner'
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <FieldError errors={[{ message: errors.ownerships }]} />
+        </Field>
+      )}
+
+      {form.property_owner === 'COMPANY' && (
+        <Field data-invalid={!!errors.shareholder}>
+          <div className='mb-1.5 flex items-center justify-between'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={addShareholder}
+            >
+              <Plus className='h-3.5 w-3.5' />
+              Add Shareholders
+            </Button>
+          </div>
+
+          {form.shareholder.length > 0 && (
+            <div className='space-y-2'>
+              {/* Column headers — rendered once */}
+              <div className='flex items-center gap-2'>
+                <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                  <FieldLabel className='text-sm font-semibold'>
+                    Name
+                  </FieldLabel>
+                  <FieldLabel className='text-sm font-semibold'>
+                    % Share
+                  </FieldLabel>
+                </div>
+                {/* spacer to match trash button width so headers align with inputs above */}
+                <div className='w-9 shrink-0' />
+              </div>
+
+              {form.shareholder.map((sh, i) => (
+                <div key={i} className='flex items-center gap-2'>
+                  <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                    <Input
+                      type='text'
+                      placeholder='Shareholder name'
+                      value={sh.shareholder_name}
+                      onChange={(e) =>
+                        updateShareholder(i, 'shareholder_name', e.target.value)
+                      }
+                    />
+                    <Input
+                      type='number'
+                      placeholder='% share'
+                      value={sh.share_percentage}
+                      onChange={(e) =>
+                        updateShareholder(i, 'share_percentage', e.target.value)
+                      }
+                    />
+                  </div>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => removeShareholder(i)}
+                    className='text-muted-foreground hover:text-danger shrink-0'
+                    aria-label='Remove shareholder'
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          <FieldError errors={[{ message: errors.shareholder }]} />
+        </Field>
+      )}
+
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.property_type}>
           <FieldLabel className='text-sm font-semibold'>
@@ -420,7 +657,9 @@ const DetailsTab: React.FC<{
             value={form.property_type}
             onValueChange={(v) => set('property_type', v)}
           >
-            <SelectTrigger className={errors.property_type ? 'border-danger' : ''}>
+            <SelectTrigger
+              className={errors.property_type ? 'border-danger' : ''}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -461,74 +700,74 @@ const DetailsTab: React.FC<{
             type='number'
             placeholder={getCurrencySign()}
             maxLength={10}
-            value={form.purchasePrice}
-            onChange={(e) => set('purchasePrice', e.target.value)}
-            aria-invalid={!!errors.purchasePrice}
+            value={form.purchase_price}
+            onChange={(e) => set('purchase_price', e.target.value)}
+            aria-invalid={!!errors.purchase_price}
             className={
-              errors.purchasePrice
+              errors.purchase_price
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.purchasePrice }]} />
+          <FieldError errors={[{ message: errors.purchase_price }]} />
         </Field>
 
-        <Field data-invalid={!!errors.currentValue}>
+        <Field data-invalid={!!errors.current_value}>
           <FieldLabel className='text-sm font-semibold'>
             Current Value
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.currentValue}
-            onChange={(e) => set('currentValue', e.target.value)}
-            aria-invalid={!!errors.currentValue}
+            value={form.current_value}
+            onChange={(e) => set('current_value', e.target.value)}
+            aria-invalid={!!errors.current_value}
             className={
-              errors.currentValue
+              errors.current_value
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.currentValue }]} />
+          <FieldError errors={[{ message: errors.current_value }]} />
         </Field>
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.rentPerMonth}>
+        <Field data-invalid={!!errors.monthly_rental_income}>
           <FieldLabel className='text-sm font-semibold'>
-            Rent Per Month
+            Monthly Rental Income
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.rentPerMonth}
-            onChange={(e) => set('rentPerMonth', e.target.value)}
-            aria-invalid={!!errors.rentPerMonth}
+            value={form.monthly_rental_income}
+            onChange={(e) => set('monthly_rental_income', e.target.value)}
+            aria-invalid={!!errors.monthly_rental_income}
             className={
-              errors.rentPerMonth
+              errors.monthly_rental_income
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.rentPerMonth }]} />
+          <FieldError errors={[{ message: errors.rent_per_month }]} />
         </Field>
 
-        <Field data-invalid={!!errors.purchaseDate}>
+        <Field data-invalid={!!errors.purchase_date}>
           <FieldLabel className='text-sm font-semibold'>
             Purchase Date
           </FieldLabel>
           <Input
             type='date'
-            value={form.purchaseDate}
-            onChange={(e) => set('purchaseDate', e.target.value)}
-            aria-invalid={!!errors.purchaseDate}
+            value={form.purchase_date}
+            onChange={(e) => set('purchase_date', e.target.value)}
+            aria-invalid={!!errors.purchase_date}
             className={
-              errors.purchaseDate
+              errors.purchase_date
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.purchaseDate }]} />
+          <FieldError errors={[{ message: errors.purchase_date }]} />
         </Field>
       </div>
 
@@ -540,6 +779,7 @@ const DetailsTab: React.FC<{
             value={form.bedrooms}
             onChange={(e) => set('bedrooms', e.target.value)}
             aria-invalid={!!errors.bedrooms}
+            placeholder='e.g. 3'
             className={
               errors.bedrooms
                 ? 'border-danger focus-visible:ring-danger/50'
@@ -556,6 +796,7 @@ const DetailsTab: React.FC<{
             value={form.bathrooms}
             onChange={(e) => set('bathrooms', e.target.value)}
             aria-invalid={!!errors.bathrooms}
+            placeholder='e.g. 2'
             className={
               errors.bathrooms
                 ? 'border-danger focus-visible:ring-danger/50'
@@ -563,6 +804,148 @@ const DetailsTab: React.FC<{
             }
           />
           <FieldError errors={[{ message: errors.bathrooms }]} />
+        </Field>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.year_built}>
+          <FieldLabel className='text-sm font-semibold'>Year Built</FieldLabel>
+          <Input
+            type='number'
+            value={form.year_built}
+            onChange={(e) => set('year_built', e.target.value)}
+            aria-invalid={!!errors.year_built}
+            placeholder='e.g. 1995'
+            className={
+              errors.year_built
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.year_built }]} />
+        </Field>
+
+        <Field data-invalid={!!errors.property_tenure}>
+          <FieldLabel className='text-sm font-semibold'>
+            Property Tenure
+          </FieldLabel>
+          <Select
+            value={form.property_tenure}
+            onValueChange={(v) => set('property_tenure', v)}
+          >
+            <SelectTrigger
+              className={errors.property_tenure ? 'border-danger' : ''}
+            >
+              <SelectValue placeholder='Select tenure' />
+            </SelectTrigger>
+            <SelectContent>
+              {PROPERTY_TENURE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldError errors={[{ message: errors.property_tenure }]} />
+        </Field>
+      </div>
+
+      {form.property_tenure === 'LEASEHOLD' && (
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.remaining_lease_term}>
+            <FieldLabel className='text-sm font-semibold'>
+              Remaining Lease Term (yrs)
+            </FieldLabel>
+            <Input
+              type='number'
+              value={form.remaining_lease_term}
+              onChange={(e) => set('remaining_lease_term', e.target.value)}
+              aria-invalid={!!errors.remaining_lease_term}
+              placeholder='e.g. 25'
+              className={
+                errors.remaining_lease_term
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.remaining_lease_term }]} />
+          </Field>
+
+          <Field data-invalid={!!errors.monthly_service_charge}>
+            <FieldLabel className='text-sm font-semibold'>
+              Monthly Service Charge
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={form.monthly_service_charge}
+              onChange={(e) => set('monthly_service_charge', e.target.value)}
+              aria-invalid={!!errors.monthly_service_charge}
+              className={
+                errors.monthly_service_charge
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.monthly_service_charge }]} />
+          </Field>
+          <Field data-invalid={!!errors.annual_ground_rent}>
+            <FieldLabel className='text-sm font-semibold'>
+              Annual Ground Rent
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={form.annual_ground_rent}
+              onChange={(e) => set('annual_ground_rent', e.target.value)}
+              aria-invalid={!!errors.annual_ground_rent}
+              className={
+                errors.annual_ground_rent
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.annual_ground_rent }]} />
+          </Field>
+        </div>
+      )}
+
+      <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.council_tax_band}>
+          <FieldLabel className='text-sm font-semibold'>
+            Council Tax Band
+          </FieldLabel>
+          <Input
+            type='text'
+            placeholder='e.g. A, B, C...'
+            value={form.council_tax_band}
+            onChange={(e) => set('council_tax_band', e.target.value)}
+            aria-invalid={!!errors.council_tax_band}
+            className={
+              errors.council_tax_band
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.council_tax_band }]} />
+        </Field>
+        <Field data-invalid={!!errors.local_authority}>
+          <FieldLabel className='text-sm font-semibold'>
+            Local Authority
+          </FieldLabel>
+          <Input
+            type='text'
+            value={form.local_authority}
+            onChange={(e) => set('local_authority', e.target.value)}
+            aria-invalid={!!errors.local_authority}
+            placeholder='e.g. London Borough of Camden'
+            className={
+              errors.local_authority
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.local_authority }]} />
         </Field>
       </div>
 

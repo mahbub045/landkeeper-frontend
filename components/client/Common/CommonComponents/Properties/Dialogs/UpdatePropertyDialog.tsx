@@ -66,13 +66,16 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
   const buildInitialDetails = (): DetailsForm => ({
     property_name: property?.property_name ?? '',
-    property_type: property?.property_type ?? 'RESIDENTIAL',
-    status: property?.status ?? 'VACANT',
     address: property?.address ?? '',
-    purchasePrice: cleanDecimal(property?.purchase_price),
-    currentValue: cleanDecimal(property?.current_value),
-    rentPerMonth: cleanDecimal(property?.rent_per_month),
-    purchaseDate: property?.purchase_date ?? '',
+    ownerships: property?.ownerships ?? [],
+    shareholders: property?.shareholders ?? [], 
+    property_type: property?.property_type ?? 'RESIDENTIAL',
+    property_owner: property?.property_owner ?? '',
+    status: property?.status ?? 'VACANT',
+    purchase_price: cleanDecimal(property?.purchase_price),
+    current_value: cleanDecimal(property?.current_value),
+    monthly_rental_income: cleanDecimal(property?.monthly_rental_income),
+    purchase_date: property?.purchase_date ?? '',
     bedrooms: property?.bedrooms != null ? String(property.bedrooms) : '',
     bathrooms: property?.bathrooms != null ? String(property.bathrooms) : '',
     notes: property?.notes ?? '',
@@ -198,13 +201,21 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     try {
       const formData = new FormData();
       formData.append('property_name', details.property_name);
-      formData.append('property_type', details.property_type);
-      formData.append('status', details.status);
       formData.append('address', details.address);
-      formData.append('purchase_price', details.purchasePrice);
-      formData.append('current_value', details.currentValue);
-      formData.append('rent_per_month', details.rentPerMonth);
-      formData.append('purchase_date', details.purchaseDate);
+      formData.append('property_type', details.property_type);
+      formData.append('property_owner', details.property_owner);
+      formData.append('status', details.status);
+      formData.append('purchase_price', details.purchase_price);
+      formData.append('current_value', details.current_value);
+      formData.append('year_built', details.year_built);
+      formData.append('property_tenure', details.property_tenure);
+      formData.append('remaining_lease_term', details.remaining_lease_term);
+      formData.append('monthly_service_charge', details.monthly_service_charge);
+      formData.append('annual_ground_rent', details.annual_ground_rent);
+      formData.append('council_tax_band', details.council_tax_band);
+      formData.append('local_authority', details.local_authority);
+      formData.append('monthly_rental_income', details.monthly_rental_income);
+      formData.append('purchase_date', details.purchase_date);
       formData.append('bedrooms', details.bedrooms);
       formData.append('bathrooms', details.bathrooms);
       formData.append('notes', details.notes);
@@ -566,81 +577,81 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.purchasePrice}>
+        <Field data-invalid={!!errors.purchase_price}>
           <FieldLabel className='text-sm font-semibold'>
             Purchase Price
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.purchasePrice}
-            onChange={(e) => set('purchasePrice', e.target.value)}
-            aria-invalid={!!errors.purchasePrice}
+            value={form.purchase_price}
+            onChange={(e) => set('purchase_price', e.target.value)}
+            aria-invalid={!!errors.purchase_price}
             className={
-              errors.purchasePrice
+              errors.purchase_price
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.purchasePrice }]} />
+          <FieldError errors={[{ message: errors.purchase_price }]} />
         </Field>
 
-        <Field data-invalid={!!errors.currentValue}>
+        <Field data-invalid={!!errors.current_value}>
           <FieldLabel className='text-sm font-semibold'>
             Current Value
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.currentValue}
-            onChange={(e) => set('currentValue', e.target.value)}
-            aria-invalid={!!errors.currentValue}
+            value={form.current_value}
+            onChange={(e) => set('current_value', e.target.value)}
+            aria-invalid={!!errors.current_value}
             className={
-              errors.currentValue
+              errors.current_value
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.currentValue }]} />
+          <FieldError errors={[{ message: errors.current_value }]} />
         </Field>
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.rentPerMonth}>
+        <Field data-invalid={!!errors.rent_per_month}>
           <FieldLabel className='text-sm font-semibold'>
             Rent Per Month
           </FieldLabel>
           <Input
             type='number'
             placeholder={getCurrencySign()}
-            value={form.rentPerMonth}
-            onChange={(e) => set('rentPerMonth', e.target.value)}
-            aria-invalid={!!errors.rentPerMonth}
+            value={form.rent_per_month}
+            onChange={(e) => set('rent_per_month', e.target.value)}
+            aria-invalid={!!errors.rent_per_month}
             className={
-              errors.rentPerMonth
+              errors.rent_per_month
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.rentPerMonth }]} />
+          <FieldError errors={[{ message: errors.rent_per_month }]} />
         </Field>
 
-        <Field data-invalid={!!errors.purchaseDate}>
+        <Field data-invalid={!!errors.purchase_date}>
           <FieldLabel className='text-sm font-semibold'>
             Purchase Date
           </FieldLabel>
           <Input
             type='date'
-            value={form.purchaseDate}
-            onChange={(e) => set('purchaseDate', e.target.value)}
-            aria-invalid={!!errors.purchaseDate}
+            value={form.purchase_date}
+            onChange={(e) => set('purchase_date', e.target.value)}
+            aria-invalid={!!errors.purchase_date}
             className={
-              errors.purchaseDate
+              errors.purchase_date
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.purchaseDate }]} />
+          <FieldError errors={[{ message: errors.purchase_date }]} />
         </Field>
       </div>
 

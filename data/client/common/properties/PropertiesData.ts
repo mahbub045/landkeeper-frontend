@@ -61,17 +61,36 @@ export const PROPERTY_TYPE_OPTIONS = [
   { value: 'HOLIDAY_LET', label: 'Holiday Let' },
 ];
 
+export const PROPERTY_OWNER_OPTIONS = [
+  { value: 'OWNER', label: 'Owner' },
+  { value: 'COMPANY', label: 'Company' },
+];
+
+export const PROPERTY_TENURE_OPTIONS = [
+  { value: 'FREEHOLD', label: 'Freehold' },
+  { value: 'LEASEHOLD', label: 'Leasehold' },
+];
+
 export const EMPTY_DETAILS_FORM: DetailsForm = {
   property_name: '',
-  property_type: 'RESIDENTIAL',
-  status: 'OCCUPIED',
   address: '',
-  purchasePrice: '',
-  currentValue: '',
-  rentPerMonth: '',
-  purchaseDate: '',
+  property_type: 'RESIDENTIAL',
+  property_owner: 'OWNER',
+  shareholder: [],
+  status: 'OCCUPIED',
+  purchase_price: '',
+  current_value: '',
+  purchase_date: '',
+  year_built: '',
+  property_tenure: '',
+  remaining_lease_term: '',
+  monthly_service_charge: '',
+  annual_ground_rent: '',
+  council_tax_band: '',
+  local_authority: '',
   bedrooms: '',
   bathrooms: '',
+  monthly_rental_income: '',
   notes: '',
 };
 
