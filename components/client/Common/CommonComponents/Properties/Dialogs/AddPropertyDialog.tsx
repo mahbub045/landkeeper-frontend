@@ -120,8 +120,8 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
     try {
       const formData = new FormData();
-      formData.append('property_name', details.name);
-      formData.append('property_type', details.type);
+      formData.append('property_name', details.property_name);
+      formData.append('property_type', details.property_type);
       formData.append('status', details.status);
       formData.append('address', details.address);
       formData.append('purchase_price', details.purchasePrice);
@@ -312,8 +312,8 @@ const DetailsTab: React.FC<{
   useEffect(() => {
     if (isNameCustom) return;
     const derived = form.address;
-    if (derived !== form.name) {
-      onChange({ ...form, name: derived });
+    if (derived !== form.property_name) {
+      onChange({ ...form, property_name: derived });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.address, isNameCustom]);
@@ -322,7 +322,7 @@ const DetailsTab: React.FC<{
     if (isNameCustom) {
       // Switching back to auto: re-derive immediately from current address.
       onToggleNameCustom(false);
-      onChange({ ...form, name: form.address });
+      onChange({ ...form, property_name: form.address });
     } else {
       onToggleNameCustom(true);
     }
@@ -362,14 +362,14 @@ const DetailsTab: React.FC<{
               <Input
                 type='text'
                 placeholder='e.g. 14 Oak Street'
-                value={form.name}
-                onChange={(e) => set('name', e.target.value)}
+                value={form.property_name}
+                onChange={(e) => set('property_name', e.target.value)}
                 readOnly={!isNameCustom}
-                aria-invalid={!!errors.name}
+                aria-invalid={!!errors.property_name}
                 required
                 className={[
                   'bg-background transition-shadow',
-                  errors.name
+                  errors.property_name
                     ? 'border-danger focus-visible:ring-danger/50'
                     : '',
                   !isNameCustom
@@ -389,7 +389,7 @@ const DetailsTab: React.FC<{
                 to set a custom name.
               </p>
             )}
-            <FieldError errors={[{ message: errors.name }]} />
+            <FieldError errors={[{ message: errors.property_name }]} />
           </Field>
         </div>
       </div>
@@ -412,12 +412,15 @@ const DetailsTab: React.FC<{
       </Field>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.type}>
+        <Field data-invalid={!!errors.property_type}>
           <FieldLabel className='text-sm font-semibold'>
             Property Type
           </FieldLabel>
-          <Select value={form.type} onValueChange={(v) => set('type', v)}>
-            <SelectTrigger className={errors.type ? 'border-danger' : ''}>
+          <Select
+            value={form.property_type}
+            onValueChange={(v) => set('property_type', v)}
+          >
+            <SelectTrigger className={errors.property_type ? 'border-danger' : ''}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -428,7 +431,7 @@ const DetailsTab: React.FC<{
               ))}
             </SelectContent>
           </Select>
-          <FieldError errors={[{ message: errors.type }]} />
+          <FieldError errors={[{ message: errors.property_type }]} />
         </Field>
 
         <Field data-invalid={!!errors.status}>

@@ -38,10 +38,11 @@ export interface Property {
 }
 
 export interface DetailsForm {
-  name: string;
-  type: string;
-  status: string;
+  property_name: string;
   address: string;
+  
+  property_type: string;
+  status: string;
   purchasePrice: string;
   currentValue: string;
   rentPerMonth: string;

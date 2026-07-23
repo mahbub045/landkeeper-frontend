@@ -62,8 +62,8 @@ export const PROPERTY_TYPE_OPTIONS = [
 ];
 
 export const EMPTY_DETAILS_FORM: DetailsForm = {
-  name: '',
-  type: 'RESIDENTIAL',
+  property_name: '',
+  property_type: 'RESIDENTIAL',
   status: 'OCCUPIED',
   address: '',
   purchasePrice: '',
