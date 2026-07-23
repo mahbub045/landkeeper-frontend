@@ -59,7 +59,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
   property,
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
-  const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -154,7 +153,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
-  const [updateProperty] = useUpdatePropertyMutation();
+  const [updateProperty, { isLoading }] = useUpdatePropertyMutation();
 
   // ── Shared error handler (mirrors AddPropertyDialog) ───────────────────────
 
@@ -195,7 +194,6 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
     setBannerError(null);
     setFieldErrors({});
-    setLoading(true);
 
     try {
       const formData = new FormData();
@@ -246,9 +244,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       } else {
         toast.error('Something went wrong. Please try again.');
       }
-    } finally {
-      setLoading(false);
-    }
+    } 
   }
 
   // ── File helpers ────────────────────────────────────────────────────────────
@@ -371,7 +367,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
               type='button'
               variant='outline'
               onClick={onClose}
-              disabled={loading}
+              disabled={isLoading}
             >
               Cancel
             </Button>
@@ -384,7 +380,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
                     setActiveTab('Property Picture');
                   }
                 }}
-                disabled={loading}
+                disabled={isLoading}
               >
                 Next
               </Button>
@@ -392,9 +388,9 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
               <Button
                 key='submit-btn'
                 type='submit'
-                disabled={loading || docsLoading}
+                disabled={isLoading || docsLoading}
               >
-                {loading && <Loading className='text-white!' />}
+                {isLoading && <Loading className='text-white!' />}
                 Update
               </Button>
             )}

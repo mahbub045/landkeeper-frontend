@@ -51,7 +51,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
   onSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
-  const [loading, setLoading] = useState(false);
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -66,7 +65,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
 
   // ── RTK Query ───────────────────────────────────────────────────────────────
 
-  const [addProperty] = useAddPropertiesMutation();
+  const [addProperty, { isLoading }] = useAddPropertiesMutation();
 
   // ── Reset ───────────────────────────────────────────────────────────────────
 
@@ -74,7 +73,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     setActiveTab('Details');
     setBannerError(null);
     setFieldErrors({});
-    setLoading(false);
     setFiles([]);
     propertyIdRef.current = null;
     setDetails(EMPTY_DETAILS_FORM);
@@ -120,8 +118,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     setBannerError(null);
     setFieldErrors({});
 
-    setLoading(true);
-
     try {
       const formData = new FormData();
       formData.append('property_name', details.name);
@@ -148,8 +144,6 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       } else {
         toast.error('Something went wrong. Please try again.');
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -266,7 +260,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
               type='button'
               variant='outline'
               onClick={handleClose}
-              disabled={loading}
+              disabled={isLoading}
             >
               Cancel
             </Button>
@@ -279,13 +273,13 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
                     setActiveTab('Property Picture');
                   }
                 }}
-                disabled={loading}
+                disabled={isLoading}
               >
                 Next
               </Button>
             ) : (
-              <Button key='submit-btn' type='submit' disabled={loading}>
-                {loading && <Loading className='text-white!' />}
+              <Button key='submit-btn' type='submit' disabled={isLoading}>
+                {isLoading && <Loading className='text-white!' />}
                 Add Property
               </Button>
             )}
