@@ -54,6 +54,10 @@ export const STATUS_STYLES: Record<string, string> = {
 };
 
 export const PROPERTY_TYPE_OPTIONS = [
+  { value: 'HOUSE', label: 'House' },
+  { value: 'FLAT', label: 'Flat' },
+  { value: 'MAISONETTE', label: 'Maisonette' },
+  { value: 'BUNGALOW', label: 'Bungalow' },
   { value: 'RESIDENTIAL', label: 'Residential' },
   { value: 'HMO', label: 'HMO' },
   { value: 'COMMERCIAL', label: 'Commercial' },
