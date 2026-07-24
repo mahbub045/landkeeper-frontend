@@ -576,8 +576,8 @@ const DetailsTab: React.FC<{
                     type='text'
                     placeholder='Owner name'
                     value={owner.owner_name}
+                    className='border-primary! focus-visible:ring-primary/50 flex-1'
                     onChange={(e) => updateOwner(i, e.target.value)}
-                    className='flex-1'
                   />
                   <Button
                     type='button'
@@ -609,11 +609,7 @@ const DetailsTab: React.FC<{
             onChange={(e) => set('company_name', e.target.value)}
             aria-invalid={!!errors.company_name}
             required
-            className={
-              errors.company_name
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
+            className={`border-primary! focus-visible:ring-primary/50 ${errors.company_name ? 'border-danger focus-visible:ring-danger/50' : ''}`}
           />
           <FieldError errors={[{ message: errors.company_name }]} />
         </Field>
@@ -642,6 +638,7 @@ const DetailsTab: React.FC<{
                       type='text'
                       placeholder='Shareholder name'
                       value={sh.shareholder_name}
+                      className='border-primary! focus-visible:ring-primary/50'
                       onChange={(e) =>
                         updateShareholder(i, 'shareholder_name', e.target.value)
                       }
@@ -650,6 +647,7 @@ const DetailsTab: React.FC<{
                       type='number'
                       placeholder='% share'
                       value={sh.share_percentage}
+                      className='border-primary! focus-visible:ring-primary/50'
                       onChange={(e) =>
                         updateShareholder(i, 'share_percentage', e.target.value)
                       }

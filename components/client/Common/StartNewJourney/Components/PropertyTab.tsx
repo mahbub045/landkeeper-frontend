@@ -280,7 +280,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                         placeholder='Owner name'
                         value={owner.owner_name}
                         onChange={(e) => updateOwner(i, e.target.value)}
-                        className='flex-1'
+                        className='border-primary! focus-visible:ring-primary/50 flex-1'
                       />
                       <Button
                         type='button'
@@ -312,11 +312,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 onChange={(e) => set('company_name', e.target.value)}
                 aria-invalid={!!errors.company_name}
                 required
-                className={
-                  errors.company_name
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
+                className={`border-primary! focus-visible:ring-primary/50 ${errors.company_name ? 'border-danger focus-visible:ring-danger/50' : ''}`}
               />
               <FieldError errors={[{ message: errors.company_name }]} />
             </Field>
@@ -353,6 +349,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                               e.target.value,
                             )
                           }
+                          className='border-primary! focus-visible:ring-primary/50'
                         />
                         <Input
                           type='number'
@@ -365,6 +362,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                               e.target.value,
                             )
                           }
+                          className='border-primary! focus-visible:ring-primary/50'
                         />
                       </div>
                       <Button
