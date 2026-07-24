@@ -214,44 +214,64 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             <FieldError errors={[{ message: errors.address }]} />
           </Field>
 
-          <Field data-invalid={!!errors.property_property_owner}>
-            <FieldLabel className='text-sm font-semibold'>
-              Property Owner
-            </FieldLabel>
-            <Select
-              value={value.property_owner}
-              onValueChange={(v) => set('property_owner', v)}
+          <div className='flex items-end gap-4'>
+            <Field
+              className='flex-1'
+              data-invalid={!!errors.property_property_owner}
             >
-              <SelectTrigger
-                className={errors.property_property_owner ? 'border-danger' : ''}
+              <FieldLabel className='text-sm font-semibold'>
+                Property Owner
+              </FieldLabel>
+              <Select
+                value={value.property_owner}
+                onValueChange={(v) => set('property_owner', v)}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PROPERTY_OWNER_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FieldError errors={[{ message: errors.property_property_owner }]} />
-          </Field>
+                <SelectTrigger
+                  className={
+                    errors.property_property_owner ? 'border-danger' : ''
+                  }
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROPERTY_OWNER_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
 
+            {value.property_owner === 'OWNER' && (
+              <Button
+                type='button'
+                variant='default'
+                className='h-10'
+                onClick={addOwner}
+              >
+                <Plus className='h-3.5 w-3.5' />
+                Add Owner
+              </Button>
+            )}
+
+            {value.property_owner === 'COMPANY' && (
+              <Button
+                type='button'
+                variant='default'
+                className='h-10'
+                onClick={addShareholder}
+              >
+                <Plus className='h-3.5 w-3.5' />
+                Add Shareholders
+              </Button>
+            )}
+          </div>
+          <FieldError errors={[{ message: errors.property_property_owner }]} />
+
+          {/* Owner inputs — full width, below the row */}
           {value.property_owner === 'OWNER' && (
             <Field data-invalid={!!errors.ownerships}>
-              <div className='mb-1.5 flex items-center justify-between'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={addOwner}
-                >
-                  <Plus className='h-3.5 w-3.5' />
-                  Add Owner
-                </Button>
-              </div>
-
               {value.shareholder.length > 0 && (
                 <div className='space-y-2'>
                   {value.shareholder.map((owner, i) => (
@@ -282,22 +302,32 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           )}
 
           {value.property_owner === 'COMPANY' && (
-            <Field data-invalid={!!errors.shareholder}>
-              <div className='mb-1.5 flex items-center justify-between'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={addShareholder}
-                >
-                  <Plus className='h-3.5 w-3.5' />
-                  Add Shareholders
-                </Button>
-              </div>
+            <Field data-invalid={!!errors.company_name}>
+              <FieldLabel className='text-sm font-semibold'>
+                Company Name<span className='text-danger'>*</span>
+              </FieldLabel>
+              <Input
+                type='text'
+                placeholder='Company name'
+                value={value.company_name}
+                onChange={(e) => set('company_name', e.target.value)}
+                aria-invalid={!!errors.company_name}
+                required
+                className={
+                  errors.company_name
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: errors.company_name }]} />
+            </Field>
+          )}
 
+          {/* Shareholder inputs — full width, below the row */}
+          {value.property_owner === 'COMPANY' && (
+            <Field data-invalid={!!errors.shareholder}>
               {value.shareholder.length > 0 && (
                 <div className='space-y-2'>
-                  {/* Column headers — rendered once */}
                   <div className='flex items-center gap-2'>
                     <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
                       <FieldLabel className='text-sm font-semibold'>
@@ -307,7 +337,6 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                         % Share
                       </FieldLabel>
                     </div>
-                    {/* spacer to match trash button width so headers align with inputs above */}
                     <div className='w-9 shrink-0' />
                   </div>
 
