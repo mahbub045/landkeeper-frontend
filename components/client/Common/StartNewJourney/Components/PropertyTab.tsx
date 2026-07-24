@@ -144,9 +144,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               <Field data-invalid={!!errors.name}>
                 <div className='mb-1.5 flex items-center justify-between'>
                   <FieldLabel className='gap-1.5 text-sm font-semibold'>
-                    <div className='gap-0'>
-                      Property Name<span className='text-danger'>*</span>
-                    </div>
+                    <div className='gap-0'>Property Name</div>
                     {!isNameCustom && (
                       <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                         <Sparkles className='h-2.5 w-2.5' />
@@ -195,7 +193,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           </div>
 
           <Field data-invalid={!!errors.address}>
-            <FieldLabel className='gap-0 text-sm font-semibold'>
+            <FieldLabel className='text-sm font-semibold'>
               Property Address<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
