@@ -61,7 +61,6 @@ export const PROPERTY_TYPE_OPTIONS = [
   { value: 'RESIDENTIAL', label: 'Residential' },
   { value: 'HMO', label: 'HMO' },
   { value: 'COMMERCIAL', label: 'Commercial' },
-  { value: 'MIXED_USE', label: 'Mixed Use' },
   { value: 'HOLIDAY_LET', label: 'Holiday Let' },
 ];
 
