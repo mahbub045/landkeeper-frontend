@@ -79,6 +79,7 @@ export const EMPTY_DETAILS_FORM: DetailsForm = {
   address: '',
   property_type: 'RESIDENTIAL',
   property_owner: 'OWNER',
+  company_name: '',
   shareholder: [],
   status: 'OCCUPIED',
   purchase_price: '',

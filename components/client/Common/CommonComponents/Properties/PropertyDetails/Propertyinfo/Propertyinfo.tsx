@@ -77,6 +77,10 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
           />
         )}
 
+        {property.property_owner === 'COMPANY' && property.company_name && (
+          <InfoRow label='Company Name' value={property.company_name} />
+        )}
+
         {property.shareholder?.length > 0 && (
           <InfoRow
             label={
@@ -99,7 +103,6 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
             }
           />
         )}
-
         {property.bedrooms != null && (
           <InfoRow
             label='Bedrooms'

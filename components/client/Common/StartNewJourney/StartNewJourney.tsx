@@ -227,6 +227,7 @@ const StartNewJourney: React.FC = () => {
     fd.append('property_status', p.status ?? '');
     fd.append('property_address', p.address ?? '');
     fd.append('property_property_owner', p.property_owner ?? '');
+    fd.append('property_company_name', p.company_name ?? '');
     (p.shareholder ?? []).forEach((item, i) => {
       if ('owner_name' in item && item.owner_name !== undefined) {
         fd.append(`property_shareholder[${i}].owner_name`, item.owner_name);

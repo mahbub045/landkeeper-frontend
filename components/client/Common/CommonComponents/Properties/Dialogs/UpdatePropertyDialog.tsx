@@ -75,6 +75,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     property_name: property?.property_name ?? '',
     address: property?.address ?? '',
     property_owner: property?.property_owner ?? '',
+    company_name: property?.company_name ?? '',
 
     // ── Shareholder / Owner rows ────────────────────────────────────────────
     // The API already returns a single unified `shareholder` list, but each
@@ -234,6 +235,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       formData.append('property_name', details.property_name);
       formData.append('address', details.address);
       formData.append('property_owner', details.property_owner);
+      formData.append('company_name', details.company_name);
 
       // ── Shareholder / Owner rows ────────────────────────────────────────────
       // The API expects indexed form fields (shareholder[i].field), not a
@@ -651,51 +653,67 @@ const DetailsTab: React.FC<{
       </Field>
 
       <Field data-invalid={!!errors.property_owner}>
-        <FieldLabel className='text-sm font-semibold'>
-          Property Owner
-        </FieldLabel>
-        <Select
-          value={form.property_owner}
-          onValueChange={(v) => {
-            // Switching flows leaves stale rows shaped for the other flow
-            // (e.g. shareholder_name/share_percentage items when moving to
-            // OWNER), which renders owner_name as undefined and trips
-            // React's uncontrolled→controlled input warning once typed
-            // into. Reset the rows whenever the owner type changes.
-            if (v === form.property_owner) return;
-            onChange({ ...form, property_owner: v, shareholder: [] });
-          }}
-        >
-          <SelectTrigger
-            className={errors.property_owner ? 'border-danger' : ''}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PROPERTY_OWNER_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <FieldError errors={[{ message: errors.property_owner }]} />
-      </Field>
+        <div className='flex items-end justify-between gap-4'>
+          <div className='flex-1'>
+            <FieldLabel className='text-sm font-semibold'>
+              Property Owner
+            </FieldLabel>
+            <Select
+              value={form.property_owner}
+              onValueChange={(v) => {
+                // Switching flows leaves stale rows shaped for the other flow
+                // (e.g. shareholder_name/share_percentage items when moving to
+                // OWNER), which renders owner_name as undefined and trips
+                // React's uncontrolled→controlled input warning once typed
+                // into. Reset the rows whenever the owner type changes.
+                if (v === form.property_owner) return;
+                onChange({ ...form, property_owner: v, shareholder: [] });
+              }}
+            >
+              <SelectTrigger
+                className={errors.property_owner ? 'border-danger' : ''}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROPERTY_OWNER_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      {form.property_owner === 'OWNER' && (
-        <Field data-invalid={!!errors.ownerships}>
-          <div className='mb-1.5 flex items-center justify-between'>
+          {form.property_owner === 'OWNER' && (
             <Button
               type='button'
-              variant='outline'
-              size='sm'
+              variant='default'
+              className='h-10'
               onClick={addOwner}
             >
               <Plus className='h-3.5 w-3.5' />
               Add Owner
             </Button>
-          </div>
+          )}
 
+          {form.property_owner === 'COMPANY' && (
+            <Button
+              type='button'
+              variant='default'
+              className='h-10'
+              onClick={addShareholder}
+            >
+              <Plus className='h-3.5 w-3.5' />
+              Add Shareholders
+            </Button>
+          )}
+        </div>
+        <FieldError errors={[{ message: errors.property_owner }]} />
+      </Field>
+
+      {form.property_owner === 'OWNER' && (
+        <Field data-invalid={!!errors.ownerships}>
           {form.shareholder.length > 0 && (
             <div className='space-y-2'>
               {form.shareholder.map((owner, i) => (
@@ -726,19 +744,29 @@ const DetailsTab: React.FC<{
       )}
 
       {form.property_owner === 'COMPANY' && (
-        <Field data-invalid={!!errors.shareholder}>
-          <div className='mb-1.5 flex items-center justify-between'>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              onClick={addShareholder}
-            >
-              <Plus className='h-3.5 w-3.5' />
-              Add Shareholders
-            </Button>
-          </div>
+        <Field data-invalid={!!errors.company_name}>
+          <FieldLabel className='text-sm font-semibold'>
+            Company Name<span className='text-danger'>*</span>
+          </FieldLabel>
+          <Input
+            type='text'
+            placeholder='Company name'
+            value={form.company_name}
+            onChange={(e) => set('company_name', e.target.value)}
+            aria-invalid={!!errors.company_name}
+            required
+            className={
+              errors.company_name
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.company_name }]} />
+        </Field>
+      )}
 
+      {form.property_owner === 'COMPANY' && (
+        <Field data-invalid={!!errors.shareholder}>
           {form.shareholder.length > 0 && (
             <div className='space-y-2'>
               {/* Column headers — rendered once */}
