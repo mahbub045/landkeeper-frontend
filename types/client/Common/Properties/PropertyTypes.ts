@@ -25,6 +25,7 @@ export interface Property {
   address: string;
 
   property_owner: string;
+  company_name: string;
   shareholder: [
     {
       owner_name?: string;
@@ -57,6 +58,7 @@ export interface DetailsForm {
   property_name: string;
   address: string;
   property_owner: string;
+  company_name: string;
   shareholder: {
     owner_name?: string;
     shareholder_name?: string;
