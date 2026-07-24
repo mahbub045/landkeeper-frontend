@@ -55,7 +55,6 @@ function toFormState(document: PropertyDocument): UpdateDocumentForm {
     propertyName: document.property.property_name,
     category: document.document_category as DocumentCategory,
     name: document.document_name,
-    tags: document.tags ?? '',
   };
 }
 
@@ -74,9 +73,15 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
     toFormState(document),
   );
 
-  const existingFile = document.files[0] ?? null;
-  const [removedExisting, setRemovedExisting] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  // all files already attached to this document (index-tracked, since
+  // PropertyDocument entries don't always carry a stable removable id)
+  const existingFiles = document.files ?? [];
+  const [removedExistingIndexes, setRemovedExistingIndexes] = useState<
+    Set<number>
+  >(new Set());
+
+  // newly-added files, multiple allowed
+  const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,23 +104,42 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
 
   // ── File helpers ──────────────────────────────────────────────────────
 
-  function addFile(incoming: FileList | null) {
+  function addFiles(incoming: FileList | null) {
     if (!incoming || incoming.length === 0) return;
-    setFile(incoming[0]);
+
+    const newFiles = Array.from(incoming);
+
+    setFiles((prev) => {
+      const existingKeys = new Set(prev.map((f) => `${f.name}-${f.size}`));
+      const deduped = newFiles.filter(
+        (f) => !existingKeys.has(`${f.name}-${f.size}`),
+      );
+      return [...prev, ...deduped];
+    });
+
     setFieldErrors((prev) => ({ ...prev, file: '' }));
+
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function removeFile() {
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    if (existingFile) setRemovedExisting(true);
+  function removeNewFile(index: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function removeExistingFile(index: number) {
+    setRemovedExistingIndexes((prev) => new Set(prev).add(index));
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    addFile(e.dataTransfer.files);
+    addFiles(e.dataTransfer.files);
   }, []);
+
+  const remainingExistingFiles = existingFiles.filter(
+    (_, index) => !removedExistingIndexes.has(index),
+  );
+  const totalFileCount = remainingExistingFiles.length + files.length;
 
   // ── Submit ──────────────────────────────────────────────────────────────
 
@@ -138,15 +162,33 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
       return;
     }
 
+    if (totalFileCount === 0) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        file: 'Please upload at least one document.',
+      }));
+      return;
+    }
+
     const payload = new FormData();
     payload.append('property', form.propertyId);
     payload.append('document_category', form.category);
     payload.append('document_name', form.name.trim());
-    payload.append('tags', form.tags.trim());
-    // Only send a file if the user actually picked a new one -- this is
-    // a PATCH, so omitting it leaves the existing file untouched.
-    if (file) {
+
+    // Only send new files if the user actually picked some -- this is a
+    // PATCH, so omitting it leaves the existing files untouched.
+    files.forEach((file) => {
       payload.append('uploaded_files', file);
+    });
+
+    // NOTE: confirm this field name against your backend serializer if it
+    // supports removing individual existing files (e.g. by id/alias).
+    // Falling back to index-based removal markers here since
+    // PropertyDocument.files may not expose a stable identifier.
+    if (removedExistingIndexes.size > 0) {
+      Array.from(removedExistingIndexes).forEach((index) => {
+        payload.append('removed_file_indexes', String(index));
+      });
     }
 
     try {
@@ -174,8 +216,6 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
       }
     }
   }
-
-  const showExistingFile = existingFile && !removedExisting && !file;
 
   return (
     <form onSubmit={handleSubmit} className='contents'>
@@ -297,26 +337,11 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
           <FieldError errors={[{ message: fieldErrors.documentName }]} />
         </Field>
 
-        <Field data-invalid={!!fieldErrors.tags}>
-          <FieldLabel className='text-sm font-semibold'>Tags</FieldLabel>
-          <Input
-            type='text'
-            placeholder='Comma separated tags...'
-            value={form.tags}
-            onChange={(e) => set('tags', e.target.value)}
-            aria-invalid={!!fieldErrors.tags}
-            className={
-              fieldErrors.tags
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
-          />
-          <FieldError errors={[{ message: fieldErrors.tags }]} />
-        </Field>
-
         {/* File Upload */}
         <div className='space-y-3'>
-          <FieldLabel className='text-sm font-semibold'>File</FieldLabel>
+          <FieldLabel className='gap-0 text-sm font-semibold'>
+            Documents<span className='text-danger'>*</span>
+          </FieldLabel>
 
           <div
             onDrop={handleDrop}
@@ -345,43 +370,54 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
               Drag &amp; Drop or Click to Upload
             </p>
             <p className='text-muted-foreground mt-1 text-xs'>
-              PDF, DOC, XLS, JPG, PNG up to 50MB
+              PDF, DOC, XLS, JPG, PNG up to 50MB each. You can select multiple
+              files.
             </p>
             <input
               ref={fileInputRef}
               type='file'
+              multiple
               accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
               className='hidden'
-              onChange={(e) => addFile(e.target.files)}
+              onChange={(e) => addFiles(e.target.files)}
             />
           </div>
           <FieldError errors={[{ message: fieldErrors.file }]} />
 
-          {showExistingFile ? (
+          {(remainingExistingFiles.length > 0 || files.length > 0) && (
             <ul className='space-y-2'>
-              <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
-                <Badge
-                  variant='secondary'
-                  className='max-w-[80%] truncate font-normal'
+              {existingFiles.map((existingFile, index) => {
+                if (removedExistingIndexes.has(index)) return null;
+                return (
+                  <li
+                    key={`existing-${index}`}
+                    className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
+                  >
+                    <Badge
+                      variant='secondary'
+                      className='max-w-[80%] truncate font-normal'
+                    >
+                      {getFileName(existingFile.file)}
+                    </Badge>
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon'
+                      onClick={() => removeExistingFile(index)}
+                      className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
+                      aria-label={`Remove ${getFileName(existingFile.file)}`}
+                    >
+                      <X className='h-4 w-4' />
+                    </Button>
+                  </li>
+                );
+              })}
+
+              {files.map((file, index) => (
+                <li
+                  key={`new-${file.name}-${file.size}-${index}`}
+                  className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'
                 >
-                  {getFileName(existingFile.file)}
-                </Badge>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  onClick={removeFile}
-                  className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                  aria-label='Remove file'
-                >
-                  <X className='h-4 w-4' />
-                </Button>
-              </li>
-            </ul>
-          ) : (
-            file && (
-              <ul className='space-y-2'>
-                <li className='bg-muted flex items-center justify-between rounded-md px-4 py-2.5'>
                   <Badge
                     variant='secondary'
                     className='max-w-[80%] truncate font-normal'
@@ -392,15 +428,15 @@ const UpdateDocumentFormInner: React.FC<UpdateDocumentFormProps> = ({
                     type='button'
                     variant='ghost'
                     size='icon'
-                    onClick={removeFile}
+                    onClick={() => removeNewFile(index)}
                     className='text-muted-foreground hover:text-danger ml-2 h-6 w-6 shrink-0'
-                    aria-label='Remove file'
+                    aria-label={`Remove ${file.name}`}
                   >
                     <X className='h-4 w-4' />
                   </Button>
                 </li>
-              </ul>
-            )
+              ))}
+            </ul>
           )}
         </div>
       </div>

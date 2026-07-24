@@ -1,3 +1,4 @@
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,15 +28,7 @@ import {
   formatDate,
   getInitials,
 } from '@/utils/formatters';
-import {
-  AlertCircle,
-  Mail,
-  Pencil,
-  Phone,
-  ShieldUser,
-  Trash2,
-  Users,
-} from 'lucide-react';
+import { Mail, Pencil, Phone, ShieldUser, Trash2, Users } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import DeleteAcceptedUserDialog from './Dialogs/DeleteAcceptedUserDialog';
@@ -136,24 +129,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
         </div>
       )}
 
-      {!isLoading && isError && (
-        <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
-          <div className='bg-danger/10 flex size-12 items-center justify-center rounded-full'>
-            <AlertCircle className='text-danger size-6' />
-          </div>
-          <div>
-            <p className='text-foreground text-sm font-semibold'>
-              Failed to load team members
-            </p>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              Something went wrong while fetching the team. Please try again.
-            </p>
-          </div>
-          <Button variant='outline' size='sm' onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
-      )}
+      {!isLoading && isError && <CustomErrorMessage title='team members' />}
 
       {!isLoading && !isError && members.length === 0 && (
         <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
@@ -184,7 +160,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
               >
                 <SelectTrigger
                   size='sm'
-                  className={`absolute -top-2 right-2 h-6! w-fit cursor-pointer gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+                  className={`absolute -top-2 right-2 h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${member?.user?.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
                 >
                   <span
                     className={`inline-block size-1.5 rounded-full ${member?.user?.is_active ? 'bg-success' : 'bg-danger'}`}
@@ -194,16 +170,13 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    value='active'
-                    className='focus:bg-success/10 cursor-pointer'
-                  >
+                  <SelectItem value='active' className='focus:bg-success/10'>
                     <span className='bg-success inline-block size-1.5 rounded-full' />
                     Active
                   </SelectItem>
                   <SelectItem
                     value='deactivated'
-                    className='focus:bg-danger/10 cursor-pointer'
+                    className='focus:bg-danger/10'
                   >
                     <span className='bg-danger inline-block size-1.5 rounded-full' />
                     Deactivated
@@ -256,6 +229,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   aria-label='Edit'
                   variant='outline'
                   size='icon'
+                  title='Edit User'
                   className='rounded-lg'
                   onClick={() => handleEditAcceptedUserDialogOpen(member)}
                 >
@@ -265,6 +239,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   aria-label='Remove'
                   variant='danger'
                   size='icon'
+                  title='Delete User'
                   className='rounded-lg'
                   onClick={() => handleDeleteAcceptedUserDialogOpen(member)}
                 >

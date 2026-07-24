@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
+import { getStartNewJourneyUrl } from '@/utils/redirectPath';
 import {
   ChevronRight,
   LogOut,
@@ -95,7 +96,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                   onClick={() => toggleOpen(item.label)}
                   isActive={isActive}
                   tooltip={item.label}
-                  className='h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                  className='data-active:text-primary data-active:hover:text-primary h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
                 >
                   <item.icon />
                   <span>{item.label}</span>
@@ -117,15 +118,17 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                               ? isNavActive(pathname, child.href)
                               : false
                           }
-                          className='h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                          className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                         >
                           <Link href={child.href || '#'}>
                             <child.icon
-                              className={cn(
-                                'h-4 w-4',
-                                isNavActive(pathname, child.href || ''),
-                              )}
+                              data-active={
+                                isNavActive(pathname, child.href || '') ||
+                                undefined
+                              }
+                              className='data-active:text-primary! h-4 w-4'
                             />
+
                             <span>{child.label}</span>
                           </Link>
                         </SidebarMenuSubButton>
@@ -141,7 +144,7 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                     asChild
                     isActive={isNavActive(pathname, item.href)}
                     tooltip={item.label}
-                    className='h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                    className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                   >
                     <Link href={item.href}>
                       <item.icon />
@@ -210,31 +213,38 @@ const AppSidebar: React.FC = () => {
             loading='eager'
           />
         </div>
-        <span
-          className={cn(
-            'bg-warning text-warning-foreground inline-flex w-fit items-center rounded-full px-3 py-0.5 text-xs font-semibold',
-            'group-data-[collapsible=icon]:hidden',
-          )}
+
+        <Badge
+          variant='secondary'
+          className='group-data-[collapsible=icon]:hidden'
         >
           Premium Plan
-        </span>
+        </Badge>
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />
 
-      <Link href='#' passHref className='flex justify-center'>
-        <Button
-          type='button'
-          size='lg'
-          variant='secondary'
-          className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+      {(session?.user?.role === 'LANDLORD' ||
+        session?.user?.role === 'LETTING_AGENT' ||
+        session?.user?.role === 'ADMIN') && (
+        <Link
+          href={getStartNewJourneyUrl(session)}
+          passHref
+          className='flex justify-center'
         >
-          <Plus className='size-4' />
-          <span className='group-data-[collapsible=icon]:hidden'>
-            Start New Journey
-          </span>
-        </Button>
-      </Link>
+          <Button
+            type='button'
+            size='lg'
+            variant='secondary'
+            className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+          >
+            <Plus className='size-4' />
+            <span className='group-data-[collapsible=icon]:hidden'>
+              Start New Journey
+            </span>
+          </Button>
+        </Link>
+      )}
 
       <SidebarContent className='gap-1 px-2 py-2'>
         <SidebarGroup className='p-0'>

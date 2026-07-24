@@ -20,7 +20,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { TicketTypeOptions } from '@/data/common/SupportTickets/SupportTicketsData';
+import {
+  PriorityOptions,
+  TicketTypeOptions,
+} from '@/data/common/SupportTickets/SupportTicketsData';
 
 import { cn } from '@/lib/utils';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
@@ -40,11 +43,12 @@ function mapToForm(
   ticket: UpdateSupportTicketDialogProps['ticket'],
 ): SupportTicketForm {
   if (!ticket) {
-    return { ticketType: '', subject: '', description: '' };
+    return { ticketType: '', priority: '', subject: '', description: '' };
   }
 
   return {
     ticketType: ticket.ticket_type,
+    priority: ticket.priority,
     subject: ticket.subject,
     description: ticket.description,
   };
@@ -196,6 +200,9 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
     if (form.ticketType !== initialFormRef.current.ticketType) {
       payload.append('ticket_type', form.ticketType);
     }
+    if (form.priority !== initialFormRef.current.priority) {
+      payload.append('priority', form.priority);
+    }
     if (form.subject.trim() !== initialFormRef.current.subject) {
       payload.append('subject', form.subject.trim());
     }
@@ -258,32 +265,61 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
 
         <form onSubmit={handleSubmit} className='contents'>
           <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-            {/* Ticket Type */}
-            <Field data-invalid={!!fieldErrors.ticketType}>
-              <FieldLabel className='gap-0 text-sm font-semibold'>
-                Ticket Type<span className='text-danger'>*</span>
-              </FieldLabel>
-              <Select
-                value={form.ticketType}
-                onValueChange={(v) =>
-                  set('ticketType', v as SupportTicketForm['ticketType'])
-                }
-              >
-                <SelectTrigger
-                  className={fieldErrors.ticketType ? 'border-danger' : ''}
+            <div className='grid grid-cols-2 gap-4'>
+              {/* Ticket Type */}
+              <Field data-invalid={!!fieldErrors.ticketType}>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Ticket Type<span className='text-danger'>*</span>
+                </FieldLabel>
+                <Select
+                  value={form.ticketType}
+                  onValueChange={(v) =>
+                    set('ticketType', v as SupportTicketForm['ticketType'])
+                  }
                 >
-                  <SelectValue placeholder='Select ticket type' />
-                </SelectTrigger>
-                <SelectContent>
-                  {TicketTypeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError errors={[{ message: fieldErrors.ticketType }]} />
-            </Field>
+                  <SelectTrigger
+                    className={fieldErrors.ticketType ? 'border-danger' : ''}
+                  >
+                    <SelectValue placeholder='Select ticket type' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TicketTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[{ message: fieldErrors.ticketType }]} />
+              </Field>
+
+              {/* Priority */}
+              <Field data-invalid={!!fieldErrors.priority}>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Priority<span className='text-danger'>*</span>
+                </FieldLabel>
+                <Select
+                  value={form.priority}
+                  onValueChange={(v) =>
+                    set('priority', v as SupportTicketForm['priority'])
+                  }
+                >
+                  <SelectTrigger
+                    className={fieldErrors.priority ? 'border-danger' : ''}
+                  >
+                    <SelectValue placeholder='Select priority' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PriorityOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[{ message: fieldErrors.priority }]} />
+              </Field>
+            </div>
 
             {/* Subject */}
             <Field data-invalid={!!fieldErrors.subject}>
@@ -313,7 +349,7 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
               </FieldLabel>
               <Textarea
                 placeholder='Describe the issue in detail...'
-                rows={4}
+                rows={8}
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}
                 aria-invalid={!!fieldErrors.description}
@@ -341,7 +377,7 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
                 onDragLeave={() => setDragging(false)}
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-2 transition-colors',
                   fieldErrors.uploadFiles
                     ? 'border-danger bg-red-50 dark:bg-red-950/20'
                     : dragging

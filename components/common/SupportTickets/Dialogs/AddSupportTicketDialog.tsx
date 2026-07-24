@@ -22,6 +22,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_FORM,
+  PriorityOptions,
   TicketTypeOptions,
 } from '@/data/common/SupportTickets/SupportTicketsData';
 
@@ -102,9 +103,17 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
       }));
       return;
     }
+    if (!form.priority) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        priority: 'Please select a priority.',
+      }));
+      return;
+    }
 
     const payload = new FormData();
     payload.append('ticket_type', form.ticketType);
+    payload.append('priority', form.priority);
     payload.append('subject', form.subject.trim());
     payload.append('description', form.description.trim());
     files.forEach((file) => payload.append('upload_files', file));
@@ -152,32 +161,61 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
         <form onSubmit={handleSubmit} className='contents'>
           {/* Scrollable body */}
           <div className='flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-            {/* Ticket Type */}
-            <Field data-invalid={!!fieldErrors.ticketType}>
-              <FieldLabel className='gap-0 text-sm font-semibold'>
-                Ticket Type<span className='text-danger'>*</span>
-              </FieldLabel>
-              <Select
-                value={form.ticketType}
-                onValueChange={(v) =>
-                  set('ticketType', v as SupportTicketForm['ticketType'])
-                }
-              >
-                <SelectTrigger
-                  className={fieldErrors.ticketType ? 'border-danger' : ''}
+            <div className='grid grid-cols-2 gap-4'>
+              {/* Ticket Type */}
+              <Field data-invalid={!!fieldErrors.ticketType}>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Ticket Type<span className='text-danger'>*</span>
+                </FieldLabel>
+                <Select
+                  value={form.ticketType}
+                  onValueChange={(v) =>
+                    set('ticketType', v as SupportTicketForm['ticketType'])
+                  }
                 >
-                  <SelectValue placeholder='Select ticket type' />
-                </SelectTrigger>
-                <SelectContent>
-                  {TicketTypeOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError errors={[{ message: fieldErrors.ticketType }]} />
-            </Field>
+                  <SelectTrigger
+                    className={fieldErrors.ticketType ? 'border-danger' : ''}
+                  >
+                    <SelectValue placeholder='Select ticket type' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TicketTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[{ message: fieldErrors.ticketType }]} />
+              </Field>
+
+              {/* Priority */}
+              <Field data-invalid={!!fieldErrors.priority}>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Priority<span className='text-danger'>*</span>
+                </FieldLabel>
+                <Select
+                  value={form.priority}
+                  onValueChange={(v) =>
+                    set('priority', v as SupportTicketForm['priority'])
+                  }
+                >
+                  <SelectTrigger
+                    className={fieldErrors.priority ? 'border-danger' : ''}
+                  >
+                    <SelectValue placeholder='Select priority' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PriorityOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldError errors={[{ message: fieldErrors.priority }]} />
+              </Field>
+            </div>
 
             {/* Subject */}
             <Field data-invalid={!!fieldErrors.subject}>
@@ -207,7 +245,7 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
               </FieldLabel>
               <Textarea
                 placeholder='Describe the issue in detail...'
-                rows={4}
+                rows={8}
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}
                 aria-invalid={!!fieldErrors.description}
@@ -235,7 +273,7 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
                 onDragLeave={() => setDragging(false)}
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors',
+                  'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-2 transition-colors',
                   fieldErrors.uploadFiles
                     ? 'border-danger bg-red-50 dark:bg-red-950/20'
                     : dragging

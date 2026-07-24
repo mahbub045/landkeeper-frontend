@@ -54,24 +54,46 @@ export const STATUS_STYLES: Record<string, string> = {
 };
 
 export const PROPERTY_TYPE_OPTIONS = [
+  { value: 'HOUSE', label: 'House' },
+  { value: 'FLAT', label: 'Flat' },
+  { value: 'MAISONETTE', label: 'Maisonette' },
+  { value: 'BUNGALOW', label: 'Bungalow' },
   { value: 'RESIDENTIAL', label: 'Residential' },
   { value: 'HMO', label: 'HMO' },
   { value: 'COMMERCIAL', label: 'Commercial' },
-  { value: 'MIXED_USE', label: 'Mixed Use' },
   { value: 'HOLIDAY_LET', label: 'Holiday Let' },
 ];
 
+export const PROPERTY_OWNER_OPTIONS = [
+  { value: 'OWNER', label: 'Owner' },
+  { value: 'COMPANY', label: 'Company' },
+];
+
+export const PROPERTY_TENURE_OPTIONS = [
+  { value: 'FREEHOLD', label: 'Freehold' },
+  { value: 'LEASEHOLD', label: 'Leasehold' },
+];
+
 export const EMPTY_DETAILS_FORM: DetailsForm = {
-  name: '',
-  type: 'RESIDENTIAL',
-  status: 'OCCUPIED',
+  property_name: '',
   address: '',
-  purchasePrice: '',
-  currentValue: '',
-  rentPerMonth: '',
-  purchaseDate: '',
+  property_type: 'RESIDENTIAL',
+  property_owner: 'OWNER',
+  shareholder: [],
+  status: 'OCCUPIED',
+  purchase_price: '',
+  current_value: '',
+  purchase_date: '',
+  year_built: '',
+  property_tenure: '',
+  remaining_lease_term: '',
+  monthly_service_charge: '',
+  annual_ground_rent: '',
+  council_tax_band: '',
+  local_authority: '',
   bedrooms: '',
   bathrooms: '',
+  monthly_rental_income: '',
   notes: '',
 };
 

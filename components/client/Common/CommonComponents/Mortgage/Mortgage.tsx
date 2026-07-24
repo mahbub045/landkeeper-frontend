@@ -1,5 +1,6 @@
 'use client';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,9 +97,7 @@ const Mortgage: React.FC = () => {
       <SummaryCards data={data?.results ?? []} />
 
       {isError ? (
-        <p className='text-danger text-sm'>
-          Failed to load mortgages. Please try again.
-        </p>
+        <CustomErrorMessage title='mortgages' />
       ) : (
         <>
           <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />

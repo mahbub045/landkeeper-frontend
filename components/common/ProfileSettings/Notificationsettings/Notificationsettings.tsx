@@ -11,40 +11,48 @@ const NotificationSettings: React.FC = () => {
     useState<NotificationSetting[]>(defaultNotifications);
 
   return (
-    <Card className='pt-0'>
-      <CardContent className='p-6'>
-        <h2 className='text-foreground mb-5 text-sm font-semibold'>
-          Notifications
-        </h2>
-        <div className='divide-border divide-y'>
-          {notifications.map((n) => (
-            <div
-              key={n.id}
-              className='flex items-center justify-between py-4 first:pt-0 last:pb-0'
-            >
-              <div>
-                <p className='text-foreground text-sm font-bold'>{n.title}</p>
-                <p className='text-muted-foreground mt-0.5 text-xs'>
-                  {n.description}
-                </p>
+    <>
+      <div className='mb-5'>
+        <h1 className='text-foreground text-xl font-semibold tracking-tight'>
+          Notifications Settings
+        </h1>
+        <p className='text-muted-foreground mt-0.5 text-sm'>
+          Manage your notification preferences and stay informed about important
+          updates.
+        </p>
+      </div>
+      <Card className='pt-0'>
+        <CardContent className='p-6'>
+          <div className='divide-border divide-y'>
+            {notifications.map((n) => (
+              <div
+                key={n.id}
+                className='flex items-center justify-between py-4 first:pt-0 last:pb-0'
+              >
+                <div>
+                  <p className='text-foreground text-sm font-bold'>{n.title}</p>
+                  <p className='text-muted-foreground mt-0.5 text-xs'>
+                    {n.description}
+                  </p>
+                </div>
+                <Switch
+                  checked={n.enabled}
+                  onCheckedChange={() =>
+                    setNotifications((prev) =>
+                      prev.map((item) =>
+                        item.id === n.id
+                          ? { ...item, enabled: !item.enabled }
+                          : item,
+                      ),
+                    )
+                  }
+                />
               </div>
-              <Switch
-                checked={n.enabled}
-                onCheckedChange={() =>
-                  setNotifications((prev) =>
-                    prev.map((item) =>
-                      item.id === n.id
-                        ? { ...item, enabled: !item.enabled }
-                        : item,
-                    ),
-                  )
-                }
-              />
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 

@@ -1,7 +1,8 @@
 'use client';
 
 import {
-  Download,
+  Eye,
+  File,
   FileImage,
   Files,
   FileText,
@@ -10,10 +11,13 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import Loading from '@/components/common/CustomLoader/Loading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import { categoryLabelMap } from '@/data/client/common/documents/DocumentsData';
 import {
@@ -51,13 +55,6 @@ function getFileName(url: string): string {
   } catch {
     return 'document';
   }
-}
-
-function parseTags(tags: string): string[] {
-  return tags
-    .split(',')
-    .map((tag) => tag.trim())
-    .filter(Boolean);
 }
 
 interface DocumentListProps {
@@ -127,8 +124,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
   return (
     <div className='space-y-3 px-4 py-2'>
       {documents.map((doc) => {
-        const tags = parseTags(doc.tags);
-
         return (
           <Card
             key={doc.alias}
@@ -147,42 +142,62 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   {categoryLabelMap[doc.document_category]} • {doc.files.length}{' '}
                   file{doc.files.length === 1 ? '' : 's'}
                 </p>
-
-                {tags.length > 0 && (
-                  <div className='mt-2 flex flex-wrap gap-1.5'>
-                    {tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        className='rounded-full bg-gray-200/70 px-2.5 py-0.5 text-xs text-black'
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className='flex shrink-0 items-center gap-2'>
-                <Button
-                  variant='outline'
-                  size='icon'
-                  aria-label='Download'
-                  onClick={() => handleDownload(doc)}
-                  disabled={
-                    doc.files.length === 0 || downloadingAlias === doc.alias
-                  }
-                >
-                  {downloadingAlias === doc.alias ? (
-                    <Loading className='text-black!' />
+                <div className='text-center'>
+                  {doc.files.length === 0 ? (
+                    <Button variant='outline' size='sm' disabled>
+                      <Eye />
+                      View
+                    </Button>
+                  ) : doc.files.length === 1 ? (
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      onClick={() => window.open(doc.files[0].file, '_blank')}
+                    >
+                      <Eye />
+                      View
+                    </Button>
                   ) : (
-                    <Download />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant='outline' size='sm'>
+                          <Eye />
+                          View ({doc.files.length})
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className='w-64 p-2' align='center'>
+                        <ul className='space-y-1'>
+                          {doc.files.map((d) => {
+                            const filename =
+                              d.file.split('/').pop() || `file-${d.id}`;
+                            return (
+                              <li key={d.id}>
+                                <a
+                                  href={d.file}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='hover:bg-muted flex items-center gap-1 rounded-md px-2 py-1.5 text-sm'
+                                >
+                                  <File size='14' />
+                                  <span className='truncate'>{filename}</span>
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </PopoverContent>
+                    </Popover>
                   )}
-                </Button>
+                </div>
 
                 <Button
                   variant='outline'
                   size='icon'
                   aria-label='Edit'
+                  title='Edit Document'
                   onClick={() => setEditingDoc(doc)}
                 >
                   <Pencil />
@@ -192,6 +207,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
                   variant='destructive'
                   size='icon'
                   aria-label='Delete'
+                  title='Delete Document'
                   onClick={() => setDeletingDoc(doc)}
                 >
                   <Trash2 />

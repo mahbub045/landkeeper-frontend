@@ -22,15 +22,31 @@ export interface Property {
   id: number;
   alias: string;
   property_name: string;
+  address: string;
+
+  property_owner: string;
+  shareholder: [
+    {
+      owner_name?: string;
+      shareholder_name?: string;
+      share_percentage?: string;
+    },
+  ];
   property_type: string;
   status: string;
-  address: string;
   purchase_price: string | null;
   current_value: string | null;
   purchase_date: string | null;
+  year_built: string | null;
+  property_tenure: string | null;
+  remaining_lease_term: string | null;
+  monthly_service_charge: string | null;
+  annual_ground_rent: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
-  rent_per_month: string | null;
+  council_tax_band: string | null;
+  local_authority: string | null;
+  monthly_rental_income: string | null;
   notes: string;
   documents: PropertyDocument[];
   created_at: string;
@@ -38,27 +54,30 @@ export interface Property {
 }
 
 export interface DetailsForm {
-  name: string;
-  type: string;
-  status: string;
+  property_name: string;
   address: string;
-  purchasePrice: string;
-  currentValue: string;
-  rentPerMonth: string;
-  purchaseDate: string;
+  property_owner: string;
+  shareholder: {
+    owner_name?: string;
+    shareholder_name?: string;
+    share_percentage?: string;
+  }[];
+  property_type: string;
+  status: string;
+  purchase_price: string;
+  current_value: string;
+  purchase_date: string;
+  year_built: string;
+  property_tenure: string;
+  remaining_lease_term: string;
+  monthly_service_charge: string;
+  annual_ground_rent: string;
+  council_tax_band: string;
+  local_authority: string;
   bedrooms: string;
   bathrooms: string;
+  monthly_rental_income: string;
   notes: string;
-}
-
-export interface MortgageForm {
-  lenderName: string;
-  productType: string;
-  interestRate: string;
-  monthlyPayment: string;
-  outstandingBalance: string;
-  startDate: string;
-  endDate: string;
 }
 
 export interface PropertyFilterProps {

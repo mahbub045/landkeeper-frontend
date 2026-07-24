@@ -1,3 +1,4 @@
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,7 +17,6 @@ import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/Invite
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import {
-  AlertCircle,
   Mail,
   MessagesSquare,
   RefreshCw,
@@ -96,22 +96,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
       )}
 
       {!isInviteLoading && isInviteError && (
-        <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
-          <div className='bg-danger/10 flex size-12 items-center justify-center rounded-full'>
-            <AlertCircle className='text-danger size-6' />
-          </div>
-          <div>
-            <p className='text-foreground text-sm font-semibold'>
-              Failed to load invited users
-            </p>
-            <p className='text-muted-foreground mt-1 text-xs'>
-              Something went wrong while fetching invites. Please try again.
-            </p>
-          </div>
-          <Button variant='outline' size='sm' onClick={() => refetchInvites()}>
-            Retry
-          </Button>
-        </div>
+        <CustomErrorMessage title='invited users' />
       )}
 
       {!isInviteLoading && !isInviteError && invites.length === 0 && (
@@ -180,8 +165,8 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   <Button
                     variant='destructive'
                     size='sm'
-                    onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
                     title='Delete invite'
+                    onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
                   >
                     <Trash2 />
                     Delete

@@ -1,64 +1,76 @@
 export type SupportTicketType = 'FEEDBACK' | 'BUG_REPORT' | 'FEATURE_REQUEST';
 
+export type SupportTicketPriority =
+  | 'URGENT'
+  | 'MEDIUM'
+  | 'NORMAL'
+  | 'WHEN_POSSIBLE';
+
+export type SupportTicketStatus =
+  | 'OPEN'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'RESOLVED'
+  | 'CLOSED';
+
 export interface ApiSupportTicketFile {
   alias: string;
   file: string;
 }
 
-export interface ApiSupportTicketUser {
+export interface ApiSupportTicketCreatedBy {
   id: number;
   alias: string;
   profile_image: string;
   name: string;
-  first_name: string;
-  last_name: string;
   email: string;
-  user_type: string;
+  role: string;
 }
 
-export interface ApiSupportTicket {
+export interface ApiSupportTicketType {
   alias: string;
   ticket_id: string;
   ticket_type: SupportTicketType;
   subject: string;
+  status: SupportTicketStatus;
+  priority: SupportTicketPriority;
   description: string;
   files: ApiSupportTicketFile[];
   created_at: string;
-  created_by: ApiSupportTicketUser;
-  organisation: string;
-}
-
-// Display/UI shape mapped from ApiSupportTicket
-export interface SupportTicket {
-  alias: string;
-  ticketId: string;
-  ticketType: SupportTicketType;
-  subject: string;
-  description: string;
-  fileCount: number;
-  createdAt: string;
-  createdByName: string;
-  createdByEmail: string;
-  createdByAvatar?: string;
-  organisation: string;
+  created_by: ApiSupportTicketCreatedBy;
 }
 
 export interface SupportTicketRowProps {
-  ticket: SupportTicket;
-  apiTicket: ApiSupportTicket;
+  ticket: ApiSupportTicketType;
+  apiTicket: ApiSupportTicketType;
   idx: number;
 }
 
 export interface SupportTicketTableProps {
-  tickets: SupportTicket[];
-  apiTickets: ApiSupportTicket[];
+  supportTicketsData: ApiSupportTicketType[];
   search: string;
   onSearchChange: (value: string) => void;
+  ticketTypeFilter: string[];
+  onTicketTypeFilterChange: (values: string[]) => void;
+  priorityFilter: string[];
+  onPriorityFilterChange: (values: string[]) => void;
+  statusFilter: string[];
+  onStatusFilterChange: (values: string[]) => void;
   isLoading: boolean;
+}
+
+type FilterOption = { value: string; label: string };
+export interface MultiSelectFilterProps {
+  label: string;
+  options: readonly FilterOption[];
+  selected: string[];
+  onChange: (values: string[]) => void;
+  widthClassName?: string;
 }
 
 export interface SupportTicketForm {
   ticketType: SupportTicketType | '';
+  priority: SupportTicketPriority | '';
   subject: string;
   description: string;
 }
@@ -70,7 +82,7 @@ export interface AddSupportTicketModalProps {
 }
 
 export interface UpdateSupportTicketDialogProps {
-  ticket?: ApiSupportTicket;
+  ticket?: ApiSupportTicketType;
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -88,7 +100,7 @@ export interface ApiSupportTicketComment {
   alias: string;
   message: string;
   parent: number | null;
-  author: ApiSupportTicketUser;
+  author: ApiSupportTicketCreatedBy;
   files: ApiSupportTicketFile[];
   replies: ApiSupportTicketComment[];
   created_at: string;

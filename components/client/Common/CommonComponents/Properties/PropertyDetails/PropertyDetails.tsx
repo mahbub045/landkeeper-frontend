@@ -9,7 +9,7 @@ import {
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { getPropertiesUrl } from '@/utils/redirectPath';
-import { ArrowLeft, MapPin, Pencil } from 'lucide-react';
+import { ArrowLeft, ImageOff, MapPin, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -50,8 +50,6 @@ const PropertyDetails: React.FC = () => {
       </div>
     );
   }
-
-  const isOccupied = property.status === 'OCCUPIED';
 
   return (
     <div className='space-y-6 px-4 py-6'>
@@ -96,10 +94,14 @@ const PropertyDetails: React.FC = () => {
       </div>
 
       {/* ── Gallery ── */}
-      {property.documents.length > 0 && (
+      {property.documents.length > 0 ? (
         <PropertyGallery docs={property.documents} />
+      ) : (
+        <div className='border-danger text-muted-foreground flex h-40 flex-col items-center justify-center gap-2 rounded-lg border border-dashed'>
+          <ImageOff className='text-danger size-6' />
+          <span className='text-sm'>No images uploaded for this property</span>
+        </div>
       )}
-
       {/* ── Info + Financials ── */}
       <div className='grid gap-6 md:grid-cols-2'>
         <PropertyInfo property={property} />

@@ -185,6 +185,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       variant='outline'
                       size='icon'
                       aria-label='Edit'
+                      title='Edit Transaction'
                       onClick={() => setEditingTx(tx)}
                     >
                       <Pencil />
@@ -194,6 +195,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       variant='destructive'
                       size='icon'
                       aria-label='Delete'
+                      title='Delete Transaction'
                       onClick={() => setDeletingTx(tx)}
                     >
                       <Trash2 />

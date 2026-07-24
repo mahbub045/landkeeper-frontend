@@ -12,31 +12,12 @@ import {
 } from '@/components/ui/pagination';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
-import {
-  ApiSupportTicket,
-  SupportTicket as SupportTicketModel,
-} from '@/types/common/SupportTickets/SupportTicketTypes';
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import CustomErrorMessage from '../CustomErrorMessage/CustomErrorMessage';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
-
-function mapApiTicket(apiTicket: ApiSupportTicket): SupportTicketModel {
-  return {
-    alias: apiTicket.alias,
-    ticketId: apiTicket.ticket_id,
-    ticketType: apiTicket.ticket_type,
-    subject: apiTicket.subject,
-    description: apiTicket.description,
-    fileCount: apiTicket.files?.length ?? 0,
-    createdAt: apiTicket.created_at,
-    createdByName: apiTicket.created_by?.name?.trim() || 'Unknown',
-    createdByEmail: apiTicket.created_by?.email,
-    createdByAvatar: apiTicket.created_by?.profile_image ?? undefined,
-    organisation: apiTicket.organisation,
-  };
-}
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();
@@ -44,6 +25,9 @@ const SupportTicket: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
+  const [ticketTypeFilter, setTicketTypeFilter] = useState<string[]>([]);
+  const [priorityFilter, setPriorityFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -54,21 +38,40 @@ const SupportTicket: React.FC = () => {
     page,
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
+    ...(ticketTypeFilter.length > 0 && {
+      ticket_type: ticketTypeFilter.join(','),
+    }),
+    ...(priorityFilter.length > 0 && { priority: priorityFilter.join(',') }),
+    ...(statusFilter.length > 0 && { status: statusFilter.join(',') }),
   };
 
-  const { data, isLoading, isError } = useGetSupportTicketsQuery(queryParams);
+  const {
+    data: supportTicketData,
+    isLoading,
+    isError,
+  } = useGetSupportTicketsQuery(queryParams);
 
-  const tickets = useMemo(
-    () => (data?.results ?? []).map(mapApiTicket),
-    [data?.results],
-  );
+  const apiTickets = supportTicketData?.results ?? [];
 
-  const apiTickets = data?.results ?? [];
-
-  const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
+  const totalPages = Math.ceil((supportTicketData?.count ?? 0) / PAGE_LIMIT);
 
   function handleSearchChange(value: string) {
     setSearch(value);
+    setPage(1);
+  }
+
+  function handleTicketTypeFilterChange(values: string[]) {
+    setTicketTypeFilter(values);
+    setPage(1);
+  }
+
+  function handlePriorityFilterChange(values: string[]) {
+    setPriorityFilter(values);
+    setPage(1);
+  }
+
+  function handleStatusFilterChange(values: string[]) {
+    setStatusFilter(values);
     setPage(1);
   }
 
@@ -108,25 +111,28 @@ const SupportTicket: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-sm'>
-          Failed to load support tickets. Please try again.
-        </p>
+        <CustomErrorMessage title='support tickets' />
       ) : (
         <>
           <SupportTicketTable
-            tickets={tickets}
-            apiTickets={apiTickets}
+            supportTicketsData={apiTickets}
             search={search}
             onSearchChange={handleSearchChange}
+            ticketTypeFilter={ticketTypeFilter}
+            onTicketTypeFilterChange={handleTicketTypeFilterChange}
+            priorityFilter={priorityFilter}
+            onPriorityFilterChange={handlePriorityFilterChange}
+            statusFilter={statusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
             isLoading={isLoading}
           />
 
           <div className='flex items-center justify-between'>
-            {(data?.count ?? 0) > 0 && (
+            {(supportTicketData?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
-                {data?.count ?? 0} Tickets
+                {Math.min(page * PAGE_LIMIT, supportTicketData?.count ?? 0)} of{' '}
+                {supportTicketData?.count ?? 0} Tickets
               </p>
             )}
             {totalPages > 1 && (

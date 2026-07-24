@@ -1,5 +1,6 @@
 'use client';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import {
   Pagination,
   PaginationContent,
@@ -133,9 +134,7 @@ const Compliance: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-center text-sm'>
-          Failed to load certificates. Please try again.
-        </p>
+        <CustomErrorMessage title='certificates' />
       ) : (
         <>
           <CertificateRegistry

@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, Upload } from 'lucide-react';
+import { AlertCircle, RefreshCcw, Search, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ import {
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const Documents: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');
@@ -120,9 +121,7 @@ const Documents: React.FC = () => {
       />
 
       {isError ? (
-        <p className='text-danger text-center text-sm'>
-          Failed to load documents. Please try again.
-        </p>
+        <CustomErrorMessage title='documents' />
       ) : (
         <>
           {/* Document Library */}

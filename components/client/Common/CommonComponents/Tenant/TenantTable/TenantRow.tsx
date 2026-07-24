@@ -86,9 +86,9 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           )}
         </TableCell>
         <TableCell className='text-sm font-bold'>
-          {tenant.rent ? (
+          {apiTenant.rent_amount ? (
             <>
-              {getCurrencySign()} <span> tenant.rent.toLocaleString()</span>
+              {getCurrencySign()} <span> {apiTenant.rent_amount}</span>
             </>
           ) : (
             <small className='text-muted-foreground'>
@@ -118,7 +118,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
           >
             <SelectTrigger
               size='sm'
-              className={`h-6! w-fit cursor-pointer gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${tenant.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+              className={`h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${tenant.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
             >
               <span
                 className={`inline-block size-1.5 rounded-full ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
@@ -128,17 +128,11 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                value='active'
-                className='focus:bg-success/10 cursor-pointer'
-              >
+              <SelectItem value='active' className='focus:bg-success/10'>
                 <span className='bg-success inline-block size-1.5 rounded-full' />
                 Active
               </SelectItem>
-              <SelectItem
-                value='deactivated'
-                className='focus:bg-danger/10 cursor-pointer'
-              >
+              <SelectItem value='deactivated' className='focus:bg-danger/10'>
                 <span className='bg-danger inline-block size-1.5 rounded-full' />
                 Deactivated
               </SelectItem>
@@ -150,6 +144,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='success'
               size='icon'
+              title='Send Invitation'
               className='rounded-lg'
               onClick={() => setSentInvitation(true)}
             >
@@ -158,6 +153,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='secondary'
               size='icon'
+              title='View Tenant Details'
               className='rounded-lg'
               onClick={() => setViewOpen(true)}
             >
@@ -166,6 +162,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <Button
               variant='default'
               size='icon'
+              title='Edit Tenant Details'
               className='rounded-lg'
               onClick={() => setEditOpen(true)}
             >
@@ -175,6 +172,7 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
               <Button
                 variant='danger'
                 size='icon'
+                title='Delete Tenant'
                 className='rounded-lg'
                 onClick={() => setDeleteOpen(true)}
               >

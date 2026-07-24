@@ -16,6 +16,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
@@ -92,9 +93,7 @@ const TransactionList: React.FC = () => {
       </div>
 
       {isError ? (
-        <p className='text-danger text-center text-sm'>
-          Failed to load transactions. Please try again.
-        </p>
+        <CustomErrorMessage title='transactions' />
       ) : (
         <>
           <Card className='gap-0 overflow-hidden'>
