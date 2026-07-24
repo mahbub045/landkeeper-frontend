@@ -15,13 +15,15 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
+  PROPERTY_OWNER_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
-import { CloudUpload, Lock, Sparkles, X } from 'lucide-react';
+import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
 const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
@@ -37,8 +39,8 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     useEffect(() => {
       if (isNameCustom) return;
       const derived = value.address;
-      if (derived !== value.name) {
-        onChange({ ...value, name: derived });
+      if (derived !== value.property_name) {
+        onChange({ ...value, property_name: derived });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value.address, isNameCustom]);
@@ -46,10 +48,67 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     function handleToggleCustom() {
       if (isNameCustom) {
         setIsNameCustom(false);
-        onChange({ ...value, name: value.address });
+        onChange({ ...value, property_name: value.address });
       } else {
         setIsNameCustom(true);
       }
+    }
+
+    // ── Owners (property_owner === 'OWNER') ─────────────────────────────────────
+
+    function addOwner() {
+      onChange({
+        ...value,
+        shareholder: [...value.shareholder, { owner_name: '' }],
+      });
+    }
+
+    function updateOwner(index: number, name: string) {
+      onChange({
+        ...value,
+        shareholder: value.shareholder.map((o, i) =>
+          i === index ? { ...o, owner_name: name } : o,
+        ),
+      });
+    }
+
+    function removeOwner(index: number) {
+      onChange({
+        ...value,
+        shareholder: value.shareholder.filter((_, i) => i !== index),
+      });
+    }
+
+    // ── Shareholders (property_owner === 'COMPANY') ─────────────────────────────
+
+    function addShareholder() {
+      onChange({
+        ...value,
+        shareholder: [
+          ...value.shareholder,
+          { shareholder_name: '', share_percentage: '' },
+        ],
+      });
+    }
+
+    function updateShareholder(
+      index: number,
+      key: 'shareholder_name' | 'share_percentage',
+      val: string,
+    ) {
+      onChange({
+        ...value,
+        shareholder: value.shareholder.map((s, i) =>
+          i === index ? { ...s, [key]: val } : s,
+        ),
+      });
+    }
+
+    function removeShareholder(index: number) {
+      onChange({
+        ...value,
+        shareholder: value.shareholder.filter((_, i) => i !== index),
+      });
     }
 
     function addFiles(incoming: FileList | null) {
@@ -112,13 +171,13 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   <Input
                     type='text'
                     placeholder='e.g. 14 Oak Street'
-                    value={value.name}
-                    onChange={(e) => set('name', e.target.value)}
+                    value={value.property_name}
+                    onChange={(e) => set('property_name', e.target.value)}
                     readOnly={!isNameCustom}
-                    aria-invalid={!!errors.name}
+                    aria-invalid={!!errors.property_name}
                     className={[
                       'bg-background transition-shadow',
-                      errors.name
+                      errors.property_name
                         ? 'border-danger focus-visible:ring-danger/50'
                         : '',
                       !isNameCustom
@@ -130,7 +189,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     <Lock className='text-muted-foreground/50 pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2' />
                   )}
                 </div>
-                <FieldError errors={[{ message: errors.name }]} />
+                <FieldError errors={[{ message: errors.property_name }]} />
               </Field>
             </div>
           </div>
@@ -155,13 +214,161 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             <FieldError errors={[{ message: errors.address }]} />
           </Field>
 
+          <Field data-invalid={!!errors.property_property_owner}>
+            <FieldLabel className='text-sm font-semibold'>
+              Property Owner
+            </FieldLabel>
+            <Select
+              value={value.property_owner}
+              onValueChange={(v) => set('property_owner', v)}
+            >
+              <SelectTrigger
+                className={errors.property_property_owner ? 'border-danger' : ''}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROPERTY_OWNER_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[{ message: errors.property_property_owner }]} />
+          </Field>
+
+          {value.property_owner === 'OWNER' && (
+            <Field data-invalid={!!errors.ownerships}>
+              <div className='mb-1.5 flex items-center justify-between'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={addOwner}
+                >
+                  <Plus className='h-3.5 w-3.5' />
+                  Add Owner
+                </Button>
+              </div>
+
+              {value.shareholder.length > 0 && (
+                <div className='space-y-2'>
+                  {value.shareholder.map((owner, i) => (
+                    <div key={i} className='flex items-center gap-2'>
+                      <Input
+                        type='text'
+                        placeholder='Owner name'
+                        value={owner.owner_name}
+                        onChange={(e) => updateOwner(i, e.target.value)}
+                        className='flex-1'
+                      />
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeOwner(i)}
+                        className='text-muted-foreground hover:text-danger shrink-0'
+                        aria-label='Remove owner'
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <FieldError errors={[{ message: errors.ownerships }]} />
+            </Field>
+          )}
+
+          {value.property_owner === 'COMPANY' && (
+            <Field data-invalid={!!errors.shareholder}>
+              <div className='mb-1.5 flex items-center justify-between'>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={addShareholder}
+                >
+                  <Plus className='h-3.5 w-3.5' />
+                  Add Shareholders
+                </Button>
+              </div>
+
+              {value.shareholder.length > 0 && (
+                <div className='space-y-2'>
+                  {/* Column headers — rendered once */}
+                  <div className='flex items-center gap-2'>
+                    <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                      <FieldLabel className='text-sm font-semibold'>
+                        Name
+                      </FieldLabel>
+                      <FieldLabel className='text-sm font-semibold'>
+                        % Share
+                      </FieldLabel>
+                    </div>
+                    {/* spacer to match trash button width so headers align with inputs above */}
+                    <div className='w-9 shrink-0' />
+                  </div>
+
+                  {value.shareholder.map((sh, i) => (
+                    <div key={i} className='flex items-center gap-2'>
+                      <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
+                        <Input
+                          type='text'
+                          placeholder='Shareholder name'
+                          value={sh.shareholder_name}
+                          onChange={(e) =>
+                            updateShareholder(
+                              i,
+                              'shareholder_name',
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <Input
+                          type='number'
+                          placeholder='% share'
+                          value={sh.share_percentage}
+                          onChange={(e) =>
+                            updateShareholder(
+                              i,
+                              'share_percentage',
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => removeShareholder(i)}
+                        className='text-muted-foreground hover:text-danger shrink-0'
+                        aria-label='Remove shareholder'
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <FieldError errors={[{ message: errors.shareholder }]} />
+            </Field>
+          )}
+
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.type}>
+            <Field data-invalid={!!errors.property_type}>
               <FieldLabel className='text-sm font-semibold'>
                 Property Type
               </FieldLabel>
-              <Select value={value.type} onValueChange={(v) => set('type', v)}>
-                <SelectTrigger className={errors.type ? 'border-danger' : ''}>
+              <Select
+                value={value.property_type}
+                onValueChange={(v) => set('property_type', v)}
+              >
+                <SelectTrigger
+                  className={errors.property_type ? 'border-danger' : ''}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -172,7 +379,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   ))}
                 </SelectContent>
               </Select>
-              <FieldError errors={[{ message: errors.type }]} />
+              <FieldError errors={[{ message: errors.property_type }]} />
             </Field>
 
             <Field data-invalid={!!errors.status}>
@@ -197,7 +404,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.purchasePrice}>
+            <Field data-invalid={!!errors.purchase_price}>
               <FieldLabel className='text-sm font-semibold'>
                 Purchase Price
               </FieldLabel>
@@ -205,74 +412,76 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 type='number'
                 placeholder={getCurrencySign()}
                 maxLength={10}
-                value={value.purchasePrice}
-                onChange={(e) => set('purchasePrice', e.target.value)}
-                aria-invalid={!!errors.purchasePrice}
+                value={value.purchase_price}
+                onChange={(e) => set('purchase_price', e.target.value)}
+                aria-invalid={!!errors.purchase_price}
                 className={
-                  errors.purchasePrice
+                  errors.purchase_price
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.purchasePrice }]} />
+              <FieldError errors={[{ message: errors.purchase_price }]} />
             </Field>
 
-            <Field data-invalid={!!errors.currentValue}>
+            <Field data-invalid={!!errors.current_value}>
               <FieldLabel className='text-sm font-semibold'>
                 Current Value
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={value.currentValue}
-                onChange={(e) => set('currentValue', e.target.value)}
-                aria-invalid={!!errors.currentValue}
+                value={value.current_value}
+                onChange={(e) => set('current_value', e.target.value)}
+                aria-invalid={!!errors.current_value}
                 className={
-                  errors.currentValue
+                  errors.current_value
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.currentValue }]} />
+              <FieldError errors={[{ message: errors.current_value }]} />
             </Field>
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.rentPerMonth}>
+            <Field data-invalid={!!errors.monthly_rental_income}>
               <FieldLabel className='text-sm font-semibold'>
-                Rent Per Month
+                Monthly Rental Income
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={getCurrencySign()}
-                value={value.rentPerMonth}
-                onChange={(e) => set('rentPerMonth', e.target.value)}
-                aria-invalid={!!errors.rentPerMonth}
+                value={value.monthly_rental_income}
+                onChange={(e) => set('monthly_rental_income', e.target.value)}
+                aria-invalid={!!errors.monthly_rental_income}
                 className={
-                  errors.rentPerMonth
+                  errors.monthly_rental_income
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.rentPerMonth }]} />
+              <FieldError
+                errors={[{ message: errors.monthly_rental_income }]}
+              />
             </Field>
 
-            <Field data-invalid={!!errors.purchaseDate}>
+            <Field data-invalid={!!errors.purchase_date}>
               <FieldLabel className='text-sm font-semibold'>
                 Purchase Date
               </FieldLabel>
               <Input
                 type='date'
-                value={value.purchaseDate}
-                onChange={(e) => set('purchaseDate', e.target.value)}
-                aria-invalid={!!errors.purchaseDate}
+                value={value.purchase_date}
+                onChange={(e) => set('purchase_date', e.target.value)}
+                aria-invalid={!!errors.purchase_date}
                 className={
-                  errors.purchaseDate
+                  errors.purchase_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.purchaseDate }]} />
+              <FieldError errors={[{ message: errors.purchase_date }]} />
             </Field>
           </div>
 
@@ -284,6 +493,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               <Input
                 type='number'
                 value={value.bedrooms}
+                placeholder='e.g. 3'
                 onChange={(e) => set('bedrooms', e.target.value)}
                 aria-invalid={!!errors.bedrooms}
                 className={
@@ -302,6 +512,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               <Input
                 type='number'
                 value={value.bathrooms}
+                placeholder='e.g. 2'
                 onChange={(e) => set('bathrooms', e.target.value)}
                 aria-invalid={!!errors.bathrooms}
                 className={
@@ -313,22 +524,168 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               <FieldError errors={[{ message: errors.bathrooms }]} />
             </Field>
           </div>
+        </div>
 
-          <Field data-invalid={!!errors.notes}>
-            <FieldLabel className='text-sm font-semibold'>Notes</FieldLabel>
-            <Textarea
-              placeholder='Additional notes...'
-              rows={4}
-              value={value.notes}
-              onChange={(e) => set('notes', e.target.value)}
-              aria-invalid={!!errors.notes}
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.year_built}>
+            <FieldLabel className='text-sm font-semibold'>
+              Year Built
+            </FieldLabel>
+            <Input
+              type='number'
+              value={value.year_built}
+              onChange={(e) => set('year_built', e.target.value)}
+              aria-invalid={!!errors.year_built}
+              placeholder='e.g. 1995'
               className={
-                errors.notes ? 'border-danger focus-visible:ring-danger/50' : ''
+                errors.year_built
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
               }
             />
-            <FieldError errors={[{ message: errors.notes }]} />
+            <FieldError errors={[{ message: errors.year_built }]} />
+          </Field>
+
+          <Field data-invalid={!!errors.property_tenure}>
+            <FieldLabel className='text-sm font-semibold'>
+              Property Tenure
+            </FieldLabel>
+            <Select
+              value={value.property_tenure}
+              onValueChange={(v) => set('property_tenure', v)}
+            >
+              <SelectTrigger
+                className={errors.property_tenure ? 'border-danger' : ''}
+              >
+                <SelectValue placeholder='Select tenure' />
+              </SelectTrigger>
+              <SelectContent>
+                {PROPERTY_TENURE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[{ message: errors.property_tenure }]} />
           </Field>
         </div>
+
+        {value.property_tenure === 'LEASEHOLD' && (
+          <div className='grid grid-cols-2 gap-4'>
+            <Field data-invalid={!!errors.remaining_lease_term}>
+              <FieldLabel className='text-sm font-semibold'>
+                Remaining Lease Term (yrs)
+              </FieldLabel>
+              <Input
+                type='number'
+                value={value.remaining_lease_term}
+                onChange={(e) => set('remaining_lease_term', e.target.value)}
+                aria-invalid={!!errors.remaining_lease_term}
+                placeholder='e.g. 25'
+                className={
+                  errors.remaining_lease_term
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: errors.remaining_lease_term }]} />
+            </Field>
+
+            <Field data-invalid={!!errors.monthly_service_charge}>
+              <FieldLabel className='text-sm font-semibold'>
+                Monthly Service Charge
+              </FieldLabel>
+              <Input
+                type='number'
+                placeholder={getCurrencySign()}
+                value={value.monthly_service_charge}
+                onChange={(e) => set('monthly_service_charge', e.target.value)}
+                aria-invalid={!!errors.monthly_service_charge}
+                className={
+                  errors.monthly_service_charge
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError
+                errors={[{ message: errors.monthly_service_charge }]}
+              />
+            </Field>
+            <Field data-invalid={!!errors.annual_ground_rent}>
+              <FieldLabel className='text-sm font-semibold'>
+                Annual Ground Rent
+              </FieldLabel>
+              <Input
+                type='number'
+                placeholder={getCurrencySign()}
+                value={value.annual_ground_rent}
+                onChange={(e) => set('annual_ground_rent', e.target.value)}
+                aria-invalid={!!errors.annual_ground_rent}
+                className={
+                  errors.annual_ground_rent
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: errors.annual_ground_rent }]} />
+            </Field>
+          </div>
+        )}
+
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.council_tax_band}>
+            <FieldLabel className='text-sm font-semibold'>
+              Council Tax Band
+            </FieldLabel>
+            <Input
+              type='text'
+              placeholder='e.g. A, B, C...'
+              value={value.council_tax_band}
+              onChange={(e) => set('council_tax_band', e.target.value)}
+              aria-invalid={!!errors.council_tax_band}
+              className={
+                errors.council_tax_band
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.council_tax_band }]} />
+          </Field>
+          <Field data-invalid={!!errors.local_authority}>
+            <FieldLabel className='text-sm font-semibold'>
+              Local Authority
+            </FieldLabel>
+            <Input
+              type='text'
+              value={value.local_authority}
+              onChange={(e) => set('local_authority', e.target.value)}
+              aria-invalid={!!errors.local_authority}
+              placeholder='e.g. London Borough of Camden'
+              className={
+                errors.local_authority
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.local_authority }]} />
+          </Field>
+        </div>
+
+        <Field data-invalid={!!errors.notes}>
+          <FieldLabel className='text-sm font-semibold'>Notes</FieldLabel>
+          <Textarea
+            placeholder='Additional notes...'
+            rows={4}
+            value={value.notes}
+            onChange={(e) => set('notes', e.target.value)}
+            aria-invalid={!!errors.notes}
+            className={
+              errors.notes ? 'border-danger focus-visible:ring-danger/50' : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.notes }]} />
+        </Field>
 
         {/* ── Pictures ── */}
         <div className='space-y-4'>
