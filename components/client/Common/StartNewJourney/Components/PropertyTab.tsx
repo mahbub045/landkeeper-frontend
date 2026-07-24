@@ -143,8 +143,8 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
               <Field data-invalid={!!errors.name}>
                 <div className='mb-1.5 flex items-center justify-between'>
-                  <FieldLabel className='gap-1.5 text-sm font-semibold'>
-                    <div className='gap-0'>Property Name</div>
+                  <FieldLabel className='text-sm font-semibold'>
+                    Property Name<span className='text-danger'>*</span>
                     {!isNameCustom && (
                       <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                         <Sparkles className='h-2.5 w-2.5' />
@@ -173,6 +173,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     onChange={(e) => set('property_name', e.target.value)}
                     readOnly={!isNameCustom}
                     aria-invalid={!!errors.property_name}
+                    required
                     className={[
                       'bg-background transition-shadow',
                       errors.property_name
