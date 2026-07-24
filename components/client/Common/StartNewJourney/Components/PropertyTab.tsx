@@ -214,7 +214,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             <FieldError errors={[{ message: errors.address }]} />
           </Field>
 
-          <Field data-invalid={!!errors.property_owner}>
+          <Field data-invalid={!!errors.property_property_owner}>
             <FieldLabel className='text-sm font-semibold'>
               Property Owner
             </FieldLabel>
@@ -223,7 +223,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               onValueChange={(v) => set('property_owner', v)}
             >
               <SelectTrigger
-                className={errors.property_owner ? 'border-danger' : ''}
+                className={errors.property_property_owner ? 'border-danger' : ''}
               >
                 <SelectValue />
               </SelectTrigger>
@@ -235,7 +235,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 ))}
               </SelectContent>
             </Select>
-            <FieldError errors={[{ message: errors.property_owner }]} />
+            <FieldError errors={[{ message: errors.property_property_owner }]} />
           </Field>
 
           {value.property_owner === 'OWNER' && (
