@@ -160,7 +160,11 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
               Remaining Mortgage Term(Years)
             </p>
             <p className='mt-1 text-base font-semibold'>
-              {mortgage.remaining_mortgage}
+              {mortgage.remaining_mortgage ? (
+                mortgage.remaining_mortgage
+              ) : (
+                <span className='text-muted-foreground text-xs'>Not Found</span>
+              )}
             </p>
           </div>
         </div>
