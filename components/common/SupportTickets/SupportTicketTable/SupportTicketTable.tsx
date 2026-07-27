@@ -48,7 +48,7 @@ import {
   TicketTypeOptions,
 } from '@/data/common/SupportTickets/SupportTicketsData';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
-import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getSupportTicketDetailsUrl } from '@/utils/redirectPath';
 import {
   Bookmark,
@@ -310,7 +310,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
           )}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {formatDate(ticket.created_at) || 'Not Available'}
+          {formatDateAndTime(ticket.created_at) || 'Not Available'}
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
