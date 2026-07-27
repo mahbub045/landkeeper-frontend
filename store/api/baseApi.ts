@@ -14,11 +14,9 @@ export type AuthRootState = {
 };
 
 export const TAG_TYPES = [
+  // Global Common Tags
+  'Notifications',
   'UserProfileAndSettings',
-  'CompanyInfo',
-  'FormLayout',
-  'Network',
-  'Organisation',
   'SupportTickets',
   'SupportTicketComments',
   'NewJourney',

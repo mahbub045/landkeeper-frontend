@@ -6,6 +6,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  useAllReadNotificationMutation,
+  useGetNotificationsQuery,
+  useReadNotificationMutation,
+} from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
@@ -13,9 +18,10 @@ import { Bell } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 // Replace with real data (API call / context / react-query etc.)
-const mockNotifications: NotificationItem[] = [
+const notificationsData = [
   {
     id: '1',
     title: 'New tenant application',
@@ -87,7 +93,33 @@ const mockNotifications: NotificationItem[] = [
 const Notification: React.FC = () => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
-  const unreadCount = mockNotifications.filter((n) => !n.is_read).length;
+
+  //   RTK Hooks
+  const { data: notifications, isLoading } =
+    useGetNotificationsQuery(undefined);
+  const [readNotification, { isLoading: isReadLoading }] =
+    useReadNotificationMutation();
+  const [allReadNotification, { isLoading: isAllReadLoading }] =
+    useAllReadNotificationMutation();
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await readNotification(notificationId).unwrap();
+      setOpen(false);
+    } catch (error) {
+      toast.error(`Failed to mark notification as read: ${error}`);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await allReadNotification(undefined).unwrap();
+    } catch (error) {
+      toast.error(`Failed to mark all notifications as read: ${error}`);
+    }
+  };
+
+  const unreadCount = notificationsData.filter((n) => !n.is_read).length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -117,45 +149,48 @@ const Notification: React.FC = () => {
             <Button
               variant='link'
               size='sm'
+              onClick={handleMarkAllAsRead}
+              disabled={isAllReadLoading}
               className='text-muted-foreground text-xs hover:underline'
             >
+              {isAllReadLoading ? 'Marking...' : 'Mark all as read'}
               Mark all as read
             </Button>
           )}
         </div>
 
         <div className='max-h-80 overflow-y-auto'>
-          {mockNotifications.length === 0 ? (
+          {notificationsData.length === 0 ? (
             <p className='text-muted-foreground px-4 py-6 text-center text-sm'>
               No notifications
             </p>
           ) : (
-            mockNotifications.map((n) => (
+            notificationsData.map((notification: NotificationItem) => (
               <Link
-                href={getNotificationURL(session, n.data)}
-                key={n.id}
-                onClick={() => setOpen(false)}
+                href={getNotificationURL(session, notification.data)}
+                key={notification.id}
+                onClick={handleMarkAsRead.bind(null, notification.id)}
                 className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
-                  !n.is_read ? 'bg-muted/30' : ''
+                  !notification.is_read ? 'bg-muted/30' : ''
                 }`}
               >
-                {!n.is_read && (
+                {!notification.is_read && (
                   <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
                 )}
-                <div className={n.is_read ? 'pl-4' : ''}>
+                <div className={notification.is_read ? 'pl-4' : ''}>
                   <p
                     className={`text-sm font-medium ${
-                      !n.is_read ? 'text-warning' : 'text-foreground'
+                      !notification.is_read ? 'text-warning' : 'text-foreground'
                     }`}
                   >
-                    {n.title}
+                    {notification.title}
                   </p>
                   <p className='text-muted-foreground text-xs'>
-                    {n.description}
+                    {notification.description}
                   </p>
-                  {n.created_at && (
+                  {notification.created_at && (
                     <p className='text-muted-foreground/70 mt-1 text-[11px]'>
-                      {formatDateAndTime(n.created_at)}
+                      {formatDateAndTime(notification.created_at)}
                     </p>
                   )}
                 </div>
