@@ -450,6 +450,8 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               </FieldLabel>
               <Input
                 type='text'
+                placeholder='e.g. A'
+                maxLength={1}
                 value={form.epc_rating}
                 onChange={(e) => {
                   const letterOnly = e.target.value

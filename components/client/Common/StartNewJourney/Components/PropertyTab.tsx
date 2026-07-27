@@ -20,9 +20,10 @@ import {
   PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -31,6 +32,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     const [isNameCustom, setIsNameCustom] = useState(false);
     const [dragging, setDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { data: profileData } = useGetProfileInfoQuery(undefined);
 
     function set(key: keyof DetailsForm, v: string) {
       onChange({ ...value, [key]: v });
@@ -135,6 +137,23 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
       [files],
     );
 
+    const fullName = profileData
+      ? [
+          formatChoiceFieldValue(profileData.title),
+          profileData.first_name,
+          profileData.middle_name,
+          profileData.last_name,
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : '';
+
+    const ownerOptions = PROPERTY_OWNER_OPTIONS.map((opt) =>
+      opt.value === 'OWNER' && fullName
+        ? { ...opt, label: `Owner (${fullName})` }
+        : opt,
+    );
+
     return (
       <form ref={ref} hidden={!active} className='space-y-8'>
         {/* ── Details ── */}
@@ -233,7 +252,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_OWNER_OPTIONS.map((opt) => (
+                  {ownerOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -250,7 +269,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 onClick={addOwner}
               >
                 <Plus className='h-3.5 w-3.5' />
-                Add Owner
+                Add Another Owner
               </Button>
             )}
 
@@ -277,7 +296,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     <div key={i} className='flex items-center gap-2'>
                       <Input
                         type='text'
-                        placeholder='Owner name'
+                        placeholder='Owner Full Name'
                         value={owner.owner_name}
                         onChange={(e) => updateOwner(i, e.target.value)}
                         className='border-primary! focus-visible:ring-primary/50 flex-1'
@@ -340,7 +359,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                       <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
                         <Input
                           type='text'
-                          placeholder='Shareholder name'
+                          placeholder='Shareholder Full Name'
                           value={sh.shareholder_name}
                           onChange={(e) =>
                             updateShareholder(
@@ -418,9 +437,9 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
+                  {PROPERTY_STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

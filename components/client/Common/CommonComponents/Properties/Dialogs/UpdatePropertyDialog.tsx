@@ -32,13 +32,17 @@ import {
   TABS,
 } from '@/data/client/common/properties/PropertiesData';
 import { useUpdatePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import {
   DetailsForm,
   PropertyDocument,
   Tab,
   UpdatePropertyModalProps,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  getCurrencySign,
+  snakeToCamel,
+} from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -486,6 +490,8 @@ const DetailsTab: React.FC<{
   isNameCustom: boolean;
   onToggleNameCustom: (v: boolean) => void;
 }> = ({ form, onChange, errors, isNameCustom, onToggleNameCustom }) => {
+  const { data: profileData } = useGetProfileInfoQuery(undefined);
+
   function set(key: keyof DetailsForm, value: string) {
     onChange({ ...form, [key]: value });
   }
@@ -567,6 +573,23 @@ const DetailsTab: React.FC<{
       shareholder: form.shareholder.filter((_, i) => i !== index),
     });
   }
+
+  const fullName = profileData
+    ? [
+        formatChoiceFieldValue(profileData.title),
+        profileData.first_name,
+        profileData.middle_name,
+        profileData.last_name,
+      ]
+        .filter(Boolean)
+        .join(' ')
+    : '';
+
+  const ownerOptions = PROPERTY_OWNER_OPTIONS.map((opt) =>
+    opt.value === 'OWNER' && fullName
+      ? { ...opt, label: `Owner (${fullName})` }
+      : opt,
+  );
 
   return (
     <div className='space-y-5'>
@@ -661,11 +684,6 @@ const DetailsTab: React.FC<{
             <Select
               value={form.property_owner}
               onValueChange={(v) => {
-                // Switching flows leaves stale rows shaped for the other flow
-                // (e.g. shareholder_name/share_percentage items when moving to
-                // OWNER), which renders owner_name as undefined and trips
-                // React's uncontrolled→controlled input warning once typed
-                // into. Reset the rows whenever the owner type changes.
                 if (v === form.property_owner) return;
                 onChange({ ...form, property_owner: v, shareholder: [] });
               }}
@@ -676,9 +694,9 @@ const DetailsTab: React.FC<{
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PROPERTY_OWNER_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {ownerOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -693,7 +711,7 @@ const DetailsTab: React.FC<{
               onClick={addOwner}
             >
               <Plus className='h-3.5 w-3.5' />
-              Add Owner
+              Add Another Owner
             </Button>
           )}
 
@@ -720,7 +738,7 @@ const DetailsTab: React.FC<{
                 <div key={i} className='flex items-center gap-2'>
                   <Input
                     type='text'
-                    placeholder='Owner name'
+                    placeholder='Owner Full Name'
                     value={owner.owner_name ?? ''}
                     onChange={(e) => updateOwner(i, e.target.value)}
                     className='border-primary! focus-visible:ring-primary/50 flex-1'
@@ -784,7 +802,7 @@ const DetailsTab: React.FC<{
                   <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
                     <Input
                       type='text'
-                      placeholder='Shareholder name'
+                      placeholder='Shareholder Full Name'
                       value={sh.shareholder_name ?? ''}
                       onChange={(e) =>
                         updateShareholder(i, 'shareholder_name', e.target.value)
