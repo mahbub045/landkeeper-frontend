@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -153,7 +154,7 @@ const Notification: React.FC = () => {
               disabled={isAllReadLoading}
               className='text-muted-foreground text-xs hover:underline'
             >
-              {isAllReadLoading ? 'Marking...' : 'Mark all as read'}
+              {isAllReadLoading && <Loading className='text-white!' />}
               Mark all as read
             </Button>
           )}
