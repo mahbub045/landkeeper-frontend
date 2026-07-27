@@ -154,7 +154,7 @@ const Notification: React.FC = () => {
               disabled={isAllReadLoading}
               className='text-muted-foreground text-xs hover:underline'
             >
-              {isAllReadLoading && <Loading className='text-white!' />}
+              {isAllReadLoading && <Loading className='text-muted-foreground!' />}
               Mark all as read
             </Button>
           )}
