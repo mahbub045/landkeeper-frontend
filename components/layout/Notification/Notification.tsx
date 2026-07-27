@@ -12,6 +12,7 @@ import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 // Replace with real data (API call / context / react-query etc.)
 const mockNotifications: NotificationItem[] = [
@@ -85,10 +86,11 @@ const mockNotifications: NotificationItem[] = [
 
 const Notification: React.FC = () => {
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false);
   const unreadCount = mockNotifications.filter((n) => !n.is_read).length;
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant='ghost'
@@ -132,6 +134,7 @@ const Notification: React.FC = () => {
               <Link
                 href={getNotificationURL(session, n.data)}
                 key={n.id}
+                onClick={() => setOpen(false)}
                 className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
                   !n.is_read ? 'bg-muted/30' : ''
                 }`}

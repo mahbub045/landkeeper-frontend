@@ -45,6 +45,7 @@ import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import CustomErrorMessage from '../../CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
 import UpdateSupportTicketDialog from '../Dialogs/UpdateSupportTicketDialog';
 import SupportTicketComments from './SupportTicketComments';
@@ -116,11 +117,7 @@ const SupportTicketDetails: React.FC = () => {
   }
 
   if (isError || !ticketDetails) {
-    return (
-      <p className='text-danger text-sm'>
-        Failed to load support ticket. Please try again.
-      </p>
-    );
+    return <CustomErrorMessage title='support ticket Details' />;
   }
 
   return (
