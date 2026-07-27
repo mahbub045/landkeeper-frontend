@@ -18,13 +18,13 @@ import {
   WizardState,
   WizardTab,
 } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
+import { validateDocumentStep } from '@/utils/validator';
 import ComplianceTab, {
   EMPTY_COMPLIANCE_STEP_FORM,
   validateComplianceStep,
 } from './Components/ComplianceTab';
 import DocumentsTab, {
   EMPTY_DOCUMENT_STEP_FORM,
-  validateDocumentStep,
 } from './Components/DocumentsTab';
 import MortgageTab, {
   EMPTY_MORTGAGE_STEP_FORM,

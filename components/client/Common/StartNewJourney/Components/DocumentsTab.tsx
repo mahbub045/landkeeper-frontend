@@ -115,7 +115,7 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
 
         <div className='space-y-3'>
           <FieldLabel className='gap-0 text-sm font-semibold'>
-            Documents
+            Documents<span className='text-danger'>*</span>
           </FieldLabel>
           <div
             onDrop={handleDrop}
@@ -153,6 +153,7 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
               accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
               className='hidden'
               onChange={(e) => addFiles(e.target.files)}
+              required
             />
           </div>
           <FieldError errors={[{ message: errors.file }]} />
@@ -193,10 +194,3 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
 DocumentsTab.displayName = 'DocumentStep';
 
 export default DocumentsTab;
-
-export function validateDocumentStep(files: File[]): Record<string, string> {
-  const errors: Record<string, string> = {};
-  // if (!files || files.length === 0)
-  //   errors.file = 'Please upload at least one document.';
-  return errors;
-}
