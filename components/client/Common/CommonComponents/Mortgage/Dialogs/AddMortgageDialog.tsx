@@ -121,7 +121,10 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
       payload.append('lender_name', form.lender_name);
       payload.append('interest_rate_type', form.interest_rate_type);
       payload.append('interest_rate', form.interest_rate);
-      payload.append('interest_rate_expiry_date', form.interest_rate_expiry_date);
+      payload.append(
+        'interest_rate_expiry_date',
+        form.interest_rate_expiry_date,
+      );
       payload.append('outstanding_balance', form.outstanding_balance);
       payload.append('monthly_payment', form.monthly_payment);
       payload.append('remaining_mortgage', form.remaining_mortgage);
@@ -359,7 +362,9 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <Input
                 type='date'
                 value={form.interest_rate_expiry_date}
-                onChange={(e) => set('interest_rate_expiry_date', e.target.value)}
+                onChange={(e) =>
+                  set('interest_rate_expiry_date', e.target.value)
+                }
                 aria-invalid={!!fieldErrors.interest_rate_expiry_date}
                 className={
                   fieldErrors.interest_rate_expiry_date
@@ -446,7 +451,13 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
               <Input
                 type='text'
                 value={form.epc_rating}
-                onChange={(e) => set('epc_rating', e.target.value)}
+                onChange={(e) => {
+                  const letterOnly = e.target.value
+                    .replace(/[^a-zA-Z]/g, '')
+                    .slice(0, 1)
+                    .toUpperCase();
+                  set('epc_rating', letterOnly);
+                }}
                 aria-invalid={!!fieldErrors.epc_rating}
                 className={
                   fieldErrors.epc_rating
