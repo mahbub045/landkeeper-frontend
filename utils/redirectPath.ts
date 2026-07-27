@@ -175,3 +175,36 @@ export const getStartNewJourneyUrl = (session: Session | null) => {
 
   return '/auth/login';
 };
+
+export const getNotificationURL = (
+  session: Session | null,
+  data?: { type: string; alias: string },
+) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (!data) return '#';
+
+  switch (data.type) {
+    case 'SUPPORT_TICKET':
+      if (role === 'SUPER_ADMIN') {
+        return `/super-admin/support-tickets/${data.alias}`;
+      }
+      if (role === 'LANDLORD') {
+        return `/client/landlord/support-tickets/${data.alias}`;
+      }
+      if (role === 'ADMIN') {
+        return `/client/admin/support-tickets/${data.alias}`;
+      }
+      if (role === 'LETTING_AGENT') {
+        return `/client/letting-agent/support-tickets/${data.alias}`;
+      }
+      return '#';
+    default:
+      return '#';
+  }
+};
