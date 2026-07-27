@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PropertyInfoProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
-import { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import {
   Bath,
   Bed,
@@ -12,24 +12,6 @@ import {
   ScrollText,
   Users,
 } from 'lucide-react';
-
-const TYPE_LABELS: Record<string, string> = {
-  RESIDENTIAL: 'Residential',
-  HMO: 'HMO',
-  COMMERCIAL: 'Commercial',
-  MIXED_USE: 'Mixed Use',
-  HOLIDAY_LET: 'Holiday Let',
-};
-
-const OWNER_LABELS: Record<string, string> = {
-  OWNER: 'Individual Owner(s)',
-  COMPANY: 'Company (Shareholders)',
-};
-
-const TENURE_LABELS: Record<string, string> = {
-  FREEHOLD: 'Freehold',
-  LEASEHOLD: 'Leasehold',
-};
 
 const InfoRow: React.FC<{ label: string; value: React.ReactNode }> = ({
   label,
@@ -59,7 +41,7 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
           value={
             <span className='flex items-center gap-1.5'>
               <Building2 className='text-primary size-3.5' />
-              {TYPE_LABELS[property.property_type] ?? property.property_type}
+              {formatChoiceFieldValue(property.property_type)}
             </span>
           }
         />
@@ -70,8 +52,11 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
             value={
               <span className='flex items-center gap-1.5'>
                 <Users className='text-primary size-3.5' />
-                {OWNER_LABELS[property.property_owner] ??
-                  property.property_owner}
+                {formatChoiceFieldValue(property.property_owner)}
+                {property.property_owner === 'OWNER' &&
+                  property.landlord.full_name && (
+                    <span> ({property.landlord.full_name})</span>
+                  )}
               </span>
             }
           />
@@ -136,8 +121,7 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
             value={
               <span className='flex items-center gap-1.5'>
                 <ScrollText className='text-primary size-3.5' />
-                {TENURE_LABELS[property.property_tenure] ??
-                  property.property_tenure}
+                {formatChoiceFieldValue(property.property_tenure)}
               </span>
             }
           />

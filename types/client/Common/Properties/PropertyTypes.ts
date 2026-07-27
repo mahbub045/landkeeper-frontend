@@ -21,9 +21,17 @@ export interface PropertyDocument {
 export interface Property {
   id: number;
   alias: string;
+  landlord: {
+    id?: number;
+    full_name?: string;
+    email?: string;
+    phone?: string;
+    current_address?: string;
+    ni_number?: number;
+    utr_number?: number;
+  };
   property_name: string;
   address: string;
-
   property_owner: string;
   company_name: string;
   shareholder: [
