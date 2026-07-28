@@ -261,7 +261,7 @@ const Notification: React.FC = () => {
             </p>
           ) : (
             notificationsData?.results.map((notification: NotificationItem) => (
-              <Link
+              <a
                 href={getNotificationURL(session, notification.data)}
                 key={notification.id}
                 onClick={handleMarkAsRead.bind(null, notification.id)}
@@ -290,7 +290,7 @@ const Notification: React.FC = () => {
                     </p>
                   )}
                 </div>
-              </Link>
+              </a>
             ))
           )}
         </div>
