@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import {
   useAllReadNotificationMutation,
   useGetNotificationsQuery,
@@ -16,7 +17,7 @@ import {
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
-import { Bell } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
@@ -33,6 +34,7 @@ const RECONNECT_DELAY_MS = 3000;
 const Notification: React.FC = () => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -41,16 +43,27 @@ const Notification: React.FC = () => {
   const {
     data: notificationsData,
     isLoading,
+    isFetching,
     refetch: refetchNotifications,
-  } = useGetNotificationsQuery(undefined);
-  const { data: unreadCountData, refetch: refetchUnreadCount } =
-    useUnreadNotificationCountQuery(undefined);
+  } = useGetNotificationsQuery({ page, limit: PAGE_LIMIT });
+  const {
+    data: unreadCountData,
+    isLoading: isUnreadCountLoading,
+    refetch: refetchUnreadCount,
+  } = useUnreadNotificationCountQuery(undefined);
   const [readNotification, { isLoading: isReadLoading }] =
     useReadNotificationMutation();
   const [allReadNotification, { isLoading: isAllReadLoading }] =
     useAllReadNotificationMutation();
 
   const accessToken = session?.user?.accessToken;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (nextOpen) {
+      setPage(1);
+    }
+  };
 
   useEffect(() => {
     if (!accessToken) return;
@@ -70,9 +83,6 @@ const Notification: React.FC = () => {
       ws.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
-          // Adjust this to match your backend's message shape.
-          // Assuming the server pushes something like
-          // { type: 'notification', data: {...} } on new notifications.
           if (payload?.type === 'notification' || payload) {
             refetchNotifications();
             refetchUnreadCount();
@@ -125,8 +135,21 @@ const Notification: React.FC = () => {
 
   const unreadCount = unreadCountData?.unread_count || 0;
 
+  const hasNext = Boolean(notificationsData?.next);
+  const hasPrevious = Boolean(notificationsData?.previous);
+  const totalCount = notificationsData?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
+
+  const handlePrevious = () => {
+    if (hasPrevious) setPage((p) => Math.max(1, p - 1));
+  };
+
+  const handleNext = () => {
+    if (hasNext) setPage((p) => p + 1);
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant='ghost'
@@ -135,10 +158,14 @@ const Notification: React.FC = () => {
           className='relative overflow-visible border border-gray-200 dark:border-gray-700'
         >
           <Bell className='size-4' />
-          {unreadCount > 0 && (
-            <span className='ring-background absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-medium text-white ring-2'>
-              {unreadCount}
-            </span>
+          {isUnreadCountLoading ? (
+            <Loading className='text-danger! absolute -top-1.5 -right-1.5 h-2 w-2' />
+          ) : (
+            unreadCount > 0 && (
+              <span className='ring-background absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-medium text-white ring-2'>
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )
           )}
         </Button>
       </PopoverTrigger>
@@ -209,6 +236,34 @@ const Notification: React.FC = () => {
             ))
           )}
         </div>
+
+        {!isLoading && totalCount > 0 && (
+          <div className='flex items-center justify-between border-t px-4 py-2'>
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={handlePrevious}
+              disabled={!hasPrevious || isFetching}
+              className='text-muted-foreground h-7 px-2 text-xs'
+            >
+              <ChevronLeft className='mr-1 size-3.5' />
+              Previous
+            </Button>
+            <span className='text-muted-foreground text-xs'>
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={handleNext}
+              disabled={!hasNext || isFetching}
+              className='text-muted-foreground h-7 px-2 text-xs'
+            >
+              Next
+              <ChevronRight className='ml-1 size-3.5' />
+            </Button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );
