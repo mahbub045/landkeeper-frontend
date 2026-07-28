@@ -282,7 +282,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
             </Badge>
           )}
         </TableCell>
-        <TableCell className='text-muted-foreground max-w-12.5 truncate text-sm'>
+        <TableCell className='text-muted-foreground max-w-12.5 truncate text-sm capitalize'>
           {ticket.subject || (
             <span className='text-muted-foreground font-normal'>N/A</span>
           )}
@@ -385,7 +385,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
                   <p className='text-muted-foreground text-[11px] font-semibold tracking-wider uppercase'>
                     Subject
                   </p>
-                  <p className='text-foreground mt-1 text-sm font-medium'>
+                  <p className='text-foreground mt-1 text-sm font-medium capitalize'>
                     {ticket.subject || (
                       <span className='text-muted-foreground font-normal'>
                         N/A

@@ -19,21 +19,92 @@ import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+
+const getWsBaseUrl = (apiUrl: string | undefined): string => {
+  if (!apiUrl) return '';
+  return apiUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
+};
+
+const WS_BASE_URL = getWsBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+const RECONNECT_DELAY_MS = 3000;
 
 const Notification: React.FC = () => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   //   RTK Hooks
-  const { data: notificationsData, isLoading } =
-    useGetNotificationsQuery(undefined);
-  const { data: unreadCountData } = useUnreadNotificationCountQuery(undefined);
+  const {
+    data: notificationsData,
+    isLoading,
+    refetch: refetchNotifications,
+  } = useGetNotificationsQuery(undefined);
+  const { data: unreadCountData, refetch: refetchUnreadCount } =
+    useUnreadNotificationCountQuery(undefined);
   const [readNotification, { isLoading: isReadLoading }] =
     useReadNotificationMutation();
   const [allReadNotification, { isLoading: isAllReadLoading }] =
     useAllReadNotificationMutation();
+
+  const accessToken = session?.user?.accessToken;
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    let isUnmounted = false;
+
+    const connect = () => {
+      const ws = new WebSocket(
+        `${WS_BASE_URL}/ws/notifications/?token=${accessToken}`,
+      );
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        console.debug('Notification WS connected');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data);
+          // Adjust this to match your backend's message shape.
+          // Assuming the server pushes something like
+          // { type: 'notification', data: {...} } on new notifications.
+          if (payload?.type === 'notification' || payload) {
+            refetchNotifications();
+            refetchUnreadCount();
+          }
+        } catch (error) {
+          console.error('Failed to parse notification WS message', error);
+        }
+      };
+
+      ws.onerror = (event) => {
+        console.error('Notification WS error', event);
+      };
+
+      ws.onclose = () => {
+        wsRef.current = null;
+        if (!isUnmounted) {
+          reconnectTimerRef.current = setTimeout(connect, RECONNECT_DELAY_MS);
+        }
+      };
+    };
+
+    connect();
+
+    return () => {
+      isUnmounted = true;
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+      }
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [accessToken, refetchNotifications, refetchUnreadCount]);
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
