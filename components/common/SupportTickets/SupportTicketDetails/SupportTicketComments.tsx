@@ -23,7 +23,9 @@ import {
 import { ApiSupportTicketComment } from '@/types/common/SupportTickets/SupportTicketTypes';
 import { formatDate, getInitials } from '@/utils/formatters';
 import {
+  Download,
   FileText,
+  Loader2,
   Paperclip,
   Pencil,
   Reply,
@@ -40,8 +42,45 @@ interface SupportTicketCommentsProps {
   ticketAlias: string;
 }
 
+// ── File constraints ────────────────────────────────────────────────────────
+const ACCEPTED_FILE_TYPES = 'image/*,video/*';
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+const MAX_FILE_SIZE_LABEL = '50MB';
+
 function getFileName(url: string) {
   return url.split('/').pop() || 'Unknown file';
+}
+
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+// Splits files into those within the size limit and those that exceed it,
+// warning about any rejected files.
+function filterFilesBySize(files: File[]): File[] {
+  const validFiles: File[] = [];
+  const oversizedFiles: File[] = [];
+
+  files.forEach((file) => {
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      oversizedFiles.push(file);
+    } else {
+      validFiles.push(file);
+    }
+  });
+
+  if (oversizedFiles.length > 0) {
+    const names = oversizedFiles
+      .map((file) => `${file.name} (${formatFileSize(file.size)})`)
+      .join(', ');
+    toast.warning(
+      `The following file(s) exceed the ${MAX_FILE_SIZE_LABEL} limit and were not added: ${names}`,
+    );
+  }
+
+  return validFiles;
 }
 
 type CommentFile = ApiSupportTicketComment['files'][number];
@@ -98,6 +137,49 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
 
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  // Tracks file identifiers (alias) currently being downloaded, for per-file loading state
+  const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(
+    new Set(),
+  );
+
+  // ── Download an attachment (instead of opening it in a new tab) ────────────
+  async function handleDownloadFile(
+    url: string,
+    filename: string,
+    fileKey: string,
+  ) {
+    if (downloadingFiles.has(fileKey)) return; // already downloading
+
+    setDownloadingFiles((prev) => new Set(prev).add(fileKey));
+    try {
+      // Routed through the same proxy used to prefetch files for editing,
+      // so this works regardless of the storage host's CORS policy.
+      const res = await fetch(
+        `/api/fetch-remote-files?url=${encodeURIComponent(url)}`,
+      );
+      if (!res.ok) throw new Error(`Failed to fetch file (${res.status})`);
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('Failed to download file', err);
+      toast.error('Failed to download file. Please try again.');
+    } finally {
+      setDownloadingFiles((prev) => {
+        const next = new Set(prev);
+        next.delete(fileKey);
+        return next;
+      });
+    }
+  }
 
   // ── Top-level comment submit ──────────────────────────────────────────────
   async function handleSubmitComment(e: React.FormEvent) {
@@ -332,7 +414,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                         {(editExistingFiles[node.alias] ?? []).map((f) => (
                           <div
                             key={f.alias}
-                            className='bg-background flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
+                            className='bg-background flex cursor-pointer items-center gap-2 rounded-md border px-2 py-1 text-xs'
                           >
                             <FileText className='text-primary size-3.5' />
                             {getFileName(f.file)}
@@ -342,6 +424,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                               onClick={() =>
                                 removeExistingEditFile(node.alias, f.alias)
                               }
+                              className='cursor-pointer'
                             >
                               <X className='hover:text-danger size-3.5' />
                             </button>
@@ -359,9 +442,10 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                           className='bg-background flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
                         >
                           <FileText className='text-muted-foreground size-3.5' />
-                          {file.name}
+                          {file.name} ({formatFileSize(file.size)})
                           <button
                             type='button'
+                            className='cursor-pointer'
                             onClick={() =>
                               setEditFiles((prev) => ({
                                 ...prev,
@@ -384,33 +468,39 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                     }}
                     type='file'
                     multiple
-                    accept='image/*,.pdf,.doc,.docx'
+                    accept={ACCEPTED_FILE_TYPES}
                     disabled={editLoading}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const picked = filterFilesBySize(
+                        Array.from(e.target.files ?? []),
+                      );
                       setEditFiles((prev) => ({
                         ...prev,
-                        [node.alias]: [
-                          ...(prev[node.alias] ?? []),
-                          ...Array.from(e.target.files ?? []),
-                        ],
-                      }))
-                    }
+                        [node.alias]: [...(prev[node.alias] ?? []), ...picked],
+                      }));
+                      e.target.value = '';
+                    }}
                     className='hidden'
                   />
 
-                  <button
-                    type='button'
-                    disabled={editLoading}
-                    onClick={() =>
-                      editFileInputRefs.current[node.alias]?.click()
-                    }
-                    className='border-border bg-background hover:bg-muted flex h-10 max-w-52 items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
-                  >
-                    <Paperclip className='size-3.5' />
-                    {(editFiles[node.alias] ?? []).length > 0
-                      ? `${(editFiles[node.alias] ?? []).length} file${(editFiles[node.alias] ?? []).length > 1 ? 's' : ''} selected`
-                      : 'Add files'}
-                  </button>
+                  <div className='flex items-center gap-2'>
+                    <button
+                      type='button'
+                      disabled={editLoading}
+                      onClick={() =>
+                        editFileInputRefs.current[node.alias]?.click()
+                      }
+                      className='border-border bg-background hover:bg-muted flex h-7 max-w-52 cursor-pointer items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
+                    >
+                      <Paperclip className='size-3.5' />
+                      {(editFiles[node.alias] ?? []).length > 0
+                        ? `${(editFiles[node.alias] ?? []).length} file${(editFiles[node.alias] ?? []).length > 1 ? 's' : ''} selected`
+                        : 'Add files'}
+                    </button>
+                    <span className='text-muted-foreground text-xs'>
+                      Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                    </span>
+                  </div>
                   <div className='flex gap-2'>
                     <Button
                       type='submit'
@@ -423,6 +513,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                     <Button
                       type='button'
                       variant='outline'
+                      className='cursor-pointer'
                       size='sm'
                       onClick={() => cancelEdit(node.alias)}
                     >
@@ -438,18 +529,32 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
 
                   {node.files.length > 0 && (
                     <div className='mt-2 flex flex-wrap gap-2'>
-                      {node.files.map((f) => (
-                        <a
-                          key={f.alias}
-                          href={f.file}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='bg-background hover:bg-muted flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs'
-                        >
-                          <FileText className='text-primary size-3.5' />
-                          {getFileName(f.file)}
-                        </a>
-                      ))}
+                      {node.files.map((f) => {
+                        const isDownloading = downloadingFiles.has(f.alias);
+                        return (
+                          <button
+                            key={f.alias}
+                            type='button'
+                            disabled={isDownloading}
+                            onClick={() =>
+                              handleDownloadFile(
+                                f.file,
+                                getFileName(f.file),
+                                f.alias,
+                              )
+                            }
+                            className='bg-background hover:bg-muted flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-xs disabled:opacity-70'
+                          >
+                            <FileText className='text-primary size-3.5' />
+                            {getFileName(f.file)}
+                            {isDownloading ? (
+                              <Loader2 className='text-muted-foreground size-3.5 animate-spin' />
+                            ) : (
+                              <Download className='text-muted-foreground size-3.5' />
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
 
@@ -457,7 +562,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                     {!isReply && (
                       <button
                         type='button'
-                        className='text-primary flex items-center gap-1 text-xs font-medium hover:underline'
+                        className='text-primary flex cursor-pointer items-center gap-1 text-xs font-medium hover:underline'
                         onClick={() =>
                           setReplyTo(replyTo === node.id ? null : node.id)
                         }
@@ -470,7 +575,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                       <>
                         <button
                           type='button'
-                          className='flex items-center gap-1 text-xs font-medium text-amber-600 hover:underline'
+                          className='flex cursor-pointer items-center gap-1 text-xs font-medium text-amber-600 hover:underline'
                           onClick={() => startEdit(node)}
                         >
                           <Pencil className='size-3.5' />
@@ -478,7 +583,7 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                         </button>
                         <button
                           type='button'
-                          className='text-danger flex items-center gap-1 text-xs font-medium hover:underline'
+                          className='text-danger flex cursor-pointer items-center gap-1 text-xs font-medium hover:underline'
                           onClick={() => setDeleteTarget(node.alias)}
                         >
                           <Trash className='size-3.5' />
@@ -514,9 +619,10 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                           className='bg-background flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
                         >
                           <FileText className='text-muted-foreground size-3.5' />
-                          {file.name}
+                          {file.name} ({formatFileSize(file.size)})
                           <button
                             type='button'
+                            className='cursor-pointer'
                             onClick={() =>
                               setReplyFiles((prev) => ({
                                 ...prev,
@@ -533,40 +639,46 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                     </div>
                   )}
 
-                  <div className='flex items-center gap-3'>
+                  <div className='flex items-start gap-3'>
                     <input
                       ref={(el) => {
                         replyFileInputRefs.current[node.id] = el;
                       }}
                       type='file'
                       multiple
-                      accept='image/*,.pdf,.doc,.docx'
+                      accept={ACCEPTED_FILE_TYPES}
                       disabled={replyLoadingId === node.id}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const picked = filterFilesBySize(
+                          Array.from(e.target.files ?? []),
+                        );
                         setReplyFiles((prev) => ({
                           ...prev,
-                          [node.id]: [
-                            ...(prev[node.id] ?? []),
-                            ...Array.from(e.target.files ?? []),
-                          ],
-                        }))
-                      }
+                          [node.id]: [...(prev[node.id] ?? []), ...picked],
+                        }));
+                        e.target.value = '';
+                      }}
                       className='hidden'
                     />
 
-                    <button
-                      type='button'
-                      disabled={replyLoadingId === node.id}
-                      onClick={() =>
-                        replyFileInputRefs.current[node.id]?.click()
-                      }
-                      className='border-border bg-background hover:bg-muted flex h-10 max-w-52 items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
-                    >
-                      <Paperclip className='size-3.5' />
-                      {(replyFiles[node.id] ?? []).length > 0
-                        ? `${(replyFiles[node.id] ?? []).length} file${(replyFiles[node.id] ?? []).length > 1 ? 's' : ''} selected`
-                        : 'Choose files'}
-                    </button>
+                    <div className='flex flex-col gap-1'>
+                      <button
+                        type='button'
+                        disabled={replyLoadingId === node.id}
+                        onClick={() =>
+                          replyFileInputRefs.current[node.id]?.click()
+                        }
+                        className='border-border bg-background hover:bg-muted flex h-7 max-w-52 cursor-pointer items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
+                      >
+                        <Paperclip className='size-3.5' />
+                        {(replyFiles[node.id] ?? []).length > 0
+                          ? `${(replyFiles[node.id] ?? []).length} file${(replyFiles[node.id] ?? []).length > 1 ? 's' : ''} selected`
+                          : 'Choose files'}
+                      </button>
+                      <span className='text-muted-foreground text-xs'>
+                        Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                      </span>
+                    </div>
 
                     <Button
                       size='sm'
@@ -576,7 +688,11 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                       }
                       onClick={() => handleSubmitReply(node.id)}
                     >
-                      {replyLoadingId === node.id ? <Loading /> : <Send />}
+                      {replyLoadingId === node.id ? (
+                        <Loading className='text-white!' />
+                      ) : (
+                        <Send />
+                      )}
                       Send
                     </Button>
                     <Button
@@ -640,9 +756,10 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                       className='bg-muted flex items-center gap-2 rounded-md border px-2 py-1 text-xs'
                     >
                       <FileText className='text-muted-foreground size-3.5' />
-                      {file.name}
+                      {file.name} ({formatFileSize(file.size)})
                       <button
                         type='button'
+                        className='cursor-pointer'
                         onClick={() =>
                           setSelectedFiles((prev) =>
                             prev.filter((_, i) => i !== index),
@@ -656,39 +773,49 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                 </div>
               )}
 
-              <div className='flex items-center gap-3'>
+              <div className='flex items-start gap-3'>
                 <input
                   ref={fileInputRef}
                   type='file'
                   multiple
-                  accept='image/*,.pdf,.doc,.docx'
+                  accept={ACCEPTED_FILE_TYPES}
                   disabled={isCommentLoading}
-                  onChange={(e) =>
-                    setSelectedFiles((prev) => [
-                      ...prev,
-                      ...Array.from(e.target.files ?? []),
-                    ])
-                  }
+                  onChange={(e) => {
+                    const picked = filterFilesBySize(
+                      Array.from(e.target.files ?? []),
+                    );
+                    setSelectedFiles((prev) => [...prev, ...picked]);
+                    e.target.value = '';
+                  }}
                   className='hidden'
                 />
 
-                <button
-                  type='button'
-                  disabled={isCommentLoading}
-                  onClick={() => fileInputRef.current?.click()}
-                  className='border-border bg-background hover:bg-muted flex h-10 max-w-60 items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
-                >
-                  <Paperclip className='size-3.5' />
-                  {selectedFiles.length > 0
-                    ? `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected`
-                    : 'Choose files'}
-                </button>
+                <div className='flex flex-col gap-1'>
+                  <button
+                    type='button'
+                    disabled={isCommentLoading}
+                    onClick={() => fileInputRef.current?.click()}
+                    className='border-border bg-background hover:bg-muted flex h-8 max-w-60 cursor-pointer items-center gap-2 rounded-lg border px-4 text-xs font-semibold disabled:opacity-50'
+                  >
+                    <Paperclip className='size-3.5' />
+                    {selectedFiles.length > 0
+                      ? `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected`
+                      : 'Choose files'}
+                  </button>
+                  <span className='text-muted-foreground text-xs'>
+                    Images & videos, max {MAX_FILE_SIZE_LABEL} each
+                  </span>
+                </div>
 
                 <Button
                   type='submit'
                   disabled={isCommentLoading || !newComment.trim()}
                 >
-                  {isCommentLoading ? <Loading /> : <Send />}
+                  {isCommentLoading ? (
+                    <Loading className='text-white!' />
+                  ) : (
+                    <Send />
+                  )}
                   Post Comment
                 </Button>
               </div>
