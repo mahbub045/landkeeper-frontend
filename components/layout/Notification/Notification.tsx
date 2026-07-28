@@ -95,7 +95,11 @@ const Notification: React.FC = () => {
         </div>
 
         <div className='max-h-80 overflow-y-auto'>
-          {notificationsData?.results.length === 0 ? (
+          {isLoading ? (
+            <div className='flex items-center justify-center px-4 py-10'>
+              <Loading />
+            </div>
+          ) : notificationsData?.results.length === 0 ? (
             <p className='text-muted-foreground px-4 py-6 text-center text-sm'>
               No notifications
             </p>
