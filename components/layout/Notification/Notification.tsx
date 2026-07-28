@@ -11,6 +11,7 @@ import {
   useAllReadNotificationMutation,
   useGetNotificationsQuery,
   useReadNotificationMutation,
+  useUnreadNotificationCountQuery,
 } from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
 import { formatDateAndTime } from '@/utils/formatters';
@@ -21,83 +22,14 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-// Replace with real data (API call / context / react-query etc.)
-const notificationsData = [
-  {
-    id: '1',
-    title: 'New tenant application',
-    description: 'John Doe applied for Unit 4B.',
-    is_read: false,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '810252c0-08af-4fc2-af27-812f38fb51ea',
-    },
-  },
-  {
-    id: '2',
-    title: 'Rent payment received',
-    description: 'Payment of $1,200 received from Unit 2A.',
-    is_read: true,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '87ed468d-ce47-4d73-8ba7-a7f41c785c75',
-    },
-  },
-  {
-    id: '3',
-    title: 'Rent payment received',
-    description: 'Payment of $1,200 received from Unit 2A.',
-    is_read: false,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '87ed468d-ce47-4d73-8ba7-a7f41c785c75',
-    },
-  },
-  {
-    id: '4',
-    title: 'Rent payment received',
-    description: 'Payment of $1,200 received from Unit 2A.',
-    is_read: true,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '87ed468d-ce47-4d73-8ba7-a7f41c785c75',
-    },
-  },
-  {
-    id: '5',
-    title: 'Rent payment received',
-    description: 'Payment of $1,200 received from Unit 2A.',
-    is_read: true,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '87ed468d-ce47-4d73-8ba7-a7f41c785c75',
-    },
-  },
-  {
-    id: '6',
-    title: 'Rent payment received',
-    description: 'Payment of $1,200 received from Unit 2A.',
-    is_read: true,
-    created_at: '2023-04-01T10:00:00Z',
-    data: {
-      type: 'SUPPORT_TICKET',
-      alias: '87ed468d-ce47-4d73-8ba7-a7f41c785c75',
-    },
-  },
-];
-
 const Notification: React.FC = () => {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
 
   //   RTK Hooks
-  const { data: notifications, isLoading } =
+  const { data: notificationsData, isLoading } =
     useGetNotificationsQuery(undefined);
+  const { data: unreadCountData } = useUnreadNotificationCountQuery(undefined);
   const [readNotification, { isLoading: isReadLoading }] =
     useReadNotificationMutation();
   const [allReadNotification, { isLoading: isAllReadLoading }] =
@@ -120,7 +52,7 @@ const Notification: React.FC = () => {
     }
   };
 
-  const unreadCount = notificationsData.filter((n) => !n.is_read).length;
+  const unreadCount = unreadCountData?.unread_count || 0;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -154,23 +86,26 @@ const Notification: React.FC = () => {
               disabled={isAllReadLoading}
               className='text-muted-foreground text-xs hover:underline'
             >
-              {isAllReadLoading && <Loading className='text-muted-foreground!' />}
+              {isAllReadLoading && (
+                <Loading className='text-muted-foreground!' />
+              )}
               Mark all as read
             </Button>
           )}
         </div>
 
         <div className='max-h-80 overflow-y-auto'>
-          {notificationsData.length === 0 ? (
+          {notificationsData?.results.length === 0 ? (
             <p className='text-muted-foreground px-4 py-6 text-center text-sm'>
               No notifications
             </p>
           ) : (
-            notificationsData.map((notification: NotificationItem) => (
+            notificationsData?.results.map((notification: NotificationItem) => (
               <Link
                 href={getNotificationURL(session, notification.data)}
                 key={notification.id}
                 onClick={handleMarkAsRead.bind(null, notification.id)}
+                aria-disabled={isReadLoading}
                 className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
                   !notification.is_read ? 'bg-muted/30' : ''
                 }`}

@@ -9,16 +9,23 @@ export const NotificationApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Notifications'],
     }),
+    unreadNotificationCount: builder.query({
+      query: () => ({
+        url: '/notifications/unread-count',
+        method: 'GET',
+      }),
+      providesTags: ['Notifications'],
+    }),
     readNotification: builder.mutation({
       query: (notificationId: string) => ({
-        url: `/notifications/${notificationId}/read`,
+        url: `/notifications/${notificationId}/mark-as-read`,
         method: 'POST',
       }),
       invalidatesTags: ['Notifications'],
     }),
     allReadNotification: builder.mutation({
       query: () => ({
-        url: '/notifications/read-all',
+        url: '/notifications/mark-all-as-read',
         method: 'POST',
       }),
       invalidatesTags: ['Notifications'],
@@ -28,6 +35,7 @@ export const NotificationApi = baseApi.injectEndpoints({
 
 export const {
   useGetNotificationsQuery,
+  useUnreadNotificationCountQuery,
   useReadNotificationMutation,
   useAllReadNotificationMutation,
 } = NotificationApi;
