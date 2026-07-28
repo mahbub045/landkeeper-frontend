@@ -282,6 +282,11 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
             </Badge>
           )}
         </TableCell>
+        <TableCell className='text-muted-foreground max-w-12.5 truncate text-sm'>
+          {ticket.subject || (
+            <span className='text-muted-foreground font-normal'>N/A</span>
+          )}
+        </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-3'>
             <div className='flex flex-col items-center justify-center'>
