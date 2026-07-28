@@ -89,7 +89,7 @@ const Notification: React.FC = () => {
           ws.close();
           return;
         }
-        console.debug('Notification WS connected');
+        // console.debug('Notification WS connected');
       };
 
       ws.onmessage = (event) => {
@@ -100,7 +100,7 @@ const Notification: React.FC = () => {
             refetchUnreadCount();
           }
         } catch (error) {
-          console.error('Failed to parse notification WS message', error);
+          // console.error('Failed to parse notification WS message', error);
         }
       };
 
@@ -112,7 +112,7 @@ const Notification: React.FC = () => {
         if (ws.readyState === WebSocket.CONNECTING) {
           return;
         }
-        console.error('Notification WS error', event);
+        // console.error('Notification WS error', event);
       };
 
       ws.onclose = () => {
