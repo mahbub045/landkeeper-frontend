@@ -19,7 +19,6 @@ import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
