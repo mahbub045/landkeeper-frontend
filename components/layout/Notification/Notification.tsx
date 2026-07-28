@@ -76,7 +76,19 @@ const Notification: React.FC = () => {
       );
       wsRef.current = ws;
 
+      // If cleanup runs while this socket is still CONNECTING (e.g. React
+      // Strict Mode's mount -> cleanup -> mount dev cycle), calling
+      // ws.close() immediately triggers a native, unsuppressable browser
+      // console warning ("WebSocket is closed before the connection is
+      // established"). Instead, mark it for closing and defer the actual
+      // close() call until onopen fires.
+      let closeRequested = false;
+
       ws.onopen = () => {
+        if (closeRequested) {
+          ws.close();
+          return;
+        }
         console.debug('Notification WS connected');
       };
 
@@ -93,13 +105,36 @@ const Notification: React.FC = () => {
       };
 
       ws.onerror = (event) => {
+        // A socket that's still CONNECTING when it errors/closes is almost
+        // always a benign race (e.g. React Strict Mode / Fast Refresh
+        // remounting and tearing down the effect before the handshake
+        // finished). Don't treat that as a real failure.
+        if (ws.readyState === WebSocket.CONNECTING) {
+          return;
+        }
         console.error('Notification WS error', event);
       };
 
       ws.onclose = () => {
-        wsRef.current = null;
+        // Only clear the ref if this callback belongs to the socket
+        // currently tracked in wsRef (avoids a stale close handler from
+        // a previous socket clobbering a newer connection's state).
+        if (wsRef.current === ws) {
+          wsRef.current = null;
+        }
         if (!isUnmounted) {
           reconnectTimerRef.current = setTimeout(connect, RECONNECT_DELAY_MS);
+        }
+      };
+
+      // Attach a helper on the socket instance itself so cleanup (which
+      // only has a reference to the WebSocket, not this closure) can
+      // request a deferred close.
+      (ws as WebSocket & { requestClose: () => void }).requestClose = () => {
+        if (ws.readyState === WebSocket.CONNECTING) {
+          closeRequested = true;
+        } else {
+          ws.close();
         }
       };
     };
@@ -110,8 +145,31 @@ const Notification: React.FC = () => {
       isUnmounted = true;
       if (reconnectTimerRef.current) {
         clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
       }
-      wsRef.current?.close();
+
+      const ws = wsRef.current as
+        | (WebSocket & { requestClose?: () => void })
+        | null;
+      if (ws) {
+        if (ws.readyState === WebSocket.CONNECTING) {
+          // Don't close yet — defer via requestClose so we avoid the
+          // native "closed before connection established" warning.
+          // Keep onopen/onclose wired up so the deferred close still runs
+          // and onclose still fires (no reconnect noise beyond this).
+          ws.onmessage = null;
+          ws.onerror = null;
+          ws.requestClose?.();
+        } else {
+          // Already open (or already closing/closed) — safe to detach
+          // handlers and close immediately.
+          ws.onopen = null;
+          ws.onmessage = null;
+          ws.onerror = null;
+          ws.onclose = null;
+          ws.close();
+        }
+      }
       wsRef.current = null;
     };
   }, [accessToken, refetchNotifications, refetchUnreadCount]);
