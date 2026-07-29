@@ -17,7 +17,7 @@ import {
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
-import { Bell, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -43,6 +43,7 @@ const Notification: React.FC = () => {
     data: notificationsData,
     isLoading,
     isFetching,
+    error,
     refetch: refetchNotifications,
   } = useGetNotificationsQuery({ page, limit: PAGE_LIMIT });
   const {
@@ -254,12 +255,31 @@ const Notification: React.FC = () => {
             <div className='flex items-center justify-center px-4 py-10'>
               <Loading />
             </div>
+          ) : error ? (
+            <div className='px-4 py-6 text-center'>
+              <p className='text-sm text-red-500'>
+                {'status' in error
+                  ? (error.data as { message?: string })?.message ||
+                    'Failed to load notifications.'
+                  : 'Something went wrong. Please try again.'}
+              </p>
+
+              <Button
+                variant='default'
+                size='sm'
+                className='mt-3'
+                onClick={() => refetchNotifications()}
+              >
+                <RefreshCcw />
+                Retry
+              </Button>
+            </div>
           ) : notificationsData?.results.length === 0 ? (
             <p className='text-muted-foreground px-4 py-6 text-center text-sm'>
               No notifications
             </p>
           ) : (
-            notificationsData?.results.map((notification: NotificationItem) => (
+            notificationsData.results.map((notification: NotificationItem) => (
               <a
                 href={getNotificationURL(session, notification.data)}
                 key={notification.id}
