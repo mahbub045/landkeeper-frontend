@@ -71,7 +71,7 @@ const FinancialOverview: React.FC = () => {
         Financial overview
       </div>
 
-      <div className='overflow-hidden rounded-xl border'>
+      <div className='overflow-hidden rounded-xl border shadow-lg'>
         {/* Header row */}
         <div className='grid grid-cols-3 gap-4 border-b px-5 py-3'>
           <p className='text-xs text-neutral-500'>Next rent due date</p>
@@ -84,7 +84,7 @@ const FinancialOverview: React.FC = () => {
           {financialData.map((row) => (
             <Card
               key={row.id}
-              className='mx-1 my-2 grid grid-cols-3 items-start gap-4 border-x-0 border-t-0 border-b-0 px-2 py-3 shadow-none'
+              className='m-2 grid grid-cols-3 items-start gap-4 border-x-0 border-t-0 border-b-0 px-2 py-3'
             >
               <div className='flex items-center gap-2'>
                 <Calendar className='h-4 w-4 text-neutral-400' />

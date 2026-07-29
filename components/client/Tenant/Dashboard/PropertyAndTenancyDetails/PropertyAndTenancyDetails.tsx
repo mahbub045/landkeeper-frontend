@@ -1,3 +1,4 @@
+'use client';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { PropertyAndTenancyDetailsType } from '@/types/client/Tenant/Dashboard/DashboardsTypes';
@@ -77,11 +78,11 @@ const statusStyles: Record<PropertyAndTenancyDetailsType['status'], string> = {
 };
 
 const PropertyAndTenancyDetails: React.FC = () => {
-  //   const {
-  //     data: tenancies,
-  //     isLoading,
-  //     isError,
-  //   } = useGetPropertyAndTenancyDetailsQuery(undefined);
+  // const {
+  //   data: tenancies,
+  //   isLoading,
+  //   isError,
+  // } = useGetPropertyAndTenancyDetailsQuery(undefined);
   return (
     <div className='mx-auto w-full max-w-4xl space-y-3'>
       <div className='flex items-center gap-2 text-sm font-medium'>
@@ -89,7 +90,7 @@ const PropertyAndTenancyDetails: React.FC = () => {
         Property and tenancy details
       </div>
 
-      <div className='overflow-hidden rounded-xl border'>
+      <div className='overflow-hidden rounded-xl border shadow-lg'>
         {/* Header row */}
         <div className='grid grid-cols-4 gap-4 border-b px-5 py-3'>
           <p className='text-xs text-neutral-500'>Property address</p>
@@ -100,10 +101,10 @@ const PropertyAndTenancyDetails: React.FC = () => {
 
         {/* Scrollable data rows */}
         <div className='max-h-105 divide-y overflow-y-auto'>
-          {tenancies.map((t) => (
+          {tenancies?.map((t: PropertyAndTenancyDetailsType) => (
             <Card
               key={t.id}
-              className='mx-1 my-2 grid grid-cols-4 items-center gap-4 border-x-0 border-t-0 border-b-0 px-2 py-3 last:border-b-0'
+              className='m-2 grid grid-cols-4 items-center gap-4 border-x-0 border-t-0 border-b-0 px-2 py-3 last:border-b-0'
             >
               <div>
                 <p className='text-sm font-medium'>{t.address}</p>
