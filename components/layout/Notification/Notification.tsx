@@ -281,7 +281,11 @@ const Notification: React.FC = () => {
           ) : (
             notificationsData.results.map((notification: NotificationItem) => (
               <a
-                href={getNotificationURL(session, notification.data)}
+                href={
+                  notification.data?.is_deleted
+                    ? '#'
+                    : getNotificationURL(session, notification.data)
+                }
                 key={notification.id}
                 onClick={handleMarkAsRead.bind(null, notification.id)}
                 aria-disabled={isReadLoading}
@@ -303,8 +307,13 @@ const Notification: React.FC = () => {
                   <p className='text-muted-foreground text-xs'>
                     {notification.description}
                   </p>
+                  {notification.data?.is_deleted && (
+                    <p className='text-danger/80 mt-1 text-[10px]'>
+                      (This notification related content is no longer available.)
+                    </p>
+                  )}
                   {notification.created_at && (
-                    <p className='text-muted-foreground/70 mt-1 text-[11px]'>
+                    <p className='text-/70 mt-1 text-[11px]'>
                       {formatDateAndTime(notification.created_at)}
                     </p>
                   )}

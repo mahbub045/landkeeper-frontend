@@ -7,5 +7,6 @@ export interface NotificationItem {
   data?: {
     type: string;
     alias: string;
+    is_deleted?: boolean;
   };
 }
