@@ -220,7 +220,7 @@ const Notification: React.FC = () => {
             <Loading className='text-danger! absolute -top-1.5 -right-1.5 h-2 w-2' />
           ) : (
             unreadCount > 0 && (
-              <span className='ring-background absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] leading-none font-medium text-white ring-2'>
+              <span className='ring-background bg-danger absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none font-medium text-white ring-2'>
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )
@@ -309,7 +309,8 @@ const Notification: React.FC = () => {
                   </p>
                   {notification.data?.is_deleted && (
                     <p className='text-danger/80 mt-1 text-[10px]'>
-                      (This notification related content is no longer available.)
+                      (This notification related content is no longer
+                      available.)
                     </p>
                   )}
                   {notification.created_at && (
