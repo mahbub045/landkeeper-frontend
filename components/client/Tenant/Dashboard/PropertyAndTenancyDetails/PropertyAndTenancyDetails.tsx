@@ -1,93 +1,89 @@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { PropertyAndTenancyDetailsType } from '@/types/client/Tenant/Dashboard/DashboardsTypes';
 import { MapPin } from 'lucide-react';
 import React from 'react';
 
-interface TenancyRecord {
-  id: string;
-  address: string;
-  city: string;
-  termStart: string;
-  termEnd: string;
-  termLength: string;
-  status: 'Active' | 'Ending soon' | 'Expired';
-}
-
-const tenancies: TenancyRecord[] = [
+const tenancies: PropertyAndTenancyDetailsType[] = [
   {
     id: '1',
     address: '123 Maple Street, Apt 4B',
     city: 'Ilford, IG1 1ZZ',
-    termStart: 'Oct 1, 2025',
-    termEnd: 'Sep 30, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Oct 1, 2025',
+    term_end: 'Sep 30, 2026',
+    term_length: '12-month agreement',
     status: 'Active',
   },
   {
     id: '2',
     address: '56 Birchwood Road, Flat 2',
     city: 'Romford, RM1 3QF',
-    termStart: 'Jan 15, 2025',
-    termEnd: 'Jan 14, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Jan 15, 2025',
+    term_end: 'Jan 14, 2026',
+    term_length: '12-month agreement',
     status: 'Ending soon',
   },
   {
     id: '3',
     address: '9 Willow Court',
     city: 'Barking, IG11 8XZ',
-    termStart: 'Mar 1, 2024',
-    termEnd: 'Feb 28, 2025',
-    termLength: '12-month agreement',
+    term_start: 'Mar 1, 2024',
+    term_end: 'Feb 28, 2025',
+    term_length: '12-month agreement',
     status: 'Expired',
   },
   {
     id: '4',
     address: '14 Elmfield Avenue',
     city: 'Dagenham, RM10 7JP',
-    termStart: 'Jun 1, 2025',
-    termEnd: 'May 31, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Jun 1, 2025',
+    term_end: 'May 31, 2026',
+    term_length: '12-month agreement',
     status: 'Active',
   },
   {
     id: '5',
     address: '14 Elmfield Avenue',
     city: 'Dagenham, RM10 7JP',
-    termStart: 'Jun 1, 2025',
-    termEnd: 'May 31, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Jun 1, 2025',
+    term_end: 'May 31, 2026',
+    term_length: '12-month agreement',
     status: 'Active',
   },
   {
     id: '6',
     address: '14 Elmfield Avenue',
     city: 'Dagenham, RM10 7JP',
-    termStart: 'Jun 1, 2025',
-    termEnd: 'May 31, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Jun 1, 2025',
+    term_end: 'May 31, 2026',
+    term_length: '12-month agreement',
     status: 'Active',
   },
   {
     id: '7',
     address: '14 Elmfield Avenue',
     city: 'Dagenham, RM10 7JP',
-    termStart: 'Jun 1, 2025',
-    termEnd: 'May 31, 2026',
-    termLength: '12-month agreement',
+    term_start: 'Jun 1, 2025',
+    term_end: 'May 31, 2026',
+    term_length: '12-month agreement',
     status: 'Active',
   },
 ];
 
-const statusStyles: Record<TenancyRecord['status'], string> = {
+const statusStyles: Record<PropertyAndTenancyDetailsType['status'], string> = {
   Active: 'bg-success',
   'Ending soon': 'bg-amber-400',
   Expired: 'bg-danger',
 };
 
 const PropertyAndTenancyDetails: React.FC = () => {
+  //   const {
+  //     data: tenancies,
+  //     isLoading,
+  //     isError,
+  //   } = useGetPropertyAndTenancyDetailsQuery(undefined);
   return (
-    <div className='mx-auto w-full max-w-4xl space-y-3 p-4'>
+    <div className='mx-auto w-full max-w-4xl space-y-3'>
       <div className='flex items-center gap-2 text-sm font-medium'>
         <MapPin className='h-4 w-4' />
         Property and tenancy details
@@ -114,9 +110,9 @@ const PropertyAndTenancyDetails: React.FC = () => {
                 <p className='text-sm text-neutral-400'>{t.city}</p>
               </div>
               <p className='text-sm'>
-                {t.termStart} - {t.termEnd}
+                {t.term_start} - {t.term_end}
               </p>
-              <p className='text-sm text-neutral-400'>{t.termLength}</p>
+              <p className='text-sm text-neutral-400'>{t.term_length}</p>
               <p className='text-center text-sm'>
                 <Badge className={`font-medium ${statusStyles[t.status]}`}>
                   <span className='inline-block h-2 w-2 rounded-full bg-current align-middle'></span>

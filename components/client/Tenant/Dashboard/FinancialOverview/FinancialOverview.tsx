@@ -1,79 +1,71 @@
 import { Card } from '@/components/ui/card';
+import { FinancialDataType } from '@/types/client/Tenant/Dashboard/DashboardsTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { Calendar, Coins, Wallet } from 'lucide-react';
 import React from 'react';
 
-interface FinancialData {
-  id: string;
-  nextRentDueDate: string;
-  outstandingBalance: number;
-  isPaidInFull: boolean;
-  rentAmount: number;
-  rentCadence: 'month' | 'week';
-}
-
-const financialData: FinancialData[] = [
+const financialData: FinancialDataType[] = [
   {
     id: '1',
-    nextRentDueDate: 'August 1, 2026',
-    outstandingBalance: 0,
-    isPaidInFull: true,
-    rentAmount: 1450,
-    rentCadence: 'month',
+    next_rent_due_date: 'August 1, 2026',
+    outstanding_balance: 0,
+    is_paid_in_full: true,
+    rent_amount: 1450,
+    rent_cadence: 'month',
   },
   {
     id: '2',
-    nextRentDueDate: 'August 5, 2026',
-    outstandingBalance: 320,
-    isPaidInFull: false,
-    rentAmount: 1200,
-    rentCadence: 'month',
+    next_rent_due_date: 'August 5, 2026',
+    outstanding_balance: 320,
+    is_paid_in_full: false,
+    rent_amount: 1200,
+    rent_cadence: 'month',
   },
   {
     id: '3',
-    nextRentDueDate: 'August 3, 2026',
-    outstandingBalance: 0,
-    isPaidInFull: true,
-    rentAmount: 275,
-    rentCadence: 'week',
+    next_rent_due_date: 'August 3, 2026',
+    outstanding_balance: 0,
+    is_paid_in_full: true,
+    rent_amount: 275,
+    rent_cadence: 'week',
   },
   {
     id: '4',
-    nextRentDueDate: 'August 10, 2026',
-    outstandingBalance: 890,
-    isPaidInFull: false,
-    rentAmount: 1600,
-    rentCadence: 'month',
+    next_rent_due_date: 'August 10, 2026',
+    outstanding_balance: 890,
+    is_paid_in_full: false,
+    rent_amount: 1600,
+    rent_cadence: 'month',
   },
   {
     id: '5',
-    nextRentDueDate: 'August 1, 2026',
-    outstandingBalance: 0,
-    isPaidInFull: true,
-    rentAmount: 1100,
-    rentCadence: 'month',
+    next_rent_due_date: 'August 1, 2026',
+    outstanding_balance: 0,
+    is_paid_in_full: true,
+    rent_amount: 1100,
+    rent_cadence: 'month',
   },
   {
     id: '6',
-    nextRentDueDate: 'August 7, 2026',
-    outstandingBalance: 150,
-    isPaidInFull: false,
-    rentAmount: 310,
-    rentCadence: 'week',
+    next_rent_due_date: 'August 7, 2026',
+    outstanding_balance: 150,
+    is_paid_in_full: false,
+    rent_amount: 310,
+    rent_cadence: 'week',
   },
   {
     id: '7',
-    nextRentDueDate: 'August 2, 2026',
-    outstandingBalance: 0,
-    isPaidInFull: true,
-    rentAmount: 1350,
-    rentCadence: 'month',
+    next_rent_due_date: 'August 2, 2026',
+    outstanding_balance: 0,
+    is_paid_in_full: true,
+    rent_amount: 1350,
+    rent_cadence: 'month',
   },
 ];
 
 const FinancialOverview: React.FC = () => {
   return (
-    <div className='mx-auto w-full max-w-4xl space-y-3 p-4'>
+    <div className='mx-auto w-full max-w-4xl space-y-3'>
       <div className='flex items-center gap-2 text-sm font-medium'>
         <Wallet className='h-4 w-4' />
         Financial overview
@@ -96,17 +88,17 @@ const FinancialOverview: React.FC = () => {
             >
               <div className='flex items-center gap-2'>
                 <Calendar className='h-4 w-4 text-neutral-400' />
-                <p className='text-sm font-medium'>{row.nextRentDueDate}</p>
+                <p className='text-sm font-medium'>{row.next_rent_due_date}</p>
               </div>
 
               <div>
                 <div className='flex items-center gap-2'>
                   <p className='text-sm font-medium'>
                     {getCurrencySign()}
-                    {row.outstandingBalance.toFixed(2)}
+                    {row.outstanding_balance.toFixed(2)}
                   </p>
                 </div>
-                {row.isPaidInFull && (
+                {row.is_paid_in_full && (
                   <p className='mt-2 text-xs text-emerald-500 italic'>
                     Paid in full
                   </p>
@@ -117,7 +109,7 @@ const FinancialOverview: React.FC = () => {
                 <Coins className='h-4 w-4 text-neutral-400' />
                 <p className='text-sm font-medium'>
                   {getCurrencySign()}
-                  {row.rentAmount.toFixed(2)} per {row.rentCadence}
+                  {row.rent_amount.toFixed(2)} per {row.rent_cadence}
                 </p>
               </div>
             </Card>
