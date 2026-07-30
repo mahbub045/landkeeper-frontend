@@ -18,6 +18,9 @@ import {
 import { BalanceSummaryCard } from '../BalanceSummaryCard/BalanceSummaryCard';
 import { QuickPaymentCard } from '../QuickPaymentCard/QuickPaymentCard';
 import { StatementsCard } from '../StatementsCard/StatementsCard';
+import { useState } from 'react';
+import { PayWithCardDialog } from '../Dialogs/PayWithCardDialog';
+import { PaymentHistoryTable } from '../PaymentHistoryTable/PaymentHistoryTable';
 
 const DIRECT_DEBIT_CALLBACK_URL =
   typeof window !== 'undefined'
@@ -30,6 +33,7 @@ export const RentAndPaymentDashboard: React.FC = () => {
   // const { data: paymentHistory } = useGetPaymentHistoryQuery();
   const summary = dummyRentSummary;
   const paymentHistory = dummyPaymentHistory;
+  const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
 
   const { data: savedPaymentMethods } = useGetPaymentMethodsQuery({});
 
@@ -89,6 +93,11 @@ export const RentAndPaymentDashboard: React.FC = () => {
       return;
     }
 
+    if (method.provider === 'stripe') {
+      setIsCardDialogOpen(true);
+      return;
+    }
+
     console.log('Selected payment method:', method.provider);
   };
 
@@ -117,23 +126,34 @@ export const RentAndPaymentDashboard: React.FC = () => {
         </p>
       </div>
 
+      <BalanceSummaryCard summary={summary} />
+
       <QuickPaymentCard
         paymentMethods={paymentMethods}
         onSelectPaymentMethod={handleSelectPaymentMethod}
         loadingMethodId={isSettingUpDirectDebit ? 'gocardless' : null}
-      />
-
-      <BalanceSummaryCard summary={summary} />
+      />      
 
       <StatementsCard
         onDownloadFullYear={handleDownloadFullYearStatement}
         onSelectCustomRange={handleSelectCustomRange}
       />
 
-      {/* <PaymentHistoryTable
+      <PaymentHistoryTable
         payments={paymentHistory}
         onDownloadReceipt={handleDownloadReceipt}
-      /> */}
+      />
+
+      <PayWithCardDialog
+        open={isCardDialogOpen}
+        onOpenChange={setIsCardDialogOpen}
+        onSuccess={() => {
+          // Backend status flips to CLEARED only once Stripe's webhook lands
+          // (per Section 7/9 of the doc), so refetch summary/history rather
+          // than assuming it's already updated.
+          console.log('Payment submitted — refetch summary/history here');
+        }}
+      />
     </div>
   );
 };

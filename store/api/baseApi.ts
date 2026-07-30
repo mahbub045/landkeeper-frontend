@@ -33,6 +33,7 @@ export const TAG_TYPES = [
 
   // Payments
   'PaymentMethods',
+  'RentPayments',
 ] as const;
 
 // ─── Mutex ────────────────────────────────────────────────────────────────────

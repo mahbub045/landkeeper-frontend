@@ -57,3 +57,36 @@ export interface StatementRequest {
   startDate?: string;
   endDate?: string;
 }
+
+export interface ApiRentPayment {
+  alias: string;
+  tenant: number;
+  property: number;
+  organisation: number;
+  payment_method: string | null;
+  reference: string;
+  amount: string;
+  due_date: string;
+  paid_date: string | null;
+  status: 'PENDING' | 'CLEARED' | 'FAILED' | 'REFUNDED' | string;
+  provider_payment_id: string | null;
+  receipt_file: string | null;
+  failure_reason: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateRentPaymentPayload {
+  amount: string; // "500.00"
+  due_date: string; // "YYYY-MM-DD"
+}
+
+export interface PayWithCardPayload {
+  rent_payment: string; // alias from CreateRentPayment response
+  amount: string;
+}
+
+export interface PayWithCardResponse {
+  client_secret: string;
+  status: string; // "requires_payment_method" | "succeeded" | "requires_action" | ...
+}
