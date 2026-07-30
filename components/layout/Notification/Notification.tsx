@@ -217,10 +217,10 @@ const Notification: React.FC = () => {
         >
           <Bell className='size-4' />
           {isUnreadCountLoading ? (
-            <Loading className='text-danger! absolute -top-1.5 -right-1.5 h-2 w-2' />
+            <Loading className='text-warning! absolute -top-1.5 -right-1.5 h-2 w-2' />
           ) : (
             unreadCount > 0 && (
-              <span className='ring-background bg-danger absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none font-medium text-white ring-2'>
+              <span className='ring-background bg-warning absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none font-medium text-white ring-2'>
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )
