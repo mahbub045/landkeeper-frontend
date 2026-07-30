@@ -1,7 +1,5 @@
 'use client';
 
-// components/StartNewJourney/steps/DocumentStep.tsx
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -115,7 +113,7 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
 
         <div className='space-y-3'>
           <FieldLabel className='gap-0 text-sm font-semibold'>
-            Documents<span className='text-danger'>*</span>
+            Documents
           </FieldLabel>
           <div
             onDrop={handleDrop}
@@ -153,7 +151,6 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
               accept='.pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png'
               className='hidden'
               onChange={(e) => addFiles(e.target.files)}
-              required
             />
           </div>
           <FieldError errors={[{ message: errors.file }]} />
