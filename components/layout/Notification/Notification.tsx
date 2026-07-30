@@ -279,48 +279,86 @@ const Notification: React.FC = () => {
               No notifications
             </p>
           ) : (
-            notificationsData.results.map((notification: NotificationItem) => (
-              <a
-                href={
-                  notification.data?.is_deleted
-                    ? '#'
-                    : getNotificationURL(session, notification.data)
-                }
-                key={notification.id}
-                onClick={handleMarkAsRead.bind(null, notification.id)}
-                aria-disabled={isReadLoading}
-                className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
-                  !notification.is_read ? 'bg-muted/30' : ''
-                }`}
-              >
-                {!notification.is_read && (
-                  <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
-                )}
-                <div className={notification.is_read ? 'pl-4' : ''}>
-                  <p
-                    className={`text-sm font-medium ${
-                      !notification.is_read ? 'text-warning' : 'text-foreground'
-                    }`}
-                  >
-                    {notification.title}
-                  </p>
-                  <p className='text-muted-foreground text-xs'>
-                    {notification.description}
-                  </p>
-                  {notification.data?.is_deleted && (
-                    <p className='text-danger/80 mt-1 text-[10px]'>
-                      (This notification related content is no longer
-                      available.)
-                    </p>
+            notificationsData.results.map((notification: NotificationItem) =>
+              notification?.data?.is_deleted ? (
+                <div
+                  key={notification.id}
+                  onClick={handleMarkAsRead.bind(null, notification.id)}
+                  aria-disabled={isReadLoading}
+                  className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
+                    !notification.is_read ? 'bg-muted/30' : ''
+                  }`}
+                >
+                  {!notification.is_read && (
+                    <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
                   )}
-                  {notification.created_at && (
-                    <p className='text-/70 mt-1 text-[11px]'>
-                      {formatDateAndTime(notification.created_at)}
+                  <div className={notification.is_read ? 'pl-4' : ''}>
+                    <p
+                      className={`text-sm font-medium ${
+                        !notification.is_read
+                          ? 'text-warning'
+                          : 'text-foreground'
+                      }`}
+                    >
+                      {notification.title}
                     </p>
-                  )}
+                    <p className='text-muted-foreground text-xs'>
+                      {notification.description}
+                    </p>
+                    {notification.data?.is_deleted && (
+                      <p className='text-danger/80 mt-1 text-[10px]'>
+                        (This notification related content is no longer
+                        available.)
+                      </p>
+                    )}
+                    {notification.created_at && (
+                      <p className='text-/70 mt-1 text-[11px]'>
+                        {formatDateAndTime(notification.created_at)}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </a>
-            ))
+              ) : (
+                <a
+                  href={getNotificationURL(session, notification.data)}
+                  key={notification.id}
+                  onClick={handleMarkAsRead.bind(null, notification.id)}
+                  aria-disabled={isReadLoading}
+                  className={`hover:bg-muted/50 flex items-start gap-2 border-b px-4 py-3 last:border-b-0 ${
+                    !notification.is_read ? 'bg-muted/30' : ''
+                  }`}
+                >
+                  {!notification.is_read && (
+                    <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                  )}
+                  <div className={notification.is_read ? 'pl-4' : ''}>
+                    <p
+                      className={`text-sm font-medium ${
+                        !notification.is_read
+                          ? 'text-warning'
+                          : 'text-foreground'
+                      }`}
+                    >
+                      {notification.title}
+                    </p>
+                    <p className='text-muted-foreground text-xs'>
+                      {notification.description}
+                    </p>
+                    {notification.data?.is_deleted && (
+                      <p className='text-danger/80 mt-1 text-[10px]'>
+                        (This notification related content is no longer
+                        available.)
+                      </p>
+                    )}
+                    {notification.created_at && (
+                      <p className='text-/70 mt-1 text-[11px]'>
+                        {formatDateAndTime(notification.created_at)}
+                      </p>
+                    )}
+                  </div>
+                </a>
+              ),
+            )
           )}
         </div>
 
