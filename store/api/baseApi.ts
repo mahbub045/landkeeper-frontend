@@ -29,6 +29,10 @@ export const TAG_TYPES = [
   'Document',
   'Finance',
   'TeamAccess',
+
+
+  // Payments
+  'PaymentMethods',
 ] as const;
 
 // ─── Mutex ────────────────────────────────────────────────────────────────────
