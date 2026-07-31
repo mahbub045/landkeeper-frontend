@@ -1,26 +1,23 @@
 'use client';
 
-import {
-  dummyPaymentHistory,
-  dummyPaymentMethods,
-  dummyRentSummary,
-} from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
+import { dummyPaymentMethods } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
 import { storeDirectDebitSessionToken } from '@/lib/storedirectdebitsessiontoken';
 import {
   useGetPaymentMethodsQuery,
+  useGetRentBalanceSummaryQuery,
   useSetupDirectDebitMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
   ApiPaymentMethod,
   PaymentMethodOption,
-  PaymentRecord,
 } from '@/types/client/Tenant/TenantTypes';
+import { useState } from 'react';
 import { BalanceSummaryCard } from '../BalanceSummaryCard/BalanceSummaryCard';
+import { PayWithCardDialog } from '../Dialogs/PayWithCardDialog';
+import { PayWithDirectDebitDialog } from '../Dialogs/PayWithDirectDebitDialog';
+import { PaymentHistoryTable } from '../PaymentHistoryTable/PaymentHistoryTable';
 import { QuickPaymentCard } from '../QuickPaymentCard/QuickPaymentCard';
 import { StatementsCard } from '../StatementsCard/StatementsCard';
-import { useState } from 'react';
-import { PayWithCardDialog } from '../Dialogs/PayWithCardDialog';
-import { PaymentHistoryTable } from '../PaymentHistoryTable/PaymentHistoryTable';
 
 const DIRECT_DEBIT_CALLBACK_URL =
   typeof window !== 'undefined'
@@ -28,36 +25,19 @@ const DIRECT_DEBIT_CALLBACK_URL =
     : '';
 
 export const RentAndPaymentDashboard: React.FC = () => {
-  // TODO: swap these for RTK Query hooks once the remaining endpoints are confirmed, e.g.
-  // const { data: summary, isLoading } = useGetRentSummaryQuery();
-  // const { data: paymentHistory } = useGetPaymentHistoryQuery();
-  const summary = dummyRentSummary;
-  const paymentHistory = dummyPaymentHistory;
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
+  const [isDirectDebitDialogOpen, setIsDirectDebitDialogOpen] = useState(false);
 
+  const { data: balanceSummary } = useGetRentBalanceSummaryQuery();
   const { data: savedPaymentMethods } = useGetPaymentMethodsQuery({});
 
-  const FORCE_SETUP_FOR_TESTING = true;
+  const activeDirectDebit = savedPaymentMethods?.find(
+    (method: ApiPaymentMethod) =>
+      method.provider === 'GOCARDLESS' &&
+      method.method_type === 'DIRECT_DEBIT' &&
+      method.status === 'ACTIVE',
+  );
 
-  const activeDirectDebit = FORCE_SETUP_FOR_TESTING
-    ? undefined
-    : savedPaymentMethods?.find(
-        (method: ApiPaymentMethod) =>
-          method.provider === 'GOCARDLESS' &&
-          method.method_type === 'DIRECT_DEBIT' &&
-          method.status === 'ACTIVE',
-      );
-
-  //   const activeDirectDebit = savedPaymentMethods?.find(
-  //     (method: ApiPaymentMethod) =>
-  //       method.provider === 'GOCARDLESS' &&
-  //       method.method_type === 'DIRECT_DEBIT' &&
-  //       method.status === 'ACTIVE',
-  //   );
-
-  // Start from the dummy/base options, then override the GoCardless entry
-  // once we know a mandate already exists. Stripe stays as-is until that
-  // endpoint is wired up.
   const paymentMethods: PaymentMethodOption[] = dummyPaymentMethods.map(
     (method) => {
       if (method.provider !== 'gocardless' || !activeDirectDebit) {
@@ -68,9 +48,9 @@ export const RentAndPaymentDashboard: React.FC = () => {
         ...method,
         title: 'Direct Debit active',
         description:
-          'Rent is collected automatically from your bank account each month.',
-        ctaLabel: 'Manage Direct Debit',
-        action: 'manage',
+          "Request your bank to deduct this month's rent automatically.",
+        ctaLabel: 'Request Rent Deduction',
+        action: 'request-deduction',
       };
     },
   );
@@ -80,6 +60,11 @@ export const RentAndPaymentDashboard: React.FC = () => {
 
   const handleSelectPaymentMethod = async (method: PaymentMethodOption) => {
     if (method.provider === 'gocardless') {
+      if (activeDirectDebit) {
+        setIsDirectDebitDialogOpen(true);
+        return;
+      }
+
       try {
         const result = await setupDirectDebit({
           success_redirect_url: DIRECT_DEBIT_CALLBACK_URL,
@@ -97,23 +82,6 @@ export const RentAndPaymentDashboard: React.FC = () => {
       setIsCardDialogOpen(true);
       return;
     }
-
-    console.log('Selected payment method:', method.provider);
-  };
-
-  const handleDownloadFullYearStatement = () => {
-    // TODO: call full-year statement endpoint, then trigger file download
-    console.log('Download full year statement');
-  };
-
-  const handleSelectCustomRange = () => {
-    // TODO: open a date range picker dialog, then call the custom-range endpoint
-    console.log('Open custom range picker');
-  };
-
-  const handleDownloadReceipt = (payment: PaymentRecord) => {
-    // TODO: fetch/download the receipt for this specific payment
-    console.log('Download receipt for', payment.reference);
   };
 
   return (
@@ -126,33 +94,28 @@ export const RentAndPaymentDashboard: React.FC = () => {
         </p>
       </div>
 
-      <BalanceSummaryCard summary={summary} />
+      <BalanceSummaryCard summary={balanceSummary} />
 
       <QuickPaymentCard
         paymentMethods={paymentMethods}
         onSelectPaymentMethod={handleSelectPaymentMethod}
         loadingMethodId={isSettingUpDirectDebit ? 'gocardless' : null}
-      />      
-
-      <StatementsCard
-        onDownloadFullYear={handleDownloadFullYearStatement}
-        onSelectCustomRange={handleSelectCustomRange}
       />
 
-      <PaymentHistoryTable
-        payments={paymentHistory}
-        onDownloadReceipt={handleDownloadReceipt}
-      />
+      <StatementsCard />
+
+      <PaymentHistoryTable />
 
       <PayWithCardDialog
         open={isCardDialogOpen}
         onOpenChange={setIsCardDialogOpen}
-        onSuccess={() => {
-          // Backend status flips to CLEARED only once Stripe's webhook lands
-          // (per Section 7/9 of the doc), so refetch summary/history rather
-          // than assuming it's already updated.
-          console.log('Payment submitted — refetch summary/history here');
-        }}
+        onSuccess={() => {}}
+      />
+
+      <PayWithDirectDebitDialog
+        open={isDirectDebitDialogOpen}
+        onOpenChange={setIsDirectDebitDialogOpen}
+        onSuccess={() => {}}
       />
     </div>
   );

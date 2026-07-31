@@ -1,6 +1,5 @@
 'use client';
 
-import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,36 +12,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   useCreateRentPaymentMutation,
-  usePayWithCardMutation,
+  usePayWithDirectDebitMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
-import { PayWithCardDialogProps } from '@/types/client/Tenant/TenantTypes';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { PayWithDirectDebitDialogProps } from '@/types/client/Tenant/TenantTypes';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
 
-export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
-  open,
-  onOpenChange,
-  onSuccess,
-}) => {
-  const [step, setStep] = useState<'details' | 'card'>('details');
+export const PayWithDirectDebitDialog: React.FC<
+  PayWithDirectDebitDialogProps
+> = ({ open, onOpenChange, onSuccess }) => {
+  const [step, setStep] = useState<'details' | 'confirmation'>('details');
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   const [createRentPayment, { isLoading: isCreating }] =
     useCreateRentPaymentMutation();
-  const [payWithCard, { isLoading: isInitiatingCharge }] =
-    usePayWithCardMutation();
+  const [payWithDirectDebit, { isLoading: isSubmitting }] =
+    usePayWithDirectDebitMutation();
 
-  const isBusy = isCreating || isInitiatingCharge;
+  const isBusy = isCreating || isSubmitting;
 
   const resetAndClose = () => {
     setStep('details');
     setAmount('');
     setDueDate('');
-    setClientSecret(null);
     setFormError(null);
     onOpenChange(false);
   };
@@ -57,17 +52,16 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
         due_date: dueDate,
       }).unwrap();
 
-      const { client_secret } = await payWithCard({
+      await payWithDirectDebit({
         rent_payment: rentPayment.alias,
-        amount,
       }).unwrap();
 
-      setClientSecret(client_secret);
-      setStep('card');
+      setStep('confirmation');
+      onSuccess?.();
     } catch (err) {
-      console.error('Failed to start card payment:', err);
+      console.error('Failed to request Direct Debit payment:', err);
       setFormError(
-        'Something went wrong while starting the payment. Please try again.',
+        'Something went wrong while notifying your bank. Please try again.',
       );
     }
   };
@@ -77,27 +71,29 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
       <DialogContent className='max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>
-            {step === 'details' ? 'Pay Rent' : 'Card Details'}
+            {step === 'details' ? 'Request Rent Deduction' : 'Request Sent'}
           </DialogTitle>
         </DialogHeader>
-        <PaymentDialogSteps
-          steps={[{ label: 'Details' }, { label: 'Card' }]}
-          currentIndex={step === 'details' ? 0 : 1}
-        />
+        {step === 'details' && (
+          <PaymentDialogSteps
+            steps={[{ label: 'Details' }, { label: 'Confirmation' }]}
+            currentIndex={0}
+          />
+        )}
 
         {step === 'details' && (
           <form onSubmit={handleDetailsSubmit} className='space-y-4'>
             <div className='bg-muted/40 space-y-4 rounded-lg border p-4'>
               <div className='space-y-2'>
                 <Label
-                  htmlFor='amount'
+                  htmlFor='dd-amount'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
                   Amount
                 </Label>
                 <div className='relative'>
                   <Input
-                    id='amount'
+                    id='dd-amount'
                     type='number'
                     step='0.01'
                     min='0'
@@ -110,13 +106,13 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               </div>
               <div className='space-y-2'>
                 <Label
-                  htmlFor='due-date'
+                  htmlFor='dd-due-date'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
                   Due Date
                 </Label>
                 <Input
-                  id='due-date'
+                  id='dd-due-date'
                   type='date'
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
@@ -143,22 +139,34 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               </Button>
               <Button type='submit' disabled={isBusy}>
                 {isBusy && <Loader2 className='mr-1 h-4 w-4 animate-spin' />}
-                {isBusy ? 'Processing…' : 'Continue to Payment'}
+                {isBusy ? 'Processing…' : 'Notify Bank'}
               </Button>
             </div>
           </form>
         )}
 
-        {step === 'card' && clientSecret && (
-          <CardPaymentForm
-            clientSecret={clientSecret}
-            amount={amount}
-            onSuccess={() => {
-              onSuccess?.();
-              resetAndClose();
-            }}
-            onCancel={resetAndClose}
-          />
+        {step === 'confirmation' && (
+          <div className='flex flex-col items-center gap-4 py-6 text-center'>
+            <div className='bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full'>
+              <CheckCircle2 className='text-primary h-8 w-8' />
+            </div>
+            <div className='space-y-1'>
+              <p className='text-lg font-semibold'>
+                Your bank has been notified
+              </p>
+              <p className='text-muted-foreground text-sm'>
+                We&apos;ve requested ৳{amount} to be deducted for the payment
+                due {dueDate}.
+              </p>
+            </div>
+            <p className='text-muted-foreground text-xs'>
+              This may take a few days to clear, you&apos;ll see it update in
+              your payment history once confirmed.
+            </p>
+            <Button onClick={resetAndClose} className='mt-2 w-full sm:w-fit'>
+              Done
+            </Button>
+          </div>
         )}
       </DialogContent>
     </Dialog>

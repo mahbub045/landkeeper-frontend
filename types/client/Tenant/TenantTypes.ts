@@ -1,20 +1,30 @@
-// NOTE: These types are placeholders based on the dummy data. Once the API
-// payloads are shared, swap in the real `ApiXxx` shapes and add mapper
-// functions (matching the ApiTenant -> Tenant pattern used elsewhere in
-// LandKeeper) so components keep consuming a stable UI-facing shape.
+export type PaymentStatus =
+  | 'cleared'
+  | 'pending'
+  | 'processing'
+  | 'failed'
+  | 'refunded';
 
-export type PaymentStatus = "cleared" | "pending" | "processing" | "failed";
-
-export interface RentSummary {
-  currentRentAmount: number;
-  rentFrequencyLabel: string; // e.g. "Per calendar month"
-  nextDueDate: string; // ISO date string
-  daysUntilDue: number;
-  outstandingBalance: number;
-  isAccountUpToDate: boolean;
+export interface ApiRentBalanceSummary {
+  current_rent_amount: number | null;
+  outstanding_balance: number | null;
+  next_due_date: string | null;
 }
 
-export type PaymentProvider = "gocardless" | "stripe";
+export type PaymentProvider = 'gocardless' | 'stripe';
+
+export interface PaymentRecord {
+  alias: string;
+  paidDate: string | null;
+  reference: string;
+  paymentMethod: {
+    provider: ApiPaymentMethod['provider'];
+    methodType: ApiPaymentMethod['method_type'];
+  } | null;
+  amount: number;
+  status: PaymentStatus;
+  receiptUrl: string | null;
+}
 
 export interface PaymentMethodOption {
   id: string;
@@ -22,20 +32,24 @@ export interface PaymentMethodOption {
   title: string;
   description: string;
   ctaLabel: string;
-  action: "setup" | "manage";
+  action: 'setup' | 'request-deduction';
 }
 
-// Raw shape returned by GET /tenant/payment-methods and the
-// direct-debit/complete endpoint. Adjust as backend adds providers/fields.
 export interface ApiPaymentMethod {
   alias: string;
   tenant: number;
-  provider: "GOCARDLESS" | "STRIPE" | string;
-  method_type: "DIRECT_DEBIT" | "CARD" | string;
+  provider: 'GOCARDLESS' | 'STRIPE' | string;
+  method_type: 'DIRECT_DEBIT' | 'CARD' | string;
   provider_customer_id: string | null;
   provider_mandate_id: string | null;
   provider_payment_method_id: string | null;
-  status: "ACTIVE" | "PENDING_SUBMISSION" | "SUBMITTED" | "FAILED" | "CANCELLED" | string;
+  status:
+    | 'ACTIVE'
+    | 'PENDING_SUBMISSION'
+    | 'SUBMITTED'
+    | 'FAILED'
+    | 'CANCELLED'
+    | string;
   is_default: boolean;
   card_last4: string | null;
   card_brand: string | null;
@@ -43,17 +57,14 @@ export interface ApiPaymentMethod {
   updated_at: string;
 }
 
-export interface PaymentRecord {
-  id: string;
-  date: string; // ISO date string
-  reference: string;
-  amount: number;
-  status: PaymentStatus;
-  receiptUrl?: string | null;
+export interface QuickPaymentCardProps {
+  paymentMethods: PaymentMethodOption[];
+  onSelectPaymentMethod: (method: PaymentMethodOption) => void;
+  loadingMethodId?: string | null;
 }
 
 export interface StatementRequest {
-  type: "full-year" | "custom-range";
+  type: 'full-year' | 'custom-range';
   startDate?: string;
   endDate?: string;
 }
@@ -63,7 +74,7 @@ export interface ApiRentPayment {
   tenant: number;
   property: number;
   organisation: number;
-  payment_method: string | null;
+  payment_method: ApiPaymentMethod | null;
   reference: string;
   amount: string;
   due_date: string;
@@ -77,16 +88,47 @@ export interface ApiRentPayment {
 }
 
 export interface CreateRentPaymentPayload {
-  amount: string; // "500.00"
-  due_date: string; // "YYYY-MM-DD"
+  amount: string;
+  due_date: string;
 }
 
 export interface PayWithCardPayload {
-  rent_payment: string; // alias from CreateRentPayment response
+  rent_payment: string;
   amount: string;
 }
 
 export interface PayWithCardResponse {
   client_secret: string;
-  status: string; // "requires_payment_method" | "succeeded" | "requires_action" | ...
+  status: string;
+}
+
+export interface PayWithDirectDebitPayload {
+  rent_payment: string;
+}
+
+export interface PayWithDirectDebitResponse {
+  provider_payment_id: string;
+  status: string;
+}
+
+export interface PaymentHistoryTableProps {
+  payments: PaymentRecord[];
+}
+
+export interface PayWithCardDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
+
+export interface PayWithDirectDebitDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
+}
+
+export interface RentStatementPdfParams {
+  period?: 'monthly';
+  year?: number;
+  month?: number;
 }

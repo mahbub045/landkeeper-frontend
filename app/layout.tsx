@@ -41,15 +41,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PaymentProvider>
-            <NextAuthProvider>
-              <SessionSync />
-              <ReduxProvider>
+          <NextAuthProvider>
+            <SessionSync />
+            <ReduxProvider>
+              <PaymentProvider>
                 {children}
                 <Toaster />
-              </ReduxProvider>
-            </NextAuthProvider>
-          </PaymentProvider>
+              </PaymentProvider>
+            </ReduxProvider>
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>
