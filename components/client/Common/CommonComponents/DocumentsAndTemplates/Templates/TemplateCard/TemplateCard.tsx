@@ -1,83 +1,12 @@
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useGetTemplatesQuery } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/TemplatesApi';
 import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
-import { Download, Pencil, Trash2 } from 'lucide-react';
-
-// ---- seed data ---------------------------------------------------------
-const seedTemplates: TemplateType[] = [
-  {
-    id: 't1',
-    title: 'Master Services Agreement',
-    category: 'Contracts',
-    size: '184 KB',
-    date: '2026.03.11',
-    uses: 212,
-  },
-  {
-    id: 't2',
-    title: 'Standard Invoice — Net 30',
-    category: 'Invoices',
-    size: '96 KB',
-    date: '2026.05.02',
-    uses: 458,
-  },
-  {
-    id: 't3',
-    title: 'Quarterly Board Report',
-    category: 'Reports',
-    size: '1.2 MB',
-    date: '2026.01.28',
-    uses: 67,
-  },
-  {
-    id: 't4',
-    title: 'Client Onboarding Letter',
-    category: 'Letters',
-    size: '44 KB',
-    date: '2026.06.19',
-    uses: 130,
-  },
-  {
-    id: 't5',
-    title: 'Vendor Intake Form',
-    category: 'Forms',
-    size: '72 KB',
-    date: '2026.04.07',
-    uses: 89,
-  },
-  {
-    id: 't6',
-    title: 'Non-Disclosure Agreement',
-    category: 'Contracts',
-    size: '112 KB',
-    date: '2026.02.14',
-    uses: 301,
-  },
-];
-
-// tiny valid PDF so downloads actually produce a file
-function makeDummyPdfBlob(title: string): Blob {
-  const text = `Template: ${title}`;
-  const pdf = `%PDF-1.4
-1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
-2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj
-3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 300 150]/Resources<</Font<</F1 4 0 R>>>>/Contents 5 0 R>>endobj
-4 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj
-5 0 obj<</Length ${text.length + 40}>>stream
-BT /F1 14 Tf 20 100 Td (${text}) Tj ET
-endstream
-endobj
-xref
-0 6
-trailer<</Size 6/Root 1 0 R>>
-startxref
-0
-%%EOF`;
-  return new Blob([pdf], { type: 'application/pdf' });
-}
+import { Dot, Download, Pencil, Trash2 } from 'lucide-react';
 
 const handleDownload = (tpl: TemplateType) => {
-  const blob = makeDummyPdfBlob(tpl.title);
+  const blob = tpl.file;
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -89,10 +18,59 @@ const handleDownload = (tpl: TemplateType) => {
 };
 
 const TemplateCard: React.FC = () => {
+  const {
+    data: templates,
+    isLoading,
+    isError,
+  } = useGetTemplatesQuery(undefined);
+
+  if (isLoading) {
+    return (
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className='relative'>
+            <div className='border-secondary absolute inset-0 translate-x-0.75 translate-y-0.75 rounded-sm border' />
+            <div className='border-secondary absolute inset-0 translate-x-[1.1px] translate-y-[1.1px] rounded-sm border' />
+
+            <div className='relative flex h-full min-h-47.5 animate-pulse flex-col justify-between rounded-sm border p-5'>
+              <div>
+                <div className='mb-4 flex items-start justify-between gap-3'>
+                  <div className='h-5 w-20 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+                  <div className='flex items-center gap-1'>
+                    <div className='h-7 w-7 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+                    <div className='h-7 w-7 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+                  </div>
+                </div>
+                <div className='mb-2 h-4 w-3/4 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+                <div className='mb-3 h-3 w-1/2 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+              </div>
+              <div className='h-8 w-32 rounded-sm bg-[#E5E7EB] dark:bg-[#2A2E35]' />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <CustomErrorMessage title='Templates' />;
+  }
+
+  if (!templates?.results?.length) {
+    return (
+      <div className='border-secondary flex flex-col items-center justify-center gap-2 rounded-sm border border-dashed py-16 text-center'>
+        <p className='text-primary text-[14px] font-medium'>No templates yet</p>
+        <p className='text-[12px] text-[#5B6472]'>
+          Add a template to get started.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-      {seedTemplates.map((tpl) => (
-        <div key={tpl.id} className='relative'>
+      {templates.results.map((tpl: TemplateType) => (
+        <div key={tpl.alias} className='relative'>
           {/* stacked-paper effect */}
           <div className='border-secondary absolute inset-0 translate-x-0.75 translate-y-0.75 rounded-sm border' />
           <div className='border-secondary absolute inset-0 translate-x-[1.1px] translate-y-[1.1px] rounded-sm border' />
@@ -121,8 +99,10 @@ const TemplateCard: React.FC = () => {
               <h3 className='text-primary mb-1 line-clamp-2 text-[17px] leading-snug font-medium'>
                 {tpl.title}
               </h3>
-              <p className='text-[11px] tracking-wide text-[#5B6472]'>
-                {tpl.size} · {tpl.date} · {tpl.uses} downloads
+              <p className='flex items-center text-[11px] tracking-wide text-[#5B6472]'>
+                {tpl.size}
+                <Dot />
+                {tpl.created_at}
               </p>
             </div>
 

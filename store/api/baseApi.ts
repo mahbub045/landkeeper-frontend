@@ -27,9 +27,9 @@ export const TAG_TYPES = [
   'Tenant',
   'Compliance',
   'Document',
+  'Templates',
   'Finance',
   'TeamAccess',
-
 
   // Payments
   'PaymentMethods',

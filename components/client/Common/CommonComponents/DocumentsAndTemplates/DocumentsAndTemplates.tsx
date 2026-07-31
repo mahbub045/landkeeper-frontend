@@ -5,6 +5,7 @@ const DocumentsAndTemplates: React.FC = () => {
   return (
     <>
       <Templates />
+      <hr className='my-8' />
       <Documents />
     </>
   );

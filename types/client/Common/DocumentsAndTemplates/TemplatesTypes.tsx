@@ -1,8 +1,8 @@
 export interface TemplateType {
-  id: string;
+  alias: string;
   title: string;
   category: string;
+  file: File;
   size: string;
-  date: string;
-  uses: number;
+  created_at: string;
 }
