@@ -1,7 +1,7 @@
 import {
   DocCategory,
   DocumentFilterOption,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 
 // Single source of truth. Both AddDocumentDialog's category <Select>
 // and the list page's filter tabs derive from this.

@@ -60,7 +60,7 @@ const TemplateIntakeSlot: React.FC<TemplateIntakeSlotProps> = ({ onFiles }) => {
           </p>
         </div>
 
-        <span className='hidden shrink-0 items-center gap-1 rounded-sm bg-[#1E2A38] px-3 py-1.5 text-[11px] tracking-widest text-[#FBFAF6] uppercase sm:inline-flex'>
+        <span className='bg-primary hidden shrink-0 items-center gap-1 rounded-sm px-3 py-1.5 text-[11px] tracking-widest text-[#FBFAF6] uppercase sm:inline-flex'>
           <Upload size={12} strokeWidth={2} />
           Browse
         </span>

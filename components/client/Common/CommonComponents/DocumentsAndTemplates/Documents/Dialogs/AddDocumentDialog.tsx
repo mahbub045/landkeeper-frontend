@@ -19,16 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+import { documentCategoryOptions } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 import { cn } from '@/lib/utils';
-import { useAddDocumentsMutation } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
+import { useAddDocumentsMutation } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/DocumentsApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import {
   DocumentCategory,
   DocumentForm,
   initialForm,
   UploadDocumentDialogProps,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { snakeToCamel } from '@/utils/formatters';
 

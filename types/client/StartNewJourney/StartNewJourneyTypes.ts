@@ -5,7 +5,7 @@ import { DocumentStepValue } from '@/components/client/Common/StartNewJourney/Co
 import { MortgageStepValue } from '@/components/client/Common/StartNewJourney/Components/MortgageTab';
 import { TenantStepValue } from '@/components/client/Common/StartNewJourney/Components/TenantTab';
 import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
-import { DocumentForm } from '@/types/client/Common/Documents/DocumentTypes';
+import { DocumentForm } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';

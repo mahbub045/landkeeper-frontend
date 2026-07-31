@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDeleteDocumentMutation } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
-import { DeleteDocumentDialogProps } from '@/types/client/Common/Documents/DocumentTypes';
+import { useDeleteDocumentMutation } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/DocumentsApi';
+import { DeleteDocumentDialogProps } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 

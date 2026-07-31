@@ -19,11 +19,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
-import { categoryLabelMap } from '@/data/client/common/documents/DocumentsData';
+import { categoryLabelMap } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 import {
   DocCategory,
   PropertyDocument,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import DeleteDocumentDialog from '../Dialogs/DeleteDocumentDialog';
 import UpdateDocumentDialog from '../Dialogs/UpdateDocumentDialog';
 

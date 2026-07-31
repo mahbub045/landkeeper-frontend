@@ -1,18 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
 import { Download, Pencil, Trash2 } from 'lucide-react';
 
-export interface Template {
-  id: string;
-  title: string;
-  category: string;
-  size: string;
-  date: string;
-  uses: number;
-}
-
 // ---- seed data ---------------------------------------------------------
-const seedTemplates: Template[] = [
+const seedTemplates: TemplateType[] = [
   {
     id: 't1',
     title: 'Master Services Agreement',
@@ -84,7 +76,7 @@ startxref
   return new Blob([pdf], { type: 'application/pdf' });
 }
 
-const handleDownload = (tpl: Template) => {
+const handleDownload = (tpl: TemplateType) => {
   const blob = makeDummyPdfBlob(tpl.title);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

@@ -11,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+import { documentCategoryOptions } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 import { cn } from '@/lib/utils';
 import {
   DocumentCategory,
   DocumentForm,
   initialForm as INITIAL_DOCUMENT_DIALOG_FORM,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { DocumentStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';

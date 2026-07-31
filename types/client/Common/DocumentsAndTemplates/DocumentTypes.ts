@@ -1,4 +1,4 @@
-import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+import { documentCategoryOptions } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 
 export type DocCategory =
   | 'MORTGAGE_DOCUMENTS'

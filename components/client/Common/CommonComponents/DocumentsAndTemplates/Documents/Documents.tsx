@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, RefreshCcw, Search, Upload } from 'lucide-react';
+import { Search, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -16,18 +16,18 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
-import { filterTabs } from '@/data/client/common/documents/DocumentsData';
+import { filterTabs } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
-import { useGetDocumentsQuery } from '@/store/api/endpoints/client/Common/Documents/DocumentsApi';
+import { useGetDocumentsQuery } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/DocumentsApi';
 import {
   FilterTab,
   PropertyDocument,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
-import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const Documents: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('ALL');
