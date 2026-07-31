@@ -2,26 +2,29 @@ import { CalendarClock, CircleAlert, CircleCheck, Coins } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { RentSummary } from '@/types/client/Tenant/TenantTypes';
+import { ApiRentBalanceSummary } from '@/types/client/Tenant/TenantTypes';
+import {
+  formatCurrency,
+  formatDate,
+  getDaysUntilDue,
+} from '@/utils/formatters';
 
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-  }).format(amount);
-}
+const NOT_AVAILABLE = 'Not Available';
 
-function formatDate(dateString: string) {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(dateString));
-}
+export const BalanceSummaryCard: React.FC<{
+  summary?: ApiRentBalanceSummary;
+}> = ({ summary }) => {
+  const hasRentAmount = summary?.current_rent_amount != null;
+  const hasDueDate = summary?.next_due_date != null;
+  const hasOutstandingBalance = summary?.outstanding_balance != null;
 
-export const BalanceSummaryCard: React.FC<{ summary: RentSummary }> = ({
-  summary,
-}) => {
+  const daysUntilDue = hasDueDate
+    ? getDaysUntilDue(summary!.next_due_date as string)
+    : null;
+  const isAccountUpToDate = hasOutstandingBalance
+    ? (summary!.outstanding_balance as number) <= 0
+    : null;
+
   return (
     <div className='grid gap-4 sm:grid-cols-3'>
       <Card>
@@ -29,11 +32,15 @@ export const BalanceSummaryCard: React.FC<{ summary: RentSummary }> = ({
           <Coins className='text-primary h-5 w-5' />
           <div>
             <p className='text-muted-foreground text-sm'>Current Rent Amount</p>
-            <p className='text-2xl font-semibold'>
-              {formatCurrency(summary.currentRentAmount)}
-            </p>
-            <p className='text-muted-foreground text-xs'>
-              {summary.rentFrequencyLabel}
+            <p
+              className={cn(
+                'text-2xl font-semibold',
+                !hasRentAmount && 'text-muted-foreground text-base font-normal',
+              )}
+            >
+              {hasRentAmount
+                ? formatCurrency(summary!.current_rent_amount as number)
+                : NOT_AVAILABLE}
             </p>
           </div>
         </CardContent>
@@ -44,19 +51,32 @@ export const BalanceSummaryCard: React.FC<{ summary: RentSummary }> = ({
           <CalendarClock className='text-secondary h-5 w-5' />
           <div>
             <p className='text-muted-foreground text-sm'>Next Due Date</p>
-            <p className='text-2xl font-semibold'>
-              {formatDate(summary.nextDueDate)}
+            <p
+              className={cn(
+                'text-2xl font-semibold',
+                !hasDueDate && 'text-muted-foreground text-base font-normal',
+              )}
+            >
+              {hasDueDate
+                ? formatDate(summary!.next_due_date as string)
+                : NOT_AVAILABLE}
             </p>
-            <p className='text-muted-foreground text-xs'>
-              Payment due in {summary.daysUntilDue} days
-            </p>
+            {daysUntilDue !== null && (
+              <p className='text-muted-foreground text-xs'>
+                {daysUntilDue >= 0
+                  ? `Payment due in ${daysUntilDue} days`
+                  : `Payment overdue by ${Math.abs(daysUntilDue)} days`}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className='flex items-start gap-3 pt-6'>
-          {summary.isAccountUpToDate ? (
+          {isAccountUpToDate === null ? (
+            <CircleAlert className='text-muted-foreground h-5 w-5' />
+          ) : isAccountUpToDate ? (
             <CircleCheck className='text-success h-5 w-5' />
           ) : (
             <CircleAlert className='text-danger h-5 w-5' />
@@ -68,16 +88,24 @@ export const BalanceSummaryCard: React.FC<{ summary: RentSummary }> = ({
             <p
               className={cn(
                 'text-2xl font-semibold',
-                summary.isAccountUpToDate ? 'text-success' : 'text-danger',
+                isAccountUpToDate === null
+                  ? 'text-muted-foreground text-base font-normal'
+                  : isAccountUpToDate
+                    ? 'text-success'
+                    : 'text-danger',
               )}
             >
-              {formatCurrency(summary.outstandingBalance)}
+              {hasOutstandingBalance
+                ? formatCurrency(summary!.outstanding_balance as number)
+                : NOT_AVAILABLE}
             </p>
-            <p className='text-muted-foreground text-xs'>
-              {summary.isAccountUpToDate
-                ? 'Account fully up to date'
-                : 'Payment overdue'}
-            </p>
+            {isAccountUpToDate !== null && (
+              <p className='text-muted-foreground text-xs'>
+                {isAccountUpToDate
+                  ? 'Account fully up to date'
+                  : 'Payment overdue'}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -1,37 +1,56 @@
-// context/PaymentContext.tsx
 'use client';
-import { createContext, useContext, useState } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface PaymentRequest {
   rentPaymentAlias: string;
   amount: string;
-  currency?: string;
   onSuccess?: () => void;
 }
 
-const PaymentContext = createContext<{ openPayment: (req: PaymentRequest) => void } | null>(null);
+const PaymentContext = createContext<{
+  openPayment: (req: PaymentRequest) => void;
+} | null>(null);
 
 export function PaymentProvider({ children }: { children: React.ReactNode }) {
   const [request, setRequest] = useState<PaymentRequest | null>(null);
+  const [payWithCard, { data, isLoading, error }] = usePayWithCardMutation();
+
+  useEffect(() => {
+    if (!request) return;
+    payWithCard({
+      rent_payment: request.rentPaymentAlias,
+      amount: request.amount,
+    });
+  }, [request]);
+
+  const handleClose = () => setRequest(null);
 
   return (
     <PaymentContext.Provider value={{ openPayment: setRequest }}>
       {children}
-      <Dialog open={!!request} onOpenChange={(open) => !open && setRequest(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <Dialog open={!!request} onOpenChange={(open) => !open && handleClose()}>
+        <DialogContent className='max-h-[90vh] overflow-y-auto'>
           <DialogTitle>Payment</DialogTitle>
-          {request && (
+          {isLoading && (
+            <p className='text-muted-foreground text-sm'>Preparing payment…</p>
+          )}
+          {error && (
+            <p className='text-sm text-red-600'>
+              Could not start payment. Please try again.
+            </p>
+          )}
+          {request && data?.client_secret && (
             <CardPaymentForm
-              rentPaymentAlias={request.rentPaymentAlias}
+              clientSecret={data.client_secret}
               amount={request.amount}
-              currency={request.currency}
               onSuccess={() => {
                 request.onSuccess?.();
-                setRequest(null);
+                handleClose();
               }}
-              onCancel={() => setRequest(null)}
+              onCancel={handleClose}
             />
           )}
         </DialogContent>

@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  CreditCard,
-  Landmark,
-  Loader2,
-  Wallet,
-  type LucideIcon,
-} from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -16,21 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  PaymentMethodOption,
-  PaymentProvider,
-} from '@/types/client/Tenant/TenantTypes';
-
-const PROVIDER_ICON: Record<PaymentProvider, LucideIcon> = {
-  gocardless: Landmark,
-  stripe: CreditCard,
-};
-
-interface QuickPaymentCardProps {
-  paymentMethods: PaymentMethodOption[];
-  onSelectPaymentMethod: (method: PaymentMethodOption) => void;
-  loadingMethodId?: string | null;
-}
+import { PROVIDER_ICON } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
+import { QuickPaymentCardProps } from '@/types/client/Tenant/TenantTypes';
 
 export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
   paymentMethods,

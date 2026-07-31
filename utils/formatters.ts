@@ -105,3 +105,18 @@ export function getInitials(first_name: string | null | undefined) {
 export function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
+
+export function formatCurrency(amount: number) {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+  }).format(amount);
+}
+
+export function getDaysUntilDue(nextDueDate: string) {
+  const due = new Date(nextDueDate);
+  const now = new Date();
+  due.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
+  return Math.round((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
