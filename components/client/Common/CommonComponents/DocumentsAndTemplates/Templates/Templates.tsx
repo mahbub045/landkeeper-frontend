@@ -139,36 +139,27 @@ function TemplateCard({
   return (
     <div className='relative'>
       {/* stacked-paper effect */}
-      <div className='absolute inset-0 translate-x-0.75 translate-y-0.75 rounded-sm border border-[#E6E1D2] bg-[#FBFAF6]' />
-      <div className='absolute inset-0 translate-x-[1.5px] translate-y-[1.5px] rounded-sm border border-[#E6E1D2] bg-[#FBFAF6]' />
+      <div className='border-secondary absolute inset-0 translate-x-0.75 translate-y-0.75 rounded-sm border' />
+      <div className='border-secondary absolute inset-0 translate-x-[1.1px] translate-y-[1.1px] rounded-sm border' />
 
-      <div className='relative flex h-full min-h-47.5 flex-col justify-between rounded-sm border border-[#D9D3C2] bg-[#FBFAF6] p-5 transition-shadow hover:shadow-[0_10px_24px_-14px_rgba(30,42,56,0.35)]'>
+      <div className='relative flex h-full min-h-47.5 flex-col justify-between rounded-sm p-5 transition-shadow hover:shadow-[0_10px_24px_-14px_rgba(30,42,56,0.35)]'>
         <div>
           <div className='mb-4 flex items-start justify-between gap-3'>
             <Badge
               variant='outline'
-              className='-rotate-2 rounded-sm border-[#A67C3D] bg-[#A67C3D]/6 px-2.5 py-1 text-[10px] tracking-[0.14em] text-[#8B6530] uppercase'
+              className='border-secondary text-primary -rotate-2 rounded-sm bg-[#A67C3D]/6 px-2.5 py-1 text-[10px] tracking-[0.14em] uppercase'
             >
               {tpl.category}
             </Badge>
 
             <div className='flex items-center gap-1'>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='h-7 w-7 text-[#5B6472] hover:bg-[#1E2A38]/6 hover:text-[#1E2A38]'
-                onClick={() => onEdit(tpl)}
-              >
+              <Button variant='outline' size='icon' onClick={() => onEdit(tpl)}>
                 <Pencil size={13} strokeWidth={1.8} />
               </Button>
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-7 w-7 text-[#5B6472] hover:bg-red-50 hover:text-red-600'
-                  >
+                  <Button variant='destructive' size='icon'>
                     <Trash2 size={13} strokeWidth={1.8} />
                   </Button>
                 </AlertDialogTrigger>
@@ -196,7 +187,7 @@ function TemplateCard({
             </div>
           </div>
 
-          <h3 className='mb-1 text-[17px] leading-snug font-medium text-[#1E2A38]'>
+          <h3 className='text-primary mb-1 line-clamp-2 text-[17px] leading-snug font-medium'>
             {tpl.title}
           </h3>
           <p className='text-[11px] tracking-wide text-[#5B6472]'>
@@ -207,7 +198,7 @@ function TemplateCard({
         <Button
           onClick={() => onDownload(tpl)}
           size='sm'
-          className='mt-4 gap-2 self-start rounded-sm bg-[#1E2A38] text-[12px] text-[#FBFAF6] hover:bg-[#1E2A38]/90'
+          className='mt-2 gap-2 self-start rounded-sm bg-[#1E2A38] text-[12px] text-[#FBFAF6] hover:bg-[#1E2A38]/90'
         >
           <Download size={13} strokeWidth={2} />
           Download PDF
@@ -241,9 +232,7 @@ function IntakeSlot({ onFiles }: IntakeSlotProps) {
       onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
       className={`relative flex cursor-pointer items-center gap-5 rounded-sm border-[1.5px] border-dashed px-6 py-8 transition-colors ${
-        dragOver
-          ? 'border-[#1E2A38] bg-[#1E2A38]/4'
-          : 'border-[#D9D3C2] bg-[#FBFAF6]'
+        dragOver ? 'border-[#1E2A38] bg-[#1E2A38]/4' : 'border-[#D9D3C2]'
       }`}
     >
       <input
@@ -258,38 +247,11 @@ function IntakeSlot({ onFiles }: IntakeSlotProps) {
       />
 
       <div className='h-14 w-14 shrink-0'>
-        <svg viewBox='0 0 56 56' fill='none'>
-          <rect
-            x='1'
-            y='1'
-            width='54'
-            height='54'
-            rx='4'
-            stroke='#1E2A38'
-            strokeWidth='1.2'
-          />
-          <line
-            x1='14'
-            y1='28'
-            x2='42'
-            y2='28'
-            stroke='#A67C3D'
-            strokeWidth='2.5'
-            strokeLinecap='round'
-          />
-          <path
-            d='M28 14 L28 30 M22 24 L28 30 L34 24'
-            stroke='#1E2A38'
-            strokeWidth='1.6'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            fill='none'
-          />
-        </svg>
+        <Download size={56} className='text-secondary' strokeWidth={1.4} />
       </div>
 
       <div className='min-w-0 flex-1'>
-        <p className='mb-1 text-[15px] font-medium text-[#1E2A38]'>
+        <p className='text-secondary mb-1 text-[15px] font-medium'>
           Add a template to the catalog
         </p>
         <p className='text-[12px] text-[#5B6472]'>
@@ -384,16 +346,14 @@ const Templates: React.FC = () => {
         {/* header */}
         <div className='mb-1 flex flex-wrap items-end justify-between gap-4'>
           <div>
-            <p className='mb-2 text-[11px] tracking-[0.18em] text-[#8B6530] uppercase'>
+            <p className='text-secondary mb-2 text-[11px] tracking-[0.18em] uppercase'>
               Document Catalog
             </p>
-            <h1 className='text-[38px] leading-none font-semibold text-[#1E2A38]'>
+            <h1 className='text-[38px] leading-none font-semibold'>
               Template Library
             </h1>
           </div>
-          <p className='pb-1 text-[12px] text-[#5B6472]'>
-            {templates.length} files indexed
-          </p>
+          <p className='pb-1 text-[12px]'>{templates.length} files indexed</p>
         </div>
 
         <div className='mb-8 h-px w-full bg-[#D9D3C2]' />
@@ -420,11 +380,11 @@ const Templates: React.FC = () => {
           <div className='flex flex-col items-center justify-center rounded-sm border border-dashed border-[#D9D3C2] py-20 text-center'>
             <FolderOpen
               size={28}
-              className='text-[#5B6472]'
+              className='text-secondary'
               strokeWidth={1.4}
             />
-            <p className='mt-3 text-[14px] text-[#1E2A38]'>No templates yet.</p>
-            <p className='mt-1 text-[12px] text-[#5B6472]'>
+            <p className='text-primary mt-3 text-[14px]'>No templates yet.</p>
+            <p className='text-secondary mt-1 text-[12px]'>
               Add one using the panel above.
             </p>
           </div>
