@@ -3,9 +3,10 @@ import { baseApi } from '@/store/api/baseApi';
 export const TemplateApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTemplates: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: '/templates',
         method: 'GET',
+        params,
       }),
       providesTags: ['Templates'],
     }),

@@ -3,18 +3,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useGetTemplatesQuery } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/TemplatesApi';
 import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
+import { formatDateAndTime } from '@/utils/formatters';
 import { Dot, Download, Pencil, Trash2 } from 'lucide-react';
 
 const handleDownload = (tpl: TemplateType) => {
-  const blob = tpl.file;
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
+  a.href = tpl.file;
   a.download = `${tpl.title.replace(/\s+/g, '-').toLowerCase()}.pdf`;
+  a.target = '_blank'; // fallback if download attribute is ignored cross-origin
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
 };
 
 const TemplateCard: React.FC = () => {
@@ -102,7 +101,7 @@ const TemplateCard: React.FC = () => {
               <p className='flex items-center text-[11px] tracking-wide text-[#5B6472]'>
                 {tpl.size}
                 <Dot />
-                {tpl.created_at}
+                {formatDateAndTime(tpl.created_at)}
               </p>
             </div>
 
