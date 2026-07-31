@@ -94,8 +94,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ShieldUser,
       },
       {
-        label: 'Documents',
-        href: '/client/landlord/documents',
+        label: 'Documents & Templates',
+        href: '/client/landlord/documents-and-templates',
         icon: Files,
       },
       {
@@ -181,8 +181,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ShieldUser,
       },
       {
-        label: 'Documents',
-        href: '/client/admin/documents',
+        label: 'Documents & Templates',
+        href: '/client/admin/documents-and-templates',
         icon: Files,
       },
       {
