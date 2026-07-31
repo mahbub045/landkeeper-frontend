@@ -14,7 +14,7 @@ const Templates: React.FC = () => {
             <p className='text-secondary mb-2 text-[11px] tracking-[0.18em] uppercase'>
               Document Catalog
             </p>
-            <h1 className='text-[38px] leading-none font-semibold'>
+            <h1 className='text-3xl leading-none font-semibold'>
               Template Library
             </h1>
           </div>

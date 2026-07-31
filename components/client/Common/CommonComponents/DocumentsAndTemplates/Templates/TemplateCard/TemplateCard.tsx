@@ -129,7 +129,8 @@ const TemplateCard: React.FC = () => {
             <Button
               onClick={() => handleDownload(tpl)}
               size='sm'
-              className='mt-2 gap-2 self-start rounded-sm bg-[#1E2A38] text-[12px] text-[#FBFAF6] hover:bg-[#1E2A38]/90'
+              variant='secondary'
+              className='self-start'
             >
               <Download size={13} strokeWidth={2} />
               Download PDF

@@ -1,4 +1,4 @@
-import { Download, Upload } from 'lucide-react';
+import { CloudUpload, Upload } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 interface TemplateIntakeSlotProps {
@@ -48,7 +48,7 @@ const TemplateIntakeSlot: React.FC<TemplateIntakeSlotProps> = ({ onFiles }) => {
         />
 
         <div className='h-14 w-14 shrink-0'>
-          <Download size={56} className='text-secondary' strokeWidth={1.4} />
+          <CloudUpload size={56} className='text-secondary' strokeWidth={1.4} />
         </div>
 
         <div className='min-w-0 flex-1'>
