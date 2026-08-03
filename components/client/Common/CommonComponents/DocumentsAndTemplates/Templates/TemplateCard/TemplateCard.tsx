@@ -1,20 +1,11 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { useGetTemplatesQuery } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/TemplatesApi';
 import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { Dot, Download, Pencil, Trash2 } from 'lucide-react';
-
-const handleDownload = (tpl: TemplateType) => {
-  const a = document.createElement('a');
-  a.href = tpl.file;
-  a.download = `${tpl.title.replace(/\s+/g, '-').toLowerCase()}.pdf`;
-  a.target = '_blank'; // fallback if download attribute is ignored cross-origin
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-};
 
 const TemplateCard: React.FC = () => {
   const {
@@ -22,6 +13,7 @@ const TemplateCard: React.FC = () => {
     isLoading,
     isError,
   } = useGetTemplatesQuery(undefined);
+  const { downloadFile, isDownloading } = useDownloadFile();
 
   if (isLoading) {
     return (
@@ -106,7 +98,13 @@ const TemplateCard: React.FC = () => {
             </div>
 
             <Button
-              onClick={() => handleDownload(tpl)}
+              onClick={() =>
+                downloadFile({
+                  url: tpl.file,
+                  filename: `${tpl.title.replace(/\s+/g, '-').toLowerCase()}.pdf`,
+                })
+              }
+              disabled={isDownloading}
               size='sm'
               variant='secondary'
               className='self-start'
