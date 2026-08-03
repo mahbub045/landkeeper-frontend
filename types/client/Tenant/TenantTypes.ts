@@ -94,6 +94,7 @@ export interface CreateRentPaymentPayload {
 
 export interface PayWithCardPayload {
   rent_payment: string;
+  payment_method_id?: string;
   amount: string;
 }
 

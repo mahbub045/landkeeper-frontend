@@ -1,6 +1,6 @@
 'use client';
 
-import { Receipt } from 'lucide-react';
+import { Icon, Receipt } from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -30,14 +30,16 @@ import {
 } from '@/components/ui/table';
 import {
   PAYMENT_METHOD_PROVIDER_CONFIG,
-  PAYMENT_METHOD_TYPE_LABEL,
   STATUS_CONFIG,
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
 import { useGetRentPaymentsQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import { PaymentStatus } from '@/types/client/Tenant/TenantTypes';
-import { formatCurrency, formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  formatCurrency,
+  formatDate,
+} from '@/utils/formatters';
 
 const NOT_AVAILABLE = 'Not Available';
 
@@ -105,56 +107,61 @@ export function PaymentHistoryTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Paid Date</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Reference</TableHead>
+                  <TableHead className='text-center'>Paid Date</TableHead>
+                  <TableHead className='text-center'>Payment Method</TableHead>
+                  <TableHead className='text-center'>Amount</TableHead>
+                  <TableHead className='text-center'>Status</TableHead>
+                  <TableHead className='text-center'>Reference</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {payments.map((payment) => (
                   <TableRow key={payment.alias}>
-                    <TableCell>
-                      {payment.paidDate
-                        ? formatDate(payment.paidDate)
-                        : NOT_AVAILABLE}
+                    <TableCell className='text-center'>
+                      {payment.paidDate ? (
+                        formatDate(payment.paidDate)
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
                     </TableCell>
-
-                    <TableCell>
+                    <TableCell className='text-center'>
                       {payment.paymentMethod ? (
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center justify-center gap-2'>
                           {(() => {
-                            const Icon =
-                              PAYMENT_METHOD_PROVIDER_CONFIG[
-                                payment.paymentMethod.provider
-                              ]?.icon;
+                            const provider = payment.paymentMethod.provider;
+                            const config =
+                              PAYMENT_METHOD_PROVIDER_CONFIG[provider];
+                            const Icon = config?.icon;
                             return Icon ? (
                               <Icon className='text-muted-foreground h-4 w-4' />
                             ) : null;
                           })()}
-                          <div className='flex flex-col leading-tight'>
-                            <span>
-                              {PAYMENT_METHOD_PROVIDER_CONFIG[
-                                payment.paymentMethod.provider
-                              ]?.label ?? payment.paymentMethod.provider}
-                            </span>
-                            <span className='text-muted-foreground text-xs'>
-                              {PAYMENT_METHOD_TYPE_LABEL[
-                                payment.paymentMethod.methodType
-                              ] ?? payment.paymentMethod.methodType}
+                          <div className='flex flex-col text-center leading-tight'>
+                            <span>{payment.paymentMethod.provider}</span>
+                            <span className='text-muted-foreground text-start text-xs'>
+                              {formatChoiceFieldValue(
+                                payment.paymentMethod.methodType,
+                              )}
                             </span>
                           </div>
                         </div>
                       ) : (
-                        NOT_AVAILABLE
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
                       )}
                     </TableCell>
-                    <TableCell>{formatCurrency(payment.amount)}</TableCell>
-                    <TableCell>
+                    <TableCell className='text-center'>
+                      {formatCurrency(payment.amount)}
+                    </TableCell>
+                    <TableCell className='text-center'>
                       <PaymentStatusBadge status={payment.status} />
                     </TableCell>
-                    <TableCell>{payment.reference}</TableCell>
+                    <TableCell className='text-center'>
+                      {payment.reference}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
