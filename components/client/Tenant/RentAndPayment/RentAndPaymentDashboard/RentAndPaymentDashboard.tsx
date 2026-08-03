@@ -7,10 +7,11 @@ import {
   useGetRentBalanceSummaryQuery,
   useSetupDirectDebitMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
+
 import {
   ApiPaymentMethod,
   PaymentMethodOption,
-} from '@/types/client/Tenant/TenantTypes';
+} from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { useState } from 'react';
 import { BalanceSummaryCard } from '../BalanceSummaryCard/BalanceSummaryCard';
 import { PayWithCardDialog } from '../Dialogs/PayWithCardDialog';
@@ -28,7 +29,7 @@ export const RentAndPaymentDashboard: React.FC = () => {
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
   const [isDirectDebitDialogOpen, setIsDirectDebitDialogOpen] = useState(false);
 
-  const { data: balanceSummary } = useGetRentBalanceSummaryQuery();
+  const { data: balanceSummary } = useGetRentBalanceSummaryQuery(undefined);
   const { data: savedPaymentMethods } = useGetPaymentMethodsQuery({});
 
   const activeDirectDebit = savedPaymentMethods?.find(

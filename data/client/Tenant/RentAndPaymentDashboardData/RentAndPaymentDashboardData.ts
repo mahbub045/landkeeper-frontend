@@ -1,10 +1,8 @@
 import {
-  ApiRentPayment,
   PaymentMethodOption,
   PaymentProvider,
-  PaymentRecord,
   PaymentStatus,
-} from '@/types/client/Tenant/TenantTypes';
+} from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import {
   CheckCircle2,
   Clock,
@@ -103,7 +101,7 @@ export const PAYMENT_METHOD_TYPE_LABEL: Record<string, string> = {
   CARD: 'Card',
 };
 
-function mapPaymentStatus(status: string): PaymentStatus {
+export function normalizePaymentStatus(status: string): PaymentStatus {
   switch (status.toUpperCase()) {
     case 'CLEARED':
       return 'cleared';
@@ -118,23 +116,4 @@ function mapPaymentStatus(status: string): PaymentStatus {
     default:
       return 'pending';
   }
-}
-
-export function mapApiRentPaymentToPaymentRecord(
-  payment: ApiRentPayment,
-): PaymentRecord {
-  return {
-    alias: payment.alias,
-    paidDate: payment.paid_date,
-    reference: payment.reference,
-    paymentMethod: payment.payment_method
-      ? {
-          provider: payment.payment_method.provider,
-          methodType: payment.payment_method.method_type,
-        }
-      : null,
-    amount: parseFloat(payment.amount),
-    status: mapPaymentStatus(payment.status),
-    receiptUrl: payment.receipt_file,
-  };
 }

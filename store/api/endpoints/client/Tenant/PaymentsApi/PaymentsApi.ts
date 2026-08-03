@@ -1,10 +1,4 @@
-import { mapApiRentPaymentToPaymentRecord } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
 import { baseApi } from '@/store/api/baseApi';
-import {
-  ApiRentBalanceSummary,
-  ApiRentPayment,
-  PaymentRecord,
-} from '@/types/client/Tenant/TenantTypes';
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -36,22 +30,12 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
       invalidatesTags: ['PaymentMethods'],
     }),
 
-    getRentBalanceSummary: builder.query<ApiRentBalanceSummary, void>({
+    getRentBalanceSummary: builder.query({
       query: () => '/tenant/rent-payments/balance-summary',
     }),
 
-    getRentPayments: builder.query<
-      { results: PaymentRecord[]; count: number },
-      { page: number }
-    >({
+    getRentPayments: builder.query({
       query: ({ page }) => `/tenant/rent-payments?page=${page}`,
-      transformResponse: (response: {
-        count: number;
-        results: ApiRentPayment[];
-      }) => ({
-        count: response.count,
-        results: response.results.map(mapApiRentPaymentToPaymentRecord),
-      }),
       providesTags: ['RentPayments'],
     }),
 

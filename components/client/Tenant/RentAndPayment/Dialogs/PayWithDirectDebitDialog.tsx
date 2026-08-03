@@ -14,10 +14,10 @@ import {
   useCreateRentPaymentMutation,
   usePayWithDirectDebitMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
-import { PayWithDirectDebitDialogProps } from '@/types/client/Tenant/TenantTypes';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
+import { PayWithDirectDebitDialogProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 
 export const PayWithDirectDebitDialog: React.FC<
   PayWithDirectDebitDialogProps

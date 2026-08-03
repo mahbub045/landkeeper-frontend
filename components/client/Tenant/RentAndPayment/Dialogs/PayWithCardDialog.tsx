@@ -1,6 +1,7 @@
 'use client';
 
 import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +17,7 @@ import {
   usePayWithCardMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
 import { PayWithCardDialogProps } from '@/types/client/Tenant/TenantTypes';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
 
@@ -137,7 +138,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                 Cancel
               </Button>
               <Button type='submit' disabled={isBusy}>
-                {isBusy && <Loader2 className='mr-1 h-4 w-4 animate-spin' />}
+                {isBusy && <Loading className='h-4 w-4' />}
                 {isBusy ? 'Processing…' : 'Continue to Payment'}
               </Button>
             </div>

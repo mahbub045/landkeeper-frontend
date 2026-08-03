@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { PROVIDER_ICON } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
-import { QuickPaymentCardProps } from '@/types/client/Tenant/TenantTypes';
+import { QuickPaymentCardProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 
 export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
   paymentMethods,

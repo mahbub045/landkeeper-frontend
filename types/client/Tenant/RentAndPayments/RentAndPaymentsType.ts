@@ -13,19 +13,6 @@ export interface ApiRentBalanceSummary {
 
 export type PaymentProvider = 'gocardless' | 'stripe';
 
-export interface PaymentRecord {
-  alias: string;
-  paidDate: string | null;
-  reference: string;
-  paymentMethod: {
-    provider: ApiPaymentMethod['provider'];
-    methodType: ApiPaymentMethod['method_type'];
-  } | null;
-  amount: number;
-  status: PaymentStatus;
-  receiptUrl: string | null;
-}
-
 export interface PaymentMethodOption {
   id: string;
   provider: PaymentProvider;
@@ -113,7 +100,7 @@ export interface PayWithDirectDebitResponse {
 }
 
 export interface PaymentHistoryTableProps {
-  payments: PaymentRecord[];
+  payments: ApiRentPayment[];
 }
 
 export interface PayWithCardDialogProps {

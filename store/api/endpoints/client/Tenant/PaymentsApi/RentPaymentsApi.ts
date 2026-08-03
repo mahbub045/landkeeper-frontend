@@ -1,19 +1,8 @@
 import { baseApi } from '@/store/api/baseApi';
-import {
-  ApiRentPayment,
-  CreateRentPaymentPayload,
-  PayWithCardPayload,
-  PayWithCardResponse,
-  PayWithDirectDebitPayload,
-  PayWithDirectDebitResponse,
-} from '@/types/client/Tenant/TenantTypes';
 
 export const rentPaymentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    createRentPayment: builder.mutation<
-      ApiRentPayment,
-      CreateRentPaymentPayload
-    >({
+    createRentPayment: builder.mutation({
       query: (body) => ({
         url: '/tenant/rent-payments',
         method: 'POST',
@@ -22,7 +11,7 @@ export const rentPaymentsApi = baseApi.injectEndpoints({
       invalidatesTags: ['RentPayments'],
     }),
 
-    payWithCard: builder.mutation<PayWithCardResponse, PayWithCardPayload>({
+    payWithCard: builder.mutation({
       query: (body) => ({
         url: '/tenant/rent-payments/pay-with-card',
         method: 'POST',
@@ -31,10 +20,7 @@ export const rentPaymentsApi = baseApi.injectEndpoints({
       invalidatesTags: ['RentPayments'],
     }),
 
-    payWithDirectDebit: builder.mutation<
-      PayWithDirectDebitResponse,
-      PayWithDirectDebitPayload
-    >({
+    payWithDirectDebit: builder.mutation({
       query: (body) => ({
         url: '/tenant/rent-payments/pay-with-direct-debit',
         method: 'POST',

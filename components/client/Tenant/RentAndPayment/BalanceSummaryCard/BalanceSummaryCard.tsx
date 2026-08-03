@@ -2,7 +2,7 @@ import { CalendarClock, CircleAlert, CircleCheck, Coins } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { ApiRentBalanceSummary } from '@/types/client/Tenant/TenantTypes';
+import { ApiRentBalanceSummary } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import {
   formatCurrency,
   formatDate,

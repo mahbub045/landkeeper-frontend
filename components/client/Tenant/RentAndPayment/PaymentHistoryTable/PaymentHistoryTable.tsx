@@ -1,8 +1,6 @@
 'use client';
 
-import { Icon, Receipt } from 'lucide-react';
-import { useState } from 'react';
-
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -29,19 +27,23 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  normalizePaymentStatus,
   PAYMENT_METHOD_PROVIDER_CONFIG,
   STATUS_CONFIG,
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
 import { useGetRentPaymentsQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
-import { PaymentStatus } from '@/types/client/Tenant/TenantTypes';
+import {
+  ApiRentPayment,
+  PaymentStatus,
+} from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDate,
 } from '@/utils/formatters';
-
-const NOT_AVAILABLE = 'Not Available';
+import { CircleOff, Receipt } from 'lucide-react';
+import { useState } from 'react';
 
 function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   const config = STATUS_CONFIG[status];
@@ -61,10 +63,11 @@ function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
 export function PaymentHistoryTable() {
   const [page, setPage] = useState(1);
 
-  const { data } = useGetRentPaymentsQuery({ page });
+  const { data: rentPaymentsData, isLoading: isRentPaymentsLoading } =
+    useGetRentPaymentsQuery({ page });
 
-  const payments = data?.results ?? [];
-  const count = data?.count ?? 0;
+  const payments = rentPaymentsData?.results ?? [];
+  const count = rentPaymentsData?.count ?? 0;
   const totalPages = Math.ceil(count / PAGE_LIMIT);
 
   const getPageNumbers = () => {
@@ -98,7 +101,11 @@ export function PaymentHistoryTable() {
         <span className='text-muted-foreground text-sm'>{count} payments</span>
       </CardHeader>
       <CardContent>
-        {payments.length === 0 ? (
+        {isRentPaymentsLoading ? (
+          <div className='flex items-center justify-center py-8'>
+            <Loading />
+          </div>
+        ) : payments.length === 0 ? (
           <p className='text-muted-foreground py-8 text-center text-sm'>
             No payments have been recorded yet.
           </p>
@@ -107,30 +114,30 @@ export function PaymentHistoryTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className='text-center'>Paid Date</TableHead>
-                  <TableHead className='text-center'>Payment Method</TableHead>
+                  <TableHead>Paid Date</TableHead>
+                  <TableHead>Payment Method</TableHead>
                   <TableHead className='text-center'>Amount</TableHead>
                   <TableHead className='text-center'>Status</TableHead>
                   <TableHead className='text-center'>Reference</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((payment) => (
+                {payments.map((payment: ApiRentPayment) => (
                   <TableRow key={payment.alias}>
-                    <TableCell className='text-center'>
-                      {payment.paidDate ? (
-                        formatDate(payment.paidDate)
+                    <TableCell>
+                      {payment.paid_date ? (
+                        formatDate(payment.paid_date)
                       ) : (
                         <span className='text-muted-foreground text-xs'>
                           Not Available
                         </span>
                       )}
                     </TableCell>
-                    <TableCell className='text-center'>
-                      {payment.paymentMethod ? (
-                        <div className='flex items-center justify-center gap-2'>
+                    <TableCell>
+                      {payment.payment_method ? (
+                        <div className='flex items-center justify-start gap-2'>
                           {(() => {
-                            const provider = payment.paymentMethod.provider;
+                            const provider = payment.payment_method.provider;
                             const config =
                               PAYMENT_METHOD_PROVIDER_CONFIG[provider];
                             const Icon = config?.icon;
@@ -138,26 +145,34 @@ export function PaymentHistoryTable() {
                               <Icon className='text-muted-foreground h-4 w-4' />
                             ) : null;
                           })()}
-                          <div className='flex flex-col text-center leading-tight'>
-                            <span>{payment.paymentMethod.provider}</span>
-                            <span className='text-muted-foreground text-start text-xs'>
+                          <div className='flex flex-col leading-tight'>
+                            <span>{payment.payment_method.provider}</span>
+                            <span className='text-muted-foreground text-xs'>
                               {formatChoiceFieldValue(
-                                payment.paymentMethod.methodType,
+                                payment.payment_method.method_type,
+                              )}{' '}
+                              {payment.payment_method.card_brand && (
+                                <small className='text-muted-foreground text-xs'>
+                                  ({payment.payment_method.card_brand})
+                                </small>
                               )}
                             </span>
                           </div>
                         </div>
                       ) : (
-                        <span className='text-muted-foreground text-xs'>
+                        <span className='text-muted-foreground flex gap-1 text-xs'>
+                          <CircleOff size={14} />
                           Not Available
                         </span>
                       )}
                     </TableCell>
                     <TableCell className='text-center'>
-                      {formatCurrency(payment.amount)}
+                      {formatCurrency(Number(payment.amount))}
                     </TableCell>
                     <TableCell className='text-center'>
-                      <PaymentStatusBadge status={payment.status} />
+                      <PaymentStatusBadge
+                        status={normalizePaymentStatus(payment.status)}
+                      />
                     </TableCell>
                     <TableCell className='text-center'>
                       {payment.reference}
