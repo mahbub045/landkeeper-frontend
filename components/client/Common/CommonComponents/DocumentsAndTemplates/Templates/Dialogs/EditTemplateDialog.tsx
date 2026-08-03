@@ -17,6 +17,35 @@ import { EditTemplateDialogProps } from '@/types/client/Common/DocumentsAndTempl
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+type FieldErrors = Record<string, string[]>;
+
+// Normalizes RTK Query / DRF-style error responses into a flat
+// { fieldName: string[] } map, regardless of exact shape.
+function extractFieldErrors(error: unknown): FieldErrors {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object'
+  ) {
+    const data = error.data as Record<string, unknown>;
+    const fieldErrors: FieldErrors = {};
+
+    for (const [key, value] of Object.entries(data)) {
+      if (Array.isArray(value)) {
+        fieldErrors[key] = value.map(String);
+      } else if (typeof value === 'string') {
+        fieldErrors[key] = [value];
+      }
+    }
+
+    return fieldErrors;
+  }
+
+  return {};
+}
+
 const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
   isOpen,
   setIsOpen,
@@ -26,6 +55,7 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
 
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   // Tracks which template's data is currently loaded into the form fields.
   const [loadedAlias, setLoadedAlias] = useState<string | null>(null);
@@ -34,6 +64,7 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
     setLoadedAlias(template.alias);
     setTitle(template.title);
     setCategory(template.category);
+    setFieldErrors({});
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -45,6 +76,8 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
       return;
     }
 
+    setFieldErrors({});
+
     try {
       await updateTemplate({
         templateAlias: template.alias,
@@ -55,13 +88,24 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
       }).unwrap();
       toast.success('Template updated.');
       setIsOpen(false);
-    } catch {
-      toast.error('Failed to update template. Please try again.');
+    } catch (error) {
+      const errors = extractFieldErrors(error);
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+      } else {
+        toast.error('Failed to update template. Please try again.');
+      }
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) setFieldErrors({});
+      }}
+    >
       <DialogContent className='rounded-sm sm:max-w-105'>
         <form onSubmit={handleSave}>
           <DialogHeader>
@@ -83,10 +127,21 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
                 id='template-title'
                 value={title}
                 disabled={isLoading}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (fieldErrors.title) {
+                    setFieldErrors((prev) => ({ ...prev, title: [] }));
+                  }
+                }}
                 placeholder='e.g. Master Services Agreement'
-                className='rounded-sm'
+                aria-invalid={!!fieldErrors.title?.length}
+                className='aria-invalid:border-danger rounded-sm'
               />
+              {fieldErrors.title?.map((msg, i) => (
+                <p key={i} className='text-danger text-[12px]'>
+                  {msg}
+                </p>
+              ))}
             </div>
 
             <div className='space-y-1.5'>
@@ -98,11 +153,31 @@ const EditTemplateDialog: React.FC<EditTemplateDialogProps> = ({
                 id='template-category'
                 value={category}
                 disabled={isLoading}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  if (fieldErrors.category) {
+                    setFieldErrors((prev) => ({ ...prev, category: [] }));
+                  }
+                }}
                 placeholder='e.g. Lease Agreement'
-                className='rounded-sm'
+                aria-invalid={!!fieldErrors.category?.length}
+                className='aria-invalid:border-danger rounded-sm'
               />
+              {fieldErrors.category?.map((msg, i) => (
+                <p key={i} className='text-danger text-[12px]'>
+                  {msg}
+                </p>
+              ))}
             </div>
+
+            {/* Catch-all for non-field errors, e.g. { non_field_errors: [...] } or { detail: "..." } */}
+            {(fieldErrors.non_field_errors || fieldErrors.detail) && (
+              <p className='text-danger text-[12px]'>
+                {(fieldErrors.non_field_errors ?? fieldErrors.detail)?.join(
+                  ' ',
+                )}
+              </p>
+            )}
           </div>
 
           <DialogFooter className='mt-6 gap-2 sm:gap-2'>

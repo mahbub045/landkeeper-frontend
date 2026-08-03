@@ -9,32 +9,56 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUploadTemplateMutation } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/TemplatesApi';
-import {
-  AlertCircle,
-  CheckCircle2,
-  CloudUpload,
-  File,
-  Upload,
-  X,
-} from 'lucide-react';
+import { AlertCircle, CloudUpload, File, Upload, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface UploadTemplateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type FieldErrors = Record<string, string[]>;
+
+// Normalizes RTK Query / DRF-style error responses into a flat
+// { fieldName: string[] } map, regardless of exact shape.
+function extractFieldErrors(error: unknown): FieldErrors {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object'
+  ) {
+    const data = error.data as Record<string, unknown>;
+    const fieldErrors: FieldErrors = {};
+
+    for (const [key, value] of Object.entries(data)) {
+      if (Array.isArray(value)) {
+        fieldErrors[key] = value.map(String);
+      } else if (typeof value === 'string') {
+        fieldErrors[key] = [value];
+      }
+    }
+
+    return fieldErrors;
+  }
+
+  return {};
+}
+
 const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
   open,
   onOpenChange,
 }) => {
-  const [uploadFile, { isLoading, isSuccess, isError, reset }] =
+  const [uploadFile, { isLoading, isSuccess, reset }] =
     useUploadTemplateMutation();
 
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = useCallback(() => {
@@ -42,6 +66,7 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
     setTitle('');
     setCategory('');
     setIsDragging(false);
+    setFieldErrors({});
     reset();
   }, [reset]);
 
@@ -56,6 +81,9 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
     if (selectedFile.type !== 'application/pdf') return;
     setFile(selectedFile);
     setTitle((prev) => prev || selectedFile.name.replace(/\.pdf$/i, ''));
+    if (fieldErrors.file) {
+      setFieldErrors((prev) => ({ ...prev, file: [] }));
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLButtonElement>) => {
@@ -73,20 +101,32 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
     formData.append('title', title.trim());
     formData.append('category', category.trim());
 
+    setFieldErrors({});
+
     try {
       await uploadFile(formData).unwrap();
       setTimeout(() => {
         resetForm();
         onOpenChange(false);
       }, 800);
-    } catch {
-      // isError from the mutation state handles surfacing this
+      toast.success('Template uploaded successfully.');
+    } catch (error) {
+      setFieldErrors(extractFieldErrors(error));
+      toast.error(
+        'Failed to upload template. Please check the form and try again.',
+      );
     }
   };
 
+  const nonFieldErrors =
+    fieldErrors.non_field_errors ?? fieldErrors.detail ?? [];
+  const hasFieldErrors = Object.values(fieldErrors).some(
+    (msgs) => msgs.length > 0,
+  );
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden sm:max-w-185'>
+      <DialogContent className='rounded-sm sm:max-w-150'>
         <DialogHeader>
           <DialogTitle className='text-foreground text-xl font-bold'>
             Upload Template
@@ -123,7 +163,9 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
                 className={`relative flex w-full cursor-pointer items-center gap-5 rounded-sm border-[1.5px] border-dashed px-6 py-8 text-left transition-colors ${
                   isDragging
                     ? 'border-primary bg-[#FAFAF8] dark:bg-[#22262C]'
-                    : 'hover:border-primary border-[#D8DCE3] hover:bg-[#FAFAF8] dark:border-[#3A3F47] dark:hover:bg-[#22262C]'
+                    : fieldErrors.file?.length
+                      ? 'border-danger'
+                      : 'hover:border-primary border-[#D8DCE3] hover:bg-[#FAFAF8] dark:border-[#3A3F47] dark:hover:bg-[#22262C]'
                 } focus-visible:ring-primary focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none`}
               >
                 <div className='h-14 w-14 shrink-0'>
@@ -174,6 +216,11 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
                 </button>
               </div>
             )}
+            {fieldErrors.file?.map((msg, i) => (
+              <p key={i} className='text-danger -mt-2 text-[12px]'>
+                {msg}
+              </p>
+            ))}
 
             <div className='flex flex-col gap-1.5'>
               <Label htmlFor='title' className='text-[13px]'>
@@ -185,11 +232,23 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
                 required
                 placeholder='e.g. Standard Lease Agreement'
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                aria-invalid={!!fieldErrors.title?.length}
+                className='aria-invalid:border-danger'
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (fieldErrors.title) {
+                    setFieldErrors((prev) => ({ ...prev, title: [] }));
+                  }
+                }}
               />
+              {fieldErrors.title?.map((msg, i) => (
+                <p key={i} className='text-danger text-[12px]'>
+                  {msg}
+                </p>
+              ))}
             </div>
 
-            <div className='flex flex-col gap-1.5'>
+            <div className='mb-2 flex flex-col gap-1.5'>
               <Label htmlFor='category' className='text-[13px]'>
                 Category<span className='text-danger'>*</span>
               </Label>
@@ -199,23 +258,34 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
                 required
                 placeholder='e.g. Lease Agreement'
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                aria-invalid={!!fieldErrors.category?.length}
+                className='aria-invalid:border-danger'
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  if (fieldErrors.category) {
+                    setFieldErrors((prev) => ({ ...prev, category: [] }));
+                  }
+                }}
               />
+              {fieldErrors.category?.map((msg, i) => (
+                <p key={i} className='text-danger text-[12px]'>
+                  {msg}
+                </p>
+              ))}
             </div>
 
-            {isError && (
+            {(hasFieldErrors && nonFieldErrors.length === 0
+              ? false
+              : nonFieldErrors.length > 0) && (
               <div className='bg-destructive/10 text-destructive flex items-center gap-2 rounded-sm px-3 py-2 text-[13px]'>
                 <AlertCircle size={14} />
-                Upload failed. Please try again.
+                {nonFieldErrors.join(' ')}
               </div>
             )}
 
-            {isSuccess && (
-              <div className='flex items-center gap-2 rounded-sm bg-green-500/10 px-3 py-2 text-[13px] text-green-600'>
-                <CheckCircle2 size={14} />
-                Template uploaded successfully.
-              </div>
-            )}
+            {hasFieldErrors === false &&
+              Object.keys(fieldErrors).length === 0 &&
+              isLoading === false && <></>}
           </div>
 
           <div className='flex justify-end gap-2'>
