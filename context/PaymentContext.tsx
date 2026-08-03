@@ -2,7 +2,7 @@
 import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 interface PaymentRequest {
   rentPaymentAlias: string;
@@ -16,15 +16,7 @@ const PaymentContext = createContext<{
 
 export function PaymentProvider({ children }: { children: React.ReactNode }) {
   const [request, setRequest] = useState<PaymentRequest | null>(null);
-  const [payWithCard, { data, isLoading, error }] = usePayWithCardMutation();
-
-  useEffect(() => {
-    if (!request) return;
-    payWithCard({
-      rent_payment: request.rentPaymentAlias,
-      amount: request.amount,
-    });
-  }, [request]);
+  const [payWithCard, { isLoading, error }] = usePayWithCardMutation();
 
   const handleClose = () => setRequest(null);
 
@@ -42,11 +34,16 @@ export function PaymentProvider({ children }: { children: React.ReactNode }) {
               Could not start payment. Please try again.
             </p>
           )}
-          {request && data?.client_secret && (
+          {request && (
             <CardPaymentForm
-              clientSecret={data.client_secret}
               amount={request.amount}
-              onSuccess={() => {
+              onSuccess={async (paymentMethodId) => {
+                await payWithCard({
+                  rent_payment: request.rentPaymentAlias,
+                  payment_method_id: paymentMethodId,
+                  amount: request.amount,
+                }).unwrap();
+
                 request.onSuccess?.();
                 handleClose();
               }}

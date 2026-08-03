@@ -28,7 +28,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
   const [step, setStep] = useState<'details' | 'card'>('details');
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [rentPaymentAlias, setRentPaymentAlias] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
   const [createRentPayment, { isLoading: isCreating }] =
@@ -42,7 +42,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
     setStep('details');
     setAmount('');
     setDueDate('');
-    setClientSecret(null);
+    setRentPaymentAlias(null);
     setFormError(null);
     onOpenChange(false);
   };
@@ -57,12 +57,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
         due_date: dueDate,
       }).unwrap();
 
-      const { client_secret } = await payWithCard({
-        rent_payment: rentPayment.alias,
-        amount,
-      }).unwrap();
-
-      setClientSecret(client_secret);
+      setRentPaymentAlias(rentPayment.alias);
       setStep('card');
     } catch (err) {
       console.error('Failed to start card payment:', err);
@@ -149,13 +144,28 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
           </form>
         )}
 
-        {step === 'card' && clientSecret && (
+        {step === 'card' && rentPaymentAlias && (
           <CardPaymentForm
-            clientSecret={clientSecret}
             amount={amount}
-            onSuccess={() => {
-              onSuccess?.();
-              resetAndClose();
+            onSuccess={async (paymentMethodId) => {
+              setFormError(null);
+
+              try {
+                await payWithCard({
+                  rent_payment: rentPaymentAlias,
+                  payment_method_id: paymentMethodId,
+                  amount,
+                }).unwrap();
+
+                onSuccess?.();
+                resetAndClose();
+              } catch (err) {
+                console.error('Failed to complete card payment:', err);
+                const message =
+                  'Something went wrong while completing the payment. Please try again.';
+                setFormError(message);
+                throw new Error(message);
+              }
             }}
             onCancel={resetAndClose}
           />

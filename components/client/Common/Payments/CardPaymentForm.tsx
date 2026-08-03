@@ -1,8 +1,8 @@
 'use client';
 
 import {
+  CardElement,
   Elements,
-  PaymentElement,
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
@@ -10,9 +10,8 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
 interface CardPaymentFormProps {
-  clientSecret: string; // from POST /tenant/rent-payments/pay-with-card
   amount: string; // display only, e.g. "500.00"
-  onSuccess: () => void;
+  onSuccess: (paymentMethodId: string) => Promise<void> | void;
   onCancel?: () => void;
 }
 
@@ -25,25 +24,15 @@ export function getStripe() {
   return stripePromise;
 }
 
-// Elements is initialized with the REAL clientSecret from the backend —
-// Stripe reads amount/currency/allowed methods from the PaymentIntent
-// itself, so we don't (and shouldn't) pass mode/amount/currency here.
 export function CardPaymentForm(props: CardPaymentFormProps) {
   return (
-    <Elements
-      stripe={getStripe()}
-      options={{
-        clientSecret: props.clientSecret,
-        appearance: { theme: 'stripe' },
-      }}
-    >
+    <Elements stripe={getStripe()}>
       <CardPaymentFormInner {...props} />
     </Elements>
   );
 }
 
 function CardPaymentFormInner({
-  clientSecret,
   amount,
   onSuccess,
   onCancel,
@@ -61,23 +50,16 @@ function CardPaymentFormInner({
     setSubmitting(true);
     setCardError(null);
 
-    // Validates the PaymentElement fields before confirming.
-    const { error: submitError } = await elements.submit();
-    if (submitError) {
-      setCardError(submitError.message ?? 'Please check your card details.');
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      setCardError('Card details are not ready yet. Please try again.');
       setSubmitting(false);
       return;
     }
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      clientSecret,
-      confirmParams: {
-        // Stripe requires this even when redirect: 'if_required' — it's
-        // only used if the card needs an off-page 3DS challenge.
-        return_url: `${window.location.origin}/client/tenant/rent-and-payments`,
-      },
-      redirect: 'if_required',
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardElement,
     });
 
     if (error) {
@@ -86,13 +68,17 @@ function CardPaymentFormInner({
       return;
     }
 
-    if (
-      paymentIntent?.status === 'succeeded' ||
-      paymentIntent?.status === 'processing'
-    ) {
-      onSuccess();
-    } else {
-      setCardError('Payment could not be completed. Please try a different card.');
+    try {
+      await onSuccess(paymentMethod.id);
+    } catch (callbackError) {
+      const message =
+        callbackError instanceof Error
+          ? callbackError.message
+          : 'Payment could not be completed. Please try a different card.';
+
+      setCardError(message);
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);
@@ -102,7 +88,9 @@ function CardPaymentFormInner({
 
   return (
     <form onSubmit={handleSubmit} className='space-y-4'>
-      <PaymentElement />
+      <div className='bg-background rounded-md border p-3'>
+        <CardElement options={{ hidePostalCode: true }} />
+      </div>
 
       {cardError && (
         <p className='text-sm text-red-600' role='alert'>
