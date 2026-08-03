@@ -6,3 +6,15 @@ export interface TemplateType {
   size: string;
   created_at: string;
 }
+
+export interface DeleteTemplateDialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  template: TemplateType | null;
+}
+
+export interface EditTemplateDialogProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  template: TemplateType | null;
+}

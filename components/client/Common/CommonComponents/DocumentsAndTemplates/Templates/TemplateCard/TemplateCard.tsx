@@ -6,8 +6,16 @@ import { useGetTemplatesQuery } from '@/store/api/endpoints/client/Common/Docume
 import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { Dot, Download, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import DeleteTemplateDialog from '../Dialogs/DeleteTemplateDialog';
+import EditTemplateDialog from '../Dialogs/EditTemplateDialog';
 
 const TemplateCard: React.FC = () => {
+  const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
+  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(
+    null,
+  );
   const {
     data: templates,
     isLoading,
@@ -77,11 +85,25 @@ const TemplateCard: React.FC = () => {
                 </Badge>
 
                 <div className='flex items-center gap-1'>
-                  <Button variant='outline' size='icon'>
+                  <Button
+                    variant='outline'
+                    size='icon'
+                    onClick={() => {
+                      setSelectedTemplate(tpl);
+                      setIsOpenEditDialog(true);
+                    }}
+                  >
                     <Pencil size={13} strokeWidth={1.8} />
                   </Button>
 
-                  <Button variant='destructive' size='icon'>
+                  <Button
+                    variant='destructive'
+                    size='icon'
+                    onClick={() => {
+                      setSelectedTemplate(tpl);
+                      setIsOpenDeleteDialog(true);
+                    }}
+                  >
                     <Trash2 size={13} strokeWidth={1.8} />
                   </Button>
                 </div>
@@ -113,6 +135,17 @@ const TemplateCard: React.FC = () => {
               Download PDF
             </Button>
           </div>
+          {/* Dialogs  */}
+          <EditTemplateDialog
+            isOpen={isOpenEditDialog}
+            setIsOpen={setIsOpenEditDialog}
+            template={selectedTemplate}
+          />
+          <DeleteTemplateDialog
+            isOpen={isOpenDeleteDialog}
+            setIsOpen={setIsOpenDeleteDialog}
+            template={selectedTemplate}
+          />
         </div>
       ))}
     </div>
