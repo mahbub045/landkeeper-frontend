@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import {
   CardElement,
   Elements,
@@ -100,22 +101,22 @@ function CardPaymentFormInner({
 
       <div className='flex justify-end gap-2'>
         {onCancel && (
-          <button
-            type='button'
+          <Button
+            variant='outline'
             onClick={onCancel}
             disabled={isBusy}
             className='rounded-md border px-4 py-2 text-sm'
           >
             Cancel
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type='submit'
           disabled={!stripe || !elements || isBusy}
           className='bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm disabled:opacity-50'
         >
           {isBusy ? 'Processing…' : `Pay $${amount}`}
-        </button>
+        </Button>
       </div>
     </form>
   );
