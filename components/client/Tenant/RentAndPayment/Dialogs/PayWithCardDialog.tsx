@@ -16,7 +16,7 @@ import {
   useCreateRentPaymentMutation,
   usePayWithCardMutation,
 } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
-import { PayWithCardDialogProps } from '@/types/client/Tenant/TenantTypes';
+import { PayWithCardDialogProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
