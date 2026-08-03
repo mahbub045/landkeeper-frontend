@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { useDownloadFile } from '@/hooks/useDownloadFile';
 import {
   useAddSupportTicketCommentMutation,
   useDeleteSupportTicketCommentMutation,
@@ -138,46 +139,18 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
   // Delete confirmation
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  // Tracks file identifiers (alias) currently being downloaded, for per-file loading state
-  const [downloadingFiles, setDownloadingFiles] = useState<Set<string>>(
-    new Set(),
-  );
+  const { downloadFile, isDownloading } = useDownloadFile();
+  const [downloadingFileAlias, setDownloadingFileAlias] = useState<
+    string | null
+  >(null);
 
-  // ── Download an attachment (instead of opening it in a new tab) ────────────
-  async function handleDownloadFile(
-    url: string,
-    filename: string,
-    fileKey: string,
-  ) {
-    if (downloadingFiles.has(fileKey)) return; // already downloading
-
-    setDownloadingFiles((prev) => new Set(prev).add(fileKey));
+  // Add this handler (near your other handlers)
+  async function handleFileDownload(f: CommentFile) {
+    setDownloadingFileAlias(f.alias);
     try {
-      // Routed through the same proxy used to prefetch files for editing,
-      // so this works regardless of the storage host's CORS policy.
-      const res = await fetch(
-        `/api/fetch-remote-files?url=${encodeURIComponent(url)}`,
-      );
-      if (!res.ok) throw new Error(`Failed to fetch file (${res.status})`);
-      const blob = await res.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error('Failed to download file', err);
-      toast.error('Failed to download file. Please try again.');
+      await downloadFile({ url: f.file, filename: getFileName(f.file) });
     } finally {
-      setDownloadingFiles((prev) => {
-        const next = new Set(prev);
-        next.delete(fileKey);
-        return next;
-      });
+      setDownloadingFileAlias(null);
     }
   }
 
@@ -530,24 +503,19 @@ const SupportTicketComments: React.FC<SupportTicketCommentsProps> = ({
                   {node.files.length > 0 && (
                     <div className='mt-2 flex flex-wrap gap-2'>
                       {node.files.map((f) => {
-                        const isDownloading = downloadingFiles.has(f.alias);
+                        const fileDownloading =
+                          downloadingFileAlias === f.alias;
                         return (
                           <button
                             key={f.alias}
                             type='button'
-                            disabled={isDownloading}
-                            onClick={() =>
-                              handleDownloadFile(
-                                f.file,
-                                getFileName(f.file),
-                                f.alias,
-                              )
-                            }
+                            disabled={fileDownloading}
+                            onClick={() => handleFileDownload(f)}
                             className='bg-background hover:bg-muted flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-xs disabled:opacity-70'
                           >
                             <FileText className='text-primary size-3.5' />
                             {getFileName(f.file)}
-                            {isDownloading ? (
+                            {fileDownloading ? (
                               <Loader2 className='text-muted-foreground size-3.5 animate-spin' />
                             ) : (
                               <Download className='text-muted-foreground size-3.5' />
