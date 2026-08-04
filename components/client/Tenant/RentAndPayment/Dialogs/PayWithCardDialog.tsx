@@ -12,14 +12,48 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  useCreateRentPaymentMutation,
-  usePayWithCardMutation,
-} from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
+import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
 import { PayWithCardDialogProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
+
+function getApiErrorMessages(error: unknown) {
+  if (error && typeof error === 'object' && 'data' in error) {
+    const data = (error as { data?: unknown }).data;
+
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      const messages: string[] = [];
+
+      for (const [, value] of Object.entries(data as Record<string, unknown>)) {
+        if (Array.isArray(value)) {
+          value.forEach((item) => messages.push(String(item)));
+          continue;
+        }
+
+        if (typeof value === 'string') {
+          messages.push(value);
+        }
+      }
+
+      if (messages.length > 0) {
+        return messages;
+      }
+    }
+  }
+
+  if (error && typeof error === 'object' && 'error' in error) {
+    const message = (error as { error?: unknown }).error;
+
+    if (typeof message === 'string' && message.trim()) {
+      return [message];
+    }
+  }
+
+  return [
+    'Something went wrong while completing the payment. Please try again.',
+  ];
+}
 
 export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
   open,
@@ -29,43 +63,25 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
   const [step, setStep] = useState<'details' | 'card'>('details');
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [rentPaymentAlias, setRentPaymentAlias] = useState<string | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
 
-  const [createRentPayment, { isLoading: isCreating }] =
-    useCreateRentPaymentMutation();
   const [payWithCard, { isLoading: isInitiatingCharge }] =
     usePayWithCardMutation();
 
-  const isBusy = isCreating || isInitiatingCharge;
+  const isBusy = isInitiatingCharge;
 
   const resetAndClose = () => {
     setStep('details');
     setAmount('');
     setDueDate('');
-    setRentPaymentAlias(null);
-    setFormError(null);
+    setFormErrors([]);
     onOpenChange(false);
   };
 
-  const handleDetailsSubmit = async (e: React.FormEvent) => {
+  const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
-
-    try {
-      const rentPayment = await createRentPayment({
-        amount,
-        due_date: dueDate,
-      }).unwrap();
-
-      setRentPaymentAlias(rentPayment.alias);
-      setStep('card');
-    } catch (err) {
-      console.error('Failed to start card payment:', err);
-      setFormError(
-        'Something went wrong while starting the payment. Please try again.',
-      );
-    }
+    setFormErrors([]);
+    setStep('card');
   };
 
   return (
@@ -121,10 +137,16 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               </div>
             </div>
 
-            {formError && (
+            {formErrors.length > 0 && (
               <Alert variant='destructive'>
                 <AlertCircle className='h-4 w-4' />
-                <AlertDescription>{formError}</AlertDescription>
+                <AlertDescription>
+                  <ul className='bg-destructive/20 text-danger space-y-1 rounded-md p-2 text-center text-xs'>
+                    {formErrors.map((message, index) => (
+                      <li key={`${message}-${index}`}>{message}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
               </Alert>
             )}
 
@@ -145,15 +167,15 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
           </form>
         )}
 
-        {step === 'card' && rentPaymentAlias && (
+        {step === 'card' && (
           <CardPaymentForm
             amount={amount}
             onSuccess={async (paymentMethodId) => {
-              setFormError(null);
+              setFormErrors([]);
 
               try {
                 await payWithCard({
-                  rent_payment: rentPaymentAlias,
+                  due_date: dueDate,
                   payment_method_id: paymentMethodId,
                   amount,
                 }).unwrap();
@@ -162,10 +184,9 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                 resetAndClose();
               } catch (err) {
                 console.error('Failed to complete card payment:', err);
-                const message =
-                  'Something went wrong while completing the payment. Please try again.';
-                setFormError(message);
-                throw new Error(message);
+                const messages = getApiErrorMessages(err);
+                setFormErrors(messages);
+                throw new Error(messages.join(' | '));
               }
             }}
             onCancel={resetAndClose}

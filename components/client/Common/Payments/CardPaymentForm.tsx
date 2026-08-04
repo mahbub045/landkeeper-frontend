@@ -94,7 +94,10 @@ function CardPaymentFormInner({
       </div>
 
       {cardError && (
-        <p className='text-sm text-red-600' role='alert'>
+        <p
+          className='bg-destructive/20 text-danger rounded-md p-2 text-center text-xs'
+          role='alert'
+        >
           {cardError}
         </p>
       )}

@@ -80,7 +80,8 @@ export interface CreateRentPaymentPayload {
 }
 
 export interface PayWithCardPayload {
-  rent_payment: string;
+  rent_payment?: string;
+  due_date: string;
   payment_method_id?: string;
   amount: string;
 }

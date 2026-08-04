@@ -5,8 +5,8 @@ import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/Paym
 import { createContext, useContext, useState } from 'react';
 
 interface PaymentRequest {
-  rentPaymentAlias: string;
   amount: string;
+  dueDate: string;
   onSuccess?: () => void;
 }
 
@@ -39,7 +39,7 @@ export function PaymentProvider({ children }: { children: React.ReactNode }) {
               amount={request.amount}
               onSuccess={async (paymentMethodId) => {
                 await payWithCard({
-                  rent_payment: request.rentPaymentAlias,
+                  due_date: request.dueDate,
                   payment_method_id: paymentMethodId,
                   amount: request.amount,
                 }).unwrap();
