@@ -6,11 +6,13 @@ import { useGetTemplatesQuery } from '@/store/api/endpoints/client/Common/Docume
 import { TemplateType } from '@/types/client/Common/DocumentsAndTemplates/TemplatesTypes';
 import { formatDateAndTime } from '@/utils/formatters';
 import { Dot, Download, Pencil, Trash2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import DeleteTemplateDialog from '../Dialogs/DeleteTemplateDialog';
 import EditTemplateDialog from '../Dialogs/EditTemplateDialog';
 
 const TemplateCard: React.FC = () => {
+  const { data: session } = useSession();
   const [isOpenEditDialog, setIsOpenEditDialog] = useState(false);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(
@@ -85,27 +87,33 @@ const TemplateCard: React.FC = () => {
                 </Badge>
 
                 <div className='flex items-center gap-1'>
-                  <Button
-                    variant='outline'
-                    size='icon'
-                    onClick={() => {
-                      setSelectedTemplate(tpl);
-                      setIsOpenEditDialog(true);
-                    }}
-                  >
-                    <Pencil size={13} strokeWidth={1.8} />
-                  </Button>
-
-                  <Button
-                    variant='destructive'
-                    size='icon'
-                    onClick={() => {
-                      setSelectedTemplate(tpl);
-                      setIsOpenDeleteDialog(true);
-                    }}
-                  >
-                    <Trash2 size={13} strokeWidth={1.8} />
-                  </Button>
+                  {(session?.user?.role === 'SUPER_ADMIN' ||
+                    session?.user?.role === 'LANDLORD' ||
+                    session?.user?.role === 'ADMIN') && (
+                    <Button
+                      variant='outline'
+                      size='icon'
+                      onClick={() => {
+                        setSelectedTemplate(tpl);
+                        setIsOpenEditDialog(true);
+                      }}
+                    >
+                      <Pencil size={13} strokeWidth={1.8} />
+                    </Button>
+                  )}
+                  {(session?.user?.role === 'SUPER_ADMIN' ||
+                    session?.user?.role === 'LANDLORD') && (
+                    <Button
+                      variant='destructive'
+                      size='icon'
+                      onClick={() => {
+                        setSelectedTemplate(tpl);
+                        setIsOpenDeleteDialog(true);
+                      }}
+                    >
+                      <Trash2 size={13} strokeWidth={1.8} />
+                    </Button>
+                  )}
                 </div>
               </div>
 
