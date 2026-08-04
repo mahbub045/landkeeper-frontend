@@ -33,7 +33,7 @@ import {
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
-import { useGetRentPaymentsQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
+import { useGetPaymentHistoryQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
   ApiRentPayment,
   PaymentStatus,
@@ -63,11 +63,11 @@ function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
 export function PaymentHistoryTable() {
   const [page, setPage] = useState(1);
 
-  const { data: rentPaymentsData, isLoading: isRentPaymentsLoading } =
-    useGetRentPaymentsQuery({ page });
+  const { data: paymentHistoryData, isLoading: isRentPaymentsLoading } =
+    useGetPaymentHistoryQuery({ page });
 
-  const payments = rentPaymentsData?.results ?? [];
-  const count = rentPaymentsData?.count ?? 0;
+  const payments = paymentHistoryData?.results ?? [];
+  const count = paymentHistoryData?.count ?? 0;
   const totalPages = Math.ceil(count / PAGE_LIMIT);
 
   const getPageNumbers = () => {

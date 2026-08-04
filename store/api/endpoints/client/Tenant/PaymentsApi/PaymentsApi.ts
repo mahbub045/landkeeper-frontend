@@ -34,8 +34,15 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
       query: () => '/tenant/rent-payments/balance-summary',
     }),
 
-    getRentPayments: builder.query({
-      query: ({ page }) => `/tenant/rent-payments?page=${page}`,
+    // getRentPayments: builder.query({
+    //   query: ({ page }) => `/tenant/rent-payments?page=${page}`,
+    //   providesTags: ['RentPayments'],
+    // }),
+    getPaymentHistory: builder.query({
+      query: (page) => ({
+        url: '/tenant/rent-payments/payment-history',
+        page,
+      }),
       providesTags: ['RentPayments'],
     }),
 
@@ -77,7 +84,7 @@ export const {
   useSetupDirectDebitMutation,
   useCompleteDirectDebitMutation,
   useGetRentBalanceSummaryQuery,
-  useGetRentPaymentsQuery,
+  useGetPaymentHistoryQuery,
   useGetPaymentMethodsQuery,
   useGetRentStatementPdfQuery,
 } = paymentMethodsApi;

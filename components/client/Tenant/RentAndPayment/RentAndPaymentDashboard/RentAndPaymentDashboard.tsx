@@ -56,6 +56,8 @@ export const RentAndPaymentDashboard: React.FC = () => {
     },
   );
 
+  console.log("Payment Methods:", paymentMethods);
+
   const [setupDirectDebit, { isLoading: isSettingUpDirectDebit }] =
     useSetupDirectDebitMutation();
 
