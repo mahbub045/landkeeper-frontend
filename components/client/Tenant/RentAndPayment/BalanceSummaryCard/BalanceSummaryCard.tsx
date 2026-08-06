@@ -9,8 +9,6 @@ import {
   getDaysUntilDue,
 } from '@/utils/formatters';
 
-const NOT_AVAILABLE = 'Not Available';
-
 export const BalanceSummaryCard: React.FC<{
   summary?: ApiRentBalanceSummary;
 }> = ({ summary }) => {
@@ -38,9 +36,13 @@ export const BalanceSummaryCard: React.FC<{
                 !hasRentAmount && 'text-muted-foreground text-base font-normal',
               )}
             >
-              {hasRentAmount
-                ? formatCurrency(summary!.current_rent_amount as number)
-                : NOT_AVAILABLE}
+              {hasRentAmount ? (
+                formatCurrency(summary!.current_rent_amount as number)
+              ) : (
+                <span className='text-muted-foreground text-xs font-normal'>
+                  Not Available
+                </span>
+              )}
             </p>
           </div>
         </CardContent>
@@ -57,9 +59,13 @@ export const BalanceSummaryCard: React.FC<{
                 !hasDueDate && 'text-muted-foreground text-base font-normal',
               )}
             >
-              {hasDueDate
-                ? formatDate(summary!.next_due_date as string)
-                : NOT_AVAILABLE}
+              {hasDueDate ? (
+                formatDate(summary!.next_due_date as string)
+              ) : (
+                <span className='text-muted-foreground text-xs font-normal'>
+                  Not Available
+                </span>
+              )}
             </p>
             {daysUntilDue !== null && (
               <p className='text-muted-foreground text-xs'>
@@ -95,9 +101,13 @@ export const BalanceSummaryCard: React.FC<{
                     : 'text-danger',
               )}
             >
-              {hasOutstandingBalance
-                ? formatCurrency(summary!.outstanding_balance as number)
-                : NOT_AVAILABLE}
+              {hasOutstandingBalance ? (
+                formatCurrency(summary!.outstanding_balance as number)
+              ) : (
+                <span className='text-muted-foreground text-xs font-normal'>
+                  Not Available
+                </span>
+              )}
             </p>
             {isAccountUpToDate !== null && (
               <p className='text-muted-foreground text-xs'>

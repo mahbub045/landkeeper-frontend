@@ -8,7 +8,8 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
-import { useState } from 'react';
+import { useTheme } from 'next-themes';
+import { useState, useSyncExternalStore } from 'react';
 
 interface CardPaymentFormProps {
   amount: string; // display only, e.g. "500.00"
@@ -25,6 +26,17 @@ export function getStripe() {
   return stripePromise;
 }
 
+function useResolvedTheme() {
+  const { resolvedTheme } = useTheme();
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
+  return isMounted ? resolvedTheme : 'light';
+}
+
 export function CardPaymentForm(props: CardPaymentFormProps) {
   return (
     <Elements stripe={getStripe()}>
@@ -38,11 +50,33 @@ function CardPaymentFormInner({
   onSuccess,
   onCancel,
 }: CardPaymentFormProps) {
+  const resolvedTheme = useResolvedTheme();
   const stripe = useStripe();
   const elements = useElements();
 
   const [cardError, setCardError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const isDark = resolvedTheme === 'dark';
+
+  const cardElementOptions = {
+    hidePostalCode: true,
+    style: {
+      base: {
+        color: isDark ? '#f9fafb' : '#111827',
+        fontFamily:
+          'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
+        fontSize: '16px',
+        fontSmoothing: 'antialiased',
+        '::placeholder': {
+          color: isDark ? '#9ca3af' : '#6b7280',
+        },
+      },
+      invalid: {
+        color: '#ef4444',
+        iconColor: '#ef4444',
+      },
+    },
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,8 +123,8 @@ function CardPaymentFormInner({
 
   return (
     <form onSubmit={handleSubmit} className='space-y-4'>
-      <div className='bg-background rounded-md border p-3'>
-        <CardElement options={{ hidePostalCode: true }} />
+      <div className='bg-background border-border dark:bg-background/80 rounded-md border px-3 py-3 shadow-sm'>
+        <CardElement options={cardElementOptions} />
       </div>
 
       {cardError && (

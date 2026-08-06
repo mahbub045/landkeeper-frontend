@@ -40,7 +40,7 @@ import {
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import formatChoiceFieldValue, {
   formatCurrency,
-  formatDate,
+  formatDateAndTime,
 } from '@/utils/formatters';
 import { CircleOff, Receipt } from 'lucide-react';
 import { useState } from 'react';
@@ -118,15 +118,14 @@ export function PaymentHistoryTable() {
                   <TableHead>Payment Method</TableHead>
                   <TableHead className='text-center'>Amount</TableHead>
                   <TableHead className='text-center'>Status</TableHead>
-                  <TableHead className='text-center'>Reference</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {payments.map((payment: ApiRentPayment) => (
                   <TableRow key={payment.alias}>
                     <TableCell>
-                      {payment.paid_date ? (
-                        formatDate(payment.paid_date)
+                      {payment.created_at ? (
+                        formatDateAndTime(payment.created_at)
                       ) : (
                         <span className='text-muted-foreground text-xs'>
                           Not Available
@@ -173,9 +172,6 @@ export function PaymentHistoryTable() {
                       <PaymentStatusBadge
                         status={normalizePaymentStatus(payment.status)}
                       />
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {payment.reference}
                     </TableCell>
                   </TableRow>
                 ))}
