@@ -3,7 +3,6 @@ import {
   Banknote,
   BarChart3,
   Calculator,
-  Calendar,
   ChartNoAxesCombined,
   FileSpreadsheet,
   FileText,
@@ -14,10 +13,8 @@ import {
   Landmark,
   LayoutDashboard,
   Link2,
-  MessageCircle,
   Package,
   Podcast,
-  RotateCw,
   ShieldUser,
   Ticket,
   UserKey,
@@ -94,8 +91,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ShieldUser,
       },
       {
-        label: 'Documents',
-        href: '/client/landlord/documents',
+        label: 'Documents & Templates',
+        href: '/client/landlord/documents-and-templates',
         icon: Files,
       },
       {
@@ -181,8 +178,8 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         icon: ShieldUser,
       },
       {
-        label: 'Documents',
-        href: '/client/admin/documents',
+        label: 'Documents & Templates',
+        href: '/client/admin/documents-and-templates',
         icon: Files,
       },
       {
@@ -295,21 +292,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/tenant/documents',
         icon: FileText,
       },
-      {
-        label: 'Messages',
-        href: '/client/tenant/messages',
-        icon: MessageCircle,
-      },
-      {
-        label: 'Inspections',
-        href: '/client/tenant/inspections',
-        icon: Calendar,
-      },
-      {
-        label: 'Tenancy Renewals',
-        href: '/client/tenant/tenancy-renewals',
-        icon: RotateCw,
-      },
+      // {
+      //   label: 'Tenancy Renewals',
+      //   href: '/client/tenant/tenancy-renewals',
+      //   icon: RotateCw,
+      // },
       {
         label: 'Utilities',
         href: '/client/tenant/utilities',

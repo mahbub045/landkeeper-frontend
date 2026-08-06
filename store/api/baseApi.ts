@@ -14,11 +14,9 @@ export type AuthRootState = {
 };
 
 export const TAG_TYPES = [
+  // Global Common Tags
+  'Notifications',
   'UserProfileAndSettings',
-  'CompanyInfo',
-  'FormLayout',
-  'Network',
-  'Organisation',
   'SupportTickets',
   'SupportTicketComments',
   'NewJourney',
@@ -29,8 +27,13 @@ export const TAG_TYPES = [
   'Tenant',
   'Compliance',
   'Document',
+  'Templates',
   'Finance',
   'TeamAccess',
+
+  // Payments
+  'PaymentMethods',
+  'RentPayments',
 ] as const;
 
 // ─── Mutex ────────────────────────────────────────────────────────────────────

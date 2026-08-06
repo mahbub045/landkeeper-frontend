@@ -6,6 +6,7 @@ export type UserRole =
   | 'LANDLORD'
   | 'ADMIN'
   | 'LETTING_AGENT'
+  | 'MORTGAGE_ADVISER'
   | 'TENANT';
 
 declare module 'next-auth' {

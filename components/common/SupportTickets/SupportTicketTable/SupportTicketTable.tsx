@@ -48,11 +48,13 @@ import {
   TicketTypeOptions,
 } from '@/data/common/SupportTickets/SupportTicketsData';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
-import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getSupportTicketDetailsUrl } from '@/utils/redirectPath';
 import {
   Bookmark,
+  Check,
   ChevronDown,
+  Copy,
   HelpCircle,
   MessageSquare,
   MessageSquareWarning,
@@ -172,6 +174,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
@@ -188,16 +191,43 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
     }
   };
 
+  const handleCopyTicketId = async () => {
+    if (!ticket) return;
+
+    try {
+      await navigator.clipboard.writeText(ticket.ticket_id);
+      setCopied(true);
+      toast.success('Ticket ID copied to clipboard.');
+      setTimeout(() => setCopied(false), 1500);
+    } catch (error) {
+      toast.error('Failed to copy Ticket ID.');
+    }
+  };
+
   return (
     <>
       <TableRow className='text-center'>
         <TableCell className='text-primary'>
-          <Link
-            href={getSupportTicketDetailsUrl(session, ticket.alias)}
-            className='text_decoration_hover'
-          >
-            {ticket.ticket_id}
-          </Link>
+          <div className='flex items-center justify-center gap-2'>
+            <Link
+              href={getSupportTicketDetailsUrl(session, ticket.alias)}
+              className='text_decoration_hover'
+            >
+              {ticket.ticket_id}
+            </Link>
+            {session?.user?.role === 'SUPER_ADMIN' && (
+              <button
+                className='shrink-0 cursor-pointer rounded-md transition-colors'
+                onClick={handleCopyTicketId}
+              >
+                {copied ? (
+                  <Check className='text-success size-3' />
+                ) : (
+                  <Copy className='text-primary size-3' />
+                )}
+              </button>
+            )}
+          </div>
         </TableCell>
         <TableCell>
           <Badge
@@ -282,6 +312,11 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
             </Badge>
           )}
         </TableCell>
+        <TableCell className='text-muted-foreground max-w-12.5 truncate text-sm capitalize'>
+          {ticket.subject || (
+            <span className='text-muted-foreground font-normal'>N/A</span>
+          )}
+        </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-3'>
             <div className='flex flex-col items-center justify-center'>
@@ -310,7 +345,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
           )}
         </TableCell>
         <TableCell className='text-muted-foreground text-sm'>
-          {formatDate(ticket.created_at) || 'Not Available'}
+          {formatDateAndTime(ticket.created_at) || 'Not Available'}
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
@@ -380,7 +415,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
                   <p className='text-muted-foreground text-[11px] font-semibold tracking-wider uppercase'>
                     Subject
                   </p>
-                  <p className='text-foreground mt-1 text-sm font-medium'>
+                  <p className='text-foreground mt-1 text-sm font-medium capitalize'>
                     {ticket.subject || (
                       <span className='text-muted-foreground font-normal'>
                         N/A

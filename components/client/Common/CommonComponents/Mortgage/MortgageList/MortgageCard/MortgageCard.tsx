@@ -183,7 +183,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             )}
           </div>
 
-          <div className='flex items-center gap-2 opacity-100 md:translate-y-1 md:scale-95 md:opacity-0 md:transition-all md:duration-300 md:ease-out md:group-hover:translate-y-0 md:group-hover:opacity-100'>
+          <div className='flex items-center gap-2'>
             <Button variant='outline' onClick={() => setEditOpen(true)}>
               <Pencil className='size-4' />
               Edit

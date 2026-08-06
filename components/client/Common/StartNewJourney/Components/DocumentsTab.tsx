@@ -1,7 +1,5 @@
 'use client';
 
-// components/StartNewJourney/steps/DocumentStep.tsx
-
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
@@ -13,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { documentCategoryOptions } from '@/data/client/common/documents/DocumentsData';
+import { documentCategoryOptions } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
 import { cn } from '@/lib/utils';
 import {
   DocumentCategory,
   DocumentForm,
   initialForm as INITIAL_DOCUMENT_DIALOG_FORM,
-} from '@/types/client/Common/Documents/DocumentTypes';
+} from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { DocumentStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
@@ -193,10 +191,3 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
 DocumentsTab.displayName = 'DocumentStep';
 
 export default DocumentsTab;
-
-export function validateDocumentStep(files: File[]): Record<string, string> {
-  const errors: Record<string, string> = {};
-  // if (!files || files.length === 0)
-  //   errors.file = 'Please upload at least one document.';
-  return errors;
-}

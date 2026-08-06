@@ -20,9 +20,10 @@ import {
   PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -31,6 +32,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     const [isNameCustom, setIsNameCustom] = useState(false);
     const [dragging, setDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { data: profileData } = useGetProfileInfoQuery(undefined);
 
     function set(key: keyof DetailsForm, v: string) {
       onChange({ ...value, [key]: v });
@@ -135,6 +137,23 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
       [files],
     );
 
+    const fullName = profileData
+      ? [
+          formatChoiceFieldValue(profileData.title),
+          profileData.first_name,
+          profileData.middle_name,
+          profileData.last_name,
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : '';
+
+    const ownerOptions = PROPERTY_OWNER_OPTIONS.map((opt) =>
+      opt.value === 'OWNER' && fullName
+        ? { ...opt, label: `Owner (${fullName})` }
+        : opt,
+    );
+
     return (
       <form ref={ref} hidden={!active} className='space-y-8'>
         {/* ── Details ── */}
@@ -143,10 +162,8 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
               <Field data-invalid={!!errors.name}>
                 <div className='mb-1.5 flex items-center justify-between'>
-                  <FieldLabel className='gap-1.5 text-sm font-semibold'>
-                    <div className='gap-0'>
-                      Property Name<span className='text-danger'>*</span>
-                    </div>
+                  <FieldLabel className='text-sm font-semibold'>
+                    Property Name<span className='text-danger'>*</span>
                     {!isNameCustom && (
                       <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
                         <Sparkles className='h-2.5 w-2.5' />
@@ -175,6 +192,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     onChange={(e) => set('property_name', e.target.value)}
                     readOnly={!isNameCustom}
                     aria-invalid={!!errors.property_name}
+                    required
                     className={[
                       'bg-background transition-shadow',
                       errors.property_name
@@ -195,7 +213,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           </div>
 
           <Field data-invalid={!!errors.address}>
-            <FieldLabel className='gap-0 text-sm font-semibold'>
+            <FieldLabel className='text-sm font-semibold'>
               Property Address<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
@@ -234,7 +252,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_OWNER_OPTIONS.map((opt) => (
+                  {ownerOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -251,7 +269,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 onClick={addOwner}
               >
                 <Plus className='h-3.5 w-3.5' />
-                Add Owner
+                Add Another Owner
               </Button>
             )}
 
@@ -278,10 +296,10 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                     <div key={i} className='flex items-center gap-2'>
                       <Input
                         type='text'
-                        placeholder='Owner name'
+                        placeholder='Owner Full Name'
                         value={owner.owner_name}
                         onChange={(e) => updateOwner(i, e.target.value)}
-                        className='flex-1'
+                        className='border-primary! focus-visible:ring-primary/50 flex-1'
                       />
                       <Button
                         type='button'
@@ -313,11 +331,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 onChange={(e) => set('company_name', e.target.value)}
                 aria-invalid={!!errors.company_name}
                 required
-                className={
-                  errors.company_name
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
+                className={`border-primary! focus-visible:ring-primary/50 ${errors.company_name ? 'border-danger focus-visible:ring-danger/50' : ''}`}
               />
               <FieldError errors={[{ message: errors.company_name }]} />
             </Field>
@@ -345,7 +359,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                       <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
                         <Input
                           type='text'
-                          placeholder='Shareholder name'
+                          placeholder='Shareholder Full Name'
                           value={sh.shareholder_name}
                           onChange={(e) =>
                             updateShareholder(
@@ -354,6 +368,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                               e.target.value,
                             )
                           }
+                          className='border-primary! focus-visible:ring-primary/50'
                         />
                         <Input
                           type='number'
@@ -366,6 +381,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                               e.target.value,
                             )
                           }
+                          className='border-primary! focus-visible:ring-primary/50'
                         />
                       </div>
                       <Button
@@ -421,9 +437,9 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PROPERTY_STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
+                  {PROPERTY_STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

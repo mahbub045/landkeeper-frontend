@@ -1,8 +1,14 @@
+import FinancialOverview from './FinancialOverview/FinancialOverview';
+import PropertyAndTenancyDetails from './PropertyAndTenancyDetails/PropertyAndTenancyDetails';
+
 const TenantDashboardContainer: React.FC = () => {
   return (
-    <div>
-      <h4 className='text-danger text-center text-3xl'>Under Development</h4>
-    </div>
+    <>
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+        <PropertyAndTenancyDetails />
+        <FinancialOverview />
+      </div>
+    </>
   );
 };
 

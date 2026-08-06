@@ -229,8 +229,16 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
             </FieldLabel>
             <Input
               type='text'
+              placeholder='e.g. A'
+              maxLength={1}
               value={value.epc_rating}
-              onChange={(e) => set('epc_rating', e.target.value)}
+              onChange={(e) => {
+                const letterOnly = e.target.value
+                  .replace(/[^a-zA-Z]/g, '')
+                  .slice(0, 1)
+                  .toUpperCase();
+                set('epc_rating', letterOnly);
+              }}
               aria-invalid={!!errors.epc_rating}
               className={
                 errors.epc_rating

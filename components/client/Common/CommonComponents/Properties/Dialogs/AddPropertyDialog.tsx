@@ -34,12 +34,16 @@ import {
 } from '@/data/client/common/properties/PropertiesData';
 
 import { useAddPropertiesMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import {
   AddPropertyModalProps,
   DetailsForm,
   Tab,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  getCurrencySign,
+  snakeToCamel,
+} from '@/utils/formatters';
 
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -348,6 +352,8 @@ const DetailsTab: React.FC<{
   isNameCustom: boolean;
   onToggleNameCustom: (v: boolean) => void;
 }> = ({ form, onChange, errors, isNameCustom, onToggleNameCustom }) => {
+  const { data: profileData } = useGetProfileInfoQuery(undefined);
+
   function set(key: keyof DetailsForm, value: string) {
     onChange({ ...form, [key]: value });
   }
@@ -430,13 +436,30 @@ const DetailsTab: React.FC<{
     });
   }
 
+  const fullName = profileData
+    ? [
+        formatChoiceFieldValue(profileData.title),
+        profileData.first_name,
+        profileData.middle_name,
+        profileData.last_name,
+      ]
+        .filter(Boolean)
+        .join(' ')
+    : '';
+
+  const ownerOptions = PROPERTY_OWNER_OPTIONS.map((opt) =>
+    opt.value === 'OWNER' && fullName
+      ? { ...opt, label: `Owner (${fullName})` }
+      : opt,
+  );
+
   return (
     <div className='space-y-5'>
       <div className='flex justify-center'>
         <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
           <Field data-invalid={!!errors.name}>
             <div className='mb-1.5 flex items-center justify-between'>
-              <FieldLabel className='gap-1.5 text-sm font-semibold'>
+              <FieldLabel className='text-sm font-semibold'>
                 Property Name<span className='text-danger'>*</span>
                 {!isNameCustom && (
                   <span className='bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase'>
@@ -497,7 +520,7 @@ const DetailsTab: React.FC<{
       </div>
 
       <Field data-invalid={!!errors.address}>
-        <FieldLabel className='gap-0 text-sm font-semibold'>
+        <FieldLabel className='text-sm font-semibold'>
           Property Address<span className='text-danger'>*</span>
         </FieldLabel>
         <Input
@@ -524,15 +547,13 @@ const DetailsTab: React.FC<{
               value={form.property_owner}
               onValueChange={(v) => set('property_owner', v)}
             >
-              <SelectTrigger
-                className={errors.property_owner ? 'border-danger' : ''}
-              >
-                <SelectValue />
+              <SelectTrigger>
+                <SelectValue placeholder='Select ...' />
               </SelectTrigger>
               <SelectContent>
-                {PROPERTY_OWNER_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {ownerOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -547,7 +568,7 @@ const DetailsTab: React.FC<{
               onClick={addOwner}
             >
               <Plus className='h-3.5 w-3.5' />
-              Add Owner
+              Add Another Owner
             </Button>
           )}
 
@@ -574,10 +595,10 @@ const DetailsTab: React.FC<{
                 <div key={i} className='flex items-center gap-2'>
                   <Input
                     type='text'
-                    placeholder='Owner name'
+                    placeholder='Owner Full Name'
                     value={owner.owner_name}
+                    className='border-primary! focus-visible:ring-primary/50 flex-1'
                     onChange={(e) => updateOwner(i, e.target.value)}
-                    className='flex-1'
                   />
                   <Button
                     type='button'
@@ -609,11 +630,7 @@ const DetailsTab: React.FC<{
             onChange={(e) => set('company_name', e.target.value)}
             aria-invalid={!!errors.company_name}
             required
-            className={
-              errors.company_name
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
+            className={`border-primary! focus-visible:ring-primary/50 ${errors.company_name ? 'border-danger focus-visible:ring-danger/50' : ''}`}
           />
           <FieldError errors={[{ message: errors.company_name }]} />
         </Field>
@@ -640,8 +657,9 @@ const DetailsTab: React.FC<{
                   <div className='grid flex-1 grid-cols-1 gap-2 lg:grid-cols-2'>
                     <Input
                       type='text'
-                      placeholder='Shareholder name'
+                      placeholder='Shareholder Full Name'
                       value={sh.shareholder_name}
+                      className='border-primary! focus-visible:ring-primary/50'
                       onChange={(e) =>
                         updateShareholder(i, 'shareholder_name', e.target.value)
                       }
@@ -650,6 +668,7 @@ const DetailsTab: React.FC<{
                       type='number'
                       placeholder='% share'
                       value={sh.share_percentage}
+                      className='border-primary! focus-visible:ring-primary/50'
                       onChange={(e) =>
                         updateShareholder(i, 'share_percentage', e.target.value)
                       }
