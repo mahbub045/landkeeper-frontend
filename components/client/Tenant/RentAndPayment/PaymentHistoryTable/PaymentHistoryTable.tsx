@@ -98,7 +98,6 @@ export function PaymentHistoryTable() {
             A record of your past rent payments.
           </CardDescription>
         </div>
-        <span className='text-muted-foreground text-sm'>{count} payments</span>
       </CardHeader>
       <CardContent>
         {isRentPaymentsLoading ? (
