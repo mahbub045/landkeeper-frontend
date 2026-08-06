@@ -117,6 +117,7 @@ export function PaymentHistoryTable() {
                   <TableHead>Payment Method</TableHead>
                   <TableHead className='text-center'>Amount</TableHead>
                   <TableHead className='text-center'>Status</TableHead>
+                  <TableHead className='text-center'>Payment ID</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -171,6 +172,17 @@ export function PaymentHistoryTable() {
                       <PaymentStatusBadge
                         status={normalizePaymentStatus(payment.status)}
                       />
+                    </TableCell>
+                    <TableCell className='text-center'>
+                      {payment.provider_payment_id ? (
+                        <span className='font-mono text-sm'>
+                          {payment.provider_payment_id}
+                        </span>
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
