@@ -7,6 +7,7 @@ export function getDashboardPath(role: UserRole | undefined): string {
     LANDLORD: '/client/landlord/dashboard',
     ADMIN: '/client/admin/dashboard',
     LETTING_AGENT: '/client/letting-agent/dashboard',
+    MORTGAGE_ADVISER: '/client/mortgage-adviser/dashboard',
     TENANT: '/client/tenant/dashboard',
   };
   return role && paths[role] ? paths[role] : '/auth/access-denied';
