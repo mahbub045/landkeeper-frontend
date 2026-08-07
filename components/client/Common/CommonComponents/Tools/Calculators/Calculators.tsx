@@ -5,53 +5,59 @@ import RentalYieldCalculatorTab from './CalculatorTabs/RentalYieldCanculatorTab'
 import RentIncreaseCalculatorTab from './CalculatorTabs/RentIncreaseCalculatorTab';
 import StampDutyCalculatorTab from './CalculatorTabs/StampDutyCalculatorTab';
 
+const CALCULATOR_TABS = [
+  {
+    value: 'remortgage',
+    label: 'Remortgage',
+    icon: Home,
+    Component: RemortgageCalculatorTab,
+  },
+  {
+    value: 'stamp-duty',
+    label: 'Stamp Duty',
+    icon: Landmark,
+    Component: StampDutyCalculatorTab,
+  },
+  {
+    value: 'rent-increase',
+    label: 'Rent Increase',
+    icon: ArrowUpCircle,
+    Component: RentIncreaseCalculatorTab,
+  },
+  {
+    value: 'rental-yield',
+    label: 'Rental Yield',
+    icon: TrendingUp,
+    Component: RentalYieldCalculatorTab,
+  },
+] as const;
+
 const Calculators: React.FC = () => {
   return (
     <div className='mx-auto w-full max-w-4xl p-4 sm:p-6'>
       <Tabs defaultValue='remortgage' className='w-full'>
-        <TabsList className='grid w-full grid-cols-2 gap-1 sm:grid-cols-4'>
-          <TabsTrigger
-            value='remortgage'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <Home className='h-4 w-4' />
-            <span className='hidden sm:inline'>Remortgage Calculator</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value='stamp-duty'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <Landmark className='h-4 w-4' />
-            <span className='hidden sm:inline'>Stamp Duty Calculator</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value='rent-increase'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <ArrowUpCircle className='h-4 w-4' />
-            <span className='hidden sm:inline'>Rent Increase Calculator</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value='rental-yield'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <TrendingUp className='h-4 w-4' />
-            <span className='hidden sm:inline'>Rental Yield Calculator</span>
-          </TabsTrigger>
+        <TabsList
+          className='w-full flex-wrap items-start justify-start gap-1.5'
+          style={{ height: 'auto', minHeight: 0, padding: '0.25rem' }}
+        >
+          {CALCULATOR_TABS.map(({ value, label, icon: Icon }) => (
+            <TabsTrigger
+              key={value}
+              value={value}
+              className='flex flex-1 shrink-0 cursor-pointer items-center justify-center gap-1.5 text-sm whitespace-nowrap'
+              style={{ margin: 0, minWidth: 150, padding: '0.5rem 0.75rem' }}
+            >
+              <Icon className='h-4 w-4 shrink-0' />
+              <span>{label}</span>
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <TabsContent value='remortgage' className='mt-6'>
-          <RemortgageCalculatorTab />
-        </TabsContent>
-        <TabsContent value='stamp-duty' className='mt-6'>
-          <StampDutyCalculatorTab />
-        </TabsContent>
-        <TabsContent value='rent-increase' className='mt-6'>
-          <RentIncreaseCalculatorTab />
-        </TabsContent>
-        <TabsContent value='rental-yield' className='mt-6'>
-          <RentalYieldCalculatorTab />
-        </TabsContent>
+        {CALCULATOR_TABS.map(({ value, Component }) => (
+          <TabsContent key={value} value={value} className='mt-6'>
+            <Component />
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
