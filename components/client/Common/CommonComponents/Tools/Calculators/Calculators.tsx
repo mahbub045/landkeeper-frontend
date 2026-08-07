@@ -15,42 +15,42 @@ const Calculators: React.FC = () => {
             className='flex cursor-pointer items-center gap-1.5'
           >
             <Home className='h-4 w-4' />
-            <span className='hidden sm:inline'>Remortgage</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value='rental-yield'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <TrendingUp className='h-4 w-4' />
-            <span className='hidden sm:inline'>Rental Yield</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value='rent-increase'
-            className='flex cursor-pointer items-center gap-1.5'
-          >
-            <ArrowUpCircle className='h-4 w-4' />
-            <span className='hidden sm:inline'>Rent Increase</span>
+            <span className='hidden sm:inline'>Remortgage Calculator</span>
           </TabsTrigger>
           <TabsTrigger
             value='stamp-duty'
             className='flex cursor-pointer items-center gap-1.5'
           >
             <Landmark className='h-4 w-4' />
-            <span className='hidden sm:inline'>Stamp Duty</span>
+            <span className='hidden sm:inline'>Stamp Duty Calculator</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value='rent-increase'
+            className='flex cursor-pointer items-center gap-1.5'
+          >
+            <ArrowUpCircle className='h-4 w-4' />
+            <span className='hidden sm:inline'>Rent Increase Calculator</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value='rental-yield'
+            className='flex cursor-pointer items-center gap-1.5'
+          >
+            <TrendingUp className='h-4 w-4' />
+            <span className='hidden sm:inline'>Rental Yield Calculator</span>
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value='remortgage' className='mt-6'>
           <RemortgageCalculatorTab />
         </TabsContent>
-        <TabsContent value='rental-yield' className='mt-6'>
-          <RentalYieldCalculatorTab />
+        <TabsContent value='stamp-duty' className='mt-6'>
+          <StampDutyCalculatorTab />
         </TabsContent>
         <TabsContent value='rent-increase' className='mt-6'>
           <RentIncreaseCalculatorTab />
         </TabsContent>
-        <TabsContent value='stamp-duty' className='mt-6'>
-          <StampDutyCalculatorTab />
+        <TabsContent value='rental-yield' className='mt-6'>
+          <RentalYieldCalculatorTab />
         </TabsContent>
       </Tabs>
     </div>
