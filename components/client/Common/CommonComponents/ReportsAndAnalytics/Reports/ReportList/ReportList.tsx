@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { reports } from '@/data/client/common/tools/reports/ReportsData';
-import { Report } from '@/types/client/Common/Tools/Reports/ReportsType';
+import { Report } from '@/types/client/Common/ReportsAndAnalytics/ReportsType';
 
 function ReportCard({ report }: { report: Report }) {
   return (
