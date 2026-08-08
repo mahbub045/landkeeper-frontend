@@ -1823,7 +1823,7 @@ const StampDutyCalculatorTab: React.FC = () => {
                 </>
               )}
 
-            <Button onClick={resetCalculator} className='cursor-pointer'>
+            <Button onClick={resetCalculator} className='mb-3 cursor-pointer'>
               Start New Calculation
             </Button>
           </CardContent>
