@@ -143,13 +143,16 @@ const CurrencyInput: React.FC<{
   placeholder?: string;
 }> = ({ id, value, onChange, placeholder }) => (
   <div className='relative'>
+    <span className='text-muted-foreground pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm'>
+      {getCurrencySign()}
+    </span>
     <Input
       id={id}
       type='text'
       value={value}
       onChange={(e) => onChange(formatPrice(e.target.value))}
       placeholder={placeholder}
-      className='pl-7'
+      className='pl-6!'
     />
   </div>
 );
@@ -1507,7 +1510,7 @@ const StampDutyCalculatorTab: React.FC = () => {
             onChange={(formatted) =>
               setFormData({ ...formData, purchasePrice: formatted })
             }
-            placeholder={`e.g., ${getCurrencySign()}500,000`}
+            placeholder='e.g., 500,000'
           />
           {errors.purchasePrice && (
             <Alert variant='destructive' className='mt-3'>

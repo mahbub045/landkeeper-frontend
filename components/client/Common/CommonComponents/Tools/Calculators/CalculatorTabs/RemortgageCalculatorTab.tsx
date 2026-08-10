@@ -173,7 +173,7 @@ const RemortgageCalculatorTab: React.FC = () => {
                   )
                 }
                 className={cn(
-                  'pl-7',
+                  'pl-6!',
                   errors.mortgageAmount &&
                     'border-destructive focus-visible:ring-destructive',
                 )}
@@ -203,7 +203,7 @@ const RemortgageCalculatorTab: React.FC = () => {
                     toRawNumeric(e.target.value),
                   )
                 }
-                className='pl-7'
+                className='pl-6!'
               />
             </div>
           </div>
