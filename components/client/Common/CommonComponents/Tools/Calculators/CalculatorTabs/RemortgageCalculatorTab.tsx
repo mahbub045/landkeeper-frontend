@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -16,6 +17,7 @@ import {
   RemortgageCalculatorState,
 } from '@/types/client/Common/Tools/Calculators/CalculatorsTypes';
 import { formatPrice, getCurrencySign } from '@/utils/formatters';
+import { Calculator } from 'lucide-react';
 import React, { useState } from 'react';
 
 const RemortgageCalculatorTab: React.FC = () => {
@@ -150,8 +152,28 @@ const RemortgageCalculatorTab: React.FC = () => {
   ];
 
   return (
-    <div className='bg-card rounded-lg border p-4 sm:p-6'>
-      <div className='grid gap-6 lg:grid-cols-2'>
+    <Card className='overflow-hidden p-0'>
+      {/* Header — flush to the card edges; overflow-hidden on Card clips
+          its square corners to the card's own rounded corners. */}
+      <div className='from-primary to-secondary flex items-center gap-3 bg-linear-to-r px-6 py-5 text-white'>
+        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20'>
+          <Calculator className='h-5 w-5' />
+        </div>
+        <div>
+          <h2 className='text-lg leading-tight font-semibold'>
+            Remortgage Calculator
+          </h2>
+          <p className='text-sm text-white/80'>
+            Calculate your monthly payments, total paid, total interest, and
+            total repayments for your remortgage based on the mortgage amount,
+            arrangement fee, mortgage type, interest rate, and mortgage term.
+          </p>
+        </div>
+      </div>
+
+      {/* Body — padding lives here instead of on the Card, so it doesn't
+          eat into the header. */}
+      <div className='grid gap-6 p-4 sm:p-6 lg:grid-cols-2'>
         <div className='space-y-4'>
           <div className='space-y-2'>
             <Label htmlFor='mortgageAmount'>
@@ -321,7 +343,7 @@ const RemortgageCalculatorTab: React.FC = () => {
           </dl>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

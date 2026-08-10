@@ -1612,7 +1612,7 @@ const StampDutyCalculatorTab: React.FC = () => {
     return (
       <div className='mx-auto'>
         <Card className='gap-0 overflow-hidden py-0'>
-          <CardHeader className='bg-primary text-primary-foreground rounded-t-lg px-6 py-4'>
+          <CardHeader className='from-primary to-secondary text-primary-foreground rounded-t-lg bg-linear-to-r px-6 py-4'>
             <CardTitle className='text-xl font-semibold'>
               SDLT Calculation Result
             </CardTitle>
@@ -1839,7 +1839,7 @@ const StampDutyCalculatorTab: React.FC = () => {
   return (
     <div className='mx-auto space-y-4'>
       <Card className='gap-0 overflow-hidden py-0'>
-        <CardHeader className='bg-primary text-primary-foreground rounded-t-lg px-6 py-4'>
+        <CardHeader className='from-primary to-secondary bg-linear-to-r text-primary-foreground rounded-t-lg px-6 py-4'>
           <CardTitle className='text-primary-foreground text-xl'>
             Stamp Duty Land Tax Calculator
           </CardTitle>
