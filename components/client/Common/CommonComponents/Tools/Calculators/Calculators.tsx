@@ -1,5 +1,13 @@
+'use client';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { type AppDispatch, type RootState } from '@/store';
+import {
+  setActiveTab,
+  type CalculatorTab,
+} from '@/store/slices/calculatorTabsSlice';
 import { ArrowUpCircle, Home, Landmark, TrendingUp } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 import RemortgageCalculatorTab from './CalculatorTabs/RemortgageCalculatorTab';
 import RentalYieldCalculatorTab from './CalculatorTabs/RentalYieldCanculatorTab';
 import RentIncreaseCalculatorTab from './CalculatorTabs/RentIncreaseCalculatorTab';
@@ -33,9 +41,26 @@ const CALCULATOR_TABS = [
 ] as const;
 
 const Calculators: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const activeTab = useSelector(
+    (state: RootState) => state.calculatorTabs.activeTab,
+  );
+
   return (
     <div className='mx-auto w-full'>
-      <Tabs defaultValue='remortgage' className='w-full'>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          const selectedTab = CALCULATOR_TABS.find(
+            (tab) => tab.value === value,
+          )?.value;
+
+          if (selectedTab) {
+            dispatch(setActiveTab(selectedTab as CalculatorTab));
+          }
+        }}
+        className='w-full'
+      >
         <TabsList
           className='w-full flex-wrap items-start justify-start gap-1.5'
           style={{ height: 'auto', minHeight: 0, padding: '0.25rem' }}
