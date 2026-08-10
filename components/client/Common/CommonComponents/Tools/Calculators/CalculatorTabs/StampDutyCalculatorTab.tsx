@@ -23,8 +23,11 @@ import {
   StampDutyOption,
 } from '@/types/client/Common/Tools/Calculators/CalculatorsTypes';
 import { formatPrice, getCurrencySign } from '@/utils/formatters';
-import { RotateCw } from 'lucide-react';
+import { Landmark, RotateCw } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
+
+const titleText =
+  'Calculate the SDLT due on a property purchase in England or Northern Ireland. The calculator will guide you through the necessary steps to determine the amount of tax payable based on your specific circumstances.';
 
 const RadioQuestion: React.FC<{
   name: string;
@@ -1613,8 +1616,16 @@ const StampDutyCalculatorTab: React.FC = () => {
       <div className='mx-auto'>
         <Card className='gap-0 overflow-hidden py-0'>
           <CardHeader className='from-primary to-secondary text-primary-foreground rounded-t-lg bg-linear-to-r px-6 py-4'>
-            <CardTitle className='text-xl font-semibold'>
-              SDLT Calculation Result
+            <CardTitle className='flex items-center gap-2 text-xl font-semibold'>
+              <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20'>
+                <Landmark />
+              </div>
+              <div>
+                <h3 className='text-lg leading-tight font-semibold'>
+                  SDLT Calculation Result
+                </h3>
+                <p className='text-sm text-white/80'>{titleText}</p>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className='pt-6'>
@@ -1839,9 +1850,17 @@ const StampDutyCalculatorTab: React.FC = () => {
   return (
     <div className='mx-auto space-y-4'>
       <Card className='gap-0 overflow-hidden py-0'>
-        <CardHeader className='from-primary to-secondary bg-linear-to-r text-primary-foreground rounded-t-lg px-6 py-4'>
-          <CardTitle className='text-primary-foreground text-xl'>
-            Stamp Duty Land Tax Calculator
+        <CardHeader className='from-primary to-secondary text-primary-foreground rounded-t-lg bg-linear-to-r px-6 py-4'>
+          <CardTitle className='text-primary-foreground flex items-center gap-2 text-xl'>
+            <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20'>
+              <Landmark />
+            </div>
+            <div>
+              <h3 className='text-lg leading-tight font-semibold'>
+                Stamp Duty Land Tax Calculator
+              </h3>
+              <p className='text-sm text-white/80'>{titleText}</p>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent className='pt-6'>
