@@ -1607,7 +1607,7 @@ const StampDutyCalculatorTab: React.FC = () => {
   // ---------- Results page ----------
   if (calculationResult) {
     return (
-      <div className='mx-auto max-w-4xl'>
+      <div className='mx-auto'>
         <Card className='gap-0 overflow-hidden py-0'>
           <CardHeader className='bg-primary text-primary-foreground rounded-t-lg px-6 py-4'>
             <CardTitle className='text-xl font-semibold'>
@@ -1834,7 +1834,7 @@ const StampDutyCalculatorTab: React.FC = () => {
 
   // ---------- Wizard page ----------
   return (
-    <div className='mx-auto max-w-4xl space-y-4'>
+    <div className='mx-auto space-y-4'>
       <Card className='gap-0 overflow-hidden py-0'>
         <CardHeader className='bg-primary text-primary-foreground rounded-t-lg px-6 py-4'>
           <CardTitle className='text-primary-foreground text-xl'>

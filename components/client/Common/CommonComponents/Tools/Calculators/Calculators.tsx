@@ -34,7 +34,7 @@ const CALCULATOR_TABS = [
 
 const Calculators: React.FC = () => {
   return (
-    <div className='mx-auto w-full max-w-4xl p-4 sm:p-6'>
+    <div className='mx-auto w-full'>
       <Tabs defaultValue='remortgage' className='w-full'>
         <TabsList
           className='w-full flex-wrap items-start justify-start gap-1.5'
