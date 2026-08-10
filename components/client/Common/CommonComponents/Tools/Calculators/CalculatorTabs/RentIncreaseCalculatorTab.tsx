@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { RentIncreaseFrequency } from '@/types/client/Common/Tools/Calculators/CalculatorsTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import {
   Calculator,
@@ -13,10 +14,7 @@ import {
 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
-type Frequency = 'week' | 'month';
-
 // ---------- Date helpers ----------
-
 const parseDateInput = (value: string): Date | null => {
   if (!value) return null;
   const [y, m, d] = value.split('-').map(Number);
@@ -59,7 +57,7 @@ const todayInputValue = toDateInputValue(new Date());
 const RentIncreaseCalculatorTab: React.FC = () => {
   const [currentRent, setCurrentRent] = useState('');
   const [proposedRent, setProposedRent] = useState('');
-  const [frequency, setFrequency] = useState<Frequency>('month');
+  const [frequency, setFrequency] = useState<RentIncreaseFrequency>('month');
   const [tenancyStartDate, setTenancyStartDate] = useState('');
   const [neverIncreased, setNeverIncreased] = useState(true);
   const [lastIncreaseDate, setLastIncreaseDate] = useState('');

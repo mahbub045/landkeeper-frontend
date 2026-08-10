@@ -56,3 +56,5 @@ export interface StampDutyFormData {
 }
 
 export type StampDutyOption = { value: string; label: string };
+
+export type RentIncreaseFrequency = 'week' | 'month';
