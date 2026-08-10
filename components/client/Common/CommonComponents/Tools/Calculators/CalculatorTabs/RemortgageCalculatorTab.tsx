@@ -321,7 +321,7 @@ const RemortgageCalculatorTab: React.FC = () => {
           <Button
             onClick={handleCalculate}
             size='lg'
-            className='w-full cursor-pointer rounded-full'
+            className='w-full cursor-pointer'
           >
             Calculate
           </Button>
