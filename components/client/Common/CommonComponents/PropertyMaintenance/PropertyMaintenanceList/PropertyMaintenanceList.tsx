@@ -14,6 +14,18 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -27,15 +39,32 @@ import {
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
-import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
+import {
+  MaintenanceCategory,
+  MaintenanceRequest,
+  MaintenanceStatus,
+} from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
-import { Edit, Plus, Search, Trash } from 'lucide-react';
+import { Edit, Filter, Plus, Search, Trash, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 
 const SEARCH_DEBOUNCE_MS = 400;
+
+const STATUS_FILTERS: Array<{ value: MaintenanceStatus; label: string }> = [
+  { value: 'SUBMITTED', label: 'Submitted' },
+  { value: 'ASSIGNED', label: 'Assigned' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'COMPLETED', label: 'Completed' },
+];
+
+const CATEGORY_FILTERS: Array<{ value: MaintenanceCategory; label: string }> = [
+  { value: 'PLUMBING', label: 'Plumbing' },
+  { value: 'CARPENTRY_SECURITY', label: 'Carpentry & Security' },
+  { value: 'OTHER', label: 'Other' },
+];
 
 const PropertyMaintenanceList: React.FC = () => {
   const { data: session } = useSession();
@@ -44,6 +73,9 @@ const PropertyMaintenanceList: React.FC = () => {
   // Debounced value that's actually sent to the API
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [emergencyFilter, setEmergencyFilter] = useState<string>('all');
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -65,12 +97,44 @@ const PropertyMaintenanceList: React.FC = () => {
     isLoading,
     isFetching,
     isError,
-  } = useGetPropertyMaintenanceQuery({ page, limit: PAGE_LIMIT, search }); // adjust params to match your endpoint
+  } = useGetPropertyMaintenanceQuery({
+    page,
+    limit: PAGE_LIMIT,
+    search,
+    current_status: statusFilter === 'all' ? undefined : statusFilter,
+    category: categoryFilter === 'all' ? undefined : categoryFilter,
+    is_emergency:
+      emergencyFilter === 'all' ? undefined : emergencyFilter === 'true',
+  });
 
   const maintenanceRequests: MaintenanceRequest[] = useMemo(
     () => propertyMaintenanceData?.results || [],
     [propertyMaintenanceData],
   );
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+    setPage(1);
+  };
+
+  const handleEmergencyChange = (value: string) => {
+    setEmergencyFilter(value);
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setCategoryFilter('all');
+    setEmergencyFilter('all');
+    setSearchInput('');
+    setSearch('');
+    setPage(1);
+  };
 
   // Table rows show the skeleton on the first load and on any
   // subsequent refetch (search or page change).
@@ -113,7 +177,7 @@ const PropertyMaintenanceList: React.FC = () => {
               placeholder='Search...'
               value={searchInput}
               onChange={handleSearchChange}
-              className='h-8! w-full pr-8! pl-7! sm:w-64'
+              className='h-8! w-full pr-8! pl-7!'
             />
             <HoverInfoPopover
               text={
@@ -130,6 +194,73 @@ const PropertyMaintenanceList: React.FC = () => {
               Make Maintenance Request
             </Button>
           )}
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button type='button' variant='outline'>
+                <Filter />
+                Filters
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align='end' className='w-80 p-4'>
+              <div className='space-y-3'>
+                <Select
+                  value={emergencyFilter}
+                  onValueChange={handleEmergencyChange}
+                >
+                  <SelectTrigger size='sm' className='h-8! w-full'>
+                    <SelectValue placeholder='Emergency' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>All emergency states</SelectItem>
+                    <SelectItem value='true'>Emergency only</SelectItem>
+                    <SelectItem value='false'>Normal only</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={statusFilter} onValueChange={handleStatusChange}>
+                  <SelectTrigger size='sm' className='h-8! w-full'>
+                    <SelectValue placeholder='Status' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>All statuses</SelectItem>
+                    {STATUS_FILTERS.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={categoryFilter}
+                  onValueChange={handleCategoryChange}
+                >
+                  <SelectTrigger size='sm' className='h-8! w-full'>
+                    <SelectValue placeholder='Category' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>All categories</SelectItem>
+                    {CATEGORY_FILTERS.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  type='button'
+                  variant='destructive'
+                  onClick={clearFilters}
+                  className='w-full'
+                >
+                  <X />
+                  Clear filters
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
