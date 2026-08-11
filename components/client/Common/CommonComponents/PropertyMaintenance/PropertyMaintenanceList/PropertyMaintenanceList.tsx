@@ -21,7 +21,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { STATUS_STYLES } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
+import {
+  CATEGORY_STYLES,
+  STATUS_STYLES,
+} from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
@@ -119,11 +122,16 @@ const PropertyMaintenanceList: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead className='uppercase'>Request ID</TableHead>
-              <TableHead className='uppercase'>Tenant</TableHead>
-              <TableHead className='uppercase'>Property</TableHead>
+              {session?.user?.role !== 'TENANT' && (
+                <>
+                  <TableHead className='uppercase'>Tenant</TableHead>
+                  <TableHead className='uppercase'>Property</TableHead>
+                </>
+              )}
               <TableHead className='uppercase'>Issue</TableHead>
               <TableHead className='text-center uppercase'>Status</TableHead>
               <TableHead className='text-center uppercase'>Priority</TableHead>
+              <TableHead className='text-center uppercase'>Category</TableHead>
               <TableHead className='text-center uppercase'>
                 Created At
               </TableHead>
@@ -175,7 +183,9 @@ const PropertyMaintenanceList: React.FC = () => {
               filteredRequests.map((request) => (
                 <TableRow
                   key={request.alias}
-                  className='transition-colors hover:bg-gray-50/60'
+                  className={`transition-colors hover:bg-gray-50/60 ${
+                    request.is_emergency ? 'text-danger' : ''
+                  }`}
                 >
                   <TableCell className='py-3.5 text-sm'>
                     <Link
@@ -183,17 +193,23 @@ const PropertyMaintenanceList: React.FC = () => {
                         session,
                         request.alias as string,
                       )}
-                      className='text_decoration_hover'
+                      className={`text_decoration_hover transition-colors hover:bg-gray-50/60 ${
+                        request.is_emergency ? 'text-danger!' : ''
+                      }`}
                     >
                       {request.request_id}
                     </Link>
                   </TableCell>
-                  <TableCell className='py-3.5 text-sm'>
-                    {request.tenant}
-                  </TableCell>
-                  <TableCell className='max-w-50 truncate py-3.5 text-sm'>
-                    {request.property}
-                  </TableCell>
+                  {session?.user?.role !== 'TENANT' && (
+                    <>
+                      <TableCell className='py-3.5 text-sm'>
+                        {request.tenant}
+                      </TableCell>
+                      <TableCell className='max-w-50 truncate py-3.5 text-sm'>
+                        {request.property}
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell className='max-w-50 truncate py-3.5 text-sm'>
                     {request.issue}
                   </TableCell>
@@ -211,6 +227,15 @@ const PropertyMaintenanceList: React.FC = () => {
                       {request.is_emergency ? 'Emergency' : 'Normal'}
                     </Badge>
                   </TableCell>
+                  <TableCell className='py-3.5 text-center'>
+                    <Badge
+                      className={`${
+                        CATEGORY_STYLES[request.category]
+                      } rounded-full px-2.5 py-1 text-xs`}
+                    >
+                      {formatChoiceFieldValue(request.category)}
+                    </Badge>
+                  </TableCell>
                   <TableCell className='py-3.5 text-center text-sm'>
                     {formatDateAndTime(request.created_at)}
                   </TableCell>
@@ -220,6 +245,7 @@ const PropertyMaintenanceList: React.FC = () => {
                   <TableCell className='py-3.5 text-center text-sm'>
                     <div className='flex justify-end gap-2'>
                       <Button
+                        title='Edit'
                         onClick={() =>
                           console.log('Edit clicked for', request.alias)
                         }
@@ -229,6 +255,7 @@ const PropertyMaintenanceList: React.FC = () => {
                         <Edit />
                       </Button>
                       <Button
+                        title='Delete'
                         onClick={() =>
                           console.log('Delete clicked for', request.alias)
                         }
