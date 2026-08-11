@@ -1,7 +1,9 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   CATEGORY_META,
   STATUS_DOT,
@@ -55,21 +57,44 @@ const PropertyMaintenanceDetails: React.FC = () => {
     maintenanceDetails;
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  // Tracks which thumbnail images have finished loading, keyed by document id
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  // Tracks whether the full-size image in the lightbox has finished loading
+  const [lightboxImageLoaded, setLightboxImageLoaded] = useState(false);
 
   const documents = maintenanceRequestDetails?.documents ?? [];
+
+  const handleImageLoaded = (id: number | string) => {
+    setLoadedImages((prev) => ({ ...prev, [String(id)]: true }));
+  };
+
+  // Opens the lightbox at a given index and resets its loaded state,
+  // called directly from user interactions rather than from an effect.
+  const openLightbox = (index: number) => {
+    setLightboxImageLoaded(false);
+    setLightboxIndex(index);
+  };
+
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+  };
+
+  const goToLightboxIndex = (updater: (i: number) => number) => {
+    setLightboxIndex((i) => {
+      if (i === null) return i;
+      setLightboxImageLoaded(false);
+      return updater(i);
+    });
+  };
 
   useEffect(() => {
     if (lightboxIndex === null) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowRight')
-        setLightboxIndex((i) =>
-          i === null ? null : (i + 1) % documents.length,
-        );
+        goToLightboxIndex((i) => (i + 1) % documents.length);
       if (e.key === 'ArrowLeft')
-        setLightboxIndex((i) =>
-          i === null ? null : (i - 1 + documents.length) % documents.length,
-        );
+        goToLightboxIndex((i) => (i - 1 + documents.length) % documents.length);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -77,17 +102,102 @@ const PropertyMaintenanceDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className='mx-auto w-full max-w-6xl animate-pulse'>
-        <div className='mb-6 h-4 w-32 rounded bg-gray-100' />
-        <div className='mb-8 h-9 w-96 max-w-full rounded bg-gray-100' />
+      <div className='mx-auto'>
+        <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+          <div>
+            <Skeleton className='mb-2 h-7 w-72' />
+            <Skeleton className='h-4 w-56' />
+          </div>
+          <div className='flex flex-wrap gap-2'>
+            <Skeleton className='h-9 w-20' />
+            <Skeleton className='h-9 w-20' />
+            <Skeleton className='h-9 w-20' />
+          </div>
+        </div>
+
+        {/* Header */}
+        <div className='mb-6 rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+            <div className='min-w-0 flex-1'>
+              <Skeleton className='mb-2 h-3 w-24' />
+              <Skeleton className='mb-3 h-6 w-80 max-w-full' />
+              <div className='flex gap-2'>
+                <Skeleton className='h-5 w-20 rounded-full' />
+                <Skeleton className='h-5 w-24 rounded-full' />
+              </div>
+            </div>
+            <Skeleton className='h-9 w-32 shrink-0' />
+          </div>
+        </div>
+
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
           <div className='space-y-6 lg:col-span-2'>
-            <div className='h-48 rounded-xl border border-gray-200 bg-gray-50' />
-            <div className='h-64 rounded-xl border border-gray-200 bg-gray-50' />
+            {/* Notes skeleton */}
+            <div className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+              <Skeleton className='mb-3 h-4 w-16' />
+              <Skeleton className='mb-2 h-4 w-full' />
+              <Skeleton className='mb-2 h-4 w-11/12' />
+              <Skeleton className='h-4 w-2/3' />
+            </div>
+
+            {/* Photos skeleton */}
+            <div className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+              <Skeleton className='mb-3 h-4 w-20' />
+              <div className='grid grid-cols-2 gap-3 sm:grid-cols-3'>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className='aspect-square w-full rounded-lg'
+                  />
+                ))}
+              </div>
+            </div>
           </div>
+
           <div className='space-y-6'>
-            <div className='h-40 rounded-xl border border-gray-200 bg-gray-50' />
-            <div className='h-40 rounded-xl border border-gray-200 bg-gray-50' />
+            {/* Requested by skeleton */}
+            <div className='rounded-xl border border-gray-200 bg-white p-5'>
+              <Skeleton className='mb-4 h-4 w-28' />
+              <div className='space-y-4'>
+                <div className='flex items-start gap-3'>
+                  <Skeleton className='size-4 shrink-0 rounded' />
+                  <div className='min-w-0 flex-1'>
+                    <Skeleton className='mb-1 h-3 w-12' />
+                    <Skeleton className='h-4 w-32' />
+                  </div>
+                </div>
+                <div className='flex items-start gap-3'>
+                  <Skeleton className='size-4 shrink-0 rounded' />
+                  <div className='min-w-0 flex-1'>
+                    <Skeleton className='mb-1 h-3 w-14' />
+                    <Skeleton className='h-4 w-40' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Timeline skeleton */}
+            <div className='rounded-xl border border-gray-200 bg-white p-5'>
+              <Skeleton className='mb-4 h-4 w-20' />
+              <div className='space-y-4'>
+                <div className='flex items-start gap-3'>
+                  <Skeleton className='size-4 shrink-0 rounded' />
+                  <div className='min-w-0 flex-1'>
+                    <Skeleton className='mb-1 h-3 w-16' />
+                    <Skeleton className='mb-1 h-4 w-28' />
+                    <Skeleton className='h-3 w-14' />
+                  </div>
+                </div>
+                <div className='flex items-start gap-3'>
+                  <Skeleton className='size-4 shrink-0 rounded' />
+                  <div className='min-w-0 flex-1'>
+                    <Skeleton className='mb-1 h-3 w-20' />
+                    <Skeleton className='mb-1 h-4 w-28' />
+                    <Skeleton className='h-3 w-14' />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -237,15 +347,25 @@ const PropertyMaintenanceDetails: React.FC = () => {
                 {documents.map((doc, i) => (
                   <button
                     key={doc.id}
-                    onClick={() => setLightboxIndex(i)}
+                    onClick={() => openLightbox(i)}
                     className='group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-50'
                   >
+                    {!loadedImages[String(doc.id)] && (
+                      <div className='absolute inset-0 z-10 flex items-center justify-center bg-gray-50'>
+                        <Loading />
+                      </div>
+                    )}
                     <Image
                       src={doc.file}
                       alt={`Attachment ${i + 1} for ${maintenanceRequestDetails?.issue}`}
                       height={200}
                       width={200}
-                      className='size-full object-cover transition-transform duration-200 group-hover:scale-105'
+                      onLoad={() => handleImageLoaded(doc.id)}
+                      className={`size-full object-cover transition-all duration-200 group-hover:scale-105 ${
+                        loadedImages[String(doc.id)]
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                      }`}
                     />
                     <div className='absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10' />
                   </button>
@@ -327,7 +447,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
           onClick={() => setLightboxIndex(null)}
         >
           <button
-            onClick={() => setLightboxIndex(null)}
+            onClick={closeLightbox}
             className='absolute top-4 right-4 rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white'
             aria-label='Close'
           >
@@ -339,10 +459,8 @@ const PropertyMaintenanceDetails: React.FC = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setLightboxIndex((i) =>
-                    i !== null
-                      ? (i - 1 + documents.length) % documents.length
-                      : i,
+                  goToLightboxIndex(
+                    (i) => (i - 1 + documents.length) % documents.length,
                   );
                 }}
                 className='absolute left-4 rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white'
@@ -353,9 +471,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setLightboxIndex((i) =>
-                    i !== null ? (i + 1) % documents.length : i,
-                  );
+                  goToLightboxIndex((i) => (i + 1) % documents.length);
                 }}
                 className='absolute right-4 rounded-full p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white'
                 aria-label='Next photo'
@@ -365,11 +481,20 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </>
           )}
 
+          {!lightboxImageLoaded && (
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <Loading />
+            </div>
+          )}
+
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={documents[lightboxIndex].file}
             alt={`Attachment ${lightboxIndex + 1} for ${maintenanceRequestDetails?.issue}`}
-            className='max-h-[85vh] max-w-full rounded-lg object-contain'
+            className={`max-h-[85vh] max-w-full rounded-lg object-contain transition-opacity duration-200 ${
+              lightboxImageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() => setLightboxImageLoaded(true)}
             onClick={(e) => e.stopPropagation()}
           />
 
