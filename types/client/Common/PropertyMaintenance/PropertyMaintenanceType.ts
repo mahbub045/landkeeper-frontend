@@ -5,6 +5,12 @@ export type MaintenanceStatus =
   | 'COMPLETED';
 export type MaintenanceCategory = 'PLUMBING' | 'CARPENTRY_SECURITY' | 'OTHER';
 
+export interface MaintenanceDocument {
+  id: number;
+  file: string;
+  length: number;
+}
+
 export interface MaintenanceRequest {
   alias: string | number;
   request_id: string;
@@ -14,7 +20,7 @@ export interface MaintenanceRequest {
   category: MaintenanceCategory;
   current_status: MaintenanceStatus;
   is_emergency: boolean;
-  documents: string[];
+  documents?: MaintenanceDocument[];
   notes: string;
   created_at: string;
   updated_at: string;

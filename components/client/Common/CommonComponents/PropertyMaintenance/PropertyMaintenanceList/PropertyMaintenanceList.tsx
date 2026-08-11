@@ -104,11 +104,12 @@ const PropertyMaintenanceList: React.FC = () => {
             />
             <HoverInfoPopover text='You can search using Property Name and Address.' />
           </div>
-
-          <Button onClick={() => console.log('Add request clicked')}>
-            <Wrench />
-            Make Maintenance Request
-          </Button>
+          {session?.user?.role === 'TENANT' && (
+            <Button onClick={() => console.log('Add request clicked')}>
+              <Wrench />
+              Make Maintenance Request
+            </Button>
+          )}
         </div>
       </div>
 
