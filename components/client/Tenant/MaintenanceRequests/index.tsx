@@ -1,7 +1,7 @@
 import PropertyMaintenance from '../../Common/CommonComponents/PropertyMaintenance/PropertyMaintenance';
 
-const TenantPropertyMaintenanceContainer: React.FC = () => {
+const TenantPropertyMaintenanceRequestsContainer: React.FC = () => {
   return <PropertyMaintenance />;
 };
 
-export default TenantPropertyMaintenanceContainer;
+export default TenantPropertyMaintenanceRequestsContainer;

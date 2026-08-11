@@ -30,6 +30,7 @@ export const TAG_TYPES = [
   'Templates',
   'Finance',
   'TeamAccess',
+  'PropertyMaintenance',
 
   // Payments
   'PaymentMethods',
