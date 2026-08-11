@@ -30,41 +30,51 @@ import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Com
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
-import { Edit, Search, Trash, Wrench } from 'lucide-react';
+import { Edit, Plus, Search, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+
+const SEARCH_DEBOUNCE_MS = 400;
 
 const PropertyMaintenanceList: React.FC = () => {
   const { data: session } = useSession();
+  // Raw text bound to the input, updates on every keystroke
+  const [searchInput, setSearchInput] = useState('');
+  // Debounced value that's actually sent to the API
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPage(1); // reset to page 1 on new search
+    setSearchInput(e.target.value);
   };
+
+  // Debounce: wait for typing to pause before firing the API call,
+  // then reset back to page 1 since the result set has changed.
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   const {
     data: propertyMaintenanceData,
     isLoading,
+    isFetching,
     isError,
-  } = useGetPropertyMaintenanceQuery({ page, limit: PAGE_LIMIT }); // adjust params to match your endpoint
+  } = useGetPropertyMaintenanceQuery({ page, limit: PAGE_LIMIT, search }); // adjust params to match your endpoint
 
   const maintenanceRequests: MaintenanceRequest[] = useMemo(
     () => propertyMaintenanceData?.results || [],
     [propertyMaintenanceData],
   );
 
-  const filteredRequests = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) return maintenanceRequests;
-    return maintenanceRequests.filter((r) =>
-      [r.issue, r.tenant, r.property].some((field) =>
-        field?.toLowerCase().includes(query),
-      ),
-    );
-  }, [maintenanceRequests, search]);
+  // Table rows show the skeleton on the first load and on any
+  // subsequent refetch (search or page change).
+  const showTableLoading = isLoading || isFetching;
 
   const totalCount = propertyMaintenanceData?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
@@ -101,15 +111,22 @@ const PropertyMaintenanceList: React.FC = () => {
             <Input
               type='text'
               placeholder='Search...'
-              value={search}
+              value={searchInput}
               onChange={handleSearchChange}
               className='h-8! w-full pr-8! pl-7! sm:w-64'
             />
-            <HoverInfoPopover text='You can search using Property Name and Address.' />
+            <HoverInfoPopover
+              text={
+                session?.user?.role === 'TENANT'
+                  ? 'You can search using Request ID.'
+                  : 'You can search using Request ID, Property Tenant Name and Property Address.'
+              }
+            />
           </div>
+
           {session?.user?.role === 'TENANT' && (
             <Button onClick={() => console.log('Add request clicked')}>
-              <Wrench />
+              <Plus />
               Make Maintenance Request
             </Button>
           )}
@@ -142,10 +159,10 @@ const PropertyMaintenanceList: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading &&
-              Array.from({ length: 5 }).map((_, i) => (
+            {showTableLoading &&
+              Array.from({ length: 6 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 6 }).map((__, j) => (
+                  {Array.from({ length: 12 }).map((__, j) => (
                     <TableCell key={j} className='py-3.5'>
                       <div className='h-4 w-full max-w-35 animate-pulse rounded bg-gray-100' />
                     </TableCell>
@@ -153,34 +170,36 @@ const PropertyMaintenanceList: React.FC = () => {
                 </TableRow>
               ))}
 
-            {!isLoading && isError && (
+            {!showTableLoading && isError && (
               <TableRow>
-                <TableCell colSpan={6} className='py-10 text-center'>
+                <TableCell colSpan={12} className='py-10 text-center'>
                   <CustomErrorMessage title='maintenance requests' />
                 </TableCell>
               </TableRow>
             )}
 
-            {!isLoading && !isError && filteredRequests.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className='py-10 text-center'>
-                  <p className='text-sm text-gray-900'>
-                    {search
-                      ? 'No matching requests'
-                      : 'No maintenance requests yet'}
-                  </p>
-                  <p className='mt-1 text-sm text-gray-500'>
-                    {search
-                      ? 'Try a different search term.'
-                      : 'Add your first request to get started.'}
-                  </p>
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading &&
+            {!showTableLoading &&
               !isError &&
-              filteredRequests.map((request) => (
+              maintenanceRequests.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={12} className='py-10 text-center'>
+                    <p className='text-sm text-gray-900'>
+                      {search
+                        ? 'No matching requests'
+                        : 'No maintenance requests yet'}
+                    </p>
+                    <p className='mt-1 text-sm text-gray-500'>
+                      {search
+                        ? 'Try a different search term.'
+                        : 'Add your first request to get started.'}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
+
+            {!showTableLoading &&
+              !isError &&
+              maintenanceRequests.map((request) => (
                 <TableRow
                   key={request.alias}
                   className={`transition-colors hover:bg-gray-50/60 ${

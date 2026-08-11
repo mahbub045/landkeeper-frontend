@@ -30,17 +30,6 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-function timeAgo(dateStr: string): string {
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.round(diffMs / 60000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.round(hours / 24);
-  return `${days}d ago`;
-}
-
 const PropertyMaintenanceDetails: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -419,7 +408,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
                     {formatDateAndTime(maintenanceRequestDetails?.created_at)}
                   </dd>
                   <dd className='text-xs text-gray-400'>
-                    {timeAgo(maintenanceRequestDetails?.created_at)}
+                    {formatDateAndTime(maintenanceRequestDetails?.created_at)}
                   </dd>
                 </div>
               </div>
@@ -431,7 +420,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
                     {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
                   </dd>
                   <dd className='text-xs text-gray-400'>
-                    {timeAgo(maintenanceRequestDetails?.updated_at)}
+                    {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
                   </dd>
                 </div>
               </div>

@@ -6,10 +6,10 @@ const PropertyMaintenance: React.FC = () => {
   const { data: session } = useSession();
   return (
     <div>
-      {/* <div>
+      {/* <div className='mb-6'>
         <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-          Property Maintenance{' '}
-          {session?.user?.role === 'TENANT' ? 'Requests' : ''}
+          Maintenance {session?.user?.role === 'TENANT' ? 'Requests' : ''} &
+          Emergency Contacts
         </h1>
         <p className='text-muted-foreground text-sm'>
           Manage your property maintenance{' '}
