@@ -3,13 +3,24 @@ import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErr
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CATEGORY_META,
   STATUS_DOT,
+  STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
-import { useGetPropertyMaintenanceDetailsQuery } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
+import {
+  useEditPropertyMaintenanceMutation,
+  useGetPropertyMaintenanceDetailsQuery,
+} from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import {
@@ -29,6 +40,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
 import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
 
@@ -111,6 +123,25 @@ const PropertyMaintenanceDetails: React.FC = () => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [lightboxIndex, documents.length]);
+
+  const [editStatus, { isLoading: isStatusUpdating }] =
+    useEditPropertyMaintenanceMutation();
+
+  const canEditStatus =
+    session?.user?.role === 'LANDLORD' || session?.user?.role === 'ADMIN';
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!maintenanceRequestDetails?.alias) return;
+    try {
+      await editStatus({
+        alias: maintenanceRequestDetails.alias,
+        payload: { current_status: newStatus },
+      }).unwrap();
+      toast.success('Status updated successfully.');
+    } catch (error) {
+      toast.error('Failed to update status.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -276,7 +307,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
         <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
           <div className='min-w-0'>
             <div className='mb-2 flex flex-wrap items-center gap-2'>
-              <span className='font-mono text-xs font-medium tracking-wide'>
+              <span className='font-mono text-xl font-medium tracking-wide'>
                 {maintenanceRequestDetails?.request_id}
               </span>
               {maintenanceRequestDetails?.is_emergency && (
@@ -293,16 +324,42 @@ const PropertyMaintenanceDetails: React.FC = () => {
               {maintenanceRequestDetails?.issue}
             </h1>
             <div className='mt-2 flex flex-wrap items-center gap-2'>
-              <Badge
-                className={`gap-1.5 ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
-              >
-                <span
-                  className={`size-1.5 rounded-full ${STATUS_DOT[maintenanceRequestDetails?.current_status]}`}
-                />
-                {formatChoiceFieldValue(
-                  maintenanceRequestDetails?.current_status,
-                )}
-              </Badge>
+              {canEditStatus ? (
+                <Select
+                  value={maintenanceRequestDetails?.current_status}
+                  onValueChange={handleStatusChange}
+                  disabled={isStatusUpdating}
+                >
+                  <SelectTrigger
+                    className={`h-5! w-fit gap-1.5 rounded-full border-none px-3 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align='start'>
+                    {STATUS_OPTIONS.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        <span className='flex items-center gap-1.5'>
+                          <span
+                            className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status.value]}`}
+                          />
+                          {status.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Badge
+                  className={`gap-1.5 ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${STATUS_DOT[maintenanceRequestDetails?.current_status]}`}
+                  />
+                  {formatChoiceFieldValue(
+                    maintenanceRequestDetails?.current_status,
+                  )}
+                </Badge>
+              )}
               <Badge
                 className={`gap-1.5 ring-1 ring-inset ${CATEGORY_META[maintenanceRequestDetails?.category].classes}`}
               >
@@ -315,22 +372,6 @@ const PropertyMaintenanceDetails: React.FC = () => {
               </Badge>
             </div>
           </div>
-
-          {session?.user?.role !== 'TENANT' && (
-            <div className='flex shrink-0 gap-2'>
-              <Button
-                variant='outline'
-                onClick={() =>
-                  console.log(
-                    'Update status clicked for',
-                    maintenanceRequestDetails?.alias,
-                  )
-                }
-              >
-                Update status
-              </Button>
-            </div>
-          )}
         </div>
       </div>
 

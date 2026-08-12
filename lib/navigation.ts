@@ -297,11 +297,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
       //   href: '/client/tenant/tenancy-renewals',
       //   icon: RotateCw,
       // },
-      {
-        label: 'Utilities',
-        href: '/client/tenant/utilities',
-        icon: Zap,
-      },
+      // {
+      //   label: 'Utilities',
+      //   href: '/client/tenant/utilities',
+      //   icon: Zap,
+      // },
     ];
   }
 

@@ -24,22 +24,22 @@ export const CATEGORY_OPTIONS: Array<{
 ];
 
 export const STATUS_STYLES: Record<MaintenanceStatus, string> = {
-  SUBMITTED: 'bg-amber-50 text-amber-700 ring-amber-600/20',
-  ASSIGNED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  IN_PROGRESS: 'bg-blue-50 text-blue-700 ring-blue-600/20',
-  COMPLETED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+  SUBMITTED: 'bg-red-100 text-red-700 ring-red-600/20',
+  ASSIGNED: 'bg-blue-100 text-blue-700 ring-blue-600/20',
+  IN_PROGRESS: 'bg-amber-100 text-amber-700 ring-amber-600/20',
+  COMPLETED: 'bg-emerald-100 text-emerald-700 ring-emerald-600/20',
 };
 
 export const CATEGORY_STYLES: Record<MaintenanceCategory, string> = {
-  PLUMBING: 'bg-sky-50 text-sky-700 ring-sky-600/20',
-  CARPENTRY_SECURITY: 'bg-orange-50 text-orange-700 ring-orange-600/20',
+  PLUMBING: 'bg-sky-100 text-sky-700 ring-sky-600/20',
+  CARPENTRY_SECURITY: 'bg-orange-100 text-orange-700 ring-orange-600/20',
   OTHER: 'bg-gray-100 text-gray-700 ring-gray-500/20',
 };
 
 export const STATUS_DOT: Record<keyof typeof STATUS_STYLES, string> = {
-  SUBMITTED: 'bg-amber-500',
+  SUBMITTED: 'bg-red-500',
   ASSIGNED: 'bg-blue-500',
-  IN_PROGRESS: 'bg-blue-500',
+  IN_PROGRESS: 'bg-amber-500',
   COMPLETED: 'bg-emerald-500',
 };
 
@@ -49,17 +49,19 @@ export const CATEGORY_META: Record<
 > = {
   PLUMBING: {
     icon: Wrench,
-    classes: 'bg-sky-50 text-sky-700 ring-sky-600/20',
+    classes: 'bg-sky-100 text-sky-700 ring-sky-600/20',
   },
   CARPENTRY_SECURITY: {
     icon: Hammer,
-    classes: 'bg-orange-50 text-orange-700 ring-orange-600/20',
+    classes: 'bg-orange-100 text-orange-700 ring-orange-600/20',
   },
   OTHER: {
     icon: CircleHelp,
     classes: 'bg-gray-100 text-gray-700 ring-gray-500/20',
   },
 };
+
+
 
 export const MAX_FILES = 5;
 export const MAX_FILE_SIZE_MB = 10;

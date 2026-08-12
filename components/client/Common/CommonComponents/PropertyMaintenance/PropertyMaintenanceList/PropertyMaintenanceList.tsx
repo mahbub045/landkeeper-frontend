@@ -21,6 +21,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -31,11 +38,15 @@ import {
 import {
   CATEGORY_OPTIONS,
   CATEGORY_STYLES,
+  STATUS_DOT,
   STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
-import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
+import {
+  useEditPropertyMaintenanceMutation,
+  useGetPropertyMaintenanceQuery,
+} from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
@@ -74,6 +85,7 @@ const PropertyMaintenanceList: React.FC = () => {
   const [selectedRequestAlias, setSelectedRequestAlias] = useState<
     string | null
   >(null);
+  const [updatingAlias, setUpdatingAlias] = useState<string | null>(null);
 
   const handleOpenEditDialog = (alias: string) => {
     setSelectedRequestAlias(alias);
@@ -113,6 +125,8 @@ const PropertyMaintenanceList: React.FC = () => {
     category: categoryFilter.length ? categoryFilter.join(',') : undefined,
     is_emergency: emergencyFilter ? true : undefined,
   });
+  const [editStatus, { isLoading: isStatusUpdating }] =
+    useEditPropertyMaintenanceMutation();
 
   const maintenanceRequests: MaintenanceRequest[] = useMemo(
     () => propertyMaintenanceData?.results || [],
@@ -173,6 +187,24 @@ const PropertyMaintenanceList: React.FC = () => {
       }
     }
     return pages;
+  };
+
+  const canEditStatus =
+    session?.user?.role === 'LANDLORD' || session?.user?.role === 'ADMIN';
+
+  const handleStatusChange = async (alias: string, newStatus: string) => {
+    try {
+      setUpdatingAlias(alias);
+      await editStatus({
+        alias,
+        payload: { current_status: newStatus },
+      }).unwrap();
+      toast.success('Status updated successfully.');
+    } catch (error) {
+      toast.error('Failed to update status.');
+    } finally {
+      setUpdatingAlias(null);
+    }
   };
 
   const handleCopyMaintenanceRequestId = async (
@@ -451,11 +483,44 @@ const PropertyMaintenanceList: React.FC = () => {
                     )}
                   </TableCell>
                   <TableCell className='text-center'>
-                    <Badge
-                      className={` ${STATUS_STYLES[request.current_status]}`}
-                    >
-                      {formatChoiceFieldValue(request.current_status)}
-                    </Badge>
+                    {canEditStatus ? (
+                      <Select
+                        value={request.current_status}
+                        onValueChange={(value) =>
+                          handleStatusChange(request.alias as string, value)
+                        }
+                        disabled={
+                          isStatusUpdating && updatingAlias === request.alias
+                        }
+                      >
+                        <SelectTrigger
+                          className={`mx-auto h-5! w-fit gap-1.5 rounded-full border-none px-2 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[request.current_status]}`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent align='center'>
+                          {STATUS_OPTIONS.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              <span className='flex items-center gap-1.5'>
+                                <span
+                                  className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status.value]}`}
+                                />
+                                {status.label}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge
+                        className={`gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLES[request.current_status]}`}
+                      >
+                        <span
+                          className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[request.current_status]}`}
+                        />
+                        {formatChoiceFieldValue(request.current_status)}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className='text-center'>
                     <Badge
