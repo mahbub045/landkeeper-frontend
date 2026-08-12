@@ -478,7 +478,7 @@ const PropertyMaintenanceList: React.FC = () => {
                   </TableCell>
                   <TableCell className='text-center text-sm'>
                     {formatDateAndTime(request.updated_at)}
-                  </TableCell>{' '}
+                  </TableCell>
                   {session?.user?.role === 'TENANT' && (
                     <TableCell className='text-center text-sm'>
                       <div className='flex justify-center gap-2'>
