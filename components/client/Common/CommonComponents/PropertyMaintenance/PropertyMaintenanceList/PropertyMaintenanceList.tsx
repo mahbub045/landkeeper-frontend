@@ -29,37 +29,32 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  CATEGORY_OPTIONS,
   CATEGORY_STYLES,
+  STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
-import {
-  MaintenanceCategory,
-  MaintenanceRequest,
-  MaintenanceStatus,
-} from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
+import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
-import { Edit, Filter, Plus, Search, Trash, X } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  Edit,
+  Filter,
+  Plus,
+  Search,
+  Trash,
+  X,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 const SEARCH_DEBOUNCE_MS = 400;
-
-const STATUS_FILTERS: Array<{ value: MaintenanceStatus; label: string }> = [
-  { value: 'SUBMITTED', label: 'Submitted' },
-  { value: 'ASSIGNED', label: 'Assigned' },
-  { value: 'IN_PROGRESS', label: 'In progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-];
-
-const CATEGORY_FILTERS: Array<{ value: MaintenanceCategory; label: string }> = [
-  { value: 'PLUMBING', label: 'Plumbing' },
-  { value: 'CARPENTRY_SECURITY', label: 'Carpentry & Security' },
-  { value: 'OTHER', label: 'Other' },
-];
 
 const PropertyMaintenanceList: React.FC = () => {
   const { data: session } = useSession();
@@ -71,6 +66,7 @@ const PropertyMaintenanceList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [emergencyFilter, setEmergencyFilter] = useState<boolean>(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -162,6 +158,20 @@ const PropertyMaintenanceList: React.FC = () => {
     return pages;
   };
 
+  const handleCopyMaintenanceRequestId = async (
+    requestId: string | number,
+    alias: string,
+  ) => {
+    try {
+      await navigator.clipboard.writeText(requestId.toString());
+      setCopiedId(alias);
+      toast.success('Maintenance ID copied to clipboard.');
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch (error) {
+      toast.error('Failed to copy Maintenance ID.');
+    }
+  };
+
   return (
     <div className='w-full'>
       {/* Header */}
@@ -224,7 +234,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Status
                   </p>
                   <div className='space-y-2'>
-                    {STATUS_FILTERS.map((status) => (
+                    {STATUS_OPTIONS.map((status) => (
                       <div
                         key={status.value}
                         className='flex items-center gap-2'
@@ -252,7 +262,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Category
                   </p>
                   <div className='space-y-2'>
-                    {CATEGORY_FILTERS.map((category) => (
+                    {CATEGORY_OPTIONS.map((category) => (
                       <div
                         key={category.value}
                         className='flex items-center gap-2'
@@ -289,7 +299,7 @@ const PropertyMaintenanceList: React.FC = () => {
           </Popover>
 
           {session?.user?.role === 'TENANT' && (
-            <Button onClick={() => console.log('Add request clicked')}>
+            <Button>
               <Plus />
               Make Maintenance Request
             </Button>
@@ -370,7 +380,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     request.is_emergency ? 'text-danger' : ''
                   }`}
                 >
-                  <TableCell className='py-3.5 text-sm'>
+                  <TableCell className='flex items-center gap-2 py-3.5 text-sm'>
                     <Link
                       href={getPropertyMaintenanceUrl(
                         session,
@@ -382,6 +392,23 @@ const PropertyMaintenanceList: React.FC = () => {
                     >
                       {request.request_id}
                     </Link>
+                    <button
+                      className='shrink-0 cursor-pointer rounded-md transition-colors'
+                      onClick={() =>
+                        handleCopyMaintenanceRequestId(
+                          request.request_id,
+                          request.alias as string,
+                        )
+                      }
+                    >
+                      {copiedId === request.alias ? (
+                        <Check className='text-success size-3' />
+                      ) : (
+                        <Copy
+                          className={`size-3 ${request.is_emergency ? 'text-danger' : 'text-primary'}`}
+                        />
+                      )}
+                    </button>
                   </TableCell>
                   {session?.user?.role !== 'TENANT' && (
                     <>

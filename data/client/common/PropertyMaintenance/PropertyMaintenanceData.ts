@@ -4,6 +4,19 @@ import {
 } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import { CircleHelp, Hammer, Wrench } from 'lucide-react';
 
+export const STATUS_OPTIONS: Array<{ value: MaintenanceStatus; label: string }> = [
+  { value: 'SUBMITTED', label: 'Submitted' },
+  { value: 'ASSIGNED', label: 'Assigned' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'COMPLETED', label: 'Completed' },
+];
+
+export const CATEGORY_OPTIONS: Array<{ value: MaintenanceCategory; label: string }> = [
+  { value: 'PLUMBING', label: 'Plumbing' },
+  { value: 'CARPENTRY_SECURITY', label: 'Carpentry & Security' },
+  { value: 'OTHER', label: 'Other' },
+];
+
 export const STATUS_STYLES: Record<MaintenanceStatus, string> = {
   SUBMITTED: 'bg-amber-50 text-amber-700 ring-amber-600/20',
   ASSIGNED: 'bg-blue-50 text-blue-700 ring-blue-600/20',
