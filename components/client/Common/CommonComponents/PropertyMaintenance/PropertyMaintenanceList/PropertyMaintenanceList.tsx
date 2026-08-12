@@ -53,6 +53,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import MaintenanceRequestDialog from '../Dialogs/MaintenanceRequestDialog';
 
 const SEARCH_DEBOUNCE_MS = 400;
 
@@ -67,6 +68,8 @@ const PropertyMaintenanceList: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [emergencyFilter, setEmergencyFilter] = useState<boolean>(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isMaintenanceRequestDialogOpen, setIsMaintenanceRequestDialogOpen] =
+    useState(false);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -299,7 +302,7 @@ const PropertyMaintenanceList: React.FC = () => {
           </Popover>
 
           {session?.user?.role === 'TENANT' && (
-            <Button>
+            <Button onClick={() => setIsMaintenanceRequestDialogOpen(true)}>
               <Plus />
               Make Maintenance Request
             </Button>
@@ -337,7 +340,7 @@ const PropertyMaintenanceList: React.FC = () => {
               Array.from({ length: 6 }).map((_, i) => (
                 <TableRow key={i}>
                   {Array.from({ length: 12 }).map((__, j) => (
-                    <TableCell key={j} className='py-3.5'>
+                    <TableCell key={j} className=''>
                       <div className='h-4 w-full max-w-35 animate-pulse rounded bg-gray-100' />
                     </TableCell>
                   ))}
@@ -380,7 +383,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     request.is_emergency ? 'text-danger' : ''
                   }`}
                 >
-                  <TableCell className='flex items-center gap-2 py-3.5 text-sm'>
+                  <TableCell className='flex items-center gap-2 text-sm'>
                     <Link
                       href={getPropertyMaintenanceUrl(
                         session,
@@ -412,32 +415,38 @@ const PropertyMaintenanceList: React.FC = () => {
                   </TableCell>
                   {session?.user?.role !== 'TENANT' && (
                     <>
-                      <TableCell className='py-3.5 text-sm'>
+                      <TableCell className='text-sm'>
                         {request.tenant}
                       </TableCell>
-                      <TableCell className='max-w-50 truncate py-3.5 text-sm'>
+                      <TableCell className='max-w-50 truncate text-sm'>
                         {request.property}
                       </TableCell>
                     </>
                   )}
-                  <TableCell className='max-w-50 truncate py-3.5 text-sm'>
-                    {request.issue}
+                  <TableCell className='max-w-50 truncate text-sm'>
+                    {request.issue ? (
+                      request.issue
+                    ) : (
+                      <span className='text-muted-foreground'>
+                        No issue provided
+                      </span>
+                    )}
                   </TableCell>
-                  <TableCell className='py-3.5 text-center'>
+                  <TableCell className='text-center'>
                     <Badge
                       className={` ${STATUS_STYLES[request.current_status]}`}
                     >
                       {formatChoiceFieldValue(request.current_status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className='py-3.5 text-center'>
+                  <TableCell className='text-center'>
                     <Badge
                       className={`${request.is_emergency ? 'bg-danger/20 text-danger' : 'bg-green-100 text-green-800'} rounded-full px-2.5 py-1 text-xs`}
                     >
                       {request.is_emergency ? 'Emergency' : 'Normal'}
                     </Badge>
                   </TableCell>
-                  <TableCell className='py-3.5 text-center'>
+                  <TableCell className='text-center'>
                     <Badge
                       className={`${
                         CATEGORY_STYLES[request.category]
@@ -446,13 +455,13 @@ const PropertyMaintenanceList: React.FC = () => {
                       {formatChoiceFieldValue(request.category)}
                     </Badge>
                   </TableCell>
-                  <TableCell className='py-3.5 text-center text-sm'>
+                  <TableCell className='text-center text-sm'>
                     {formatDateAndTime(request.created_at)}
                   </TableCell>
-                  <TableCell className='py-3.5 text-center text-sm'>
+                  <TableCell className='text-center text-sm'>
                     {formatDateAndTime(request.updated_at)}
                   </TableCell>
-                  <TableCell className='py-3.5 text-center text-sm'>
+                  <TableCell className='text-center text-sm'>
                     <div className='flex justify-end gap-2'>
                       <Button
                         title='Edit'
@@ -540,6 +549,10 @@ const PropertyMaintenanceList: React.FC = () => {
           )}
         </div>
       )}
+      <MaintenanceRequestDialog
+        isOpen={isMaintenanceRequestDialogOpen}
+        onClose={() => setIsMaintenanceRequestDialogOpen(false)}
+      />
     </div>
   );
 };
