@@ -53,6 +53,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
 import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
 import MaintenanceRequestDialog from '../Dialogs/MaintenanceRequestDialog';
 
@@ -75,6 +76,10 @@ const PropertyMaintenanceList: React.FC = () => {
     isEditMaintenanceRequestDialogOpen,
     setIsEditMaintenanceRequestDialogOpen,
   ] = useState(false);
+  const [
+    isDeleteMaintenanceRequestDialogOpen,
+    setIsDeleteMaintenanceRequestDialogOpen,
+  ] = useState(false);
   const [selectedRequestAlias, setSelectedRequestAlias] = useState<
     string | null
   >(null);
@@ -82,6 +87,11 @@ const PropertyMaintenanceList: React.FC = () => {
   const handleOpenEditDialog = (alias: string) => {
     setSelectedRequestAlias(alias);
     setIsEditMaintenanceRequestDialogOpen(true);
+  };
+
+  const handleOpenDeleteDialog = (alias: string) => {
+    setSelectedRequestAlias(alias);
+    setIsDeleteMaintenanceRequestDialogOpen(true);
   };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -478,20 +488,22 @@ const PropertyMaintenanceList: React.FC = () => {
                   </TableCell>
                   <TableCell className='text-center text-sm'>
                     <div className='flex justify-center gap-2'>
-                      <Button
-                        title='Edit'
-                        onClick={() =>
-                          handleOpenEditDialog(request.alias as string)
-                        }
-                        size='icon'
-                        variant='outline'
-                      >
-                        <Edit />
-                      </Button>
+                      {session?.user?.role === 'TENANT' && (
+                        <Button
+                          title='Edit'
+                          onClick={() =>
+                            handleOpenEditDialog(request.alias as string)
+                          }
+                          size='icon'
+                          variant='outline'
+                        >
+                          <Edit />
+                        </Button>
+                      )}
                       <Button
                         title='Delete'
                         onClick={() =>
-                          console.log('Delete clicked for', request.alias)
+                          handleOpenDeleteDialog(request.alias as string)
                         }
                         size='icon'
                         variant='destructive'
@@ -573,6 +585,15 @@ const PropertyMaintenanceList: React.FC = () => {
         isOpen={isEditMaintenanceRequestDialogOpen}
         onClose={() => setIsEditMaintenanceRequestDialogOpen(false)}
         maintenanceRequestAlias={selectedRequestAlias || ''}
+      />
+      <DeleteMaintenanceRequestDialog
+        isOpen={isDeleteMaintenanceRequestDialogOpen}
+        onClose={() => setIsDeleteMaintenanceRequestDialogOpen(false)}
+        maintenanceRequestAlias={selectedRequestAlias || ''}
+        maintenanceRequestId={
+          maintenanceRequests.find((req) => req.alias === selectedRequestAlias)
+            ?.request_id || ''
+        }
       />
     </div>
   );

@@ -48,3 +48,10 @@ export type FormValues = {
   is_emergency: boolean;
   notes: string;
 };
+
+export interface DeleteMaintenanceRequestDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  maintenanceRequestAlias: string;
+  maintenanceRequestId: string;
+}
