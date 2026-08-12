@@ -12,7 +12,7 @@ export interface MaintenanceDocument {
 }
 
 export interface MaintenanceRequest {
-  alias: string | number;
+  alias: string ;
   request_id: string;
   tenant: string;
   property: string;

@@ -13,11 +13,13 @@ import {
 import { useDeletePropertyMaintenanceMutation } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { DeleteMaintenanceRequestDialogProps } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import { AlertTriangle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 const DeleteMaintenanceRequestDialog: React.FC<
   DeleteMaintenanceRequestDialogProps
 > = ({ isOpen, onClose, maintenanceRequestAlias, maintenanceRequestId }) => {
+  const router = useRouter();
   const [deleteMaintenanceRequest, { isLoading }] =
     useDeletePropertyMaintenanceMutation();
 
@@ -34,6 +36,7 @@ const DeleteMaintenanceRequestDialog: React.FC<
 
       toast.success('Maintenance request deleted successfully.');
       onClose();
+      router.back();
     } catch {
       toast.error('Failed to delete maintenance request.');
     }

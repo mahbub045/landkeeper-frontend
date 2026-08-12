@@ -39,16 +39,7 @@ import { useGetPropertyMaintenanceQuery } from '@/store/api/endpoints/client/Com
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
-import {
-  Check,
-  Copy,
-  Edit,
-  Filter,
-  Plus,
-  Search,
-  Trash,
-  X,
-} from 'lucide-react';
+import { Check, Copy, Edit, Filter, Plus, Search, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -355,7 +346,9 @@ const PropertyMaintenanceList: React.FC = () => {
               <TableHead className='text-center uppercase'>
                 Updated At
               </TableHead>
-              <TableHead className='text-center uppercase'>Actions</TableHead>
+              {session?.user?.role === 'TENANT' && (
+                <TableHead className='text-center uppercase'>Action</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -485,33 +478,23 @@ const PropertyMaintenanceList: React.FC = () => {
                   </TableCell>
                   <TableCell className='text-center text-sm'>
                     {formatDateAndTime(request.updated_at)}
-                  </TableCell>
-                  <TableCell className='text-center text-sm'>
-                    <div className='flex justify-center gap-2'>
-                      {session?.user?.role === 'TENANT' && (
+                  </TableCell>{' '}
+                  {session?.user?.role === 'TENANT' && (
+                    <TableCell className='text-center text-sm'>
+                      <div className='flex justify-center gap-2'>
                         <Button
                           title='Edit'
                           onClick={() =>
                             handleOpenEditDialog(request.alias as string)
                           }
-                          size='icon'
                           variant='outline'
                         >
                           <Edit />
+                          Edit
                         </Button>
-                      )}
-                      <Button
-                        title='Delete'
-                        onClick={() =>
-                          handleOpenDeleteDialog(request.alias as string)
-                        }
-                        size='icon'
-                        variant='destructive'
-                      >
-                        <Trash />
-                      </Button>
-                    </div>
-                  </TableCell>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>

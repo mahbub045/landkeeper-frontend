@@ -29,11 +29,34 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
+import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
 
 const PropertyMaintenanceDetails: React.FC = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const { maintenancealias } = useParams();
+  const [
+    isEditMaintenanceRequestDialogOpen,
+    setIsEditMaintenanceRequestDialogOpen,
+  ] = useState(false);
+  const [
+    isDeleteMaintenanceRequestDialogOpen,
+    setIsDeleteMaintenanceRequestDialogOpen,
+  ] = useState(false);
+  const [selectedRequestAlias, setSelectedRequestAlias] = useState<
+    string | null
+  >(null);
+
+  const handleOpenEditDialog = (alias: string) => {
+    setSelectedRequestAlias(alias);
+    setIsEditMaintenanceRequestDialogOpen(true);
+  };
+
+  const handleOpenDeleteDialog = (alias: string) => {
+    setSelectedRequestAlias(alias);
+    setIsDeleteMaintenanceRequestDialogOpen(true);
+  };
   const {
     data: maintenanceDetails,
     isLoading,
@@ -219,11 +242,23 @@ const PropertyMaintenanceDetails: React.FC = () => {
             <ArrowLeft className='size-4' />
             Back
           </Button>
-          <Button variant='default'>
-            <Edit />
-            Edit
-          </Button>
-          <Button variant='destructive'>
+          {session?.user?.role === 'TENANT' && (
+            <Button
+              variant='default'
+              onClick={() =>
+                handleOpenEditDialog(maintenanceRequestDetails?.alias)
+              }
+            >
+              <Edit />
+              Edit
+            </Button>
+          )}
+          <Button
+            variant='destructive'
+            onClick={() =>
+              handleOpenDeleteDialog(maintenanceRequestDetails?.alias)
+            }
+          >
             <Trash />
             Delete
           </Button>
@@ -494,6 +529,18 @@ const PropertyMaintenanceDetails: React.FC = () => {
           )}
         </div>
       )}
+      {/* Dialogs  */}
+      <EditMaintenanceRequestDialog
+        isOpen={isEditMaintenanceRequestDialogOpen}
+        onClose={() => setIsEditMaintenanceRequestDialogOpen(false)}
+        maintenanceRequestAlias={selectedRequestAlias || ''}
+      />
+      <DeleteMaintenanceRequestDialog
+        isOpen={isDeleteMaintenanceRequestDialogOpen}
+        onClose={() => setIsDeleteMaintenanceRequestDialogOpen(false)}
+        maintenanceRequestAlias={selectedRequestAlias || ''}
+        maintenanceRequestId={maintenanceRequestDetails?.request_id || ''}
+      />
     </div>
   );
 };
