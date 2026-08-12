@@ -20,7 +20,6 @@ import {
   UserKey,
   UsersRound,
   Wrench,
-  Zap,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -270,6 +269,42 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
       },
     ];
   }
+  if (role === 'MORTGAGE_ADVISER') {
+    return [
+      {
+        label: 'Dashboard',
+        href: '/client/mortgage-adviser/dashboard',
+        icon: LayoutDashboard,
+      },
+      {
+        label: 'Properties',
+        href: '/client/mortgage-adviser/properties',
+        icon: House,
+      },
+      {
+        label: 'Mortgages',
+        href: '/client/mortgage-adviser/mortgages',
+        icon: Landmark,
+      },
+      {
+        label: 'Tools',
+        icon: Hammer,
+        children: [
+          {
+            label: 'Calculators',
+            href: '/client/mortgage-adviser/tools/calculators',
+            icon: Calculator,
+          },
+        ],
+      },
+      {
+        label: 'Support Tickets',
+        href: '/client/mortgage-adviser/support-tickets',
+        icon: Ticket,
+      },
+    ];
+  }
+
   if (role === 'TENANT') {
     return [
       {

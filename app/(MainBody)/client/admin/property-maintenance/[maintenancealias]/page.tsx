@@ -1,5 +1,5 @@
-import TenantMaintenanceRequestDetailsContainer from '@/components/client/Tenant/MaintenanceRequests/MaintenanceRequestAlias';
+import AdminPropertyMaintenanceDetailsContainer from '@/components/client/Admin/PropertyMaintenance/PropertyMaintenanceAlias';
 
-export default function TenantMaintenanceRequestDetailsPage() {
-  return <TenantMaintenanceRequestDetailsContainer />;
+export default function AdminPropertyMaintenanceDetailsPage() {
+  return <AdminPropertyMaintenanceDetailsContainer />;
 }
