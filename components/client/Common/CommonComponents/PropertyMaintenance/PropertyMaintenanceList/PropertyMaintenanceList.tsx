@@ -3,7 +3,9 @@ import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErr
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Pagination,
   PaginationContent,
@@ -18,13 +20,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -73,9 +68,9 @@ const PropertyMaintenanceList: React.FC = () => {
   // Debounced value that's actually sent to the API
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [emergencyFilter, setEmergencyFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [emergencyFilter, setEmergencyFilter] = useState<boolean>(false);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -101,10 +96,9 @@ const PropertyMaintenanceList: React.FC = () => {
     page,
     limit: PAGE_LIMIT,
     search,
-    current_status: statusFilter === 'all' ? undefined : statusFilter,
-    category: categoryFilter === 'all' ? undefined : categoryFilter,
-    is_emergency:
-      emergencyFilter === 'all' ? undefined : emergencyFilter === 'true',
+    current_status: statusFilter.length ? statusFilter.join(',') : undefined,
+    category: categoryFilter.length ? categoryFilter.join(',') : undefined,
+    is_emergency: emergencyFilter ? true : undefined,
   });
 
   const maintenanceRequests: MaintenanceRequest[] = useMemo(
@@ -112,29 +106,36 @@ const PropertyMaintenanceList: React.FC = () => {
     [propertyMaintenanceData],
   );
 
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
+  const handleStatusToggle = (value: string) => {
+    setStatusFilter((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
     setPage(1);
   };
 
-  const handleCategoryChange = (value: string) => {
-    setCategoryFilter(value);
+  const handleCategoryToggle = (value: string) => {
+    setCategoryFilter((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    );
     setPage(1);
   };
 
-  const handleEmergencyChange = (value: string) => {
-    setEmergencyFilter(value);
+  const handleEmergencyChange = (checked: boolean) => {
+    setEmergencyFilter(checked);
     setPage(1);
   };
 
   const clearFilters = () => {
-    setStatusFilter('all');
-    setCategoryFilter('all');
-    setEmergencyFilter('all');
+    setStatusFilter([]);
+    setCategoryFilter([]);
+    setEmergencyFilter(false);
     setSearchInput('');
     setSearch('');
     setPage(1);
   };
+
+  const activeFilterCount =
+    statusFilter.length + categoryFilter.length + (emergencyFilter ? 1 : 0);
 
   // Table rows show the skeleton on the first load and on any
   // subsequent refetch (search or page change).
@@ -188,66 +189,91 @@ const PropertyMaintenanceList: React.FC = () => {
             />
           </div>
 
-          {session?.user?.role === 'TENANT' && (
-            <Button onClick={() => console.log('Add request clicked')}>
-              <Plus />
-              Make Maintenance Request
-            </Button>
-          )}
-
           <Popover>
             <PopoverTrigger asChild>
               <Button type='button' variant='outline'>
                 <Filter />
                 Filters
+                {activeFilterCount > 0 && (
+                  <Badge className='ml-1 rounded-full px-1.5 py-0 text-xs'>
+                    {activeFilterCount}
+                  </Badge>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent align='end' className='w-80 p-4'>
-              <div className='space-y-3'>
-                <Select
-                  value={emergencyFilter}
-                  onValueChange={handleEmergencyChange}
-                >
-                  <SelectTrigger size='sm' className='h-8! w-full'>
-                    <SelectValue placeholder='Emergency' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='all'>All emergency states</SelectItem>
-                    <SelectItem value='true'>Emergency only</SelectItem>
-                    <SelectItem value='false'>Normal only</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className='space-y-4'>
+                <div className='flex items-center gap-2'>
+                  <Checkbox
+                    id='emergency-only'
+                    checked={emergencyFilter}
+                    onCheckedChange={(checked) =>
+                      handleEmergencyChange(checked === true)
+                    }
+                  />
+                  <Label
+                    htmlFor='emergency-only'
+                    className='cursor-pointer text-sm font-normal'
+                  >
+                    Emergency only
+                  </Label>
+                </div>
 
-                <Select value={statusFilter} onValueChange={handleStatusChange}>
-                  <SelectTrigger size='sm' className='h-8! w-full'>
-                    <SelectValue placeholder='Status' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='all'>All statuses</SelectItem>
+                <div className='space-y-2'>
+                  <p className='text-muted-foreground text-xs font-medium uppercase'>
+                    Status
+                  </p>
+                  <div className='space-y-2'>
                     {STATUS_FILTERS.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.label}
-                      </SelectItem>
+                      <div
+                        key={status.value}
+                        className='flex items-center gap-2'
+                      >
+                        <Checkbox
+                          id={`status-${status.value}`}
+                          checked={statusFilter.includes(status.value)}
+                          onCheckedChange={() =>
+                            handleStatusToggle(status.value)
+                          }
+                        />
+                        <Label
+                          htmlFor={`status-${status.value}`}
+                          className='cursor-pointer text-sm font-normal'
+                        >
+                          {status.label}
+                        </Label>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </div>
 
-                <Select
-                  value={categoryFilter}
-                  onValueChange={handleCategoryChange}
-                >
-                  <SelectTrigger size='sm' className='h-8! w-full'>
-                    <SelectValue placeholder='Category' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='all'>All categories</SelectItem>
+                <div className='space-y-2'>
+                  <p className='text-muted-foreground text-xs font-medium uppercase'>
+                    Category
+                  </p>
+                  <div className='space-y-2'>
                     {CATEGORY_FILTERS.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
+                      <div
+                        key={category.value}
+                        className='flex items-center gap-2'
+                      >
+                        <Checkbox
+                          id={`category-${category.value}`}
+                          checked={categoryFilter.includes(category.value)}
+                          onCheckedChange={() =>
+                            handleCategoryToggle(category.value)
+                          }
+                        />
+                        <Label
+                          htmlFor={`category-${category.value}`}
+                          className='cursor-pointer text-sm font-normal'
+                        >
+                          {category.label}
+                        </Label>
+                      </div>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </div>
 
                 <Button
                   type='button'
@@ -261,6 +287,13 @@ const PropertyMaintenanceList: React.FC = () => {
               </div>
             </PopoverContent>
           </Popover>
+
+          {session?.user?.role === 'TENANT' && (
+            <Button onClick={() => console.log('Add request clicked')}>
+              <Plus />
+              Make Maintenance Request
+            </Button>
+          )}
         </div>
       </div>
 
