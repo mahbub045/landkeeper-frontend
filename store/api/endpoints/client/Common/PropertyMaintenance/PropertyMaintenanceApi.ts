@@ -25,10 +25,10 @@ export const PropertyMaintenanceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['PropertyMaintenance'],
     }),
-    updatePropertyMaintenance: builder.mutation({
+    editPropertyMaintenance: builder.mutation({
       query: ({ alias, payload }) => ({
         url: `/tenant/maintenance-requests/${alias}`,
-        method: 'PUT',
+        method: 'PATCH',
         body: payload,
       }),
       invalidatesTags: ['PropertyMaintenance'],
@@ -47,6 +47,6 @@ export const {
   useGetPropertyMaintenanceQuery,
   useGetPropertyMaintenanceDetailsQuery,
   useMaintenanceRequestMutation,
-  useUpdatePropertyMaintenanceMutation,
+  useEditPropertyMaintenanceMutation,
   useDeletePropertyMaintenanceMutation,
 } = PropertyMaintenanceApi;

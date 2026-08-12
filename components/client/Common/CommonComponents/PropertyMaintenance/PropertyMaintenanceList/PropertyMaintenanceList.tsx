@@ -53,6 +53,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
 import MaintenanceRequestDialog from '../Dialogs/MaintenanceRequestDialog';
 
 const SEARCH_DEBOUNCE_MS = 400;
@@ -70,6 +71,18 @@ const PropertyMaintenanceList: React.FC = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isMaintenanceRequestDialogOpen, setIsMaintenanceRequestDialogOpen] =
     useState(false);
+  const [
+    isEditMaintenanceRequestDialogOpen,
+    setIsEditMaintenanceRequestDialogOpen,
+  ] = useState(false);
+  const [selectedRequestAlias, setSelectedRequestAlias] = useState<
+    string | null
+  >(null);
+
+  const handleOpenEditDialog = (alias: string) => {
+    setSelectedRequestAlias(alias);
+    setIsEditMaintenanceRequestDialogOpen(true);
+  };
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -429,7 +442,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     {request.issue ? (
                       request.issue
                     ) : (
-                      <span className='text-muted-foreground'>
+                      <span className='text-muted-foreground text-xs'>
                         No issue provided
                       </span>
                     )}
@@ -468,7 +481,7 @@ const PropertyMaintenanceList: React.FC = () => {
                       <Button
                         title='Edit'
                         onClick={() =>
-                          console.log('Edit clicked for', request.alias)
+                          handleOpenEditDialog(request.alias as string)
                         }
                         size='icon'
                         variant='outline'
@@ -551,9 +564,15 @@ const PropertyMaintenanceList: React.FC = () => {
           )}
         </div>
       )}
+      {/* Dialogs */}
       <MaintenanceRequestDialog
         isOpen={isMaintenanceRequestDialogOpen}
         onClose={() => setIsMaintenanceRequestDialogOpen(false)}
+      />
+      <EditMaintenanceRequestDialog
+        isOpen={isEditMaintenanceRequestDialogOpen}
+        onClose={() => setIsEditMaintenanceRequestDialogOpen(false)}
+        maintenanceRequestAlias={selectedRequestAlias || ''}
       />
     </div>
   );

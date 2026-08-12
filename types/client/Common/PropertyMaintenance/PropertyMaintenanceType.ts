@@ -30,3 +30,21 @@ export interface MaintenanceRequestDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
+export interface EditMaintenanceRequestDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  maintenanceRequestAlias: string;
+}
+
+export type ExistingDocument = MaintenanceDocument;
+export interface EditMaintenanceRequestFormProps {
+  requestDetails: Partial<FormValues> & { documents?: ExistingDocument[] };
+  maintenanceRequestAlias: string;
+  onClose: () => void;
+}
+export type FormValues = {
+  issue: string;
+  category: MaintenanceCategory | '';
+  is_emergency: boolean;
+  notes: string;
+};
