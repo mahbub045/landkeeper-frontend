@@ -4,14 +4,20 @@ import {
 } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import { CircleHelp, Hammer, Wrench } from 'lucide-react';
 
-export const STATUS_OPTIONS: Array<{ value: MaintenanceStatus; label: string }> = [
+export const STATUS_OPTIONS: Array<{
+  value: MaintenanceStatus;
+  label: string;
+}> = [
   { value: 'SUBMITTED', label: 'Submitted' },
   { value: 'ASSIGNED', label: 'Assigned' },
   { value: 'IN_PROGRESS', label: 'In progress' },
   { value: 'COMPLETED', label: 'Completed' },
 ];
 
-export const CATEGORY_OPTIONS: Array<{ value: MaintenanceCategory; label: string }> = [
+export const CATEGORY_OPTIONS: Array<{
+  value: MaintenanceCategory;
+  label: string;
+}> = [
   { value: 'PLUMBING', label: 'Plumbing' },
   { value: 'CARPENTRY_SECURITY', label: 'Carpentry & Security' },
   { value: 'OTHER', label: 'Other' },
@@ -54,3 +60,7 @@ export const CATEGORY_META: Record<
     classes: 'bg-gray-100 text-gray-700 ring-gray-500/20',
   },
 };
+
+export const MAX_FILES = 5;
+export const MAX_FILE_SIZE_MB = 10;
+export const ACCEPTED_FILE_TYPES = '.jpg,.jpeg,.png,.pdf';

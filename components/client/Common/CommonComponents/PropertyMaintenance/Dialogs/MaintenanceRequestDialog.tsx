@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -20,16 +21,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { CATEGORY_OPTIONS } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
+import {
+  ACCEPTED_FILE_TYPES,
+  CATEGORY_OPTIONS,
+  MAX_FILE_SIZE_MB,
+  MAX_FILES,
+} from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { useMaintenanceRequestMutation } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequestDialogProps } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
-import { FileText, Loader2, Paperclip, X } from 'lucide-react';
+import { FileText, Paperclip, X } from 'lucide-react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { toast } from 'sonner';
-
-const MAX_FILES = 5;
-const MAX_FILE_SIZE_MB = 10;
-const ACCEPTED_FILE_TYPES = '.jpg,.jpeg,.png,.pdf';
 
 const initialState = {
   issue: '',
@@ -107,7 +109,7 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
     documents.forEach((file) => payload.append('documents', file));
 
     try {
-      await maintenanceRequest({payload}).unwrap();
+      await maintenanceRequest({ payload }).unwrap();
       toast.success('Maintenance request submitted.');
       resetForm();
       onClose();
@@ -129,7 +131,7 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
         <form onSubmit={handleSubmit} className='space-y-4'>
           <div className='space-y-2'>
             <Label htmlFor='issue'>
-              Issue <span className='text-danger'>*</span>
+              Issue<span className='text-danger'>*</span>
             </Label>
             <Input
               id='issue'
@@ -142,10 +144,13 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='category'>Category</Label>
+            <Label htmlFor='category'>
+              Category<span className='text-danger'>*</span>
+            </Label>
             <Select
               value={formState.category}
               onValueChange={(value) => handleFieldChange('category', value)}
+              required
             >
               <SelectTrigger id='category'>
                 <SelectValue placeholder='Select a category' />
@@ -160,14 +165,14 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
             </Select>
           </div>
 
-          <div className='flex items-center gap-2 bg-danger/20 p-2 rounded-md text-danger'>
+          <div className='bg-danger/20 text-danger flex items-center gap-2 rounded-md p-2'>
             <Checkbox
               id='is_emergency'
               checked={formState.is_emergency}
               onCheckedChange={(checked) =>
                 handleFieldChange('is_emergency', checked === true)
               }
-             className='border-danger cursor-pointer data-[state=checked]:bg-danger! data-[state=checked]:border-danger! data-[state=checked]:hover:bg-danger/80'
+              className='border-danger data-[state=checked]:bg-danger! data-[state=checked]:border-danger! data-[state=checked]:hover:bg-danger/80 cursor-pointer'
             />
             <Label
               htmlFor='is_emergency'
@@ -239,7 +244,7 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
               Cancel
             </Button>
             <Button type='submit' disabled={isLoading}>
-              {isLoading && <Loader2 className='size-4 animate-spin' />}
+              {isLoading && <Loading className='size-4 text-white!' />}
               Submit Request
             </Button>
           </DialogFooter>
