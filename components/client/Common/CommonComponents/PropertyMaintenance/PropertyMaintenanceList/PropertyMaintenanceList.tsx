@@ -383,35 +383,37 @@ const PropertyMaintenanceList: React.FC = () => {
                     request.is_emergency ? 'text-danger' : ''
                   }`}
                 >
-                  <TableCell className='flex items-center gap-2 text-sm'>
-                    <Link
-                      href={getPropertyMaintenanceUrl(
-                        session,
-                        request.alias as string,
-                      )}
-                      className={`text_decoration_hover transition-colors hover:bg-gray-50/60 ${
-                        request.is_emergency ? 'text-danger!' : ''
-                      }`}
-                    >
-                      {request.request_id}
-                    </Link>
-                    <button
-                      className='shrink-0 cursor-pointer rounded-md transition-colors'
-                      onClick={() =>
-                        handleCopyMaintenanceRequestId(
-                          request.request_id,
+                  <TableCell className='text-sm'>
+                    <div className='flex items-center gap-2'>
+                      <Link
+                        href={getPropertyMaintenanceUrl(
+                          session,
                           request.alias as string,
-                        )
-                      }
-                    >
-                      {copiedId === request.alias ? (
-                        <Check className='text-success size-3' />
-                      ) : (
-                        <Copy
-                          className={`size-3 ${request.is_emergency ? 'text-danger' : 'text-primary'}`}
-                        />
-                      )}
-                    </button>
+                        )}
+                        className={`text_decoration_hover transition-colors hover:bg-gray-50/60 ${
+                          request.is_emergency ? 'text-danger!' : ''
+                        }`}
+                      >
+                        {request.request_id}
+                      </Link>
+                      <button
+                        className='shrink-0 cursor-pointer rounded-md transition-colors'
+                        onClick={() =>
+                          handleCopyMaintenanceRequestId(
+                            request.request_id,
+                            request.alias as string,
+                          )
+                        }
+                      >
+                        {copiedId === request.alias ? (
+                          <Check className='text-success size-3' />
+                        ) : (
+                          <Copy
+                            className={`size-3 ${request.is_emergency ? 'text-danger' : 'text-primary'}`}
+                          />
+                        )}
+                      </button>
+                    </div>
                   </TableCell>
                   {session?.user?.role !== 'TENANT' && (
                     <>
@@ -462,7 +464,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     {formatDateAndTime(request.updated_at)}
                   </TableCell>
                   <TableCell className='text-center text-sm'>
-                    <div className='flex justify-end gap-2'>
+                    <div className='flex justify-center gap-2'>
                       <Button
                         title='Edit'
                         onClick={() =>
