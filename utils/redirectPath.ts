@@ -205,6 +205,19 @@ export const getNotificationURL = (
         return `/client/letting-agent/support-tickets/${data.alias}`;
       }
       return '#';
+    case 'MAINTENANCE_REQUEST':
+      if (role === 'LANDLORD') {
+        return `/client/landlord/property-maintenance/${data.alias}`;
+      }
+      if (role === 'ADMIN') {
+        return `/client/admin/property-maintenance/${data.alias}`;
+      }
+      // if (role === 'LETTING_AGENT') {
+      //   return `/client/letting-agent/property-maintenance/${data.alias}`;
+      // }
+      if (role === 'TENANT') {
+        return `/client/tenant/maintenance-requests/${data.alias}`;
+      }
     default:
       return '#';
   }
@@ -230,13 +243,13 @@ export const getPropertyMaintenanceUrl = (
     return `/client/admin/property-maintenance/${maintenanceAlias}`;
   }
 
-  if (role === 'LETTING_AGENT') {
-    return `/client/letting-agent/property-maintenance/${maintenanceAlias}`;
-  }
+  // if (role === 'LETTING_AGENT') {
+  //   return `/client/letting-agent/property-maintenance/${maintenanceAlias}`;
+  // }
 
-  if (role === 'MORTGAGE_ADVISER') {
-    return `/client/mortgage-adviser/property-maintenance/${maintenanceAlias}`;
-  }
+  // if (role === 'MORTGAGE_ADVISER') {
+  //   return `/client/mortgage-adviser/property-maintenance/${maintenanceAlias}`;
+  // }
 
   if (role === 'TENANT') {
     return `/client/tenant/maintenance-requests/${maintenanceAlias}`;
