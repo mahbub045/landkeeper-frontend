@@ -36,6 +36,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  canEditMaintenanceStatus,
   CATEGORY_OPTIONS,
   CATEGORY_STYLES,
   STATUS_DOT,
@@ -189,8 +190,7 @@ const PropertyMaintenanceList: React.FC = () => {
     return pages;
   };
 
-  const canEditStatus =
-    session?.user?.role === 'LANDLORD' || session?.user?.role === 'ADMIN';
+  const canEditStatus = canEditMaintenanceStatus(session?.user?.role);
 
   const handleStatusChange = async (alias: string, newStatus: string) => {
     try {

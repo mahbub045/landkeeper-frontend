@@ -4,6 +4,14 @@ import {
 } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import { CircleHelp, Hammer, Wrench } from 'lucide-react';
 
+
+export const STATUS_EDITABLE_ROLES = ['LANDLORD', 'ADMIN'] as const;
+
+export const canEditMaintenanceStatus = (role?: string) =>
+  STATUS_EDITABLE_ROLES.includes(
+    role as (typeof STATUS_EDITABLE_ROLES)[number],
+  );
+
 export const STATUS_OPTIONS: Array<{
   value: MaintenanceStatus;
   label: string;
@@ -64,5 +72,5 @@ export const CATEGORY_META: Record<
 
 
 export const MAX_FILES = 5;
-export const MAX_FILE_SIZE_MB = 10;
+export const MAX_FILE_SIZE_MB = 20;
 export const ACCEPTED_FILE_TYPES = '.jpg,.jpeg,.png,.pdf';

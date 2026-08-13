@@ -12,11 +12,13 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
+  canEditMaintenanceStatus,
   CATEGORY_META,
   STATUS_DOT,
   STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
   useGetPropertyMaintenanceDetailsQuery,
@@ -27,9 +29,11 @@ import {
   ArrowLeft,
   Building2,
   Calendar,
+  Check,
   ChevronLeft,
   ChevronRight,
   Clock,
+  Copy,
   Edit,
   ImageOff,
   Trash,
@@ -59,6 +63,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
   const [selectedRequestAlias, setSelectedRequestAlias] = useState<
     string | null
   >(null);
+  const { copy, isCopied } = useCopyToClipboard();
 
   const handleOpenEditDialog = (alias: string) => {
     setSelectedRequestAlias(alias);
@@ -127,8 +132,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
   const [editStatus, { isLoading: isStatusUpdating }] =
     useEditPropertyMaintenanceMutation();
 
-  const canEditStatus =
-    session?.user?.role === 'LANDLORD' || session?.user?.role === 'ADMIN';
+  const canEditStatus = canEditMaintenanceStatus(session?.user?.role);
 
   const handleStatusChange = async (newStatus: string) => {
     if (!maintenanceRequestDetails?.alias) return;
@@ -159,7 +163,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
         </div>
 
         {/* Header */}
-        <div className='mb-6 rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+        <div className='mb-6 rounded-xl border p-5 sm:p-6'>
           <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
             <div className='min-w-0 flex-1'>
               <Skeleton className='mb-2 h-3 w-24' />
@@ -176,7 +180,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
           <div className='space-y-6 lg:col-span-2'>
             {/* Notes skeleton */}
-            <div className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+            <div className='rounded-xl border p-5 sm:p-6'>
               <Skeleton className='mb-3 h-4 w-16' />
               <Skeleton className='mb-2 h-4 w-full' />
               <Skeleton className='mb-2 h-4 w-11/12' />
@@ -184,7 +188,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </div>
 
             {/* Photos skeleton */}
-            <div className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
+            <div className='rounded-xl border p-5 sm:p-6'>
               <Skeleton className='mb-3 h-4 w-20' />
               <div className='grid grid-cols-2 gap-3 sm:grid-cols-3'>
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -199,7 +203,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
 
           <div className='space-y-6'>
             {/* Requested by skeleton */}
-            <div className='rounded-xl border border-gray-200 bg-white p-5'>
+            <div className='rounded-xl border p-5'>
               <Skeleton className='mb-4 h-4 w-28' />
               <div className='space-y-4'>
                 <div className='flex items-start gap-3'>
@@ -220,7 +224,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </div>
 
             {/* Timeline skeleton */}
-            <div className='rounded-xl border border-gray-200 bg-white p-5'>
+            <div className='rounded-xl border p-5'>
               <Skeleton className='mb-4 h-4 w-20' />
               <div className='space-y-4'>
                 <div className='flex items-start gap-3'>
@@ -300,8 +304,8 @@ const PropertyMaintenanceDetails: React.FC = () => {
       <div
         className={`mb-6 rounded-xl border p-5 sm:p-6 ${
           maintenanceRequestDetails?.is_emergency
-            ? 'border-rose-200 bg-rose-50/40'
-            : 'border-gray-200 bg-white'
+            ? 'border-rose-200 bg-rose-50/40 dark:border-rose-800 dark:bg-rose-900/20'
+            : ''
         }`}
       >
         <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
@@ -310,6 +314,18 @@ const PropertyMaintenanceDetails: React.FC = () => {
               <span className='font-mono text-xl font-medium tracking-wide'>
                 {maintenanceRequestDetails?.request_id}
               </span>
+              <button
+                onClick={() => copy(maintenanceRequestDetails?.request_id)}
+                className='cursor-pointer rounded-md transition-colors'
+                aria-label='Copy request ID'
+                title='Copy request ID'
+              >
+                {isCopied(maintenanceRequestDetails?.request_id) ? (
+                  <Check className='text-success size-4' />
+                ) : (
+                  <Copy className='text-primary size-4' />
+                )}
+              </button>
               {maintenanceRequestDetails?.is_emergency && (
                 <Badge className='gap-1 rounded-full bg-rose-600 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-rose-600'>
                   <span className='relative flex size-1.5'>
@@ -320,7 +336,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
                 </Badge>
               )}
             </div>
-            <h1 className='text-xl font-semibold text-gray-900 sm:text-2xl'>
+            <h1 className='text-xl font-semibold sm:text-2xl'>
               {maintenanceRequestDetails?.issue}
             </h1>
             <div className='mt-2 flex flex-wrap items-center gap-2'>
@@ -379,31 +395,29 @@ const PropertyMaintenanceDetails: React.FC = () => {
         {/* Main column */}
         <div className='space-y-6 lg:col-span-2'>
           {/* Notes */}
-          <section className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
-            <h2 className='mb-3 text-sm font-semibold text-gray-900'>Notes</h2>
+          <section className='rounded-xl border p-5 sm:p-6'>
+            <h2 className='mb-3 text-sm font-semibold'>Notes</h2>
             {maintenanceRequestDetails?.notes ? (
-              <p className='text-sm leading-relaxed text-gray-600'>
+              <p className='text-gray-600s text-sm leading-relaxed'>
                 {maintenanceRequestDetails?.notes}
               </p>
             ) : (
-              <p className='text-sm text-gray-400 italic'>
+              <p className='text-sm italic'>
                 No additional notes were provided.
               </p>
             )}
           </section>
 
           {/* Photos */}
-          <section className='rounded-xl border border-gray-200 bg-white p-5 sm:p-6'>
-            <h2 className='mb-3 text-sm font-semibold text-gray-900'>
+          <section className='rounded-xl border p-5 sm:p-6'>
+            <h2 className='mb-3 text-sm font-semibold'>
               Photos
               {documents.length > 0 && (
-                <span className='ml-1.5 font-normal text-gray-400'>
-                  ({documents.length})
-                </span>
+                <span className='ml-1.5 font-normal'>({documents.length})</span>
               )}
             </h2>
             {documents.length === 0 ? (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-200 py-10 text-gray-400'>
+              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-200 py-10'>
                 <ImageOff className='size-6' />
                 <p className='text-sm'>No photos were attached</p>
               </div>
@@ -444,25 +458,23 @@ const PropertyMaintenanceDetails: React.FC = () => {
 
         <div className='space-y-6'>
           {session?.user?.role !== 'TENANT' && (
-            <section className='rounded-xl border border-gray-200 bg-white p-5'>
-              <h2 className='mb-4 text-sm font-semibold text-gray-900'>
-                Requested by
-              </h2>
+            <section className='rounded-xl border p-5'>
+              <h2 className='mb-4 text-sm font-semibold'>Requested by</h2>
               <dl className='space-y-4'>
                 <div className='flex items-start gap-3'>
-                  <User className='mt-0.5 size-4 shrink-0 text-gray-400' />
+                  <User className='mt-0.5 size-4 shrink-0' />
                   <div className='min-w-0'>
-                    <dt className='text-xs text-gray-400'>Tenant</dt>
-                    <dd className='truncate text-sm font-medium text-gray-900'>
+                    <dt className='text-xs'>Tenant</dt>
+                    <dd className='truncate text-sm font-medium'>
                       {maintenanceRequestDetails?.tenant}
                     </dd>
                   </div>
                 </div>
                 <div className='flex items-start gap-3'>
-                  <Building2 className='mt-0.5 size-4 shrink-0 text-gray-400' />
+                  <Building2 className='mt-0.5 size-4 shrink-0' />
                   <div className='min-w-0'>
-                    <dt className='text-xs text-gray-400'>Property</dt>
-                    <dd className='text-sm font-medium text-gray-900'>
+                    <dt className='text-xs'>Property</dt>
+                    <dd className='text-sm font-medium'>
                       {maintenanceRequestDetails?.property}
                     </dd>
                   </div>
@@ -471,31 +483,29 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </section>
           )}
 
-          <section className='rounded-xl border border-gray-200 bg-white p-5'>
-            <h2 className='mb-4 text-sm font-semibold text-gray-900'>
-              Timeline
-            </h2>
+          <section className='rounded-xl border p-5'>
+            <h2 className='mb-4 text-sm font-semibold'>Timeline</h2>
             <dl className='space-y-4'>
               <div className='flex items-start gap-3'>
-                <Calendar className='mt-0.5 size-4 shrink-0 text-gray-400' />
+                <Calendar className='mt-0.5 size-4 shrink-0' />
                 <div className='min-w-0'>
-                  <dt className='text-xs text-gray-400'>Submitted</dt>
-                  <dd className='text-sm font-medium text-gray-900'>
+                  <dt className='text-xs'>Submitted</dt>
+                  <dd className='text-sm font-medium'>
                     {formatDateAndTime(maintenanceRequestDetails?.created_at)}
                   </dd>
-                  <dd className='text-xs text-gray-400'>
+                  <dd className='text-xs'>
                     {formatDateAndTime(maintenanceRequestDetails?.created_at)}
                   </dd>
                 </div>
               </div>
               <div className='flex items-start gap-3'>
-                <Clock className='mt-0.5 size-4 shrink-0 text-gray-400' />
+                <Clock className='mt-0.5 size-4 shrink-0' />
                 <div className='min-w-0'>
-                  <dt className='text-xs text-gray-400'>Last updated</dt>
-                  <dd className='text-sm font-medium text-gray-900'>
+                  <dt className='text-xs'>Last updated</dt>
+                  <dd className='text-sm font-medium'>
                     {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
                   </dd>
-                  <dd className='text-xs text-gray-400'>
+                  <dd className='text-xs'>
                     {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
                   </dd>
                 </div>
