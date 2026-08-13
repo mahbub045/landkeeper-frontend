@@ -44,6 +44,7 @@ import {
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
   useGetPropertyMaintenanceQuery,
@@ -72,7 +73,7 @@ const PropertyMaintenanceList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [emergencyFilter, setEmergencyFilter] = useState<boolean>(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const { copy, isCopied } = useCopyToClipboard();
   const [isMaintenanceRequestDialogOpen, setIsMaintenanceRequestDialogOpen] =
     useState(false);
   const [
@@ -204,20 +205,6 @@ const PropertyMaintenanceList: React.FC = () => {
       toast.error('Failed to update status.');
     } finally {
       setUpdatingAlias(null);
-    }
-  };
-
-  const handleCopyMaintenanceRequestId = async (
-    requestId: string | number,
-    alias: string,
-  ) => {
-    try {
-      await navigator.clipboard.writeText(requestId.toString());
-      setCopiedId(alias);
-      toast.success('Maintenance ID copied to clipboard.');
-      setTimeout(() => setCopiedId(null), 1500);
-    } catch (error) {
-      toast.error('Failed to copy Maintenance ID.');
     }
   };
 
@@ -447,13 +434,13 @@ const PropertyMaintenanceList: React.FC = () => {
                       <button
                         className='shrink-0 cursor-pointer rounded-md transition-colors'
                         onClick={() =>
-                          handleCopyMaintenanceRequestId(
-                            request.request_id,
-                            request.alias as string,
-                          )
+                          copy(request.alias as string, request.request_id, {
+                            successMessage:
+                              'Maintenance ID copied to clipboard.',
+                          })
                         }
                       >
-                        {copiedId === request.alias ? (
+                        {isCopied(request.alias as string) ? (
                           <Check className='text-success size-3' />
                         ) : (
                           <Copy

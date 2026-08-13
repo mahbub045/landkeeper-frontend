@@ -315,12 +315,20 @@ const PropertyMaintenanceDetails: React.FC = () => {
                 {maintenanceRequestDetails?.request_id}
               </span>
               <button
-                onClick={() => copy(maintenanceRequestDetails?.request_id)}
+                onClick={() =>
+                  copy(
+                    maintenanceRequestDetails?.alias,
+                    maintenanceRequestDetails?.request_id,
+                    {
+                      successMessage: 'Maintenance ID copied to clipboard.',
+                    },
+                  )
+                }
                 className='cursor-pointer rounded-md transition-colors'
                 aria-label='Copy request ID'
                 title='Copy request ID'
               >
-                {isCopied(maintenanceRequestDetails?.request_id) ? (
+                {isCopied(maintenanceRequestDetails?.alias) ? (
                   <Check className='text-success size-4' />
                 ) : (
                   <Copy className='text-primary size-4' />
