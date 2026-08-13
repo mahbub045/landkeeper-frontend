@@ -414,7 +414,7 @@ const PropertyMaintenanceList: React.FC = () => {
               maintenanceRequests.map((request) => (
                 <TableRow
                   key={request.alias}
-                  className={`transition-colors hover:bg-gray-50/60 ${
+                  className={`transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${
                     request.is_emergency ? 'text-danger' : ''
                   }`}
                 >
@@ -425,7 +425,7 @@ const PropertyMaintenanceList: React.FC = () => {
                           session,
                           request.alias as string,
                         )}
-                        className={`text_decoration_hover transition-colors hover:bg-gray-50/60 ${
+                        className={`text_decoration_hover transition-colors ${
                           request.is_emergency ? 'text-danger!' : ''
                         }`}
                       >
