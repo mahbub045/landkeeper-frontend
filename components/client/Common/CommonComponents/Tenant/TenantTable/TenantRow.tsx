@@ -1,4 +1,6 @@
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -110,34 +112,52 @@ const TenantRow: React.FC<TenantRowProps> = ({ tenant, apiTenant, idx }) => {
             <small className='text-muted-foreground'>Not Available</small>
           )}
         </TableCell>
+
         <TableCell className='flex items-center justify-center'>
-          <Select
-            value={tenant.is_active ? 'active' : 'deactivated'}
-            onValueChange={(value) => handleStatusChange(value)}
-            disabled={isUpdatingStatus}
-          >
-            <SelectTrigger
-              size='sm'
-              className={`h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${tenant.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+          {tenant.is_password_set ? (
+            <Select
+              value={tenant.is_active ? 'active' : 'deactivated'}
+              onValueChange={(value) => handleStatusChange(value)}
+              disabled={isUpdatingStatus}
             >
-              <span
-                className={`inline-block size-1.5 rounded-full ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
+              <SelectTrigger
+                size='sm'
+                className={`h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${tenant.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-danger/30 bg-danger/10 text-danger'}`}
+              >
+                <span
+                  className={`inline-block size-1.5 rounded-full ${tenant.is_active ? 'bg-success' : 'bg-danger'}`}
+                />
+                <SelectValue>
+                  {tenant.is_active ? 'Active' : 'Deactivated'}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='active' className='focus:bg-success/10'>
+                  <span className='bg-success inline-block size-1.5 rounded-full' />
+                  Active
+                </SelectItem>
+                <SelectItem value='deactivated' className='focus:bg-danger/10'>
+                  <span className='bg-danger inline-block size-1.5 rounded-full' />
+                  Deactivated
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <Badge variant='destructive' className='ps-3 text-xs'>
+              <span>Deactivated</span>
+              <HoverInfoPopover
+                triggerClassName='flex size-4 items-center justify-center'
+                content='Tenant has not set their password yet'
               />
-              <SelectValue>
-                {tenant.is_active ? 'Active' : 'Deactivated'}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='active' className='focus:bg-success/10'>
-                <span className='bg-success inline-block size-1.5 rounded-full' />
-                Active
-              </SelectItem>
-              <SelectItem value='deactivated' className='focus:bg-danger/10'>
-                <span className='bg-danger inline-block size-1.5 rounded-full' />
-                Deactivated
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            </Badge>
+          )}
+        </TableCell>
+        <TableCell className='text-sm'>
+          {tenant.created_at ? (
+            formatDate(tenant.created_at)
+          ) : (
+            <small className='text-muted-foreground'>Not Available</small>
+          )}
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>

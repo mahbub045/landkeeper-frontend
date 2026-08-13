@@ -11,6 +11,8 @@ export interface Tenant {
   startDate: string;
   endDate: string;
   is_active: boolean;
+  is_password_set: boolean;
+  created_at?: string;
 }
 
 export interface ApiTenant {
@@ -32,9 +34,11 @@ export interface ApiTenant {
     property_name: string;
   } | null;
   rent_amount: string;
-  tenancy_end_date: string;
   tenancy_start_date: string;
+  tenancy_end_date: string;
   is_active: boolean;
+  is_password_set: boolean;
+  created_at: string;
 }
 
 export interface TenantListResponse {

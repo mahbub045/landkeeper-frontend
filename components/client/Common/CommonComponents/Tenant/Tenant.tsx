@@ -37,6 +37,7 @@ function mapApiTenant(apiTenant: ApiTenant): TenantModel {
     startDate: apiTenant.tenancy_start_date,
     endDate: apiTenant.tenancy_end_date,
     is_active: apiTenant.is_active,
+    is_password_set: apiTenant.is_password_set,
   };
 }
 

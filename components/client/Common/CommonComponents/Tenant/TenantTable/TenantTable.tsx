@@ -23,6 +23,7 @@ const TABLE_COLUMNS = [
   'Start Date',
   'End Date',
   'Status',
+  'Created At',
   'Actions',
 ];
 
@@ -75,7 +76,7 @@ const TenantTable: React.FC<TenantTableProps> = ({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={7} className='p-0'>
+                <TableCell colSpan={8} className='p-0'>
                   <div className='space-y-3 p-6'>
                     {Array.from({ length: 4 }).map((_, i) => (
                       <Skeleton key={i} className='h-14 w-full rounded-xl' />
@@ -98,7 +99,7 @@ const TenantTable: React.FC<TenantTableProps> = ({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className='py-16 text-center'>
+                <TableCell colSpan={8} className='py-16 text-center'>
                   <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
                     <User className='size-10' />
                     <span className='text-sm'>No tenants found</span>
