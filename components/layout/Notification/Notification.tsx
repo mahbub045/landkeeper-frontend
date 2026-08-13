@@ -79,7 +79,7 @@ const Notification: React.FC = () => {
       // If cleanup runs while this socket is still CONNECTING (e.g. React
       // Strict Mode's mount -> cleanup -> mount dev cycle), calling
       // ws.close() immediately triggers a native, unsuppressable browser
-      // console warning ("WebSocket is closed before the connection is
+      // console danger ("WebSocket is closed before the connection is
       // established"). Instead, mark it for closing and defer the actual
       // close() call until onopen fires.
       let closeRequested = false;
@@ -154,7 +154,7 @@ const Notification: React.FC = () => {
       if (ws) {
         if (ws.readyState === WebSocket.CONNECTING) {
           // Don't close yet — defer via requestClose so we avoid the
-          // native "closed before connection established" warning.
+          // native "closed before connection established" danger.
           // Keep onopen/onclose wired up so the deferred close still runs
           // and onclose still fires (no reconnect noise beyond this).
           ws.onmessage = null;
@@ -217,10 +217,10 @@ const Notification: React.FC = () => {
         >
           <Bell className='size-4' />
           {isUnreadCountLoading ? (
-            <Loading className='text-warning! absolute -top-1.5 -right-1.5 h-2 w-2' />
+            <Loading className='text-danger! absolute -top-1.5 -right-1.5 h-2 w-2' />
           ) : (
             unreadCount > 0 && (
-              <span className='ring-background bg-warning absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none font-medium text-white ring-2'>
+              <span className='ring-background bg-danger absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none font-medium text-white ring-2'>
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )
@@ -290,13 +290,13 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
                       className={`text-sm font-medium ${
                         !notification.is_read
-                          ? 'text-warning'
+                          ? 'text-danger'
                           : 'text-foreground'
                       }`}
                     >
@@ -329,13 +329,13 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-warning mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
                       className={`text-sm font-medium ${
                         !notification.is_read
-                          ? 'text-warning'
+                          ? 'text-danger'
                           : 'text-foreground'
                       }`}
                     >

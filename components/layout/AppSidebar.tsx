@@ -56,8 +56,50 @@ function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+// Returns the labels of all parent items that have an active child for the
+// given pathname. Used to auto-expand the correct submenu on mount and
+// whenever the route changes.
+function getActiveParentLabels(items: NavItem[], pathname: string): string[] {
+  const labels: string[] = [];
+  for (const item of items) {
+    if (Array.isArray(item.children) && item.children.length > 0) {
+      const hasActiveChild = item.children.some(
+        (child) => child.href && isNavActive(pathname, child.href),
+      );
+      if (hasActiveChild) {
+        labels.push(item.label);
+      }
+    }
+  }
+  return labels;
+}
+
 function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
-  const [openItems, setOpenItems] = React.useState<Set<string>>(new Set());
+  // Initialize from the current route instead of always starting empty, so
+  // a hard reload lands with the correct submenu already expanded.
+  const [openItems, setOpenItems] = React.useState<Set<string>>(
+    () => new Set(getActiveParentLabels(items, pathname)),
+  );
+
+  // Track the pathname we last synced against. When it changes (e.g.
+  // client-side navigation into a submenu item without the sidebar
+  // remounting), adjust openItems during render instead of in an effect —
+  // this is React's recommended pattern for deriving state from a changed
+  // prop, and avoids the extra "commit -> effect -> setState -> re-render"
+  // round trip. This only ever adds labels, so it never collapses a
+  // submenu the user has manually toggled.
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+
+    const activeLabels = getActiveParentLabels(items, pathname);
+    const missing = activeLabels.filter((label) => !openItems.has(label));
+    if (missing.length > 0) {
+      const next = new Set(openItems);
+      missing.forEach((label) => next.add(label));
+      setOpenItems(next);
+    }
+  }
 
   const toggleOpen = (label: string) => {
     setOpenItems((prev) => {

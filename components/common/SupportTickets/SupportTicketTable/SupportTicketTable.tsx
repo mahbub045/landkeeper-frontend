@@ -47,6 +47,7 @@ import {
   TICKET_TYPE_STYLES,
   TicketTypeOptions,
 } from '@/data/common/SupportTickets/SupportTicketsData';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getSupportTicketDetailsUrl } from '@/utils/redirectPath';
@@ -174,7 +175,6 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
@@ -191,18 +191,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
     }
   };
 
-  const handleCopyTicketId = async () => {
-    if (!ticket) return;
-
-    try {
-      await navigator.clipboard.writeText(ticket.ticket_id);
-      setCopied(true);
-      toast.success('Ticket ID copied to clipboard.');
-      setTimeout(() => setCopied(false), 1500);
-    } catch (error) {
-      toast.error('Failed to copy Ticket ID.');
-    }
-  };
+  const { copy, isCopied } = useCopyToClipboard();
 
   return (
     <>
@@ -218,9 +207,13 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
             {session?.user?.role === 'SUPER_ADMIN' && (
               <button
                 className='shrink-0 cursor-pointer rounded-md transition-colors'
-                onClick={handleCopyTicketId}
+                onClick={() =>
+                  copy(ticket.alias as string, ticket.ticket_id, {
+                    successMessage: 'Ticket ID copied to clipboard.',
+                  })
+                }
               >
-                {copied ? (
+                {isCopied(ticket.alias as string) ? (
                   <Check className='text-success size-3' />
                 ) : (
                   <Copy className='text-primary size-3' />

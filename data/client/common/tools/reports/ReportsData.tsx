@@ -1,4 +1,4 @@
-import { Report } from '@/types/client/Common/Tools/Reports/ReportsType';
+import { Report } from '@/types/client/Common/ReportsAndAnalytics/ReportsType';
 import {
   Building2,
   Calculator,

@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import formatChoiceFieldValue, {
   formatDate,
   getInitials,
@@ -66,7 +67,7 @@ const SupportTicketDetails: React.FC = () => {
   const { data: session } = useSession();
   const { ticketalias } = useParams<{ ticketalias: string }>();
   const [editOpen, setEditOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copy, isCopied } = useCopyToClipboard();
 
   const [updateSupportTickets, { isLoading: isStatusUpdating }] =
     useUpdateSupportTicketsMutation();
@@ -89,19 +90,6 @@ const SupportTicketDetails: React.FC = () => {
     isLoading,
     isError,
   } = useGetSupportTicketDetailsQuery({ ticket_alias: ticketalias });
-
-  const handleCopyTicketId = async () => {
-    if (!ticketDetails) return;
-
-    try {
-      await navigator.clipboard.writeText(ticketDetails.ticket_id);
-      setCopied(true);
-      toast.success('Ticket ID copied to clipboard.');
-      setTimeout(() => setCopied(false), 1500);
-    } catch (error) {
-      toast.error('Failed to copy Ticket ID.');
-    }
-  };
 
   if (isLoading) {
     return (
@@ -320,9 +308,17 @@ const SupportTicketDetails: React.FC = () => {
                 </span>
                 <button
                   className='shrink-0 cursor-pointer rounded-md transition-colors'
-                  onClick={handleCopyTicketId}
+                  onClick={() =>
+                    copy(
+                      ticketDetails.alias as string,
+                      ticketDetails.ticket_id,
+                      {
+                        successMessage: 'Ticket ID copied to clipboard.',
+                      },
+                    )
+                  }
                 >
-                  {copied ? (
+                  {isCopied(ticketDetails.alias as string) ? (
                     <Check className='text-success size-3' />
                   ) : (
                     <Copy className='text-primary size-3' />
