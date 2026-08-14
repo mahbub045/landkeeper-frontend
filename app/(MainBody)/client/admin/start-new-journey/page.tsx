@@ -1,5 +1,5 @@
 import AdminStartNewJourneyContainer from '@/components/client/Admin/StartNewJourney';
 
-export default function AdminStartNewJourneyPage() {
+export default function StartNewJourneyPage() {
   return <AdminStartNewJourneyContainer />;
 }

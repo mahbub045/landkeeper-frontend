@@ -1,5 +1,5 @@
 import AdminTenantsContainer from '@/components/client/Admin/Tenants';
 
-export default function AdminTenantsPage() {
+export default function TenantsPage() {
   return <AdminTenantsContainer />;
 }

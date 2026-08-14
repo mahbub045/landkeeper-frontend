@@ -1,5 +1,5 @@
 import AdminCalculatorsContainer from '@/components/client/Admin/Tools/Calculators';
 
-export default function AdminCalculatorsPage() {
+export default function CalculatorsPage() {
   return <AdminCalculatorsContainer />;
 }

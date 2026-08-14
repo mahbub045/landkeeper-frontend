@@ -1,5 +1,5 @@
 import TenantPropertyMaintenanceRequestsContainer from '@/components/client/Tenant/MaintenanceRequests';
 
-export default function TenantPropertyMaintenanceRequestsPage() {
+export default function PropertyMaintenanceRequestsPage() {
   return <TenantPropertyMaintenanceRequestsContainer />;
 }
