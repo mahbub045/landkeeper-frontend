@@ -23,6 +23,7 @@ export const TAG_TYPES = [
 
   // Common Tags
   'Property',
+  'PropertyPermission',
   'Mortgage',
   'Tenants',
   'Compliance',

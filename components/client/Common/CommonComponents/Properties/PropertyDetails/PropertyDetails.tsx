@@ -20,8 +20,10 @@ import PropertyFinancials from './PropertyFinancials/PropertyFinancials';
 import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
+import PropertyPermissionList from './PropertyPermissionList/PropertyPermissionList';
 
 const PropertyDetails: React.FC = () => {
+  const { data: session } = useSession();
   const params = useParams();
   const alias = params.propertyalias as string;
   const {
@@ -30,7 +32,6 @@ const PropertyDetails: React.FC = () => {
     isError,
     refetch,
   } = useGetPropertyDetailsQuery(alias, { skip: !alias });
-  const { data: session } = useSession();
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -110,6 +111,9 @@ const PropertyDetails: React.FC = () => {
 
       {/* ── Notes ── */}
       {property.notes && <PropertyNotes notes={property.notes} />}
+
+      {/* ── Permissions ── */}
+      <PropertyPermissionList />
 
       {/* ── Danger Zone ── */}
       {session?.user?.role === 'LANDLORD' && (
