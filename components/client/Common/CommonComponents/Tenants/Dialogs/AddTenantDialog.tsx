@@ -28,18 +28,17 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_FORM,
   OVERRIDE_KEY_MAP,
-} from '@/data/client/common/tenant/TenantData';
+} from '@/data/client/common/tenants/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
-import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
+import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import {
   AddTenantModalProps,
   TenantForm,
-} from '@/types/client/Common/Tenant/TenantTypes';
+} from '@/types/client/Common/Tenants/TenantsTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
-
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -111,17 +110,18 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
     const formData = new FormData();
     if (avatarFile) formData.append('avatar', avatarFile);
     formData.append('title', form.title);
-    formData.append('first_name', form.firstName);
-    formData.append('middle_name', form.middleName);
-    formData.append('last_name', form.lastName);
+    formData.append('first_name', form.first_name);
+    formData.append('middle_name', form.middle_name);
+    formData.append('last_name', form.last_name);
     formData.append('email', form.email);
     formData.append('phone', form.phone);
-    formData.append('rent_amount', form.rentAmount);
+    formData.append('rent_amount', form.rent_amount);
     formData.append('deposit', form.deposit);
-    formData.append('tenancy_start_date', form.tenancyStart);
-    if (form.tenancyEnd) formData.append('tenancy_end_date', form.tenancyEnd);
-    formData.append('employment_details', form.employmentDetails);
-    formData.append('guarantor_name', form.guarantorName);
+    formData.append('tenancy_start_date', form.tenancy_start_date);
+    if (form.tenancy_end_date)
+      formData.append('tenancy_end_date', form.tenancy_end_date);
+    formData.append('employment_details', form.employment_details);
+    formData.append('guarantor_name', form.guarantor_name);
     formData.append('notes', form.notes);
     formData.append('property', form.propertyId);
 
@@ -368,63 +368,63 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
               <FieldError errors={[{ message: fieldErrors.title }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.firstName}>
+            <Field data-invalid={!!fieldErrors.first_name}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 First Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
-                value={form.firstName}
-                onChange={(e) => set('firstName', e.target.value)}
-                aria-invalid={!!fieldErrors.firstName}
+                value={form.first_name}
+                onChange={(e) => set('first_name', e.target.value)}
+                aria-invalid={!!fieldErrors.first_name}
                 className={
-                  fieldErrors.firstName
+                  fieldErrors.first_name
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
                 required
               />
-              <FieldError errors={[{ message: fieldErrors.firstName }]} />
+              <FieldError errors={[{ message: fieldErrors.first_name }]} />
             </Field>
           </div>
 
           {/* Middle Name + Last Name */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.middleName}>
+            <Field data-invalid={!!fieldErrors.middle_name}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Middle Name
               </FieldLabel>
               <Input
                 type='text'
-                value={form.middleName}
-                onChange={(e) => set('middleName', e.target.value)}
-                aria-invalid={!!fieldErrors.middleName}
+                value={form.middle_name}
+                onChange={(e) => set('middle_name', e.target.value)}
+                aria-invalid={!!fieldErrors.middle_name}
                 className={
-                  fieldErrors.middleName
+                  fieldErrors.middle_name
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.middleName }]} />
+              <FieldError errors={[{ message: fieldErrors.middle_name }]} />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.lastName}>
+            <Field data-invalid={!!fieldErrors.last_name}>
               <FieldLabel className='gap-0 text-sm font-semibold'>
                 Last Name<span className='text-danger'>*</span>
               </FieldLabel>
               <Input
                 type='text'
-                value={form.lastName}
-                onChange={(e) => set('lastName', e.target.value)}
-                aria-invalid={!!fieldErrors.lastName}
+                value={form.last_name}
+                onChange={(e) => set('last_name', e.target.value)}
+                aria-invalid={!!fieldErrors.last_name}
                 className={
-                  fieldErrors.lastName
+                  fieldErrors.last_name
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
                 required
               />
-              <FieldError errors={[{ message: fieldErrors.lastName }]} />
+              <FieldError errors={[{ message: fieldErrors.last_name }]} />
             </Field>
           </div>
 
@@ -471,23 +471,23 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
           {/* Rent Amount + Deposit */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.rentAmount}>
+            <Field data-invalid={!!fieldErrors.rent_amount}>
               <FieldLabel className='text-sm font-semibold'>
                 Rent Amount
               </FieldLabel>
               <Input
                 type='number'
                 placeholder={`${getCurrencySign()} per month`}
-                value={form.rentAmount}
-                onChange={(e) => set('rentAmount', e.target.value)}
-                aria-invalid={!!fieldErrors.rentAmount}
+                value={form.rent_amount}
+                onChange={(e) => set('rent_amount', e.target.value)}
+                aria-invalid={!!fieldErrors.rent_amount}
                 className={
-                  fieldErrors.rentAmount
+                  fieldErrors.rent_amount
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.rentAmount }]} />
+              <FieldError errors={[{ message: fieldErrors.rent_amount }]} />
             </Field>
 
             <Field data-invalid={!!fieldErrors.deposit}>
@@ -510,82 +510,88 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
           {/* Tenancy Start + Tenancy End */}
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!fieldErrors.tenancyStart}>
+            <Field data-invalid={!!fieldErrors.tenancy_start_date}>
               <FieldLabel className='text-sm font-semibold'>
                 Tenancy Start
               </FieldLabel>
               <Input
                 type='date'
-                value={form.tenancyStart}
-                onChange={(e) => set('tenancyStart', e.target.value)}
-                aria-invalid={!!fieldErrors.tenancyStart}
+                value={form.tenancy_start_date}
+                onChange={(e) => set('tenancy_start_date', e.target.value)}
+                aria-invalid={!!fieldErrors.tenancy_start_date}
                 className={
-                  fieldErrors.tenancyStart
+                  fieldErrors.tenancy_start_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.tenancyStart }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.tenancy_start_date }]}
+              />
             </Field>
 
-            <Field data-invalid={!!fieldErrors.tenancyEnd}>
+            <Field data-invalid={!!fieldErrors.tenancy_end_date}>
               <FieldLabel className='text-sm font-semibold'>
                 Tenancy End
               </FieldLabel>
               <Input
                 type='date'
-                value={form.tenancyEnd}
-                min={form.tenancyStart || undefined}
-                onChange={(e) => set('tenancyEnd', e.target.value)}
-                aria-invalid={!!fieldErrors.tenancyEnd}
+                value={form.tenancy_end_date}
+                min={form.tenancy_start_date || undefined}
+                onChange={(e) => set('tenancy_end_date', e.target.value)}
+                aria-invalid={!!fieldErrors.tenancy_end_date}
                 className={
-                  fieldErrors.tenancyEnd
+                  fieldErrors.tenancy_end_date
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: fieldErrors.tenancyEnd }]} />
+              <FieldError
+                errors={[{ message: fieldErrors.tenancy_end_date }]}
+              />
             </Field>
           </div>
 
           {/* Employment Details */}
-          <Field data-invalid={!!fieldErrors.employmentDetails}>
+          <Field data-invalid={!!fieldErrors.employment_details}>
             <FieldLabel className='text-sm font-semibold'>
               Employment Details
             </FieldLabel>
             <Input
               type='text'
               placeholder='Employer name and role'
-              value={form.employmentDetails}
-              onChange={(e) => set('employmentDetails', e.target.value)}
-              aria-invalid={!!fieldErrors.employmentDetails}
+              value={form.employment_details}
+              onChange={(e) => set('employment_details', e.target.value)}
+              aria-invalid={!!fieldErrors.employment_details}
               className={
-                fieldErrors.employmentDetails
+                fieldErrors.employment_details
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: fieldErrors.employmentDetails }]} />
+            <FieldError
+              errors={[{ message: fieldErrors.employment_details }]}
+            />
           </Field>
 
           {/* Guarantor Name */}
-          <Field data-invalid={!!fieldErrors.guarantorName}>
+          <Field data-invalid={!!fieldErrors.guarantor_name}>
             <FieldLabel className='text-sm font-semibold'>
               Guarantor Name
             </FieldLabel>
             <Input
               type='text'
               placeholder='Optional'
-              value={form.guarantorName}
-              onChange={(e) => set('guarantorName', e.target.value)}
-              aria-invalid={!!fieldErrors.guarantorName}
+              value={form.guarantor_name}
+              onChange={(e) => set('guarantor_name', e.target.value)}
+              aria-invalid={!!fieldErrors.guarantor_name}
               className={
-                fieldErrors.guarantorName
+                fieldErrors.guarantor_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: fieldErrors.guarantorName }]} />
+            <FieldError errors={[{ message: fieldErrors.guarantor_name }]} />
           </Field>
 
           {/* Notes */}

@@ -1,4 +1,4 @@
-import LandlordTenantsContainer from '@/components/client/Landlord/Tenant';
+import LandlordTenantsContainer from '@/components/client/Landlord/Tanents';
 
 export default function TenantsPage() {
   return <LandlordTenantsContainer />;

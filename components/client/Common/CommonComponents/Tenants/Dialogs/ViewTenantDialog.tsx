@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ViewTenantDialogProps } from '@/types/client/Common/Tenant/TenantTypes';
+import { ViewTenantDialogProps } from '@/types/client/Common/Tenants/TenantsTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { User } from 'lucide-react';
 

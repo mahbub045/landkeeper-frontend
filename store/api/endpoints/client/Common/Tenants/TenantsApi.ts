@@ -8,7 +8,7 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'GET',
         params,
       }),
-      providesTags: ['Tenant'],
+      providesTags: ['Tenants'],
     }),
     addTenants: builder.mutation({
       query: (payload) => ({
@@ -16,14 +16,14 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Tenant'],
+      invalidatesTags: ['Tenants'],
     }),
     sendInvitation: builder.mutation({
       query: ({ tenant_alias }) => ({
         url: `/auth/tenants/${tenant_alias}/send-invite`,
         method: 'POST',
       }),
-      invalidatesTags: ['Tenant'],
+      invalidatesTags: ['Tenants'],
     }),
     acceptInvitation: builder.mutation({
       query: ({ payload, token }) => ({
@@ -31,7 +31,7 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Tenant'],
+      invalidatesTags: ['Tenants'],
     }),
     updateTenant: builder.mutation({
       query: ({ tenant_alias, payload }) => ({
@@ -39,14 +39,14 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Tenant'],
+      invalidatesTags: ['Tenants'],
     }),
     deleteTenant: builder.mutation({
       query: ({ tenant_alias }) => ({
         url: `/tenants/${tenant_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Tenant'],
+      invalidatesTags: ['Tenants'],
     }),
   }),
 });

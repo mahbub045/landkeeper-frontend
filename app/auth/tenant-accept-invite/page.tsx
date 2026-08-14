@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { useAcceptInvitationMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
+import { useAcceptInvitationMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
 
 import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';

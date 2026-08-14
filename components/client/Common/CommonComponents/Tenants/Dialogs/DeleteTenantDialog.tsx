@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDeleteTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
-import { DeleteTenantDialogProps } from '@/types/client/Common/Tenant/TenantTypes';
+import { useDeleteTenantMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
+import { DeleteTenantDialogProps } from '@/types/client/Common/Tenants/TenantsTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { useState } from 'react';

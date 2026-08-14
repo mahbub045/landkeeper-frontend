@@ -1,81 +1,65 @@
-export interface Tenant {
-  alias: string;
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  avatar?: string;
-  property: string;
-  rent: number;
-  startDate: string;
-  endDate: string;
-  is_active: boolean;
-  is_password_set: boolean;
-  created_at?: string;
-}
-
-export interface ApiTenant {
+export interface TenantTypes {
   alias: string;
   avatar: string | null;
-  deposit: string;
-  email: string;
-  employment_details: string;
   title: string;
   first_name: string;
   middle_name: string;
   last_name: string;
+  email: string;
+  phone: string;
+  image: string | null;
+  rent_amount: number | null;
+  deposit: number | null;
+  tenancy_start_date: string | null;
+  tenancy_end_date: string | null;
+  employment_details: string;
   guarantor_name: string;
   notes: string;
-  phone: string;
-  property: {
-    alias: string;
-    id: number;
-    property_name: string;
-  } | null;
-  rent_amount: string;
-  tenancy_start_date: string;
-  tenancy_end_date: string;
   is_active: boolean;
   is_password_set: boolean;
+  property: Property;
   created_at: string;
+}
+
+interface Property {
+  id: number;
+  alias: string;
+  property_name: string;
 }
 
 export interface TenantListResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: ApiTenant[];
+  results: TenantTypes[];
 }
 
 export interface TenantTableProps {
-  tenants: Tenant[];
+  tenants: TenantTypes[];
   search: string;
-  apiTenants: ApiTenant[];
   onSearchChange: (value: string) => void;
   isLoading?: boolean;
 }
 
 export interface TenantRowProps {
-  tenant: Tenant;
-  apiTenant: ApiTenant;
+  tenant: TenantTypes;
   idx: number;
 }
 
 export interface TenantForm {
   propertyId: string;
   title: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   phone: string;
-  rentAmount: string;
+  rent_amount: string;
   deposit: string;
-  tenancyStart: string;
-  tenancyEnd: string;
-  employmentDetails: string;
-  guarantorName: string;
+  tenancy_start_date: string;
+  tenancy_end_date: string;
+  employment_details: string;
+  guarantor_name: string;
   notes: string;
 }
 
@@ -89,17 +73,17 @@ export interface AddTenantModalProps {
 export interface ViewTenantDialogProps {
   open: boolean;
   onClose: () => void;
-  tenant: ApiTenant | null;
+  tenant: TenantTypes | null;
 }
 
 export interface SendInvitationDialogProps {
   open: boolean;
   onClose: () => void;
-  tenantData: ApiTenant | null;
+  tenantData: TenantTypes | null;
 }
 
 export interface UpdateTenantFormProps {
-  tenant: ApiTenant;
+  tenant: TenantTypes;
   onClose: () => void;
   onSuccess?: () => void;
 }
@@ -108,12 +92,12 @@ export interface UpdateTenantModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  tenant: ApiTenant | null;
+  tenant: TenantTypes | null;
 }
 
 export interface DeleteTenantDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
-  tenantData: ApiTenant | null;
+  tenantData: TenantTypes | null;
 }

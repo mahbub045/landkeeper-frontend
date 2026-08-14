@@ -1,5 +1,5 @@
-import LettingAgentTenantsContainer from '@/components/client/LettingAgent/Tenant';
+import LettingAgentTenantsContainer from '@/components/client/LettingAgent/Tenants';
 
-export default function TenantsPage() {
+export default function LettingAgentTenantsPage() {
   return <LettingAgentTenantsContainer />;
 }

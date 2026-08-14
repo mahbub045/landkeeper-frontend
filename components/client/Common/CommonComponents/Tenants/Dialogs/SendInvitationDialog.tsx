@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useSendInvitationMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantApi';
-import { SendInvitationDialogProps } from '@/types/client/Common/Tenant/TenantTypes';
+import { useSendInvitationMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
+import { SendInvitationDialogProps } from '@/types/client/Common/Tenants/TenantsTypes';
 import { toast } from 'sonner';
 
 const SendInvitationDialog: React.FC<SendInvitationDialogProps> = ({

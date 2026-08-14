@@ -291,17 +291,17 @@ const StartNewJourney: React.FC = () => {
     // ── Tenant ──
     const t = state.tenant;
     fd.append('tenant_title', t.title ?? '');
-    fd.append('tenant_first_name', t.firstName ?? '');
-    fd.append('tenant_middle_name', t.middleName ?? '');
-    fd.append('tenant_last_name', t.lastName ?? '');
+    fd.append('tenant_first_name', t.first_name ?? '');
+    fd.append('tenant_middle_name', t.middle_name ?? '');
+    fd.append('tenant_last_name', t.last_name ?? '');
     fd.append('tenant_email', t.email ?? '');
     fd.append('tenant_phone', t.phone ?? '');
-    fd.append('tenant_rent_amount', t.rentAmount ?? '');
+    fd.append('tenant_rent_amount', t.rent_amount ?? '');
     fd.append('tenant_deposit', t.deposit ?? '');
-    fd.append('tenant_tenancy_start_date', t.tenancyStart ?? '');
-    fd.append('tenant_tenancy_end_date', t.tenancyEnd ?? '');
-    fd.append('tenant_employment_details', t.employmentDetails ?? '');
-    fd.append('tenant_guarantor_name', t.guarantorName ?? '');
+    fd.append('tenant_tenancy_start_date', t.tenancy_start_date ?? '');
+    fd.append('tenant_tenancy_end_date', t.tenancy_end_date ?? '');
+    fd.append('tenant_employment_details', t.employment_details ?? '');
+    fd.append('tenant_guarantor_name', t.guarantor_name ?? '');
     fd.append('tenant_notes', t.notes ?? '');
     fd.append('tenant_is_active', 'true');
     if (state.tenantAvatar) fd.append('tenant_avatar', state.tenantAvatar);

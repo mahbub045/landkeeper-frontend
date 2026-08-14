@@ -1,7 +1,7 @@
-import Tenant from '../../Common/CommonComponents/Tenant/Tenant';
+import Tenants from '../../Common/CommonComponents/Tenants/Tenants';
 
 const LandlordTenantsContainer: React.FC = () => {
-  return <Tenant />;
+  return <Tenants />;
 };
 
 export default LandlordTenantsContainer;
