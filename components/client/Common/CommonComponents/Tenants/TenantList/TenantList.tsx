@@ -223,7 +223,7 @@ const TenantList: React.FC = () => {
                             </Avatar>
                             <div className='flex flex-col items-start justify-center'>
                               <p className='text-foreground text-sm font-semibold'>
-                                {`${formatChoiceFieldValue(tenant.title)} ${tenant.first_name} ${tenant.middle_name} ${tenant.last_name}`.trim()}
+                                {`${formatChoiceFieldValue(tenant.title || '')} ${tenant.first_name || ''} ${tenant.middle_name || ''} ${tenant.last_name || ''}`.trim()}
                               </p>
                               <p className='text-muted-foreground text-xs'>
                                 {tenant.email}
