@@ -1,6 +1,7 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Pagination,
@@ -18,8 +19,9 @@ import {
   PropertyPermissionListProps,
 } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Ban, Eye, Mail, Pencil, Phone } from 'lucide-react';
+import { Ban, Eye, Mail, Pencil, Phone, Plus } from 'lucide-react';
 import React, { useState } from 'react';
+import AddUserFromPropertyPermissionDialog from './Dialogs/AddUserFromPropertyPermissionDialog';
 
 const PAGE_LIMIT = 4;
 
@@ -27,6 +29,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   propertyAlias,
 }) => {
   const [page, setPage] = useState(1);
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
 
   const {
     data: propertyPermissions,
@@ -64,13 +67,26 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 
   return (
     <div className='border-warning space-y-4 rounded-lg border border-dashed p-4'>
-      <div>
-        <h2 className='text-warning text-lg leading-none font-medium'>
-          Property access
-        </h2>
-        <p className='text-muted-foreground mt-1 text-sm'>
-          Mortgage advisers with permission to view or edit this property.
-        </p>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h2 className='text-warning text-lg leading-none font-medium'>
+            Property access
+          </h2>
+          <p className='text-muted-foreground mt-1 text-sm'>
+            Mortgage advisers with permission to view or edit this property.
+          </p>
+        </div>
+        <div>
+          <Button
+            variant='warning'
+            size='sm'
+            className='mt-2'
+            onClick={() => setIsAddUserDialogOpen(true)}
+          >
+            <Plus />
+            Add new Permission
+          </Button>
+        </div>
       </div>
 
       {isError ? (
@@ -138,18 +154,14 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 
                       <div className='flex flex-wrap gap-1.5 pt-1'>
                         <Badge
-                          variant={
-                            permission.can_view ? 'secondary' : 'outline'
-                          }
+                          variant={permission.can_view ? 'warning' : 'outline'}
                           className='flex items-center gap-1 text-xs font-normal'
                         >
                           <Eye className='h-3 w-3' />
                           {permission.can_view ? 'Can view' : 'No view access'}
                         </Badge>
                         <Badge
-                          variant={
-                            permission.can_edit ? 'secondary' : 'outline'
-                          }
+                          variant={permission.can_edit ? 'warning' : 'outline'}
                           className='flex items-center gap-1 text-xs font-normal'
                         >
                           <Pencil className='h-3 w-3' />
@@ -220,6 +232,12 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
           </div>
         </>
       )}
+      {/* Modals */}
+      <AddUserFromPropertyPermissionDialog
+        isOpen={isAddUserDialogOpen}
+        onClose={() => setIsAddUserDialogOpen(false)}
+        propertyAlias={propertyAlias}
+      />
     </div>
   );
 };

@@ -15,6 +15,7 @@ export type AuthRootState = {
 
 export const TAG_TYPES = [
   // Global Common Tags
+  'AuthUserList',
   'Notifications',
   'UserProfileAndSettings',
   'SupportTickets',

@@ -3,9 +3,10 @@ import { baseApi } from '@/store/api/baseApi';
 export const PermissionsApis = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     addPermission: builder.mutation({
-      query: () => ({
+      query: (payload) => ({
         url: `/permissions`,
-        method: 'GET',
+        method: 'POST',
+        body: payload,
       }),
       invalidatesTags: ['Permissions'],
     }),
