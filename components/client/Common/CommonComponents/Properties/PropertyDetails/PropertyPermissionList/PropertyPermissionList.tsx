@@ -13,7 +13,13 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
+import { cn } from '@/lib/utils';
 import { useUpdatePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { useGetPropertyPermissionsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
@@ -21,8 +27,18 @@ import {
   PropertyPermissionListProps,
 } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Ban, Eye, Mail, Pencil, Phone, Plus, Trash2 } from 'lucide-react';
+import {
+  Ban,
+  Check,
+  Eye,
+  Mail,
+  Pencil,
+  Phone,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import AddUserFromPropertyPermissionDialog from './Dialogs/AddUserFromPropertyPermissionDialog';
 import DeleteUserFromPropertyPermissionDialog from './Dialogs/DeleteUserFromPropertyPermissionDialog';
 
@@ -64,8 +80,14 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
         alias: permission.alias,
         payload: { [field]: !permission[field] },
       }).unwrap();
+      toast.success(
+        `Successfully updated ${field.replace('_', ' ')} permission for ${permission.user.name}`,
+      );
     } catch {
       // Optionally surface an error toast here
+      toast.error(
+        `Failed to update ${field.replace('_', ' ')} permission for ${permission.user.name}`,
+      );
     } finally {
       setUpdatingAlias(null);
     }
@@ -201,46 +223,65 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
                       </div>
 
                       <div className='flex flex-wrap gap-1.5 pt-1'>
-                        <button
-                          type='button'
-                          disabled={isRowUpdating}
-                          onClick={() =>
-                            handleTogglePermission(permission, 'can_view')
-                          }
-                          className='disabled:cursor-not-allowed disabled:opacity-60'
-                        >
-                          <Badge
-                            variant={
-                              permission.can_view ? 'warning' : 'outline'
-                            }
-                            className='flex cursor-pointer items-center gap-1 text-xs font-normal transition-opacity hover:opacity-80'
-                          >
-                            <Eye className='h-3 w-3' />
-                            {permission.can_view
-                              ? 'Can view'
-                              : 'No view access'}
-                          </Badge>
-                        </button>
-                        <button
-                          type='button'
-                          disabled={isRowUpdating}
-                          onClick={() =>
-                            handleTogglePermission(permission, 'can_edit')
-                          }
-                          className='disabled:cursor-not-allowed disabled:opacity-60'
-                        >
-                          <Badge
-                            variant={
-                              permission.can_edit ? 'warning' : 'outline'
-                            }
-                            className='flex cursor-pointer items-center gap-1 text-xs font-normal transition-opacity hover:opacity-80'
-                          >
-                            <Pencil className='h-3 w-3' />
-                            {permission.can_edit
-                              ? 'Can edit'
-                              : 'No edit access'}
-                          </Badge>
-                        </button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type='button'
+                              disabled={isRowUpdating}
+                              onClick={() =>
+                                handleTogglePermission(permission, 'can_view')
+                              }
+                              aria-pressed={permission.can_view}
+                              className={cn(
+                                'flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-all',
+                                'disabled:cursor-not-allowed disabled:opacity-60',
+                                permission.can_view
+                                  ? 'bg-warning border-warning text-warning-foreground shadow-sm'
+                                  : 'border-input text-muted-foreground hover:bg-accent/50 bg-transparent',
+                              )}
+                            >
+                              <Eye className='h-3 w-3' />
+                              Can view
+                              {permission.can_view && (
+                                <Check className='h-3 w-3' />
+                              )}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Click to {permission.can_view ? 'revoke' : 'grant'}{' '}
+                            view access
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type='button'
+                              disabled={isRowUpdating}
+                              onClick={() =>
+                                handleTogglePermission(permission, 'can_edit')
+                              }
+                              aria-pressed={permission.can_edit}
+                              className={cn(
+                                'flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-all',
+                                'disabled:cursor-not-allowed disabled:opacity-60',
+                                permission.can_edit
+                                  ? 'bg-warning border-warning text-warning-foreground shadow-sm'
+                                  : 'border-input text-muted-foreground hover:bg-accent/50 bg-transparent',
+                              )}
+                            >
+                              <Pencil className='h-3 w-3' />
+                              Can edit
+                              {permission.can_edit && (
+                                <Check className='h-3 w-3' />
+                              )}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Click to {permission.can_edit ? 'revoke' : 'grant'}{' '}
+                            edit access
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                   </CardContent>
