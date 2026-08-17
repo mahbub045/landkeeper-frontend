@@ -24,7 +24,9 @@ import {
 import { cn } from '@/lib/utils';
 import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
 import { useAddPermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
-import formatChoiceFieldValue from '@/utils/formatters';
+import { AuthUser } from '@/types/auth/AuthUsersType';
+import { AddUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
+import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import {
@@ -36,27 +38,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-
-export interface AddUserFromPropertyPermissionDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  propertyAlias?: string;
-}
-export interface AuthUser {
-  user: {
-    alias: string;
-    profile_image: string | null;
-    title: string;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    email: string;
-  };
-  role: string;
-}
-
-const getInitials = (first: string, last: string) =>
-  `${first?.[0] ?? ''}${last?.[0] ?? ''}`.toUpperCase();
 
 // Small reusable avatar: shows profile_image if present, otherwise initials
 const UserAvatar: React.FC<{
@@ -89,7 +70,7 @@ const UserAvatar: React.FC<{
         dimension,
       )}
     >
-      {getInitials(firstName, lastName)}
+      {getInitials(firstName)}
     </span>
   );
 };

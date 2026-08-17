@@ -113,7 +113,9 @@ const PropertyDetails: React.FC = () => {
       {property.notes && <PropertyNotes notes={property.notes} />}
 
       {/* ── Permissions ── */}
-      <PropertyPermissionList propertyAlias={property.alias} />
+      {session?.user?.role === 'LANDLORD' && (
+        <PropertyPermissionList propertyAlias={property.alias} />
+      )}
 
       {/* ── Danger Zone ── */}
       {session?.user?.role === 'LANDLORD' && (

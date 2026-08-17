@@ -1,5 +1,5 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,9 +19,10 @@ import {
   PropertyPermissionListProps,
 } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Ban, Eye, Mail, Pencil, Phone, Plus } from 'lucide-react';
+import { Ban, Eye, Mail, Pencil, Phone, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import AddUserFromPropertyPermissionDialog from './Dialogs/AddUserFromPropertyPermissionDialog';
+import DeleteUserFromPropertyPermissionDialog from './Dialogs/DeleteUserFromPropertyPermissionDialog';
 
 const PAGE_LIMIT = 4;
 
@@ -30,6 +31,15 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 }) => {
   const [page, setPage] = useState(1);
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+  const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
+  const [userToRemove, setUserToRemove] = useState<PropertyPermission | null>(
+    null,
+  );
+
+  const handleDeleteUser = (user: PropertyPermission) => {
+    setUserToRemove(user);
+    setIsDeleteUserDialogOpen(true);
+  };
 
   const {
     data: propertyPermissions,
@@ -123,19 +133,36 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
                 <Card key={permission.alias} className='shadow-sm'>
                   <CardContent className='flex items-start gap-3 p-4'>
                     <Avatar className='h-10 w-10 shrink-0'>
+                      <AvatarImage
+                        src={permission.user.profile_image ?? undefined}
+                        alt={permission.user.name}
+                      />
                       <AvatarFallback className='bg-muted text-sm font-medium'>
                         {getInitials(permission.user.name)}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className='min-w-0 flex-1 space-y-2'>
-                      <div>
-                        <p className='truncate text-sm leading-none font-medium'>
-                          {fullName}
-                        </p>
-                        <Badge variant='default' className='mt-1'>
-                          {formatChoiceFieldValue(permission.user.role)}
-                        </Badge>
+                      <div className='flex items-start justify-between gap-2'>
+                        <div className='min-w-0'>
+                          <p className='truncate text-sm leading-none font-medium'>
+                            {fullName}
+                          </p>
+                          <Badge variant='default' className='mt-1'>
+                            {formatChoiceFieldValue(permission.user.role)}
+                          </Badge>
+                        </div>
+                        <Button
+                          variant='destructive'
+                          title='Remove User From Permission'
+                          size='icon'
+                          onClick={() => {
+                            handleDeleteUser(permission);
+                          }}
+                          aria-label='Remove permission'
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
                       </div>
 
                       <div className='text-muted-foreground space-y-1 text-xs'>
@@ -237,6 +264,11 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
         isOpen={isAddUserDialogOpen}
         onClose={() => setIsAddUserDialogOpen(false)}
         propertyAlias={propertyAlias}
+      />
+      <DeleteUserFromPropertyPermissionDialog
+        isOpen={isDeleteUserDialogOpen}
+        onClose={() => setIsDeleteUserDialogOpen(false)}
+        userToRemove={userToRemove}
       />
     </div>
   );

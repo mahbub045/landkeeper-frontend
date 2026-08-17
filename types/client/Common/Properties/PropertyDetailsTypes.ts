@@ -70,3 +70,15 @@ export interface PropertyPermissionListResponse {
   previous: string | null;
   results: PropertyPermission[];
 }
+
+export interface AddUserFromPropertyPermissionDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  propertyAlias?: string;
+}
+
+export interface DeleteUserFromPropertyPermissionDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  userToRemove: PropertyPermission | null;
+}
