@@ -3,10 +3,10 @@ import { baseApi } from '@/store/api/baseApi';
 export const PropertiesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProperties: builder.query({
-      query: (params) => ({ 
-        url: '/property', 
-        method: 'GET', 
-        params 
+      query: (params) => ({
+        url: '/property',
+        method: 'GET',
+        params,
       }),
       providesTags: ['Property'],
     }),
@@ -19,9 +19,9 @@ export const PropertiesApi = baseApi.injectEndpoints({
       invalidatesTags: ['Property'],
     }),
     getPropertyDetails: builder.query({
-      query: (alias) => ({ 
-        url: `/property/${alias}`, 
-        method: 'GET' 
+      query: (alias) => ({
+        url: `/property/${alias}`,
+        method: 'GET',
       }),
       providesTags: ['Property'],
     }),
@@ -40,6 +40,13 @@ export const PropertiesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Property'],
     }),
+    getPropertyPermissions: builder.query({
+      query: ({ property_alias }) => ({
+        url: `/permissions/property/${property_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Permissions'],
+    }),
   }),
 });
 
@@ -49,4 +56,5 @@ export const {
   useGetPropertyDetailsQuery,
   useUpdatePropertyMutation,
   useDeletePropertyMutation,
+  useGetPropertyPermissionsQuery,
 } = PropertiesApi;

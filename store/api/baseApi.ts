@@ -20,10 +20,10 @@ export const TAG_TYPES = [
   'SupportTickets',
   'SupportTicketComments',
   'NewJourney',
+  'Permissions',
 
   // Common Tags
   'Property',
-  'PropertyPermission',
   'Mortgage',
   'Tenants',
   'Compliance',
