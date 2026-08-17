@@ -13,6 +13,8 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
+import { useUpdatePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { useGetPropertyPermissionsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
   PropertyPermission,
@@ -24,8 +26,6 @@ import React, { useState } from 'react';
 import AddUserFromPropertyPermissionDialog from './Dialogs/AddUserFromPropertyPermissionDialog';
 import DeleteUserFromPropertyPermissionDialog from './Dialogs/DeleteUserFromPropertyPermissionDialog';
 
-const PAGE_LIMIT = 4;
-
 const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   propertyAlias,
 }) => {
@@ -35,6 +35,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   const [userToRemove, setUserToRemove] = useState<PropertyPermission | null>(
     null,
   );
+  const [updatingAlias, setUpdatingAlias] = useState<string | null>(null);
 
   const handleDeleteUser = (user: PropertyPermission) => {
     setUserToRemove(user);
@@ -50,6 +51,25 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
     page,
     limit: PAGE_LIMIT,
   });
+
+  const [updatePermission] = useUpdatePermissionMutation();
+
+  const handleTogglePermission = async (
+    permission: PropertyPermission,
+    field: 'can_view' | 'can_edit',
+  ) => {
+    setUpdatingAlias(permission.alias);
+    try {
+      await updatePermission({
+        alias: permission.alias,
+        payload: { [field]: !permission[field] },
+      }).unwrap();
+    } catch {
+      // Optionally surface an error toast here
+    } finally {
+      setUpdatingAlias(null);
+    }
+  };
 
   const permissions = propertyPermissions?.results ?? [];
   const count = propertyPermissions?.count ?? 0;
@@ -128,6 +148,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
           <div className='grid gap-3 sm:grid-cols-2'>
             {permissions.map((permission: PropertyPermission) => {
               const fullName = permission.user.name;
+              const isRowUpdating = updatingAlias === permission.alias;
 
               return (
                 <Card key={permission.alias} className='shadow-sm'>
@@ -180,20 +201,46 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
                       </div>
 
                       <div className='flex flex-wrap gap-1.5 pt-1'>
-                        <Badge
-                          variant={permission.can_view ? 'warning' : 'outline'}
-                          className='flex items-center gap-1 text-xs font-normal'
+                        <button
+                          type='button'
+                          disabled={isRowUpdating}
+                          onClick={() =>
+                            handleTogglePermission(permission, 'can_view')
+                          }
+                          className='disabled:cursor-not-allowed disabled:opacity-60'
                         >
-                          <Eye className='h-3 w-3' />
-                          {permission.can_view ? 'Can view' : 'No view access'}
-                        </Badge>
-                        <Badge
-                          variant={permission.can_edit ? 'warning' : 'outline'}
-                          className='flex items-center gap-1 text-xs font-normal'
+                          <Badge
+                            variant={
+                              permission.can_view ? 'warning' : 'outline'
+                            }
+                            className='flex cursor-pointer items-center gap-1 text-xs font-normal transition-opacity hover:opacity-80'
+                          >
+                            <Eye className='h-3 w-3' />
+                            {permission.can_view
+                              ? 'Can view'
+                              : 'No view access'}
+                          </Badge>
+                        </button>
+                        <button
+                          type='button'
+                          disabled={isRowUpdating}
+                          onClick={() =>
+                            handleTogglePermission(permission, 'can_edit')
+                          }
+                          className='disabled:cursor-not-allowed disabled:opacity-60'
                         >
-                          <Pencil className='h-3 w-3' />
-                          {permission.can_edit ? 'Can edit' : 'No edit access'}
-                        </Badge>
+                          <Badge
+                            variant={
+                              permission.can_edit ? 'warning' : 'outline'
+                            }
+                            className='flex cursor-pointer items-center gap-1 text-xs font-normal transition-opacity hover:opacity-80'
+                          >
+                            <Pencil className='h-3 w-3' />
+                            {permission.can_edit
+                              ? 'Can edit'
+                              : 'No edit access'}
+                          </Badge>
+                        </button>
                       </div>
                     </div>
                   </CardContent>

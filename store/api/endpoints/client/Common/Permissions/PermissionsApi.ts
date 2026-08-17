@@ -12,8 +12,8 @@ export const PermissionsApis = baseApi.injectEndpoints({
     }),
 
     updatePermission: builder.mutation({
-      query: ({ content_alias, payload }) => ({
-        url: `/permissions/${content_alias}`,
+      query: ({ alias, payload }) => ({
+        url: `/permissions/${alias}`,
         method: 'PATCH',
         body: payload,
       }),
@@ -21,8 +21,8 @@ export const PermissionsApis = baseApi.injectEndpoints({
     }),
 
     deletePermission: builder.mutation({
-      query: ({ content_alias }) => ({
-        url: `/permissions/${content_alias}`,
+      query: ({ alias }) => ({
+        url: `/permissions/${alias}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Permissions'],

@@ -37,7 +37,7 @@ const DeleteUserFromPropertyPermissionDialog: React.FC<
     if (!userToRemove) return;
     setSubmitError(null);
     try {
-      await deletePermission({ content_alias: userToRemove.alias }).unwrap();
+      await deletePermission({ alias: userToRemove.alias }).unwrap();
       handleClose();
     } catch (err) {
       const error = err as FetchBaseQueryError | SerializedError;
