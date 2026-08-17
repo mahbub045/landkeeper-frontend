@@ -47,6 +47,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
 import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
+import PropertyMaintenanceComments from './PropertyMaintenanceComments/PropertyMaintenanceComments';
 
 const PropertyMaintenanceDetails: React.FC = () => {
   const router = useRouter();
@@ -521,6 +522,14 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </dl>
           </section>
         </div>
+      </div>
+
+      <hr className='my-6' />
+
+      <div>
+        <PropertyMaintenanceComments
+          pmAlias={maintenanceRequestDetails?.alias}
+        />
       </div>
 
       {/* Lightbox */}
