@@ -51,7 +51,7 @@ import {
 } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
-import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
+import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
 import { Check, Copy, Edit, Filter, Plus, Search, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -421,7 +421,7 @@ const PropertyMaintenanceList: React.FC = () => {
                   <TableCell className='text-sm'>
                     <div className='flex items-center gap-2'>
                       <Link
-                        href={getPropertyMaintenanceUrl(
+                        href={getPropertyMaintenanceDetailsUrl(
                           session,
                           request.alias as string,
                         )}

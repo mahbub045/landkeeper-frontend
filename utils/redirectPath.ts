@@ -223,8 +223,8 @@ export const getNotificationURL = (
   }
 };
 
-// All users Property maintenance request Page
-export const getPropertyMaintenanceUrl = (
+// All users Property maintenance request Details Page
+export const getPropertyMaintenanceDetailsUrl = (
   session: Session | null,
   maintenanceAlias: string,
 ) => {

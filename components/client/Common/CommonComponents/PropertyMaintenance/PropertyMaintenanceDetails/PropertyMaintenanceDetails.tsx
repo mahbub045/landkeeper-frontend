@@ -42,7 +42,7 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
@@ -50,7 +50,6 @@ import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialo
 import PropertyMaintenanceComments from './PropertyMaintenanceComments/PropertyMaintenanceComments';
 
 const PropertyMaintenanceDetails: React.FC = () => {
-  const router = useRouter();
   const { data: session } = useSession();
   const { maintenancealias } = useParams();
   const [
@@ -274,10 +273,11 @@ const PropertyMaintenanceDetails: React.FC = () => {
           </p>
         </div>
         <div className='flex flex-wrap gap-2'>
-          <Button variant='outline' onClick={() => router.back()}>
+          <Button variant='outline' onClick={() => window.history.back()}>
             <ArrowLeft className='size-4' />
             Back
           </Button>
+
           {session?.user?.role === 'TENANT' && (
             <Button
               variant='default'
