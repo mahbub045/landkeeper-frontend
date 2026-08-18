@@ -14,7 +14,11 @@ import {
 } from '@/data/client/common/mortgage/MortgageData';
 import { useGetMortgageDetailsQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { MortgagePropertyType } from '@/types/client/Common/Mortgage/MortgageDetailsTypes';
-import { formatCurrency, formatDate, getDaysUntilDue } from '@/utils/formatters';
+import {
+  formatCurrency,
+  formatDate,
+  getDaysUntilDue,
+} from '@/utils/formatters';
 import {
   AlertTriangle,
   ArrowLeft,
@@ -154,7 +158,7 @@ const MortgageDetails: React.FC = () => {
       )}
 
       {/* Timeline */}
-      <Card className='shadow-lg'>
+      <Card className='shadow-md'>
         <CardHeader className='pb-2'>
           <p className='text-muted-foreground text-sm font-medium'>Key dates</p>
         </CardHeader>
@@ -218,7 +222,7 @@ const MortgageDetails: React.FC = () => {
 
       <div className='grid gap-8 md:grid-cols-[1.6fr_1fr]'>
         {/* Particulars register */}
-        <Card className='shadow-lg'>
+        <Card className='shadow-md'>
           <CardHeader className='pb-2'>
             <p className='text-muted-foreground text-sm font-medium'>
               Particulars
@@ -258,7 +262,7 @@ const MortgageDetails: React.FC = () => {
 
         {/* Documents + notes */}
         <div className='space-y-8'>
-          <Card className='shadow-lg'>
+          <Card className='shadow-md'>
             <CardHeader className='pb-2'>
               <p className='text-muted-foreground text-sm font-medium'>
                 Documents
@@ -302,7 +306,7 @@ const MortgageDetails: React.FC = () => {
           </Card>
 
           {mortgageData?.notes && (
-            <Card className='shadow-lg'>
+            <Card className='shadow-md'>
               <CardHeader className='flex flex-row items-center gap-2 pb-2'>
                 <StickyNote className='text-muted-foreground h-4 w-4' />
                 <p className='text-muted-foreground text-sm font-medium'>

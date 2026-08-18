@@ -18,7 +18,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
   const rateExpiryDays = getDaysUntilDue(mortgage.interest_rate_expiry_date);
 
   return (
-    <Card className='group py-0 shadow-lg transition-all hover:-translate-y-1'>
+    <Card className='group py-0 shadow-md transition-all hover:-translate-y-1'>
       <CardContent className='space-y-5 p-6'>
         {/* Header */}
         <div className='flex items-start justify-between gap-3'>
