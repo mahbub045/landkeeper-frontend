@@ -25,5 +25,3 @@ interface UploadedDocument {
   file: string;
   description: string | null;
 }
-
-

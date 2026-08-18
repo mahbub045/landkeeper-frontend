@@ -114,8 +114,14 @@ export function formatCurrency(amount: number | null | undefined) {
   }).format(amount);
 }
 
-export function getDaysUntilDue(nextDueDate: string) {
+export function getDaysUntilDue(
+  nextDueDate: string | Date | null | undefined,
+): number | null {
+  if (!nextDueDate) return null;
+
   const due = new Date(nextDueDate);
+  if (Number.isNaN(due.getTime())) return null;
+
   const now = new Date();
   due.setHours(0, 0, 0, 0);
   now.setHours(0, 0, 0, 0);

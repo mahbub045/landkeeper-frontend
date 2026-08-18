@@ -6,17 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  exhibitLabel,
+  fileMeta,
+  isEpcAtRisk,
+  rateTypeLabel,
+} from '@/data/client/common/mortgage/MortgageData';
 import { useGetMortgageDetailsQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { MortgagePropertyType } from '@/types/client/Common/Mortgage/MortgageDetailsTypes';
-import { formatCurrency, formatDate } from '@/utils/formatters';
+import { formatCurrency, formatDate, getDaysUntilDue } from '@/utils/formatters';
 import {
   AlertTriangle,
   ArrowLeft,
   Edit,
   ExternalLink,
-  File,
-  FileText,
-  Image as ImageIcon,
   StickyNote,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -24,46 +27,6 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 import MortgageDangerZone from './MortgageDangerZone/MortgageDangerZone';
-
-// ---------- helpers ----------
-const daysUntil = (value?: string | Date | null) => {
-  if (value == null) return null;
-  const target = new Date(value);
-  if (Number.isNaN(target.getTime())) return null;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  target.setHours(0, 0, 0, 0);
-  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
-};
-
-const rateTypeLabel = (type?: string) =>
-  type
-    ? type
-        .toLowerCase()
-        .split('_')
-        .map((w) => w[0]?.toUpperCase() + w.slice(1))
-        .join(' ')
-    : '—';
-
-const EPC_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-const isEpcAtRisk = (rating?: string) =>
-  !!rating && EPC_ORDER.indexOf(rating.toUpperCase()) >= EPC_ORDER.indexOf('E');
-
-const fileMeta = (url: string) => {
-  const name = decodeURIComponent(url.split('/').pop() ?? 'document');
-  const ext = name.split('.').pop()?.toLowerCase() ?? '';
-  const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
-  const isPdf = ext === 'pdf';
-  return {
-    name: name.length > 42 ? `${name.slice(0, 39)}…` : name,
-    icon: isImage ? ImageIcon : isPdf ? FileText : File,
-    kind: isPdf ? 'PDF' : isImage ? 'Image' : ext.toUpperCase() || 'File',
-  };
-};
-
-const exhibitLabel = (i: number) => String.fromCharCode(65 + i); // A, B, C…
-
-// ---------- component ----------
 
 const MortgageDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -106,8 +69,8 @@ const MortgageDetails: React.FC = () => {
     );
   }
 
-  const rateDays = daysUntil(mortgageData?.interest_rate_expiry_date);
-  const epcDays = daysUntil(mortgageData?.epc_certificate_expiry_date);
+  const rateDays = getDaysUntilDue(mortgageData?.interest_rate_expiry_date);
+  const epcDays = getDaysUntilDue(mortgageData?.epc_certificate_expiry_date);
   const epcAtRisk = isEpcAtRisk(mortgageData?.epc_rating);
 
   // Position markers along a shared timeline from today to the furthest date

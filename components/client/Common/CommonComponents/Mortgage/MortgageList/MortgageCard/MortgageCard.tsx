@@ -1,47 +1,55 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
+import { epcStyles, expiryUrgencyStyles } from '@/data/client/common/mortgage/MortgageData';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
-import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
-import { ChevronDown, ChevronUp, Eye } from 'lucide-react';
-import { useState } from 'react';
+import formatChoiceFieldValue, {
+  formatDate,
+  getCurrencySign,
+  getDaysUntilDue,
+} from '@/utils/formatters';
+import { Calendar } from 'lucide-react';
+
+
 
 const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
-  const [docsOpen, setDocsOpen] = useState(false);
+  const rateExpiryDays = getDaysUntilDue(mortgage.interest_rate_expiry_date);
 
   return (
     <Card className='group py-0 shadow-lg transition-all hover:-translate-y-1'>
       <CardContent className='space-y-5 p-6'>
-        <div className='flex items-start justify-between'>
-          <div>
-            <p className='text-muted-foreground text-sm'>
+        {/* Header */}
+        <div className='flex items-start justify-between gap-3'>
+          <div className='min-w-0'>
+            <p className='text-muted-foreground truncate text-sm'>
               {mortgage.property.property_name}
             </p>
-            <div className='mt-1 flex flex-wrap items-center gap-3'>
-              <h2 className='text-xl font-bold'>
-                {mortgage.lender_name} –{' '}
-                {formatChoiceFieldValue(mortgage.interest_rate_type)}
-              </h2>
-            </div>
-          </div>
-          <div className='shrink-0 text-right'>
-            <p className='text-muted-foreground text-xs'>Interest Rate</p>
-            <p className='text-2xl font-bold'>
-              {parseFloat(mortgage.interest_rate ?? '0')}%
+            <h2 className='mt-0.5 truncate text-xl font-bold'>
+              {mortgage.lender_name}
+            </h2>
+            <p className='text-muted-foreground mt-0.5 text-xs'>
+              {formatChoiceFieldValue(mortgage.interest_rate_type)}
+              {mortgage.remaining_mortgage != null &&
+                ` · ${mortgage.remaining_mortgage} yrs remaining`}
             </p>
           </div>
+
+          {mortgage.epc_rating && (
+            <Badge
+              variant='outline'
+              className={`shrink-0 font-mono text-xs ${epcStyles(mortgage.epc_rating)}`}
+            >
+              EPC {mortgage.epc_rating}
+            </Badge>
+          )}
         </div>
 
-        {/* Balance + View Documents */}
-        <div className='flex items-end justify-between'>
+        {/* Stats */}
+        <div className='flex items-end justify-between gap-4'>
           <div>
-            <p className='text-3xl font-bold'>
+            <p className='text-3xl font-bold tracking-tight'>
               {getCurrencySign()}
               {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
                 'en-GB',
@@ -52,55 +60,43 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             </p>
           </div>
 
-          <div className='shrink-0'>
-            {mortgage.uploaded_documents.length === 0 ? (
-              <Button variant='outline' size='sm' disabled>
-                <Eye />
-                View Documents
-              </Button>
-            ) : mortgage.uploaded_documents.length === 1 ? (
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() =>
-                  window.open(mortgage.uploaded_documents[0].file, '_blank')
-                }
-              >
-                <Eye />
-                View Documents
-              </Button>
-            ) : (
-              <Popover open={docsOpen} onOpenChange={setDocsOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant='outline' size='sm'>
-                    <Eye />
-                    View Documents
-                    {docsOpen ? <ChevronUp /> : <ChevronDown />}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className='w-64 p-2' align='center'>
-                  <ul className='space-y-1'>
-                    {mortgage.uploaded_documents.map((doc) => {
-                      const filename =
-                        doc.file.split('/').pop() || `file-${doc.id}`;
-                      return (
-                        <li key={doc.id}>
-                          <a
-                            href={doc.file}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5 text-sm'
-                          >
-                            <span className='truncate'>{filename}</span>
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </PopoverContent>
-              </Popover>
+          <div className='flex shrink-0 gap-6 text-right'>
+            <div>
+              <p className='font-mono text-lg font-semibold'>
+                {parseFloat(mortgage.interest_rate ?? '0')}%
+              </p>
+              <p className='text-muted-foreground text-xs'>Interest Rate</p>
+            </div>
+            {mortgage.monthly_payment && (
+              <div>
+                <p className='font-mono text-lg font-semibold'>
+                  {getCurrencySign()}
+                  {parseFloat(mortgage.monthly_payment).toLocaleString('en-GB')}
+                </p>
+                <p className='text-muted-foreground text-xs'>Per Month</p>
+              </div>
             )}
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Footer */}
+        <div className='flex items-center justify-between gap-3'>
+          {mortgage.interest_rate_expiry_date && (
+            <div
+              className={`flex items-center gap-1.5 text-xs ${expiryUrgencyStyles(rateExpiryDays)}`}
+            >
+              <Calendar className='size-3.5' />
+              <span>
+                Rate fixed until{' '}
+                {formatDate(mortgage.interest_rate_expiry_date)}
+                {rateExpiryDays !== null && rateExpiryDays >= 0 && (
+                  <span className='ml-1 opacity-80'>({rateExpiryDays}d)</span>
+                )}
+              </span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
