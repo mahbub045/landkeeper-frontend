@@ -40,6 +40,13 @@ export const MortgageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Mortgage'],
     }),
+    getMortgagePermissions: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/permissions/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Permissions'],
+    }),
   }),
 });
 
@@ -49,4 +56,5 @@ export const {
   useAddMortgagesMutation,
   useUpdateMortgageMutation,
   useDeleteMortgageMutation,
+  useGetMortgagePermissionsQuery,
 } = MortgageApi;

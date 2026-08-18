@@ -20,12 +20,12 @@ import {
 } from '@/components/ui/tooltip';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
+import { useGetMortgagePermissionsQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { useUpdatePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
-import { useGetPropertyPermissionsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
-  PropertyPermission,
-  PropertyPermissionListProps,
-} from '@/types/client/Common/Properties/PropertyPermissionTypes';
+  MortgagePermission,
+  MortgagePermissionListProps,
+} from '@/types/client/Common/Mortgage/MortgagePermissionTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,
@@ -39,31 +39,31 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import AddUserFromPropertyPermissionDialog from './Dialogs/AddUserFromPropertyPermissionDialog';
-import DeleteUserFromPropertyPermissionDialog from './Dialogs/DeleteUserFromPropertyPermissionDialog';
+import AddUserFromMortgagePermissionDialog from './Dialogs/AddUserFromMortgagePermissionDialog';
+import DeleteUserFromMortgagePermissionDialog from './Dialogs/DeleteUserFromMortgagePermissionDialog';
 
-const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
-  propertyAlias,
+const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
+  mortgageAlias,
 }) => {
   const [page, setPage] = useState(1);
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
-  const [userToRemove, setUserToRemove] = useState<PropertyPermission | null>(
+  const [userToRemove, setUserToRemove] = useState<MortgagePermission | null>(
     null,
   );
   const [updatingAlias, setUpdatingAlias] = useState<string | null>(null);
 
-  const handleDeleteUser = (user: PropertyPermission) => {
+  const handleDeleteUser = (user: MortgagePermission) => {
     setUserToRemove(user);
     setIsDeleteUserDialogOpen(true);
   };
 
   const {
-    data: propertyPermissions,
+    data: mortgagePermissions,
     isLoading,
     isError,
-  } = useGetPropertyPermissionsQuery({
-    property_alias: propertyAlias,
+  } = useGetMortgagePermissionsQuery({
+    mortgage_alias: mortgageAlias,
     page,
     limit: PAGE_LIMIT,
   });
@@ -71,7 +71,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   const [updatePermission] = useUpdatePermissionMutation();
 
   const handleTogglePermission = async (
-    permission: PropertyPermission,
+    permission: MortgagePermission,
     field: 'can_view' | 'can_edit',
   ) => {
     setUpdatingAlias(permission.alias);
@@ -93,8 +93,8 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
     }
   };
 
-  const permissions = propertyPermissions?.results ?? [];
-  const count = propertyPermissions?.count ?? 0;
+  const permissions = mortgagePermissions?.results ?? [];
+  const count = mortgagePermissions?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(count / PAGE_LIMIT));
   const isEmpty = !isLoading && !isError && permissions.length === 0;
 
@@ -122,10 +122,10 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-warning text-lg leading-none font-medium'>
-            Property access
+            Mortgage access
           </h2>
           <p className='text-muted-foreground mt-1 text-sm'>
-            Mortgage advisers with permission to view or edit this property.
+            Mortgage advisers with permission to view or edit this mortgage.
           </p>
         </div>
         <div>
@@ -142,7 +142,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
       </div>
 
       {isError ? (
-        <CustomErrorMessage title='property access' />
+        <CustomErrorMessage title='mortgage access' />
       ) : isLoading ? (
         <div className='grid gap-3 sm:grid-cols-2'>
           {Array.from({ length: 2 }).map((_, i) => (
@@ -162,13 +162,13 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
         <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center'>
           <Ban className='text-muted-foreground h-6 w-6' />
           <p className='text-muted-foreground text-sm'>
-            No mortgage advisers have been given access to this property.
+            No mortgage advisers have been given access to this mortgage.
           </p>
         </div>
       ) : (
         <>
           <div className='grid gap-3 sm:grid-cols-2'>
-            {permissions.map((permission: PropertyPermission) => {
+            {permissions.map((permission: MortgagePermission) => {
               const fullName = permission.user.name;
               const isRowUpdating = updatingAlias === permission.alias;
 
@@ -348,12 +348,12 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
         </>
       )}
       {/* Modals */}
-      <AddUserFromPropertyPermissionDialog
+      <AddUserFromMortgagePermissionDialog
         isOpen={isAddUserDialogOpen}
         onClose={() => setIsAddUserDialogOpen(false)}
-        propertyAlias={propertyAlias}
+        mortgageAlias={mortgageAlias}
       />
-      <DeleteUserFromPropertyPermissionDialog
+      <DeleteUserFromMortgagePermissionDialog
         isOpen={isDeleteUserDialogOpen}
         onClose={() => setIsDeleteUserDialogOpen(false)}
         userToRemove={userToRemove}
@@ -362,4 +362,4 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   );
 };
 
-export default PropertyPermissionList;
+export default MortgagePermissionList;

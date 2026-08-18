@@ -31,6 +31,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 import MortgageDangerZone from './MortgageDangerZone/MortgageDangerZone';
+import MortgagePermissionList from './MortgagePermissionList/MortgagePermissionList';
 
 const MortgageDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -322,6 +323,10 @@ const MortgageDetails: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Permission list */}
+      {session?.user?.role === 'LANDLORD' && (
+        <MortgagePermissionList mortgageAlias={mortgageData?.alias ?? ''} />
+      )}
       {/* Danger zone */}
       {session?.user?.role === 'LANDLORD' && (
         <MortgageDangerZone mortgage={mortgageData} />

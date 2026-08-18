@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
 import { useAddPermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { AuthUser } from '@/types/auth/AuthUsersType';
-import { AddUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyPermissionTypes';
+import { AddUserFromMortgagePermissionDialogProps } from '@/types/client/Common/Mortgage/MortgagePermissionTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -75,9 +75,9 @@ const UserAvatar: React.FC<{
   );
 };
 
-const AddUserFromPropertyPermissionDialog: React.FC<
-  AddUserFromPropertyPermissionDialogProps
-> = ({ isOpen, onClose, propertyAlias }) => {
+const AddUserFromMortgagePermissionDialog: React.FC<
+  AddUserFromMortgagePermissionDialogProps
+> = ({ isOpen, onClose, mortgageAlias }) => {
   const { data: authUsers, isLoading: isAuthUsersLoading } =
     useGetAuthUserListQuery({
       role: 'MORTGAGE_ADVISER',
@@ -114,12 +114,12 @@ const AddUserFromPropertyPermissionDialog: React.FC<
   };
 
   const handleSubmit = async () => {
-    if (!selectedUserAlias || !propertyAlias) return;
+    if (!selectedUserAlias || !mortgageAlias) return;
     setSubmitErrors([]);
     try {
       await addPermission({
         user: selectedUserAlias,
-        property: propertyAlias,
+        mortgage: mortgageAlias,
         can_view: canView,
         can_edit: canEdit,
       }).unwrap();
@@ -158,7 +158,7 @@ const AddUserFromPropertyPermissionDialog: React.FC<
             Add User For Permission
           </DialogTitle>
           <DialogDescription className='text-muted-foreground text-sm'>
-            Grant a mortgage adviser access to this property.
+            Grant a mortgage adviser access to this mortgage.
           </DialogDescription>
         </DialogHeader>
 
@@ -299,7 +299,7 @@ const AddUserFromPropertyPermissionDialog: React.FC<
                 <div className='min-w-0 flex-1'>
                   <p className='text-sm font-medium'>Can view</p>
                   <p className='text-muted-foreground text-xs'>
-                    Read-only access to property details
+                    Read-only access to mortgage details
                   </p>
                 </div>
                 <span
@@ -327,7 +327,7 @@ const AddUserFromPropertyPermissionDialog: React.FC<
                 <div className='min-w-0 flex-1'>
                   <p className='text-sm font-medium'>Can edit</p>
                   <p className='text-muted-foreground text-xs'>
-                    Modify property details and documents
+                    Modify mortgage details and documents
                   </p>
                 </div>
                 <span
@@ -364,4 +364,4 @@ const AddUserFromPropertyPermissionDialog: React.FC<
   );
 };
 
-export default AddUserFromPropertyPermissionDialog;
+export default AddUserFromMortgagePermissionDialog;
