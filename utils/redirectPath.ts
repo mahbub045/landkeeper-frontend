@@ -96,6 +96,37 @@ export const getMortgageUrl = (session: Session | null) => {
   return '/auth/login';
 };
 
+// All users Mortgage Details Page
+export const getMortgageDetailsUrl = (
+  session: Session | null,
+  mortgagealias: string,
+) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (role === 'LANDLORD') {
+    return `/client/landlord/mortgages/${mortgagealias}`;
+  }
+
+  if (role === 'ADMIN') {
+    return `/client/admin/mortgages/${mortgagealias}`;
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return `/client/letting-agent/mortgages/${mortgagealias}`;
+  }
+
+  if (role === 'MORTGAGE_ADVISER') {
+    return `/client/mortgage-adviser/mortgages/${mortgagealias}`;
+  }
+
+  return '/auth/login';
+};
+
 // All users Compliance List
 export const getComplianceUrl = (session: Session | null) => {
   if (!session) {

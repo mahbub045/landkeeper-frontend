@@ -27,10 +27,10 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
       await deleteMortgage({
         mortgage_alias: mortgageAlias,
       }).unwrap();
-
       toast.success('Mortgage deleted successfully.');
       onSuccess?.();
       onClose();
+      window.history.back();
     } catch {
       toast.error('Failed to delete mortgage. Please try again.');
     }
@@ -55,7 +55,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
         </DialogHeader>
 
         {/* Body */}
-        <div className='space-y-5 px-6 py-6'>
+        <div className='space-y-5 px-6'>
           <p className='text-muted-foreground text-center text-sm leading-7'>
             You&rsquo;re about to permanently delete this mortgage record.
           </p>
@@ -92,7 +92,7 @@ const DeleteMortgageDialog: React.FC<DeleteMortgageDialogProps> = ({
             disabled={isLoading}
             className='min-w-40'
           >
-            {isLoading && <Loading className='mr-2 text-white!' />}
+            {isLoading && <Loading className='text-danger/50!' />}
             Delete Mortgage
           </Button>
         </div>

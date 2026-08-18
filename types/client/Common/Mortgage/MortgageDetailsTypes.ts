@@ -6,7 +6,7 @@ export interface MortgagePropertyType {
     property_name: string;
   };
   lender_name: string;
-  interest_rate_type: 'FIXED_RATE' | string;
+  interest_rate_type: string;
   interest_rate: number;
   interest_rate_expiry_date: Date | null;
   outstanding_balance: number;
@@ -25,3 +25,5 @@ interface UploadedDocument {
   file: string;
   description: string | null;
 }
+
+

@@ -2,14 +2,17 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { getMortgageDetailsUrl } from '@/utils/redirectPath';
 import { Landmark } from 'lucide-react';
-import MortgageCard from './MortgageCard/MortgageCard';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import MortgageCard from './MortgageCard/MortgageCard';
 
 const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
   mortgages,
   isLoading,
 }) => {
+  const { data: session } = useSession();
   if (isLoading)
     return (
       <div className='space-y-4'>
@@ -30,7 +33,10 @@ const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
   return (
     <div className='grid grid-cols-1 gap-4 space-y-4 md:grid-cols-2 lg:grid-cols-3'>
       {mortgages.map((mortgage) => (
-        <Link key={mortgage.alias} href={`/client/landlord/mortgages/${mortgage.alias}`}>
+        <Link
+          key={mortgage.alias}
+          href={getMortgageDetailsUrl(session, mortgage.alias)}
+        >
           <MortgageCard mortgage={mortgage} />
         </Link>
       ))}

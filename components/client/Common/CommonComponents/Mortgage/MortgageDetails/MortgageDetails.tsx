@@ -2,6 +2,7 @@
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,13 +11,19 @@ import { MortgagePropertyType } from '@/types/client/Common/Mortgage/MortgageDet
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import {
   AlertTriangle,
+  ArrowLeft,
+  Edit,
   ExternalLink,
   File,
   FileText,
   Image as ImageIcon,
   StickyNote,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
+import MortgageDangerZone from './MortgageDangerZone/MortgageDangerZone';
 
 // ---------- helpers ----------
 const daysUntil = (value?: string | Date | null) => {
@@ -59,7 +66,9 @@ const exhibitLabel = (i: number) => String.fromCharCode(65 + i); // A, B, C…
 // ---------- component ----------
 
 const MortgageDetails: React.FC = () => {
+  const { data: session } = useSession();
   const { mortgagealias } = useParams();
+  const [editOpen, setEditOpen] = useState(false);
   const {
     data: mortgage,
     isLoading,
@@ -72,7 +81,7 @@ const MortgageDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className='mx-auto max-w-5xl space-y-8 px-6 py-10'>
+      <div className='mx-auto space-y-8 py-10'>
         <Skeleton className='h-24 w-full' />
         <Skeleton className='h-20 w-full' />
         <div className='grid gap-8 md:grid-cols-[1.6fr_1fr]'>
@@ -85,7 +94,7 @@ const MortgageDetails: React.FC = () => {
 
   if (isError || !mortgage) {
     return (
-      <div className='mx-auto max-w-5xl px-6 py-10'>
+      <div className='mx-auto py-10'>
         <Alert variant='destructive'>
           <AlertTriangle className='h-4 w-4' />
           <AlertTitle>Couldn&apos;t load this mortgage record</AlertTitle>
@@ -115,14 +124,16 @@ const MortgageDetails: React.FC = () => {
   return (
     <div className='mx-auto space-y-8 py-10'>
       {/* Masthead */}
-      <div className='flex flex-col justify-between gap-4 border-b pb-6 md:flex-row md:items-end'>
+      <div className='relative flex flex-col justify-between gap-4 border-b pb-6 md:flex-row md:items-end'>
         <div>
           <p className='text-secondary-foreground/60 mb-1 text-xs font-medium tracking-widest uppercase'>
             Mortgage record
           </p>
+
           <h1 className='text-2xl font-semibold tracking-tight md:text-3xl'>
             {mortgageData?.property?.property_name ?? 'Untitled property'}
           </h1>
+
           <p className='text-muted-foreground mt-1 text-sm'>
             Held with{' '}
             <span className='text-foreground font-medium'>
@@ -130,7 +141,27 @@ const MortgageDetails: React.FC = () => {
             </span>
           </p>
         </div>
+
         <div className='flex items-center gap-2'>
+          <div className='absolute top-0 right-0 flex gap-2'>
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={() => window.history.back()}
+            >
+              <ArrowLeft />
+              Back
+            </Button>
+            <Button
+              size='sm'
+              variant='default'
+              onClick={() => setEditOpen(true)}
+            >
+              <Edit />
+              Edit
+            </Button>
+          </div>
+
           <Badge variant='secondary' className='font-mono text-xs'>
             {rateTypeLabel(mortgageData?.interest_rate_type)}
           </Badge>
@@ -138,7 +169,10 @@ const MortgageDetails: React.FC = () => {
             className='font-mono text-xs'
             variant={epcAtRisk ? 'destructive' : 'default'}
           >
-            EPC {mortgageData?.epc_rating ?? '—'}
+            <span>EPC:</span>
+            {mortgageData?.epc_rating ?? (
+              <span className='text-muted-foreground'>Not set</span>
+            )}
           </Badge>
         </div>
       </div>
@@ -157,12 +191,12 @@ const MortgageDetails: React.FC = () => {
       )}
 
       {/* Timeline */}
-      <Card>
+      <Card className='shadow-lg'>
         <CardHeader className='pb-2'>
           <p className='text-muted-foreground text-sm font-medium'>Key dates</p>
         </CardHeader>
         <CardContent>
-          <div className='relative mt-2 h-16'>
+          <div className='relative mt-2 mb-8 h-16'>
             <div className='bg-border absolute top-8 right-0 left-0 h-px' />
             <div className='bg-primary absolute top-8 left-0 h-2 w-2 -translate-y-1/2 rounded-full' />
             <span className='text-muted-foreground absolute top-0 left-0 text-xs'>
@@ -221,7 +255,7 @@ const MortgageDetails: React.FC = () => {
 
       <div className='grid gap-8 md:grid-cols-[1.6fr_1fr]'>
         {/* Particulars register */}
-        <Card>
+        <Card className='shadow-lg'>
           <CardHeader className='pb-2'>
             <p className='text-muted-foreground text-sm font-medium'>
               Particulars
@@ -261,7 +295,7 @@ const MortgageDetails: React.FC = () => {
 
         {/* Documents + notes */}
         <div className='space-y-8'>
-          <Card>
+          <Card className='shadow-lg'>
             <CardHeader className='pb-2'>
               <p className='text-muted-foreground text-sm font-medium'>
                 Documents
@@ -305,7 +339,7 @@ const MortgageDetails: React.FC = () => {
           </Card>
 
           {mortgageData?.notes && (
-            <Card>
+            <Card className='shadow-lg'>
               <CardHeader className='flex flex-row items-center gap-2 pb-2'>
                 <StickyNote className='text-muted-foreground h-4 w-4' />
                 <p className='text-muted-foreground text-sm font-medium'>
@@ -321,6 +355,17 @@ const MortgageDetails: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Danger zone */}
+      {session?.user?.role === 'LANDLORD' && (
+        <MortgageDangerZone mortgage={mortgageData} />
+      )}
+      {/* Dailogs  */}
+      <UpdateMortgageDialog
+        key={mortgage.alias}
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        mortgage={mortgage}
+      />
     </div>
   );
 };

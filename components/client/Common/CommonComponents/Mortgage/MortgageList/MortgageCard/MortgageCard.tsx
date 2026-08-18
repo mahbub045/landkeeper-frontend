@@ -8,23 +8,11 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
-import formatChoiceFieldValue, {
-  formatDate,
-  getCurrencySign,
-} from '@/utils/formatters';
-import { getMortgageUrl } from '@/utils/redirectPath';
-import { ChevronDown, ChevronUp, Eye, Pencil, Trash2 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
+import { ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { useState } from 'react';
-import DeleteMortgageDialog from '../../Dialogs/DeleteMortgageDialog';
-import UpdateMortgageDialog from '../../Dialogs/UpdateMortgageDialog';
 
 const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [docsOpen, setDocsOpen] = useState(false);
 
   return (
@@ -47,7 +35,6 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             <p className='text-2xl font-bold'>
               {parseFloat(mortgage.interest_rate ?? '0')}%
             </p>
-           
           </div>
         </div>
 
@@ -115,40 +102,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             )}
           </div>
         </div>
-
-       
-
-   
-
-        {/* <div className='flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between'>
-         
-
-          <div className='flex items-center gap-2'>
-            <Button variant='outline' onClick={() => setEditOpen(true)}>
-              <Pencil className='size-4' />
-              Edit
-            </Button>
-            <Button variant='destructive' onClick={() => setDeleteOpen(true)}>
-              <Trash2 className='size-4' />
-              Delete
-            </Button>
-          </div>
-        </div> */}
       </CardContent>
-
-      <UpdateMortgageDialog
-        key={mortgage.alias}
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        mortgage={mortgage}
-      />
-
-      <DeleteMortgageDialog
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        onSuccess={() => router.push(getMortgageUrl(session))}
-        mortgageAlias={mortgage.alias}
-      />
     </Card>
   );
 };
