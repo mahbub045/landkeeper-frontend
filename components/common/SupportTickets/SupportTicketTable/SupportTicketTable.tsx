@@ -225,6 +225,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         <TableCell>
           <Badge
             variant='secondary'
+            size='lg'
             className={`rounded-md font-medium ${TICKET_TYPE_STYLES[ticket.ticket_type]}`}
           >
             {formatChoiceFieldValue(ticket.ticket_type)}
@@ -234,6 +235,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         <TableCell>
           <Badge
             variant='secondary'
+            size='lg'
             className={`rounded-md font-medium ${PRIORITY_STYLES[ticket.priority]}`}
           >
             {PRIORITY_LABELS[ticket.priority]}
@@ -289,6 +291,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
           ) : (
             <Badge
               variant='secondary'
+              size='lg'
               className={`rounded-md text-xs font-medium ${STATUS_STYLES[ticket.status]}`}
             >
               <span className='flex items-center gap-1.5'>
@@ -511,7 +514,7 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-center text-xs font-extrabold tracking-wider uppercase'
+                  className='px-6 text-center font-extrabold tracking-wider capitalize'
                 >
                   <div className='flex items-center justify-center gap-1'>
                     {col}

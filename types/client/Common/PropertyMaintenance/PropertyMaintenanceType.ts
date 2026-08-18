@@ -11,10 +11,18 @@ export interface MaintenanceDocument {
   length: number;
 }
 
+interface Tenant {
+  alias: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  phone?: string;
+}
+
 export interface MaintenanceRequest {
   alias: string;
   request_id: string;
-  tenant: string;
+  tenant: Tenant;
   property: string;
   issue: string;
   category: MaintenanceCategory;

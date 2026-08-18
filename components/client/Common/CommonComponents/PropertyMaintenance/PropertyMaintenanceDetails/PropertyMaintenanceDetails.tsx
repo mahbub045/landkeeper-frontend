@@ -1,6 +1,7 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -471,16 +472,35 @@ const PropertyMaintenanceDetails: React.FC = () => {
               <h2 className='mb-4 text-sm font-semibold'>Requested by</h2>
               <dl className='space-y-4'>
                 <div className='flex items-start gap-3'>
-                  <User className='mt-0.5 size-4 shrink-0' />
+                  <Avatar className='size-9 shrink-0'>
+                    <AvatarImage
+                      src={
+                        maintenanceRequestDetails?.tenant.avatar ?? undefined
+                      }
+                      alt={maintenanceRequestDetails?.tenant.name ?? 'Tenant'}
+                    />
+                    <AvatarFallback className='bg-primary/10'>
+                      <User />
+                    </AvatarFallback>
+                  </Avatar>
+
                   <div className='min-w-0'>
                     <dt className='text-xs'>Tenant</dt>
                     <dd className='truncate text-sm font-medium'>
-                      {maintenanceRequestDetails?.tenant}
+                      {maintenanceRequestDetails?.tenant.name}
                     </dd>
+                    <p className='text-muted-foreground text-xs'>
+                      {maintenanceRequestDetails?.tenant.email}
+                    </p>
+                    <p className='text-muted-foreground text-xs'>
+                      {maintenanceRequestDetails?.tenant.phone}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-start gap-3'>
-                  <Building2 className='mt-0.5 size-4 shrink-0' />
+                  <span className='bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full'>
+                    <Building2 className='mt-0.5 size-4 shrink-0' />
+                  </span>
                   <div className='min-w-0'>
                     <dt className='text-xs'>Property</dt>
                     <dd className='text-sm font-medium'>
