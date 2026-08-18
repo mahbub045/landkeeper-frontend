@@ -74,6 +74,61 @@ function getActiveParentLabels(items: NavItem[], pathname: string): string[] {
   return labels;
 }
 
+// Unique, deterministic colors for icons — same label always maps to the same
+// color, regardless of active/inactive state. Defined at module scope so the
+// array/function identity is stable across renders.
+const ICON_COLORS = [
+  '#6366f1', // indigo
+  '#ec4899', // pink
+  '#14b8a6', // teal
+  '#f59e0b', // amber
+  '#8b5cf6', // violet
+  '#ef4444', // red
+  '#22c55e', // green
+  '#06b6d4', // cyan
+  '#f97316', // orange
+  '#0ea5e9', // sky
+  '#a855f7', // purple
+  '#84cc16', // lime
+  '#f43f5e', // rose
+  '#10b981', // emerald
+  '#eab308', // yellow
+  '#3b82f6', // blue
+  '#d946ef', // fuchsia
+  '#0d9488', // teal-dark
+  '#dc2626', // red-dark
+  '#65a30d', // lime-dark
+  '#7c3aed', // violet-dark
+  '#ea580c', // orange-dark
+  '#0891b2', // cyan-dark
+  '#db2777', // pink-dark
+  '#059669', // emerald-dark
+  '#4f46e5', // indigo-dark
+  '#9333ea', // purple-dark
+  '#ca8a04', // amber-dark
+  '#e11d48', // rose-dark
+  '#2563eb', // blue-dark
+  '#16a34a', // green-dark
+  '#c026d3', // fuchsia-dark
+  '#0284c7', // sky-dark
+  '#b91c1c', // red-darker
+  '#15803d', // green-darker
+  '#6d28d9', // violet-darker
+  '#be185d', // pink-darker
+  '#a16207', // yellow-dark
+  '#0e7490', // cyan-darker
+  '#4338ca', // indigo-darker
+  '#c2410c', // orange-darker
+];
+
+function getIconColor(key: string) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return ICON_COLORS[Math.abs(hash) % ICON_COLORS.length];
+}
+
 function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
   // Initialize from the current route instead of always starting empty, so
   // a hard reload lands with the correct submenu already expanded.
@@ -138,9 +193,9 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                   onClick={() => toggleOpen(item.label)}
                   isActive={isActive}
                   tooltip={item.label}
-                  className='data-active:text-primary data-active:hover:text-primary h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                  className='h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
                 >
-                  <item.icon />
+                  <item.icon style={{ color: getIconColor(item.label) }} />
                   <span>{item.label}</span>
                   <ChevronRight
                     className={cn(
@@ -160,15 +215,12 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                               ? isNavActive(pathname, child.href)
                               : false
                           }
-                          className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                          className='h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                         >
                           <Link href={child.href || '#'}>
                             <child.icon
-                              data-active={
-                                isNavActive(pathname, child.href || '') ||
-                                undefined
-                              }
-                              className='data-active:text-primary! h-4 w-4'
+                              style={{ color: getIconColor(child.label) }}
+                              className='h-4 w-4'
                             />
 
                             <span>{child.label}</span>
@@ -186,10 +238,10 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                     asChild
                     isActive={isNavActive(pathname, item.href)}
                     tooltip={item.label}
-                    className='data-active:text-primary data-active:hover:text-primary h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                    className='h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                   >
                     <Link href={item.href}>
-                      <item.icon />
+                      <item.icon style={{ color: getIconColor(item.label) }} />
                       <span>{item.label}</span>
                     </Link>
                   </SidebarMenuButton>
