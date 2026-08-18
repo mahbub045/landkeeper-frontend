@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeletePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
-import { DeleteUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
+import { DeleteUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyPermissionTypes';
 import { getInitials } from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';

@@ -25,7 +25,7 @@ import { useGetPropertyPermissionsQuery } from '@/store/api/endpoints/client/Com
 import {
   PropertyPermission,
   PropertyPermissionListProps,
-} from '@/types/client/Common/Properties/PropertyDetailsTypes';
+} from '@/types/client/Common/Properties/PropertyPermissionTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,

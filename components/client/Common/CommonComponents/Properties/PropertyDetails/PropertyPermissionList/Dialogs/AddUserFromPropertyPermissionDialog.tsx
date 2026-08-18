@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils';
 import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
 import { useAddPermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { AuthUser } from '@/types/auth/AuthUsersType';
-import { AddUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
+import { AddUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyPermissionTypes';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
