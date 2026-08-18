@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GetRoleBadge } from '@/data/client/common/tools/teamAccess/TeamAccessData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { AcceptedUsersProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
@@ -38,7 +39,6 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
   members,
   isLoading,
   isError,
-  refetch,
   page,
   onPageChange,
   totalCount,
@@ -107,6 +107,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
     pages.push(total);
     return pages;
   };
+
   return (
     <>
       {isLoading && (
@@ -200,8 +201,10 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                   {member?.user?.first_name} {member?.user?.middle_name}{' '}
                   {member?.user?.last_name}
                 </p>
-                <p className='text-muted-foreground mt-0.5 flex gap-2 text-xs font-semibold'>
-                  <span className='flex gap-0.5'>
+                <p className='mt-0.5 flex gap-2 text-xs'>
+                  <span
+                    className={`flex gap-0.5 ${GetRoleBadge({ role: member?.role })}`}
+                  >
                     <ShieldUser size={14} />
                     {formatChoiceFieldValue(member?.role)}
                   </span>

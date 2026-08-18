@@ -347,7 +347,7 @@ const PropertyMaintenanceList: React.FC = () => {
         <Table className='min-w-180'>
           <TableHeader>
             <TableRow>
-              <TableHead className='capitalize'>Request ID</TableHead>
+              <TableHead>Request ID</TableHead>
               {session?.user?.role !== 'TENANT' && (
                 <>
                   <TableHead>Tenant</TableHead>

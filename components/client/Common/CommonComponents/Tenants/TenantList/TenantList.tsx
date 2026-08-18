@@ -184,7 +184,7 @@ const TenantList: React.FC = () => {
                     {TABLE_COLUMNS.map((col) => (
                       <TableHead
                         key={col}
-                        className='px-6 text-center text-xs font-semibold tracking-wider uppercase'
+                        className='px-6 text-center font-semibold tracking-wider'
                       >
                         {col}
                       </TableHead>

@@ -514,7 +514,7 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-center font-extrabold tracking-wider capitalize'
+                  className='px-6 text-center font-semibold tracking-wider'
                 >
                   <div className='flex items-center justify-center gap-1'>
                     {col}

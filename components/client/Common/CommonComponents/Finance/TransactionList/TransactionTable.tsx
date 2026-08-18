@@ -5,6 +5,11 @@ import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -18,7 +23,6 @@ import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import DeleteTransactionDialog from '../Dialogs/DeleteTransactionDialog';
 import UpdateTransactionDialog from '../Dialogs/UpdateTransactionDialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 function formatAmount(
   amount: string,
@@ -73,17 +77,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     <>
       <Table>
         <TableHeader className='bg-card'>
-          <TableRow className='text-xs'>
-            <TableHead className='pl-4 font-semibold'>DATE</TableHead>
-            <TableHead className='font-semibold'>PROPERTY</TableHead>
-            <TableHead className='font-semibold'>TYPE</TableHead>
-            <TableHead className='font-semibold'>CATEGORY</TableHead>
-            <TableHead className='font-semibold'>DESCRIPTION</TableHead>
-            <TableHead className='text-right font-semibold'>AMOUNT</TableHead>
-            <TableHead className='text-center font-semibold'>FILE</TableHead>
-            <TableHead className='pr-4 text-right font-semibold'>
-              ACTIONS
-            </TableHead>
+          <TableRow>
+            <TableHead className='pl-4'>Date</TableHead>
+            <TableHead>Property</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead className='text-right'>Amount</TableHead>
+            <TableHead className='text-center'>File</TableHead>
+            <TableHead className='pr-4 text-right'>Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -93,7 +95,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
             return (
               <TableRow key={tx.alias} className='hover:bg-accent/40'>
-                <TableCell className='text-muted-foreground pl-4 text-xs tabular-nums'>
+                <TableCell className='pl-4 text-xs tabular-nums'>
                   {formatDate(tx.date)}
                 </TableCell>
 
@@ -142,7 +144,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     <Button
                       variant='outline'
                       size='sm'
-                      onClick={() => window.open(tx.receipt_files[0].file, '_blank')}
+                      onClick={() =>
+                        window.open(tx.receipt_files[0].file, '_blank')
+                      }
                     >
                       <Eye />
                       View
@@ -158,7 +162,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                       <PopoverContent className='w-64 p-2' align='center'>
                         <ul className='space-y-1'>
                           {tx.receipt_files.map((r) => {
-                            const filename = r.file.split('/').pop() || `file-${r.id}`;
+                            const filename =
+                              r.file.split('/').pop() || `file-${r.id}`;
                             return (
                               <li key={r.id}>
                                 <a
