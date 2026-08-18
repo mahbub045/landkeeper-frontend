@@ -120,8 +120,10 @@ const PropertyMaintenanceList: React.FC = () => {
     page,
     limit: PAGE_LIMIT,
     search,
-    current_status: statusFilter.length ? statusFilter.join(',') : undefined,
-    category: categoryFilter.length ? categoryFilter.join(',') : undefined,
+    current_status__in: statusFilter.length
+      ? statusFilter.join(',')
+      : undefined,
+    category__in: categoryFilter.length ? categoryFilter.join(',') : undefined,
     is_emergency: emergencyFilter ? true : undefined,
   });
   const [editStatus, { isLoading: isStatusUpdating }] =
