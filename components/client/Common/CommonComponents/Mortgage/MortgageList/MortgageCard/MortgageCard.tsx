@@ -47,12 +47,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             <p className='text-2xl font-bold'>
               {parseFloat(mortgage.interest_rate ?? '0')}%
             </p>
-            <p>
-              <span className='text-muted-foreground text-xs'>
-                Interest Rate Expiry:{' '}
-              </span>
-              {formatDate(mortgage?.interest_rate_expiry_date)}
-            </p>
+           
           </div>
         </div>
 
@@ -121,67 +116,12 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
           </div>
         </div>
 
-        <div className='border-border border-t' />
+       
 
-        <div className='grid grid-cols-3 gap-4'>
-          <div>
-            <p className='mt-1'>
-              <span className='text-muted-foreground text-xs'>EPC Rating:</span>{' '}
-              {mortgage.epc_rating ? (
-                <span className='text-sm font-semibold'>
-                  {mortgage.epc_rating}
-                </span>
-              ) : (
-                <span className='text-muted-foreground text-xs'>Not Found</span>
-              )}
-            </p>
-            <p className='mt-1'>
-              <span className='text-muted-foreground text-xs'>EPC Expiry:</span>{' '}
-              {mortgage.epc_certificate_expiry_date ? (
-                <span className='text-sm font-semibold'>
-                  {formatDate(mortgage.epc_certificate_expiry_date)}
-                </span>
-              ) : (
-                <span className='text-muted-foreground text-xs'>Not Found</span>
-              )}
-            </p>
-          </div>
-          <div>
-            <p className='text-muted-foreground text-xs'>Monthly Payment</p>
-            <p className='mt-1 text-base font-semibold'>
-              {getCurrencySign()}
-              {parseFloat(mortgage.monthly_payment ?? '0').toLocaleString(
-                'en-GB',
-              )}
-            </p>
-          </div>
-          <div>
-            <p className='text-muted-foreground text-xs'>
-              Remaining Mortgage Term(Years)
-            </p>
-            <p className='mt-1 text-base font-semibold'>
-              {mortgage.remaining_mortgage ? (
-                mortgage.remaining_mortgage
-              ) : (
-                <span className='text-muted-foreground text-xs'>Not Found</span>
-              )}
-            </p>
-          </div>
-        </div>
+   
 
-        <div className='border-border border-t' />
-
-        <div className='flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between'>
-          <div className='items-center gap-2'>
-            <p>Notes:</p>
-            {mortgage.notes ? (
-              <small>{mortgage.notes}</small>
-            ) : (
-              <small className='text-muted-foreground'>
-                No notes available
-              </small>
-            )}
-          </div>
+        {/* <div className='flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between'>
+         
 
           <div className='flex items-center gap-2'>
             <Button variant='outline' onClick={() => setEditOpen(true)}>
@@ -193,7 +133,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
               Delete
             </Button>
           </div>
-        </div>
+        </div> */}
       </CardContent>
 
       <UpdateMortgageDialog

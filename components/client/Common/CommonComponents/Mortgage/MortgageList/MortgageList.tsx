@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Landmark } from 'lucide-react';
 import MortgageCard from './MortgageCard/MortgageCard';
+import Link from 'next/link';
 
 const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
   mortgages,
@@ -27,9 +28,11 @@ const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
     );
 
   return (
-    <div className='space-y-4'>
+    <div className='grid grid-cols-1 gap-4 space-y-4 md:grid-cols-2 lg:grid-cols-3'>
       {mortgages.map((mortgage) => (
-        <MortgageCard key={mortgage.alias} mortgage={mortgage} />
+        <Link key={mortgage.alias} href={`/client/landlord/mortgages/${mortgage.alias}`}>
+          <MortgageCard mortgage={mortgage} />
+        </Link>
       ))}
     </div>
   );

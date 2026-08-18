@@ -10,6 +10,13 @@ export const MortgageApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Mortgage'],
     }),
+    getMortgageDetails: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Mortgage'],
+    }),
     addMortgages: builder.mutation({
       query: (payload) => ({
         url: '/mortgage',
@@ -38,6 +45,7 @@ export const MortgageApi = baseApi.injectEndpoints({
 
 export const {
   useGetMortgagesQuery,
+  useGetMortgageDetailsQuery,
   useAddMortgagesMutation,
   useUpdateMortgageMutation,
   useDeleteMortgageMutation,

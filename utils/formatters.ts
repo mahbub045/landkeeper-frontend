@@ -57,7 +57,7 @@ export function formatDateAndTime(isoDate: Date | string | null): string {
   return `${day}-${month}-${year}, ${hours}:${minutes}:${seconds}`;
 }
 
-export function formatDate(isoDate: Date | string | null): string {
+export function formatDate(isoDate: Date | string | null | undefined): string {
   if (isoDate == null) return '';
   const date = new Date(isoDate);
   if (isNaN(date.getTime())) return '';
@@ -106,7 +106,8 @@ export function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-export function formatCurrency(amount: number) {
+export function formatCurrency(amount: number | null | undefined) {
+  if (amount == null || Number.isNaN(amount)) return '';
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
