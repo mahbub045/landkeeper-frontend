@@ -193,7 +193,12 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                   onClick={() => toggleOpen(item.label)}
                   isActive={isActive}
                   tooltip={item.label}
-                  className='h-9 cursor-pointer rounded-lg data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                  style={
+                    isActive
+                      ? { borderBottomColor: getIconColor(item.label) }
+                      : undefined
+                  }
+                  className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
                 >
                   <item.icon style={{ color: getIconColor(item.label) }} />
                   <span>{item.label}</span>
@@ -206,28 +211,38 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                 </SidebarMenuButton>
                 {openItems.has(item.label) && (
                   <SidebarMenuSub>
-                    {item.children!.map((child) => (
-                      <SidebarMenuSubItem key={child.href || child.label}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={
-                            child.href
-                              ? isNavActive(pathname, child.href)
-                              : false
-                          }
-                          className='h-9 rounded-lg data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
-                        >
-                          <Link href={child.href || '#'}>
-                            <child.icon
-                              style={{ color: getIconColor(child.label) }}
-                              className='h-4 w-4'
-                            />
+                    {item.children!.map((child) => {
+                      const childActive = child.href
+                        ? isNavActive(pathname, child.href)
+                        : false;
+                      return (
+                        <SidebarMenuSubItem key={child.href || child.label}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={childActive}
+                            style={
+                              childActive
+                                ? {
+                                    borderBottomColor: getIconColor(
+                                      child.label,
+                                    ),
+                                  }
+                                : undefined
+                            }
+                            className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                          >
+                            <Link href={child.href || '#'}>
+                              <child.icon
+                                style={{ color: getIconColor(child.label) }}
+                                className='h-4 w-4'
+                              />
 
-                            <span>{child.label}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                              <span>{child.label}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 )}
               </>
@@ -238,7 +253,12 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                     asChild
                     isActive={isNavActive(pathname, item.href)}
                     tooltip={item.label}
-                    className='h-9 rounded-lg data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                    style={
+                      isNavActive(pathname, item.href)
+                        ? { borderBottomColor: getIconColor(item.label) }
+                        : undefined
+                    }
+                    className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
                   >
                     <Link href={item.href}>
                       <item.icon style={{ color: getIconColor(item.label) }} />
