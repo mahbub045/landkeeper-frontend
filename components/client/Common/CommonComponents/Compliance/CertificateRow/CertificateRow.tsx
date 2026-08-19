@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
   ApiCertificate,
-  Certificate,
   CertStatus,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { formatDate } from '@/utils/formatters';
@@ -24,48 +23,84 @@ const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
 };
 
 interface CertificateRowProps {
-  cert: Certificate;
-  apiCertificate: ApiCertificate;
+  cert: ApiCertificate;
 }
 
-const CertificateRow: React.FC<CertificateRowProps> = ({
-  cert,
-  apiCertificate,
-}) => {
+const humanizeCertType = (type: string) =>
+  type
+    .toLowerCase()
+    .split('_')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+
+const getCertStatus = (expiryDate: string): CertStatus => {
+  const daysUntilExpiry = Math.ceil(
+    (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (daysUntilExpiry < 0) return 'Expired';
+  if (daysUntilExpiry <= 30) return 'Expiring Soon';
+  return 'Valid';
+};
+
+const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
   const router = useRouter();
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const { color, dot } = statusConfig[cert.status];
+  const status = getCertStatus(cert.expiry_date);
+  const { color, dot } = statusConfig[status];
 
   return (
     <>
       <TableRow className='text-center'>
-        <TableCell className='text-muted-foreground px-6 text-sm'>
-          {cert.property || 'Not Available'}
+        <TableCell className='px-6 text-sm'>
+          {cert.property?.property_name || (
+            <span className='text-muted-foreground text-xs'>Not Available</span>
+          )}
         </TableCell>
-        <TableCell className='text-muted-foreground px-6 text-sm'>
+        <TableCell className='px-6 text-sm'>
           <span className='flex items-center justify-center gap-2'>
             <span className='text-primary'>✳</span>
-            {cert.type || 'Not Available'}
+            {cert.certificate_type ? (
+              humanizeCertType(cert.certificate_type)
+            ) : (
+              <span className='text-muted-foreground text-xs'>
+                Not Available
+              </span>
+            )}
           </span>
         </TableCell>
-        <TableCell className='text-muted-foreground px-6 text-sm'>
-          {cert.certificateNumber || 'Not Available'}
+        <TableCell className='px-6 text-sm'>
+          {cert.certificate_number || (
+            <span className='text-muted-foreground text-xs'>Not Available</span>
+          )}
         </TableCell>
-        <TableCell className='text-muted-foreground px-6 text-sm'>
+        <TableCell className='px-6 text-sm'>
           <div className='flex flex-col gap-0.5'>
-            <span>Issue: {formatDate(cert.issueDate) || 'Not Available'}</span>
             <span>
-              Expiry: {formatDate(cert.expiryDate) || 'Not Available'}
+              Issue:{' '}
+              {formatDate(cert.issue_date) || (
+                <span className='text-muted-foreground text-xs'>
+                  Not Available
+                </span>
+              )}
+            </span>
+            <span>
+              Expiry:{' '}
+              {formatDate(cert.expiry_date) || (
+                <span className='text-muted-foreground text-xs'>
+                  Not Available
+                </span>
+              )}
             </span>
           </div>
         </TableCell>
         <TableCell className='px-6'>
-          {apiCertificate.certificate_file ? (
+          {cert.certificate_file ? (
             <Button variant='outline' size='sm' className='rounded-lg' asChild>
               <a
-                href={apiCertificate.certificate_file}
+                href={cert.certificate_file}
                 target='_blank'
                 rel='noopener noreferrer'
               >
@@ -73,7 +108,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
               </a>
             </Button>
           ) : (
-            <span className='text-muted-foreground text-sm'>Not Available</span>
+            <span className='text-muted-foreground text-xs'>Not Available</span>
           )}
         </TableCell>
         <TableCell className='px-6'>
@@ -81,7 +116,11 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
             className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
           >
             <span className={`inline-block size-1.5 rounded-full ${dot}`} />
-            {cert.status}
+            {status ?? (
+              <span className='text-muted-foreground text-xs'>
+                Not Available
+              </span>
+            )}
           </Badge>
         </TableCell>
         <TableCell className='px-6'>
@@ -109,18 +148,18 @@ const CertificateRow: React.FC<CertificateRowProps> = ({
       </TableRow>
 
       <UpdateCertificateDialog
-        key={apiCertificate.alias}
+        key={cert.alias}
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onSuccess={() => setEditOpen(false)}
-        certificate={apiCertificate}
+        certificate={cert}
       />
 
       <DeleteCertificateDialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onSuccess={() => router.push(getComplianceUrl(session))}
-        certificateAlias={apiCertificate.alias}
+        certificateAlias={cert.alias}
       />
     </>
   );

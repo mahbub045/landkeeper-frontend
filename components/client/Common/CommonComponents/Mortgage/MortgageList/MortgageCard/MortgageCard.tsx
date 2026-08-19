@@ -90,7 +90,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
 
           {/* Footer */}
           <div className='flex items-center justify-between gap-3'>
-            {mortgage.interest_rate_expiry_date && (
+            {mortgage.interest_rate_expiry_date ? (
               <div
                 className={`flex items-center gap-1.5 text-xs ${expiryUrgencyStyles(rateExpiryDays)}`}
               >
@@ -102,6 +102,11 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
                     <span className='ml-1 opacity-80'>({rateExpiryDays}d)</span>
                   )}
                 </span>
+              </div>
+            ): (
+              <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                <Calendar className='size-3.5' />
+                <span>Rate not fixed</span>
               </div>
             )}
           </div>

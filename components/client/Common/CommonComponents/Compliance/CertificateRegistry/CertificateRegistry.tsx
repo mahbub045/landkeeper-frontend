@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/table';
 import {
   ApiCertificate,
-  Certificate,
   CertificateRegistryProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { FileBadge, Plus, Search } from 'lucide-react';
@@ -33,7 +32,6 @@ const TABLE_COLUMNS = [
 
 interface CertificateRegistryComponentProps extends CertificateRegistryProps {
   isLoading?: boolean;
-  apiCertificates: ApiCertificate[];
   search: string;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAddClick: () => void;
@@ -42,7 +40,6 @@ interface CertificateRegistryComponentProps extends CertificateRegistryProps {
 const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
   certificates,
   isLoading,
-  apiCertificates,
   search,
   onSearchChange,
   onAddClick,
@@ -81,7 +78,7 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
               {TABLE_COLUMNS.map((col) => (
                 <TableHead
                   key={col}
-                  className='px-6 text-center text-xs font-semibold tracking-wider'
+                  className='px-6 text-center font-semibold tracking-wider'
                 >
                   {col}
                 </TableHead>
@@ -115,19 +112,8 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              certificates.map((cert: Certificate) => {
-                const apiCertificate = apiCertificates.find(
-                  (a) => a.alias === cert.alias,
-                );
-                if (!apiCertificate) return null;
-
-                return (
-                  <CertificateRow
-                    key={cert.alias}
-                    cert={cert}
-                    apiCertificate={apiCertificate}
-                  />
-                );
+              certificates.map((cert: ApiCertificate) => {
+                return <CertificateRow key={cert.alias} cert={cert} />;
               })
             )}
           </TableBody>

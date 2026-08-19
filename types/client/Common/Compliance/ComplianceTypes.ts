@@ -1,19 +1,9 @@
 export type CertStatus = 'Valid' | 'Expired' | 'Expiring Soon';
 
-export interface Certificate {
-  alias: string;
-  property: string;
-  type: string;
-  certificateNumber: number;
-  issueDate: string;
-  expiryDate: string;
-  status: CertStatus;
-}
-
 export interface ApiCertificate {
   alias: string;
   certificate_file: string | null;
-  certificate_number: number;
+  certificate_number: string;
   certificate_type: string;
   created_at: string;
   expiry_date: string;
@@ -47,7 +37,7 @@ export interface ComplianceScoreProps {
 }
 
 export interface CertificateRegistryProps {
-  certificates: Certificate[];
+  certificates: ApiCertificate[];
   isLoading?: boolean;
 }
 

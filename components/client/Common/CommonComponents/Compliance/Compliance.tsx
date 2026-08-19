@@ -18,7 +18,6 @@ import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetCompliancesQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import {
   ApiCertificate,
-  Certificate,
   CertStatus,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { useEffect, useMemo, useState } from 'react';
@@ -28,13 +27,6 @@ import AddCertificateDialog from './Dialogs/AddCertificateDialog';
 import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
 
 const COMPLIANCE_SCORE = 87;
-
-const humanizeCertType = (type: string) =>
-  type
-    .toLowerCase()
-    .split('_')
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(' ');
 
 const getCertStatus = (expiryDate: string): CertStatus => {
   const daysUntilExpiry = Math.ceil(
@@ -72,22 +64,10 @@ const Compliance: React.FC = () => {
     [data?.results],
   );
 
-  const certificates: Certificate[] = useMemo(() => {
-    return apiCertificates.map((cert: ApiCertificate) => ({
-      alias: cert.alias,
-      property: cert.property.property_name,
-      type: humanizeCertType(cert.certificate_type),
-      certificateNumber: cert.certificate_number,
-      issueDate: cert.issue_date,
-      expiryDate: cert.expiry_date,
-      status: getCertStatus(cert.expiry_date),
-    }));
-  }, [apiCertificates]);
-
-  const validCount = certificates.filter(
-    (c: Certificate) => c.status === 'Valid',
+  const validCount = apiCertificates.filter(
+    (cert) => getCertStatus(cert.expiry_date) === 'Valid',
   ).length;
-  const totalCount = certificates.length;
+  const totalCount = apiCertificates.length;
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value);
@@ -138,8 +118,7 @@ const Compliance: React.FC = () => {
       ) : (
         <>
           <CertificateRegistry
-            certificates={certificates}
-            apiCertificates={apiCertificates}
+            certificates={apiCertificates}
             isLoading={isLoading}
             search={search}
             onSearchChange={handleSearchChange}

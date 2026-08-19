@@ -324,7 +324,7 @@ const AppSidebar: React.FC = () => {
         <Link
           href={getStartNewJourneyUrl(session)}
           passHref
-          className='flex justify-center px-4'
+          className='flex justify-center px-3'
         >
           <Button
             type='button'
