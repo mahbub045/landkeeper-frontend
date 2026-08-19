@@ -131,17 +131,19 @@ const MortgageDetails: React.FC = () => {
           </div>
 
           <Badge variant='secondary' className='font-mono text-xs'>
-            {rateTypeLabel(mortgageData?.interest_rate_type)}
+            {rateTypeLabel(mortgageData?.interest_rate_type || 'Not set')}
           </Badge>
-          <Badge
-            className='font-mono text-xs'
-            variant={epcAtRisk ? 'destructive' : 'default'}
-          >
-            <span>EPC:</span>
-            {mortgageData?.epc_rating ?? (
-              <span className='text-muted-foreground'>Not set</span>
-            )}
-          </Badge>
+          {mortgageData?.interest_rate && (
+            <Badge
+              className='font-mono text-xs'
+              variant={epcAtRisk ? 'destructive' : 'default'}
+            >
+              <span>EPC:</span>
+              {mortgageData?.epc_rating ?? (
+                <span className='text-muted-foreground'>Not set</span>
+              )}
+            </Badge>
+          )}
         </div>
       </div>
 
