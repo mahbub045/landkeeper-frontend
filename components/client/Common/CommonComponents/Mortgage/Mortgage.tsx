@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { Skeleton } from '@/components/ui/skeleton';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { Plus, Search } from 'lucide-react';
@@ -20,6 +21,67 @@ import { useEffect, useState } from 'react';
 import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
 import SummaryCards from './SummaryCards/SummaryCards';
+
+// Skeleton for the summary stat cards row (matches a typical 4-card grid).
+function SummaryCardsSkeleton() {
+  return (
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className='border-border bg-card space-y-3 rounded-xl border p-4'
+        >
+          <Skeleton className='h-4 w-24' />
+          <Skeleton className='h-7 w-32' />
+          <Skeleton className='h-3 w-20' />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Skeleton for a single mortgage card — mirrors MortgageList's card layout:
+function MortgageCardSkeleton() {
+  return (
+    <div className='border-border bg-card space-y-4 rounded-xl border p-4 shadow-sm'>
+      <div className='flex items-start justify-between'>
+        <Skeleton className='h-3.5 w-28' />
+        <Skeleton className='h-5 w-14 rounded-full' />
+      </div>
+
+      <div className='space-y-1.5'>
+        <Skeleton className='h-5 w-40' />
+        <Skeleton className='h-3.5 w-20' />
+      </div>
+
+      <div className='flex items-end justify-between'>
+        <div className='space-y-1.5'>
+          <Skeleton className='h-7 w-20' />
+          <Skeleton className='h-3 w-28' />
+        </div>
+        <div className='space-y-1.5 text-right'>
+          <Skeleton className='ml-auto h-5 w-10' />
+          <Skeleton className='ml-auto h-3 w-16' />
+        </div>
+      </div>
+
+      <div className='border-border border-t pt-3'>
+        <Skeleton className='h-3.5 w-24' />
+      </div>
+    </div>
+  );
+}
+
+// Grid of mortgage card skeletons while data is loading.
+function MortgageListSkeleton() {
+  return (
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <MortgageCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
 
 const Mortgage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -76,40 +138,47 @@ const Mortgage: React.FC = () => {
         </div>
       </div>
 
-      <SummaryCards data={data?.results ?? []} />
-
-      {isError ? (
-        <CustomErrorMessage title='mortgages' />
+      {isLoading ? (
+        <SummaryCardsSkeleton />
       ) : (
-        <>
-          <div className='mt-15 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-            <div>
-              <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-                Mortgages
-              </h1>
-              <p className='text-muted-foreground text-sm'>
-                Track and manage your property financing
-              </p>
-            </div>
-            <div className='flex items-center gap-2'>
-              <div className='relative w-64'>
-                <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-                <Input
-                  type='text'
-                  placeholder='Search...'
-                  value={search}
-                  onChange={handleSearchChange}
-                  className='h-8! w-64 pr-8! pl-7!'
-                />
-                <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
-              </div>
+        <SummaryCards data={data?.results ?? []} />
+      )}
 
-              <Button onClick={() => setModalOpen(true)}>
-                <Plus />
-                Add Mortgage
-              </Button>
-            </div>
+      <div className='mt-15 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+        <div>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+            Mortgages
+          </h1>
+          <p className='text-muted-foreground text-sm'>
+            Track and manage your property financing
+          </p>
+        </div>
+        <div className='flex items-center gap-2'>
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search...'
+              value={search}
+              onChange={handleSearchChange}
+              className='h-8! w-64 pr-8! pl-7!'
+            />
+            <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
           </div>
+
+          <Button onClick={() => setModalOpen(true)}>
+            <Plus />
+            Add Mortgage
+          </Button>
+        </div>
+      </div>
+
+      {isLoading && <MortgageListSkeleton />}
+
+      {!isLoading && isError && <CustomErrorMessage title='mortgages' />}
+
+      {!isLoading && !isError && (
+        <>
           <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />
 
           <div className='flex items-center justify-between'>
