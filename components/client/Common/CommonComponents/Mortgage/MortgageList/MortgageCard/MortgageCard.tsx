@@ -23,15 +23,15 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
       {/* Animated Gradient Glow */}
       <div className='from-primary via-secondary to-primary absolute -inset-2 z-0 rounded-[24px] bg-linear-to-r opacity-0 blur-xl transition-all duration-700 group-hover:opacity-100' />
 
-      <Card className='relative z-10 py-0 shadow-md transition-all duration-700 group-hover:-translate-y-1.5 group-hover:shadow-xl'>
-        <CardContent className='space-y-5 p-6'>
+      <Card className='relative z-10 min-w-0 py-0 shadow-md transition-all duration-700 group-hover:-translate-y-1.5 group-hover:shadow-xl'>
+        <CardContent className='min-w-0 space-y-5 p-4 sm:p-6'>
           {/* Header */}
           <div className='flex items-start justify-between gap-3'>
             <div className='min-w-0'>
               <p className='text-muted-foreground truncate text-sm'>
                 {mortgage.property.property_name}
               </p>
-              <h2 className='mt-0.5 truncate text-xl font-bold'>
+              <h2 className='mt-0.5 truncate text-lg font-bold'>
                 {mortgage.lender_name}
               </h2>
               <p className='text-muted-foreground mt-0.5 text-xs'>
@@ -52,20 +52,20 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
           </div>
 
           {/* Stats */}
-          <div className='flex items-end justify-between gap-4'>
-            <div>
-              <p className='text-3xl font-bold tracking-tight'>
+          <div className='flex min-w-0 flex-wrap items-end justify-between gap-4'>
+            <div className='min-w-0'>
+              <p className='truncate text-lg font-bold tracking-tight sm:text-xl'>
                 {getCurrencySign()}
                 {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
                   'en-GB',
                 )}
               </p>
-              <p className='text-muted-foreground mt-1 text-sm'>
+              <p className='text-muted-foreground mt-1 text-xs'>
                 Outstanding Balance
               </p>
             </div>
 
-            <div className='flex shrink-0 gap-6 text-right'>
+            <div className='flex min-w-0 shrink-0 gap-4 text-right sm:gap-6'>
               <div>
                 <p className='font-mono text-lg font-semibold'>
                   {parseFloat(mortgage.interest_rate ?? '0')}%
@@ -89,13 +89,13 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
           <Separator />
 
           {/* Footer */}
-          <div className='flex items-center justify-between gap-3'>
+          <div className='flex items-start gap-3'>
             {mortgage.interest_rate_expiry_date ? (
               <div
                 className={`flex items-center gap-1.5 text-xs ${expiryUrgencyStyles(rateExpiryDays)}`}
               >
                 <Calendar className='size-3.5' />
-                <span>
+                <span className='min-w-0'>
                   Rate fixed until{' '}
                   {formatDate(mortgage.interest_rate_expiry_date)}
                   {rateExpiryDays !== null && rateExpiryDays >= 0 && (
@@ -103,8 +103,8 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
                   )}
                 </span>
               </div>
-            ): (
-              <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+            ) : (
+              <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
                 <Calendar className='size-3.5' />
                 <span>Rate not fixed</span>
               </div>

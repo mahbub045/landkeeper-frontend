@@ -144,8 +144,8 @@ const Mortgage: React.FC = () => {
         <SummaryCards data={data?.results ?? []} />
       )}
 
-      <div className='mt-15 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-        <div>
+      <div className='mt-15 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
+        <div className='min-w-0'>
           <h1 className='text-foreground text-2xl font-bold tracking-tight'>
             Mortgages
           </h1>
@@ -153,20 +153,20 @@ const Mortgage: React.FC = () => {
             Track and manage your property financing
           </p>
         </div>
-        <div className='flex items-center gap-2'>
-          <div className='relative w-64'>
+        <div className='flex w-full min-w-0 flex-col gap-2 sm:flex-row lg:w-auto'>
+          <div className='relative min-w-0 flex-1 sm:max-w-56 lg:w-64 lg:flex-none'>
             <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
             <Input
               type='text'
               placeholder='Search...'
               value={search}
               onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-7!'
+              className='h-8! w-full pr-8! pl-7!'
             />
             <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
           </div>
 
-          <Button onClick={() => setModalOpen(true)}>
+          <Button onClick={() => setModalOpen(true)} className='shrink-0'>
             <Plus />
             Add Mortgage
           </Button>
@@ -181,7 +181,7 @@ const Mortgage: React.FC = () => {
         <>
           <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />
 
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-wrap items-center justify-between gap-3'>
             {(data?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
