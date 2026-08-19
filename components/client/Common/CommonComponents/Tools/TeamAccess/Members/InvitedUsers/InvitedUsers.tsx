@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
+import { GetRoleBadge } from '@/data/client/common/tools/teamAccess/TeamAccessData';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/InvitedUsersTypes';
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
@@ -31,7 +32,6 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
   invites,
   isInviteLoading,
   isInviteError,
-  refetchInvites,
   page,
   onPageChange,
   totalCount,
@@ -134,7 +134,9 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                 <div className='min-w-0 flex-1'>
                   <p className='text-foreground truncate text-sm font-bold'>
                     {invite.email} &bull;{' '}
-                    <small className='text-muted-foreground mt-0.5 text-xs'>
+                    <small
+                      className={`text-muted-foreground mt-0.5 text-xs ${GetRoleBadge({ role: invite?.role })}`}
+                    >
                       {' '}
                       {formatChoiceFieldValue(invite?.role)}
                     </small>
@@ -147,7 +149,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                     </p>
                   )}
                   <p className='text-muted-foreground/70 mt-0.5 text-xs'>
-                    Invited {formatDate(invite.created_at)}
+                    Invited At: {formatDate(invite.created_at)}
                   </p>
                 </div>
 

@@ -8,7 +8,8 @@ import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceType
 import { DocumentForm } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
-import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';
+import { TenantForm } from '../Common/Tenants/TenantsTypes';
+
 
 export type WizardTab =
   | 'property'

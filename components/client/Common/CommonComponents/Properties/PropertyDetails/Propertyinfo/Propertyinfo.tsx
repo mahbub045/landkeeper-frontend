@@ -154,10 +154,14 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
           label='Purchase Date'
           value={
             <span className='flex items-center gap-1.5'>
-              <CalendarDays className='text-primary size-3.5' />
-              {property.purchase_date
-                ? formatDate(property.purchase_date)
-                : '—'}
+              {property.purchase_date ? (
+                <>
+                  <CalendarDays className='text-primary size-3.5' />
+                  {formatDate(property.purchase_date)}
+                </>
+              ) : (
+                '—'
+              )}
             </span>
           }
         />

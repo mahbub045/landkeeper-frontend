@@ -68,29 +68,11 @@ const Mortgage: React.FC = () => {
       <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div>
           <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-            Mortgages
+            Mortgage overview
           </h1>
           <p className='text-muted-foreground text-sm'>
-            Track and manage your property financing
+            Manage your mortgages and track their details in one place.
           </p>
-        </div>
-        <div className='flex items-center gap-2'>
-          <div className='relative w-64'>
-            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-            <Input
-              type='text'
-              placeholder='Search...'
-              value={search}
-              onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-7!'
-            />
-            <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
-          </div>
-
-          <Button onClick={() => setModalOpen(true)}>
-            <Plus />
-            Add Mortgage
-          </Button>
         </div>
       </div>
 
@@ -100,6 +82,34 @@ const Mortgage: React.FC = () => {
         <CustomErrorMessage title='mortgages' />
       ) : (
         <>
+          <div className='mt-15 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+            <div>
+              <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+                Mortgages
+              </h1>
+              <p className='text-muted-foreground text-sm'>
+                Track and manage your property financing
+              </p>
+            </div>
+            <div className='flex items-center gap-2'>
+              <div className='relative w-64'>
+                <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+                <Input
+                  type='text'
+                  placeholder='Search...'
+                  value={search}
+                  onChange={handleSearchChange}
+                  className='h-8! w-64 pr-8! pl-7!'
+                />
+                <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
+              </div>
+
+              <Button onClick={() => setModalOpen(true)}>
+                <Plus />
+                Add Mortgage
+              </Button>
+            </div>
+          </div>
           <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />
 
           <div className='flex items-center justify-between'>

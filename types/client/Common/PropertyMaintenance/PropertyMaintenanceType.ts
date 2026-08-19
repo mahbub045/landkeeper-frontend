@@ -11,10 +11,18 @@ export interface MaintenanceDocument {
   length: number;
 }
 
+interface Tenant {
+  alias: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  phone?: string;
+}
+
 export interface MaintenanceRequest {
-  alias: string ;
+  alias: string;
   request_id: string;
-  tenant: string;
+  tenant: Tenant;
   property: string;
   issue: string;
   category: MaintenanceCategory;
@@ -54,4 +62,32 @@ export interface DeleteMaintenanceRequestDialogProps {
   onClose: () => void;
   maintenanceRequestAlias: string;
   maintenanceRequestId: string;
+}
+
+export interface PropertyMaintenanceCommentsProps {
+  pmAlias: string;
+}
+
+export interface PropertyMaintenanceCommentAuthor {
+  email: string;
+  name: string;
+  profile_image: string | null;
+  role?: string;
+}
+
+export interface PropertyMaintenanceCommentFile {
+  id: number;
+  file: string;
+}
+
+export interface ApiPropertyMaintenanceComment {
+  id: number;
+  alias: string;
+  message: string;
+  author: PropertyMaintenanceCommentAuthor;
+  documents: PropertyMaintenanceCommentFile[];
+  parent: number | null;
+  replies: ApiPropertyMaintenanceComment[];
+  created_at: string;
+  updated_at?: string;
 }

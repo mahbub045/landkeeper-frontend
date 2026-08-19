@@ -1,5 +1,6 @@
 'use client';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,12 +24,11 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { AlertCircle, Plus, RefreshCcw, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
-import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 
 const Properties: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');

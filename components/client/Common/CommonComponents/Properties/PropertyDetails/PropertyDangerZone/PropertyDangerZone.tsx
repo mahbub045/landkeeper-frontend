@@ -5,13 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PropertyDangerZoneProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import { AlertTriangle, Trash2 } from 'lucide-react';
-import { useState } from 'react';
 
 const PropertyDangerZone: React.FC<PropertyDangerZoneProps> = ({
   onDeleteClick,
 }) => {
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-
   return (
     <Card className='border-destructive/40 rounded-2xl shadow-sm'>
       <CardHeader className='pb-2'>

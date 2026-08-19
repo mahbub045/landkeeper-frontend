@@ -12,7 +12,6 @@ import {
   House,
   Landmark,
   LayoutDashboard,
-  Link2,
   Package,
   Podcast,
   ShieldUser,
@@ -114,11 +113,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/landlord/reports-and-analytics',
         icon: BarChart3,
       },
-      {
-        label: 'Integrations',
-        href: '/client/landlord/integrations',
-        icon: Link2,
-      },
+      // {
+      //   label: 'Integrations',
+      //   href: '/client/landlord/integrations',
+      //   icon: Link2,
+      // },
       {
         label: 'Marketplace',
         href: '/client/landlord/marketplace',
@@ -201,11 +200,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         href: '/client/admin/reports-and-analytics',
         icon: BarChart3,
       },
-      {
-        label: 'Integrations',
-        href: '/client/admin/integrations',
-        icon: Link2,
-      },
+      // {
+      //   label: 'Integrations',
+      //   href: '/client/admin/integrations',
+      //   icon: Link2,
+      // },
       {
         label: 'Marketplace',
         href: '/client/admin/marketplace',

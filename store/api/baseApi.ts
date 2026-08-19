@@ -15,22 +15,25 @@ export type AuthRootState = {
 
 export const TAG_TYPES = [
   // Global Common Tags
+  'AuthUserList',
   'Notifications',
   'UserProfileAndSettings',
   'SupportTickets',
   'SupportTicketComments',
   'NewJourney',
+  'Permissions',
 
   // Common Tags
   'Property',
   'Mortgage',
-  'Tenant',
+  'Tenants',
   'Compliance',
   'Document',
   'Templates',
   'Finance',
   'TeamAccess',
   'PropertyMaintenance',
+  'PropertyMaintenanceComments',
 
   // Payments
   'PaymentMethods',

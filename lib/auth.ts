@@ -66,7 +66,6 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
-
       // ✅ Called by SessionSync → update() after token refresh in baseApi
       if (trigger === 'update' && session?.accessToken) {
         token.accessToken = session.accessToken;

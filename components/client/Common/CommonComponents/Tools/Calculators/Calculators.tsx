@@ -62,7 +62,7 @@ const Calculators: React.FC = () => {
         className='w-full'
       >
         <TabsList
-          className='w-full flex-wrap items-start justify-start gap-1.5'
+          className='bg-primary/5 w-full flex-wrap items-start justify-start gap-1.5'
           style={{ height: 'auto', minHeight: 0, padding: '0.25rem' }}
         >
           {CALCULATOR_TABS.map(({ value, label, icon: Icon }) => (

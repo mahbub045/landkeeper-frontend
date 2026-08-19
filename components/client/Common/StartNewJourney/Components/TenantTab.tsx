@@ -19,9 +19,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/common/tenant/TenantData';
+import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/common/tenants/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
-import { TenantForm } from '@/types/client/Common/Tenant/TenantTypes';
+import { TenantForm } from '@/types/client/Common/Tenants/TenantsTypes';
 import { TenantStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { Upload, User, X } from 'lucide-react';
@@ -165,62 +165,62 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
             <FieldError errors={[{ message: errors.title }]} />
           </Field>
 
-          <Field data-invalid={!!errors.firstName}>
+          <Field data-invalid={!!errors.first_name}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               First Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               type='text'
-              value={value.firstName}
-              onChange={(e) => set('firstName', e.target.value)}
-              aria-invalid={!!errors.firstName}
+              value={value.first_name}
+              onChange={(e) => set('first_name', e.target.value)}
+              aria-invalid={!!errors.first_name}
               className={
-                errors.firstName
+                errors.first_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
               required
             />
-            <FieldError errors={[{ message: errors.firstName }]} />
+            <FieldError errors={[{ message: errors.first_name }]} />
           </Field>
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.middleName}>
+          <Field data-invalid={!!errors.middle_name}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Middle Name
             </FieldLabel>
             <Input
               type='text'
-              value={value.middleName}
-              onChange={(e) => set('middleName', e.target.value)}
-              aria-invalid={!!errors.middleName}
+              value={value.middle_name}
+              onChange={(e) => set('middle_name', e.target.value)}
+              aria-invalid={!!errors.middle_name}
               className={
-                errors.middleName
+                errors.middle_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.middleName }]} />
+            <FieldError errors={[{ message: errors.middle_name }]} />
           </Field>
 
-          <Field data-invalid={!!errors.lastName}>
+          <Field data-invalid={!!errors.last_name}>
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Last Name<span className='text-danger'>*</span>
             </FieldLabel>
             <Input
               type='text'
-              value={value.lastName}
-              onChange={(e) => set('lastName', e.target.value)}
-              aria-invalid={!!errors.lastName}
+              value={value.last_name}
+              onChange={(e) => set('last_name', e.target.value)}
+              aria-invalid={!!errors.last_name}
               className={
-                errors.lastName
+                errors.last_name
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
               required
             />
-            <FieldError errors={[{ message: errors.lastName }]} />
+            <FieldError errors={[{ message: errors.last_name }]} />
           </Field>
         </div>
 
@@ -261,23 +261,23 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.rentAmount}>
+          <Field data-invalid={!!errors.rent_amount}>
             <FieldLabel className='text-sm font-semibold'>
               Rent Amount
             </FieldLabel>
             <Input
               type='number'
               placeholder={`${getCurrencySign()} per month`}
-              value={value.rentAmount}
-              onChange={(e) => set('rentAmount', e.target.value)}
-              aria-invalid={!!errors.rentAmount}
+              value={value.rent_amount}
+              onChange={(e) => set('rent_amount', e.target.value)}
+              aria-invalid={!!errors.rent_amount}
               className={
-                errors.rentAmount
+                errors.rent_amount
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.rentAmount }]} />
+            <FieldError errors={[{ message: errors.rent_amount }]} />
           </Field>
 
           <Field data-invalid={!!errors.deposit}>
@@ -299,80 +299,80 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
-          <Field data-invalid={!!errors.tenancyStart}>
+          <Field data-invalid={!!errors.tenancy_start_date}>
             <FieldLabel className='text-sm font-semibold'>
               Tenancy Start
             </FieldLabel>
             <Input
               type='date'
-              value={value.tenancyStart}
-              onChange={(e) => set('tenancyStart', e.target.value)}
-              aria-invalid={!!errors.tenancyStart}
+              value={value.tenancy_start_date}
+              onChange={(e) => set('tenancy_start_date', e.target.value)}
+              aria-invalid={!!errors.tenancy_start_date}
               className={
-                errors.tenancyStart
+                errors.tenancy_start_date
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.tenancyStart }]} />
+            <FieldError errors={[{ message: errors.tenancy_start_date }]} />
           </Field>
 
-          <Field data-invalid={!!errors.tenancyEnd}>
+          <Field data-invalid={!!errors.tenancy_end_date}>
             <FieldLabel className='text-sm font-semibold'>
               Tenancy End
             </FieldLabel>
             <Input
               type='date'
-              value={value.tenancyEnd}
-              min={value.tenancyStart || undefined}
-              onChange={(e) => set('tenancyEnd', e.target.value)}
-              aria-invalid={!!errors.tenancyEnd}
+              value={value.tenancy_end_date}
+              min={value.tenancy_start_date || undefined}
+              onChange={(e) => set('tenancy_end_date', e.target.value)}
+              aria-invalid={!!errors.tenancy_end_date}
               className={
-                errors.tenancyEnd
+                errors.tenancy_end_date
                   ? 'border-danger focus-visible:ring-danger/50'
                   : ''
               }
             />
-            <FieldError errors={[{ message: errors.tenancyEnd }]} />
+            <FieldError errors={[{ message: errors.tenancy_end_date }]} />
           </Field>
         </div>
 
-        <Field data-invalid={!!errors.employmentDetails}>
+        <Field data-invalid={!!errors.employment_details}>
           <FieldLabel className='text-sm font-semibold'>
             Employment Details
           </FieldLabel>
           <Input
             type='text'
             placeholder='Employer name and role'
-            value={value.employmentDetails}
-            onChange={(e) => set('employmentDetails', e.target.value)}
-            aria-invalid={!!errors.employmentDetails}
+            value={value.employment_details}
+            onChange={(e) => set('employment_details', e.target.value)}
+            aria-invalid={!!errors.employment_details}
             className={
-              errors.employmentDetails
+              errors.employment_details
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.employmentDetails }]} />
+          <FieldError errors={[{ message: errors.employment_details }]} />
         </Field>
 
-        <Field data-invalid={!!errors.guarantorName}>
+        <Field data-invalid={!!errors.guarantor_name}>
           <FieldLabel className='text-sm font-semibold'>
             Guarantor Name
           </FieldLabel>
           <Input
             type='text'
             placeholder='Optional'
-            value={value.guarantorName}
-            onChange={(e) => set('guarantorName', e.target.value)}
-            aria-invalid={!!errors.guarantorName}
+            value={value.guarantor_name}
+            onChange={(e) => set('guarantor_name', e.target.value)}
+            aria-invalid={!!errors.guarantor_name}
             className={
-              errors.guarantorName
+              errors.guarantor_name
                 ? 'border-danger focus-visible:ring-danger/50'
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.guarantorName }]} />
+          <FieldError errors={[{ message: errors.guarantor_name }]} />
         </Field>
 
         <Field data-invalid={!!errors.notes}>

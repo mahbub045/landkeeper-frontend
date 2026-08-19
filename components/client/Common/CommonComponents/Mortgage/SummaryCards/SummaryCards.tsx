@@ -1,9 +1,9 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Building2, CreditCard, TrendingDown } from 'lucide-react';
-import { getCurrencySign } from '@/utils/formatters';
 import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { getCurrencySign } from '@/utils/formatters';
+import { Building2, CreditCard, TrendingDown } from 'lucide-react';
 
 const SummaryCards: React.FC<{ data: Mortgage[] }> = ({ data }) => {
   const totalOutstanding = data.reduce(
@@ -43,7 +43,7 @@ const SummaryCards: React.FC<{ data: Mortgage[] }> = ({ data }) => {
   return (
     <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
       {stats.map((stat) => (
-        <Card key={stat.label} className='border-border rounded-2xl shadow-sm'>
+        <Card key={stat.label} className='border-border rounded-2xl shadow-md'>
           <CardContent className='px-6 py-3'>
             <div
               className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${stat.iconBg}`}

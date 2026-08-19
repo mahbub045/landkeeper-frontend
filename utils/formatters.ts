@@ -57,7 +57,7 @@ export function formatDateAndTime(isoDate: Date | string | null): string {
   return `${day}-${month}-${year}, ${hours}:${minutes}:${seconds}`;
 }
 
-export function formatDate(isoDate: Date | string | null): string {
+export function formatDate(isoDate: Date | string | null | undefined): string {
   if (isoDate == null) return '';
   const date = new Date(isoDate);
   if (isNaN(date.getTime())) return '';
@@ -106,15 +106,22 @@ export function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 }
 
-export function formatCurrency(amount: number) {
+export function formatCurrency(amount: number | null | undefined) {
+  if (amount == null || Number.isNaN(amount)) return '';
   return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'GBP',
   }).format(amount);
 }
 
-export function getDaysUntilDue(nextDueDate: string) {
+export function getDaysUntilDue(
+  nextDueDate: string | Date | null | undefined,
+): number | null {
+  if (!nextDueDate) return null;
+
   const due = new Date(nextDueDate);
+  if (Number.isNaN(due.getTime())) return null;
+
   const now = new Date();
   due.setHours(0, 0, 0, 0);
   now.setHours(0, 0, 0, 0);

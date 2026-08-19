@@ -1,6 +1,7 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -42,14 +43,14 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
 import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
+import PropertyMaintenanceComments from './PropertyMaintenanceComments/PropertyMaintenanceComments';
 
 const PropertyMaintenanceDetails: React.FC = () => {
-  const router = useRouter();
   const { data: session } = useSession();
   const { maintenancealias } = useParams();
   const [
@@ -273,10 +274,11 @@ const PropertyMaintenanceDetails: React.FC = () => {
           </p>
         </div>
         <div className='flex flex-wrap gap-2'>
-          <Button variant='outline' onClick={() => router.back()}>
+          <Button variant='outline' onClick={() => window.history.back()}>
             <ArrowLeft className='size-4' />
             Back
           </Button>
+
           {session?.user?.role === 'TENANT' && (
             <Button
               variant='default'
@@ -470,16 +472,35 @@ const PropertyMaintenanceDetails: React.FC = () => {
               <h2 className='mb-4 text-sm font-semibold'>Requested by</h2>
               <dl className='space-y-4'>
                 <div className='flex items-start gap-3'>
-                  <User className='mt-0.5 size-4 shrink-0' />
+                  <Avatar className='size-9 shrink-0'>
+                    <AvatarImage
+                      src={
+                        maintenanceRequestDetails?.tenant.avatar ?? undefined
+                      }
+                      alt={maintenanceRequestDetails?.tenant.name ?? 'Tenant'}
+                    />
+                    <AvatarFallback className='bg-primary/10'>
+                      <User />
+                    </AvatarFallback>
+                  </Avatar>
+
                   <div className='min-w-0'>
                     <dt className='text-xs'>Tenant</dt>
                     <dd className='truncate text-sm font-medium'>
-                      {maintenanceRequestDetails?.tenant}
+                      {maintenanceRequestDetails?.tenant.name}
                     </dd>
+                    <p className='text-muted-foreground text-xs'>
+                      {maintenanceRequestDetails?.tenant.email}
+                    </p>
+                    <p className='text-muted-foreground text-xs'>
+                      {maintenanceRequestDetails?.tenant.phone}
+                    </p>
                   </div>
                 </div>
                 <div className='flex items-start gap-3'>
-                  <Building2 className='mt-0.5 size-4 shrink-0' />
+                  <span className='bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full'>
+                    <Building2 className='mt-0.5 size-4 shrink-0' />
+                  </span>
                   <div className='min-w-0'>
                     <dt className='text-xs'>Property</dt>
                     <dd className='text-sm font-medium'>
@@ -521,6 +542,14 @@ const PropertyMaintenanceDetails: React.FC = () => {
             </dl>
           </section>
         </div>
+      </div>
+
+      <hr className='my-6' />
+
+      <div>
+        <PropertyMaintenanceComments
+          pmAlias={maintenanceRequestDetails?.alias}
+        />
       </div>
 
       {/* Lightbox */}

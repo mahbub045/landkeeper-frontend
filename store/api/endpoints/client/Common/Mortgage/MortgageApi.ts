@@ -10,6 +10,13 @@ export const MortgageApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Mortgage'],
     }),
+    getMortgageDetails: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Mortgage'],
+    }),
     addMortgages: builder.mutation({
       query: (payload) => ({
         url: '/mortgage',
@@ -33,12 +40,21 @@ export const MortgageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Mortgage'],
     }),
+    getMortgagePermissions: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/permissions/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Permissions'],
+    }),
   }),
 });
 
 export const {
   useGetMortgagesQuery,
+  useGetMortgageDetailsQuery,
   useAddMortgagesMutation,
   useUpdateMortgageMutation,
   useDeleteMortgageMutation,
+  useGetMortgagePermissionsQuery,
 } = MortgageApi;

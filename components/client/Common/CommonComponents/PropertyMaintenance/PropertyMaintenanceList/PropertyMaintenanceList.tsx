@@ -1,8 +1,10 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,8 +53,8 @@ import {
 } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
-import { getPropertyMaintenanceUrl } from '@/utils/redirectPath';
-import { Check, Copy, Edit, Filter, Plus, Search, X } from 'lucide-react';
+import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
+import { Check, Copy, Edit, Filter, Plus, Search, User, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -94,11 +96,6 @@ const PropertyMaintenanceList: React.FC = () => {
     setIsEditMaintenanceRequestDialogOpen(true);
   };
 
-  const handleOpenDeleteDialog = (alias: string) => {
-    setSelectedRequestAlias(alias);
-    setIsDeleteMaintenanceRequestDialogOpen(true);
-  };
-
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
@@ -123,8 +120,10 @@ const PropertyMaintenanceList: React.FC = () => {
     page,
     limit: PAGE_LIMIT,
     search,
-    current_status: statusFilter.length ? statusFilter.join(',') : undefined,
-    category: categoryFilter.length ? categoryFilter.join(',') : undefined,
+    current_status__in: statusFilter.length
+      ? statusFilter.join(',')
+      : undefined,
+    category__in: categoryFilter.length ? categoryFilter.join(',') : undefined,
     is_emergency: emergencyFilter ? true : undefined,
   });
   const [editStatus, { isLoading: isStatusUpdating }] =
@@ -344,39 +343,35 @@ const PropertyMaintenanceList: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className='mb-4 w-full overflow-x-auto'>
+      <Card className='mb-4 w-full overflow-x-auto p-6'>
         <Table className='min-w-180'>
           <TableHeader>
             <TableRow>
-              <TableHead className='uppercase'>Request ID</TableHead>
+              <TableHead>Request ID</TableHead>
               {session?.user?.role !== 'TENANT' && (
                 <>
-                  <TableHead className='uppercase'>Tenant</TableHead>
-                  <TableHead className='uppercase'>Property</TableHead>
+                  <TableHead>Tenant</TableHead>
+                  <TableHead>Property</TableHead>
                 </>
               )}
-              <TableHead className='uppercase'>Issue</TableHead>
-              <TableHead className='text-center uppercase'>Status</TableHead>
-              <TableHead className='text-center uppercase'>Priority</TableHead>
-              <TableHead className='text-center uppercase'>Category</TableHead>
-              <TableHead className='text-center uppercase'>
-                Created At
-              </TableHead>
-              <TableHead className='text-center uppercase'>
-                Updated At
-              </TableHead>
+              <TableHead>Issue</TableHead>
+              <TableHead className='text-center'>Status</TableHead>
+              <TableHead className='text-center'>Priority</TableHead>
+              <TableHead className='text-center'>Category</TableHead>
+              <TableHead className='text-center'>Created At</TableHead>
+              <TableHead className='text-center'>Updated At</TableHead>
               {session?.user?.role === 'TENANT' && (
-                <TableHead className='text-center uppercase'>Action</TableHead>
+                <TableHead className='text-center'>Action</TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {showTableLoading &&
-              Array.from({ length: 6 }).map((_, i) => (
+              Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={i}>
                   {Array.from({ length: 12 }).map((__, j) => (
                     <TableCell key={j} className=''>
-                      <div className='h-4 w-full max-w-35 animate-pulse rounded bg-gray-100' />
+                      <div className='h-10 w-full max-w-35 animate-pulse rounded bg-gray-100' />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -415,36 +410,36 @@ const PropertyMaintenanceList: React.FC = () => {
                 <TableRow
                   key={request.alias}
                   className={`transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 ${
-                    request.is_emergency ? 'text-danger' : ''
+                    request?.is_emergency ? 'text-danger' : ''
                   }`}
                 >
                   <TableCell className='text-sm'>
                     <div className='flex items-center gap-2'>
                       <Link
-                        href={getPropertyMaintenanceUrl(
+                        href={getPropertyMaintenanceDetailsUrl(
                           session,
                           request.alias as string,
                         )}
                         className={`text_decoration_hover transition-colors ${
-                          request.is_emergency ? 'text-danger!' : ''
+                          request?.is_emergency ? 'text-danger!' : ''
                         }`}
                       >
-                        {request.request_id}
+                        {request?.request_id}
                       </Link>
                       <button
                         className='shrink-0 cursor-pointer rounded-md transition-colors'
                         onClick={() =>
-                          copy(request.alias as string, request.request_id, {
+                          copy(request?.alias as string, request?.request_id, {
                             successMessage:
                               'Maintenance ID copied to clipboard.',
                           })
                         }
                       >
-                        {isCopied(request.alias as string) ? (
+                        {isCopied(request?.alias as string) ? (
                           <Check className='text-success size-3' />
                         ) : (
                           <Copy
-                            className={`size-3 ${request.is_emergency ? 'text-danger' : 'text-primary'}`}
+                            className={`size-3 ${request?.is_emergency ? 'text-danger' : 'text-primary'}`}
                           />
                         )}
                       </button>
@@ -453,16 +448,38 @@ const PropertyMaintenanceList: React.FC = () => {
                   {session?.user?.role !== 'TENANT' && (
                     <>
                       <TableCell className='text-sm'>
-                        {request.tenant}
+                        <div className='flex items-center gap-3'>
+                          <Avatar className='h-9 w-9'>
+                            <AvatarImage
+                              src={request?.tenant?.avatar ?? undefined}
+                              alt={request?.tenant?.name}
+                            />
+                            <AvatarFallback>
+                              <User />
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div className='flex flex-col gap-1'>
+                            <span className='font-medium'>
+                              {request?.tenant?.name}
+                            </span>
+                            <span className='text-muted-foreground text-xs'>
+                              {request?.tenant?.email}
+                            </span>
+                            <span className='text-muted-foreground text-xs'>
+                              {request?.tenant?.phone}
+                            </span>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className='max-w-50 truncate text-sm'>
-                        {request.property}
+                        {request?.property}
                       </TableCell>
                     </>
                   )}
                   <TableCell className='max-w-50 truncate text-sm'>
-                    {request.issue ? (
-                      request.issue
+                    {request?.issue ? (
+                      request?.issue
                     ) : (
                       <span className='text-muted-foreground text-xs'>
                         No issue provided
@@ -472,27 +489,30 @@ const PropertyMaintenanceList: React.FC = () => {
                   <TableCell className='text-center'>
                     {canEditStatus ? (
                       <Select
-                        value={request.current_status}
+                        value={request?.current_status}
                         onValueChange={(value) =>
-                          handleStatusChange(request.alias as string, value)
+                          handleStatusChange(request?.alias as string, value)
                         }
                         disabled={
-                          isStatusUpdating && updatingAlias === request.alias
+                          isStatusUpdating && updatingAlias === request?.alias
                         }
                       >
                         <SelectTrigger
-                          className={`mx-auto h-5! w-fit gap-1.5 rounded-full border-none px-2 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[request.current_status]}`}
+                          className={`mx-auto h-5! w-fit gap-1.5 rounded-full border-none px-2 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[request?.current_status]}`}
                         >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent align='center'>
                           {STATUS_OPTIONS.map((status) => (
-                            <SelectItem key={status.value} value={status.value}>
+                            <SelectItem
+                              key={status?.value}
+                              value={status?.value}
+                            >
                               <span className='flex items-center gap-1.5'>
                                 <span
-                                  className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status.value]}`}
+                                  className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status?.value]}`}
                                 />
-                                {status.label}
+                                {status?.label}
                               </span>
                             </SelectItem>
                           ))}
@@ -500,36 +520,37 @@ const PropertyMaintenanceList: React.FC = () => {
                       </Select>
                     ) : (
                       <Badge
-                        className={`gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLES[request.current_status]}`}
+                        size='lg'
+                        className={` ${STATUS_STYLES[request?.current_status]}`}
                       >
                         <span
-                          className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[request.current_status]}`}
+                          className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[request?.current_status]}`}
                         />
-                        {formatChoiceFieldValue(request.current_status)}
+                        {formatChoiceFieldValue(request?.current_status)}
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell className='text-center'>
                     <Badge
-                      className={`${request.is_emergency ? 'bg-danger/20 text-danger' : 'bg-green-100 text-green-800'} rounded-full px-2.5 py-1 text-xs`}
+                      size='lg'
+                      className={`${request?.is_emergency ? 'bg-danger/20 text-danger' : 'bg-green-100 text-green-800'} rounded-full px-2.5 py-1 text-xs`}
                     >
-                      {request.is_emergency ? 'Emergency' : 'Normal'}
+                      {request?.is_emergency ? 'Emergency' : 'Normal'}
                     </Badge>
                   </TableCell>
                   <TableCell className='text-center'>
                     <Badge
-                      className={`${
-                        CATEGORY_STYLES[request.category]
-                      } rounded-full px-2.5 py-1 text-xs`}
+                      size='lg'
+                      className={`${CATEGORY_STYLES[request?.category]} `}
                     >
-                      {formatChoiceFieldValue(request.category)}
+                      {formatChoiceFieldValue(request?.category)}
                     </Badge>
                   </TableCell>
                   <TableCell className='text-center text-sm'>
-                    {formatDateAndTime(request.created_at)}
+                    {formatDateAndTime(request?.created_at)}
                   </TableCell>
                   <TableCell className='text-center text-sm'>
-                    {formatDateAndTime(request.updated_at)}
+                    {formatDateAndTime(request?.updated_at)}
                   </TableCell>
                   {session?.user?.role === 'TENANT' && (
                     <TableCell className='text-center text-sm'>
@@ -537,7 +558,7 @@ const PropertyMaintenanceList: React.FC = () => {
                         <Button
                           title='Edit'
                           onClick={() =>
-                            handleOpenEditDialog(request.alias as string)
+                            handleOpenEditDialog(request?.alias as string)
                           }
                           variant='outline'
                         >
@@ -551,7 +572,7 @@ const PropertyMaintenanceList: React.FC = () => {
               ))}
           </TableBody>
         </Table>
-      </div>
+      </Card>
 
       {/* Pagination footer */}
       {!isError && (

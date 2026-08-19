@@ -1,5 +1,5 @@
 import LettingAgentStartNewJourneyContainer from '@/components/client/LettingAgent/StartNewJourney';
 
-export default function LettingAgentStartNewJourneyPage() {
+export default function StartNewJourneyPage() {
   return <LettingAgentStartNewJourneyContainer />;
 }
