@@ -144,7 +144,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
       {isError ? (
         <CustomErrorMessage title='mortgage access' />
       ) : isLoading ? (
-        <div className='grid gap-3 sm:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3'>
           {Array.from({ length: 2 }).map((_, i) => (
             <Card key={i} className='shadow-sm'>
               <CardContent className='flex items-start gap-3 p-4'>
@@ -167,7 +167,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
         </div>
       ) : (
         <>
-          <div className='grid gap-3 sm:grid-cols-2'>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3'>
             {permissions.map((permission: MortgagePermission) => {
               const fullName = permission.user.name;
               const isRowUpdating = updatingAlias === permission.alias;
