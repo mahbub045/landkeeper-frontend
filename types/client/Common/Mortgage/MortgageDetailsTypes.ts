@@ -1,5 +1,6 @@
 export interface MortgagePropertyType {
   alias: string;
+  can_edit: boolean;
   property: {
     id: number;
     alias: string;

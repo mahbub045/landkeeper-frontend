@@ -336,7 +336,7 @@ const PropertyMaintenanceComments: React.FC<
   function renderNode(node: ApiPropertyMaintenanceComment, isReply = false) {
     const canModify =
       session?.user?.email === node.author.email ||
-      session?.user?.role === 'ADMIN';
+      session?.user?.role === 'SUPER_ADMIN';
     const isEditingThis = editingAlias === node.alias;
     const editLoading = isUpdateLoading || !!editFilesLoading[node.alias];
 
