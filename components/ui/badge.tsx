@@ -10,8 +10,10 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary text-primary-foreground [a]:hover:bg-primary/80',
-        secondary:
-          'bg-secondary text-white [a]:hover:bg-secondary/80',
+        defaultLight: 'bg-primary/30 [a]:hover:bg-primary/40',
+        secondary: 'bg-secondary text-white [a]:hover:bg-secondary/80',
+        secondaryLight:
+          'bg-secondary/30 text-secondary-foreground [a]:hover:bg-secondary/40',
         destructive:
           'bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20',
         outline:
@@ -21,10 +23,19 @@ const badgeVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline',
         success:
           'bg-success text-success-foreground shadow-xs [a]:hover:bg-success/90',
+        successLight:
+          'bg-success/30 text-success-foreground shadow-xs [a]:hover:bg-success/40',
         warning:
           'bg-warning text-warning-foreground shadow-xs [a]:hover:bg-warning/90',
+        warningLight:
+          'bg-warning/30 text-warning-foreground shadow-xs [a]:hover:bg-warning/40',
+        info: 'bg-info text-info-foreground shadow-xs [a]:hover:bg-info/90',
+        infoLight:
+          'bg-info/30 text-info-foreground shadow-xs [a]:hover:bg-info/40',
         danger:
           'bg-danger text-danger-foreground shadow-xs [a]:hover:bg-danger/90',
+        dangerLight:
+          'bg-danger/30 text-danger-foreground shadow-xs [a]:hover:bg-danger/40',
       },
       size: {
         default: 'h-5 gap-1 px-2 py-0.5 text-xs [&>svg]:size-3!',
