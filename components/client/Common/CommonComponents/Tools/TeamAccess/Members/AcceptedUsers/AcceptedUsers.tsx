@@ -1,5 +1,6 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -209,16 +210,16 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
                     {formatChoiceFieldValue(member?.role)}
                   </span>
                   <span className='font-bold'>&bull;</span>
-                  <span className='flex gap-0.5'>
+                  <Badge variant='defaultLight' className='flex gap-1'>
                     <Mail size={14} />
                     {member?.user?.email}
-                  </span>
+                  </Badge>
                 </p>
                 {member?.user?.phone && (
-                  <p className='text-muted-foreground mt-0.5 flex items-center gap-1 text-xs'>
+                  <Badge variant='secondaryLight' className='mt-1 flex gap-1'>
                     <Phone size={16} />
                     {member?.user?.phone}
-                  </p>
+                  </Badge>
                 )}
                 {member?.created_at && (
                   <p className='text-muted-foreground/70 mt-0.5 text-xs'>

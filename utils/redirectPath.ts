@@ -37,6 +37,11 @@ export const getPropertiesUrl = (session: Session | null) => {
     return '/client/letting-agent/properties';
   }
 
+  //   Mortgage Adviser Property List
+  if (role === 'MORTGAGE_ADVISER') {
+    return '/client/mortgage-adviser/properties';
+  }
+
   //   If no role found
   return '/auth/login';
 };
@@ -65,6 +70,10 @@ export const getPropertyDetailsUrl = (
     return `/client/letting-agent/properties/${propertyalias}`;
   }
 
+  if (role === 'MORTGAGE_ADVISER') {
+    return `/client/mortgage-adviser/properties/${propertyalias}`;
+  }
+
   return '/auth/login';
 };
 
@@ -90,6 +99,11 @@ export const getMortgageUrl = (session: Session | null) => {
   //   Letting Agent Property List
   if (role === 'LETTING_AGENT') {
     return '/client/letting-agent/mortgages';
+  }
+
+  //   Mortgage Adviser Property List
+  if (role === 'MORTGAGE_ADVISER') {
+    return '/client/mortgage-adviser/mortgages';
   }
 
   //   If no role found
@@ -226,29 +240,34 @@ export const getNotificationURL = (
       if (role === 'SUPER_ADMIN') {
         return `/super-admin/support-tickets/${data.alias}`;
       }
+
       if (role === 'LANDLORD') {
         return `/client/landlord/support-tickets/${data.alias}`;
       }
+
       if (role === 'ADMIN') {
         return `/client/admin/support-tickets/${data.alias}`;
       }
+
       if (role === 'LETTING_AGENT') {
         return `/client/letting-agent/support-tickets/${data.alias}`;
       }
       return '#';
+
     case 'MAINTENANCE_REQUEST':
       if (role === 'LANDLORD') {
         return `/client/landlord/property-maintenance/${data.alias}`;
       }
+
       if (role === 'ADMIN') {
         return `/client/admin/property-maintenance/${data.alias}`;
       }
-      // if (role === 'LETTING_AGENT') {
-      //   return `/client/letting-agent/property-maintenance/${data.alias}`;
-      // }
+
       if (role === 'TENANT') {
         return `/client/tenant/maintenance-requests/${data.alias}`;
       }
+      return '#';
+
     default:
       return '#';
   }

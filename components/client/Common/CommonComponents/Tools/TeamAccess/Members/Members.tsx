@@ -5,11 +5,16 @@ import {
   useGetInviteTeamMemberQuery,
   useGetTeamMembersQuery,
 } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setActiveTab, TeamAccessTab } from '@/store/slices/teamAccessUiSlice';
 import React, { useState } from 'react';
 import AcceptedUsers from './AcceptedUsers/AcceptedUsers';
 import InvitedUsers from './InvitedUsers/InvitedUsers';
 
 const Members: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const activeTab = useAppSelector((state) => state.teamAccessUi.activeTab);
+
   const [invitesPage, setInvitesPage] = useState(1);
   const [membersPage, setMembersPage] = useState(1);
 
@@ -39,7 +44,13 @@ const Members: React.FC = () => {
   return (
     <Card>
       <CardContent className='p-5'>
-        <Tabs defaultValue='invited' className='w-full'>
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) =>
+            dispatch(setActiveTab(value as TeamAccessTab))
+          }
+          className='w-full'
+        >
           <TabsList className='mb-4 grid w-full grid-cols-2'>
             <TabsTrigger value='invited' className='cursor-pointer'>
               Invite Users

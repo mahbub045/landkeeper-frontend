@@ -1,13 +1,13 @@
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { type AppDispatch, type RootState } from '@/store';
+import { type RootState } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   setActiveTab,
   type CalculatorTab,
 } from '@/store/slices/calculatorTabsSlice';
 import { ArrowUpCircle, Home, Landmark, TrendingUp } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
 import RemortgageCalculatorTab from './CalculatorTabs/RemortgageCalculatorTab';
 import RentalYieldCalculatorTab from './CalculatorTabs/RentalYieldCanculatorTab';
 import RentIncreaseCalculatorTab from './CalculatorTabs/RentIncreaseCalculatorTab';
@@ -41,8 +41,8 @@ const CALCULATOR_TABS = [
 ] as const;
 
 const Calculators: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const activeTab = useSelector(
+  const dispatch = useAppDispatch();
+  const activeTab = useAppSelector(
     (state: RootState) => state.calculatorTabs.activeTab,
   );
 
