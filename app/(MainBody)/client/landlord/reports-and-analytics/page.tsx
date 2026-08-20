@@ -1,5 +1,5 @@
-import ReportsAndAnalyticsContainer from '@/components/client/Landlord/ReportsAndAnalytics';
+import LandlordReportsAndAnalyticsContainer from '@/components/client/Landlord/ReportsAndAnalytics';
 
 export default function ReportsAndAnalyticsPage() {
-  return <ReportsAndAnalyticsContainer />;
+  return <LandlordReportsAndAnalyticsContainer />;
 }
