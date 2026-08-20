@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { Plus, Search } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import AddMortgageDialog from './Dialogs/AddMortgageDialog';
 import MortgageList from './MortgageList/MortgageList';
@@ -88,6 +89,7 @@ const Mortgage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -144,35 +146,39 @@ const Mortgage: React.FC = () => {
         <SummaryCards data={data?.results ?? []} />
       )}
 
-     <div className='mt-15 flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
-  <div className='min-w-0'>
-    <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-      Mortgages
-    </h1>
-    <p className='text-muted-foreground text-sm'>
-      Track and manage your property financing
-    </p>
-  </div>
+      <div className='mt-15 flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
+        <div className='min-w-0'>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+            Mortgages
+          </h1>
+          <p className='text-muted-foreground text-sm'>
+            Track and manage your property financing
+          </p>
+        </div>
 
-  <div className='flex w-full flex-col gap-2 min-[400px]:flex-row md:w-auto'>
-    <div className='relative min-w-0 flex-1 min-[400px]:max-w-xs md:w-64 md:flex-none'>
-      <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-      <Input
-        type='text'
-        placeholder='Search...'
-        value={search}
-        onChange={handleSearchChange}
-        className='h-8! w-full pr-8! pl-7!'
-      />
-      <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
-    </div>
-
-    <Button onClick={() => setModalOpen(true)} className='w-full shrink-0 min-[400px]:w-auto'>
-      <Plus />
-      Add Mortgage
-    </Button>
-  </div>
-</div>
+        <div className='flex w-full flex-col gap-2 min-[400px]:flex-row md:w-auto'>
+          <div className='relative min-w-0 flex-1 min-[400px]:max-w-xs md:w-64 md:flex-none'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search...'
+              value={search}
+              onChange={handleSearchChange}
+              className='h-8! w-full pr-8! pl-7!'
+            />
+            <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
+          </div>
+          {session?.user?.role === 'LANDLORD' && (
+            <Button
+              onClick={() => setModalOpen(true)}
+              className='w-full shrink-0 min-[400px]:w-auto'
+            >
+              <Plus />
+              Add Mortgage
+            </Button>
+          )}
+        </div>
+      </div>
 
       {isLoading && <MortgageListSkeleton />}
 
