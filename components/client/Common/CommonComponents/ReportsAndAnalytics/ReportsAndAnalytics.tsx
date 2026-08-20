@@ -1,6 +1,6 @@
 'use client';
 
-import ReportList from './ReportList/ReportList';
+import Reports from './Reports/Reports';
 
 const ReportsAndAnalytics: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ const ReportsAndAnalytics: React.FC = () => {
           Generate and export portfolio reports
         </p>
       </div>
-      <ReportList />
+      <Reports />
     </div>
   );
 };

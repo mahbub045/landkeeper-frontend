@@ -1,7 +1,7 @@
-import Reports from '../../Common/CommonComponents/ReportsAndAnalytics/Reports/ReportsAndAnalytics';
+import ReportsAndAnalytics from '../../Common/CommonComponents/ReportsAndAnalytics/ReportsAndAnalytics';
 
 const LandlordReportsAndAnalyticsContainer: React.FC = () => {
-  return <Reports />;
+  return <ReportsAndAnalytics />;
 };
 
 export default LandlordReportsAndAnalyticsContainer;
