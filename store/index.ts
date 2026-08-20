@@ -14,7 +14,19 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(baseApi.middleware, authApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // RTK Query caches whatever a query/mutation returns in the
+        // store. Some endpoints (e.g. file export/download endpoints)
+        // intentionally return a Blob from their `responseHandler`,
+        // which trips the default serializability check.
+        ignoredActions: [
+          'api/executeMutation/fulfilled',
+          'api/executeQuery/fulfilled',
+        ],
+        ignoredPaths: [/^api\.(mutations|queries)\..*\.data$/],
+      },
+    }).concat(baseApi.middleware, authApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

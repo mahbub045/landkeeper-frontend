@@ -8,7 +8,6 @@ export const ReportsApi = baseApi.injectEndpoints({
         method: 'GET',
         params,
         responseHandler: async (response: Response) => response.blob(),
-        cache: 'no-cache',
       }),
     }),
   }),
