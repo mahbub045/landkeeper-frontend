@@ -24,7 +24,9 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
+import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
@@ -36,7 +38,7 @@ const Properties: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [infoOpen, setInfoOpen] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
@@ -112,10 +114,12 @@ const Properties: React.FC = () => {
             <HoverInfoPopover text='You can search using Property Name and Address.' />
           </div>
 
-          <Button onClick={() => setModalOpen(true)}>
-            <Plus />
-            Add Property
-          </Button>
+          {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
+            <Button onClick={() => setModalOpen(true)}>
+              <Plus />
+              Add Property
+            </Button>
+          )}
         </div>
       </div>
 

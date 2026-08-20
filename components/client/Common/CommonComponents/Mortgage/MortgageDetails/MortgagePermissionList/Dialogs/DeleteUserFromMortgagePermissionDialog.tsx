@@ -1,3 +1,4 @@
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -119,7 +120,7 @@ const DeleteUserFromMortgagePermissionDialog: React.FC<
             onClick={handleDelete}
             disabled={isLoading || !userToRemove}
           >
-            {isLoading ? 'Removing...' : 'Remove Access'}
+            {isLoading && <Loading className='text-white!' />}Remove Access
           </Button>
         </DialogFooter>
       </DialogContent>

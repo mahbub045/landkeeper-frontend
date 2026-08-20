@@ -1,3 +1,4 @@
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -86,7 +87,9 @@ const AddUserFromMortgagePermissionDialog: React.FC<
 
   const [userPopoverOpen, setUserPopoverOpen] = useState(false);
   const [selectedUserAlias, setSelectedUserAlias] = useState<string>('');
-  const [canView, setCanView] = useState(true);
+
+  // "Can view" is mandatory and always true — not user-toggleable.
+  const canView = true;
   const [canEdit, setCanEdit] = useState(false);
 
   const selectedUser = authUsers?.find(
@@ -95,7 +98,6 @@ const AddUserFromMortgagePermissionDialog: React.FC<
 
   const resetForm = () => {
     setSelectedUserAlias('');
-    setCanView(true);
     setCanEdit(false);
     setUserPopoverOpen(false);
   };
@@ -115,6 +117,7 @@ const AddUserFromMortgagePermissionDialog: React.FC<
 
   const handleSubmit = async () => {
     if (!selectedUserAlias || !mortgageAlias) return;
+
     setSubmitErrors([]);
     try {
       await addPermission({
@@ -288,10 +291,10 @@ const AddUserFromMortgagePermissionDialog: React.FC<
           <div className='space-y-2'>
             <Label className='text-sm font-medium'>Permissions</Label>
             <div className='border-input divide-y overflow-hidden rounded-lg border'>
-              <button
-                type='button'
-                onClick={() => setCanView((v) => !v)}
-                className='hover:bg-accent/40 flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors'
+              {/* Can view — locked ON, not clickable */}
+              <div
+                aria-disabled='true'
+                className='flex w-full cursor-not-allowed items-center gap-3 px-3.5 py-3 text-left opacity-70'
               >
                 <span className='bg-muted flex h-8 w-8 shrink-0 items-center justify-center rounded-md'>
                   <Eye className='text-muted-foreground h-4 w-4' />
@@ -299,23 +302,15 @@ const AddUserFromMortgagePermissionDialog: React.FC<
                 <div className='min-w-0 flex-1'>
                   <p className='text-sm font-medium'>Can view</p>
                   <p className='text-muted-foreground text-xs'>
-                    Read-only access to mortgage details
+                    Required — read-only access to mortgage details
                   </p>
                 </div>
-                <span
-                  className={cn(
-                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-                    canView
-                      ? 'bg-primary border-primary'
-                      : 'border-input bg-transparent',
-                  )}
-                >
-                  {canView && (
-                    <Check className='text-primary-foreground h-3 w-3' />
-                  )}
+                <span className='bg-primary border-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2'>
+                  <Check className='text-primary-foreground h-3 w-3' />
                 </span>
-              </button>
+              </div>
 
+              {/* Can edit — freely toggleable */}
               <button
                 type='button'
                 onClick={() => setCanEdit((v) => !v)}
@@ -356,7 +351,7 @@ const AddUserFromMortgagePermissionDialog: React.FC<
             onClick={handleSubmit}
             disabled={!selectedUserAlias || isLoading}
           >
-            {isLoading ? 'Adding...' : 'Add Permission'}
+            {isLoading && <Loading className='text-white!' />}Add Permission
           </Button>
         </DialogFooter>
       </DialogContent>

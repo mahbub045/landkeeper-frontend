@@ -34,6 +34,7 @@ import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSett
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { getStartNewJourneyUrl } from '@/utils/redirectPath';
+import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import {
   ChevronRight,
   LogOut,
@@ -338,9 +339,7 @@ const AppSidebar: React.FC = () => {
 
       <SidebarSeparator className='mx-0 h-px!' />
 
-      {(session?.user?.role === 'LANDLORD' ||
-        session?.user?.role === 'LETTING_AGENT' ||
-        session?.user?.role === 'ADMIN') && (
+      {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
         <Link
           href={getStartNewJourneyUrl(session)}
           passHref

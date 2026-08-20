@@ -16,6 +16,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
+import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -168,7 +169,7 @@ const Mortgage: React.FC = () => {
             />
             <HoverInfoPopover text='You can search using Property Name and Lender Name.' />
           </div>
-          {session?.user?.role === 'LANDLORD' && (
+          {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
             <Button
               onClick={() => setModalOpen(true)}
               className='w-full shrink-0 min-[400px]:w-auto'
