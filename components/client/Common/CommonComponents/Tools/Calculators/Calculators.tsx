@@ -3,10 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  setActiveTab,
-  type CalculatorTab,
-} from '@/store/slices/calculatorTabsSlice';
+import { setActiveTab } from '@/store/slices/calculatorTabsSlice';
 import { ArrowUpCircle, Home, Landmark, TrendingUp } from 'lucide-react';
 import RemortgageCalculatorTab from './CalculatorTabs/RemortgageCalculatorTab';
 import RentalYieldCalculatorTab from './CalculatorTabs/RentalYieldCanculatorTab';
@@ -56,7 +53,7 @@ const Calculators: React.FC = () => {
           )?.value;
 
           if (selectedTab) {
-            dispatch(setActiveTab(selectedTab as CalculatorTab));
+            dispatch(setActiveTab(selectedTab));
           }
         }}
         className='w-full'
