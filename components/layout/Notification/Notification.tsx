@@ -290,7 +290,10 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='relative mt-1.5 flex h-2 w-2 shrink-0'>
+                      <span className='bg-danger absolute inline-flex h-full w-full animate-ping rounded-full opacity-90' />
+                      <span className='bg-danger relative inline-flex h-2 w-2 rounded-full' />
+                    </span>
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
@@ -329,7 +332,10 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='relative mt-1.5 flex h-2 w-2 shrink-0'>
+                      <span className='bg-danger absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
+                      <span className='bg-danger relative inline-flex h-2 w-2 rounded-full' />
+                    </span>
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
