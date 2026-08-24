@@ -315,7 +315,7 @@ const Notification: React.FC = () => {
                       </p>
                     )}
                     {notification.created_at && (
-                      <p className='text-/70 mt-1 text-[11px]'>
+                      <p className='text-muted-foreground/70 mt-1 text-[11px]'>
                         {formatDateAndTime(notification.created_at)}
                       </p>
                     )}
@@ -357,7 +357,7 @@ const Notification: React.FC = () => {
                       </p>
                     )}
                     {notification.created_at && (
-                      <p className='text-/70 mt-1 text-[11px]'>
+                      <p className='text-muted-foreground/70 mt-1 text-[11px]'>
                         {formatDateAndTime(notification.created_at)}
                       </p>
                     )}
@@ -377,7 +377,7 @@ const Notification: React.FC = () => {
               disabled={!hasPrevious || isFetching}
               className='text-muted-foreground h-7 px-2 text-xs'
             >
-              <ChevronLeft className='mr-1 size-3.5' />
+              <ChevronLeft className='size-3.5' />
               Previous
             </Button>
             <span className='text-muted-foreground text-xs'>
@@ -391,7 +391,7 @@ const Notification: React.FC = () => {
               className='text-muted-foreground h-7 px-2 text-xs'
             >
               Next
-              <ChevronRight className='ml-1 size-3.5' />
+              <ChevronRight className='size-3.5' />
             </Button>
           </div>
         )}
