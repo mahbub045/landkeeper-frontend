@@ -9,12 +9,13 @@ import {
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { formatDate } from '@/utils/formatters';
 import { getComplianceUrl } from '@/utils/redirectPath';
-import { Pencil, Trash } from 'lucide-react';
+import { Pencil, ShieldUser, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
-import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
+import DeleteCertificateDialog from '../../Dialogs/DeleteCertificateDialog';
+import UpdateCertificateDialog from '../../Dialogs/UpdateCertificateDialog';
+import ViewCertificateSharesDialog from '../Dialogs/ViewCertificateSharesDialog';
 
 const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
   Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
@@ -50,6 +51,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const status = getCertStatus(cert.expiry_date);
   const { color, dot } = statusConfig[status];
+  const [isOpenViewShares, setIsOpenViewShares] = useState(false);
 
   return (
     <>
@@ -126,10 +128,19 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
         <TableCell className='px-6'>
           <div className='flex items-center justify-center gap-2'>
             <Button
+              variant='secondary'
+              size='icon'
+              title='View Certificate Shares'
+              className='rounded-lg'
+              onClick={() => setIsOpenViewShares(true)}
+            >
+              <ShieldUser />
+            </Button>
+            <Button
               variant='default'
               size='icon'
-              className='rounded-lg'
               title='Edit Certificate'
+              className='rounded-lg'
               onClick={() => setEditOpen(true)}
             >
               <Pencil />
@@ -137,8 +148,8 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
             <Button
               variant='danger'
               size='icon'
-              className='rounded-lg'
               title='Delete Certificate'
+              className='rounded-lg'
               onClick={() => setDeleteOpen(true)}
             >
               <Trash />
@@ -146,6 +157,13 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
           </div>
         </TableCell>
       </TableRow>
+
+      {/* Dialogs  */}
+
+      <ViewCertificateSharesDialog
+        open={isOpenViewShares}
+        onClose={() => setIsOpenViewShares(false)}
+      />
 
       <UpdateCertificateDialog
         key={cert.alias}
