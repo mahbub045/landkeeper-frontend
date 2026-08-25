@@ -105,90 +105,97 @@ const DocumentList: React.FC = () => {
       {!isLoading && !isError && results.length > 0 && (
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {results.map((doc: CertificateDocument) => (
-            <Card key={doc.alias} className='flex flex-col gap-4 p-5 shadow-md'>
-              <div className='flex items-start justify-between gap-2'>
-                <Badge
-                  size='lg'
-                  className={
-                    CERTIFICATE_STYLES[doc.certificate_type] ||
-                    'bg-gray-100 text-gray-800'
-                  }
-                >
-                  {formatChoiceFieldValue(doc.certificate_type)}
-                </Badge>
-                {doc.certificate_file ? (
-                  <button
-                    type='button'
-                    disabled={downloadingFileAlias === doc.alias}
-                    onClick={() =>
-                      handleFileDownload({
-                        file: doc.certificate_file as string,
-                        alias: doc.alias,
-                      })
+            <div key={doc.alias} className='group relative overflow-visible'>
+              {/* Animated Gradient Glow */}
+              <div className='from-primary via-secondary to-primary absolute -inset-2 z-0 rounded-[24px] bg-linear-to-r opacity-0 blur-xl transition-all duration-700 group-hover:opacity-100' />
+
+              <Card className='border-border bg-card group-hover:border-primary/40 relative z-10 flex flex-col gap-4 overflow-hidden rounded-2xl border p-5 shadow-md transition-all duration-700 group-hover:-translate-y-1.5 group-hover:shadow-xl'>
+                <div className='flex items-start justify-between gap-2'>
+                  <Badge
+                    size='lg'
+                    className={
+                      CERTIFICATE_STYLES[doc.certificate_type] ||
+                      'bg-gray-100 text-gray-800'
                     }
-                    title='Download certificate'
-                    className='text-primary shrink-0 cursor-pointer rounded-md transition-colors hover:opacity-80 disabled:opacity-50'
                   >
-                    {downloadingFileAlias === doc.alias ? (
-                      <Loading className='size-4' />
-                    ) : (
+                    {formatChoiceFieldValue(doc.certificate_type)}
+                  </Badge>
+                  {doc.certificate_file ? (
+                    <button
+                      type='button'
+                      disabled={downloadingFileAlias === doc.alias}
+                      onClick={() =>
+                        handleFileDownload({
+                          file: doc.certificate_file as string,
+                          alias: doc.alias,
+                        })
+                      }
+                      title='Download certificate'
+                      className='text-primary shrink-0 cursor-pointer rounded-md transition-colors hover:opacity-80 disabled:opacity-50'
+                    >
+                      {downloadingFileAlias === doc.alias ? (
+                        <Loading className='size-4' />
+                      ) : (
+                        <Download className='size-4' />
+                      )}
+                    </button>
+                  ) : (
+                    <div
+                      className='text-muted-foreground flex items-center gap-1.5 text-xs'
+                      title='No file available'
+                    >
                       <Download className='size-4' />
-                    )}
-                  </button>
-                ) : (
-                  <div
-                    className='text-muted-foreground flex items-center gap-1.5 text-xs'
-                    title='No file available'
-                  >
-                    <Download className='size-4' />
+                    </div>
+                  )}
+                </div>
+
+                <div className='flex items-center gap-2 text-sm font-medium'>
+                  <Building2 className='size-4 shrink-0 text-amber-600' />
+                  <span className='truncate'>
+                    {doc.property?.property_name || '—'}
+                  </span>
+                </div>
+
+                <div className='space-y-2 text-sm'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-muted-foreground flex items-center gap-1.5'>
+                      <Calendar className='size-3.5 text-emerald-600' />
+                      Issue date
+                    </span>
+                    <small>
+                      {doc.issue_date ? formatDateAndTime(doc.issue_date) : '—'}
+                    </small>
                   </div>
-                )}
-              </div>
-
-              <div className='flex items-center gap-2 text-sm font-medium'>
-                <Building2 className='size-4 shrink-0 text-amber-600' />
-                <span className='truncate'>
-                  {doc.property?.property_name || '—'}
-                </span>
-              </div>
-
-              <div className='space-y-2 text-sm'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground flex items-center gap-1.5'>
-                    <Calendar className='size-3.5 text-emerald-600' />
-                    Issue date
-                  </span>
-                  <small>
-                    {doc.issue_date ? formatDateAndTime(doc.issue_date) : '—'}
-                  </small>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-muted-foreground flex items-center gap-1.5'>
+                      <Calendar className='size-3.5 text-violet-600' />
+                      Expiry date
+                    </span>
+                    <small>
+                      {doc.expiry_date
+                        ? formatDateAndTime(doc.expiry_date)
+                        : '—'}
+                    </small>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-muted-foreground flex items-center gap-1.5'>
+                      <Hash className='size-3.5 text-indigo-600' />
+                      Certificate no.
+                    </span>
+                    <small className='truncate'>
+                      {doc.certificate_number || '—'}
+                    </small>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-muted-foreground flex items-center gap-1.5'>
+                      <UserCheck className='size-3.5 text-rose-500' />
+                      Issued by
+                    </span>
+                    <small className='truncate'>{doc.issued_by || '—'}</small>
+                  </div>
                 </div>
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground flex items-center gap-1.5'>
-                    <Calendar className='size-3.5 text-violet-600' />
-                    Expiry date
-                  </span>
-                  <small>
-                    {doc.expiry_date ? formatDateAndTime(doc.expiry_date) : '—'}
-                  </small>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground flex items-center gap-1.5'>
-                    <Hash className='size-3.5 text-indigo-600' />
-                    Certificate no.
-                  </span>
-                  <small className='truncate'>
-                    {doc.certificate_number || '—'}
-                  </small>
-                </div>
-                <div className='flex items-center justify-between'>
-                  <span className='text-muted-foreground flex items-center gap-1.5'>
-                    <UserCheck className='size-3.5 text-rose-500' />
-                    Issued by
-                  </span>
-                  <small className='truncate'>{doc.issued_by || '—'}</small>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           ))}
         </div>
       )}
