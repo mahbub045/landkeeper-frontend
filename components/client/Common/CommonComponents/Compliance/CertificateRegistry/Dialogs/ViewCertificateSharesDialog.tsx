@@ -75,7 +75,11 @@ const ViewCertificateSharesDialog: React.FC<
                   <TableCell>John Doe</TableCell>
                   <TableCell>Admins</TableCell>
                   <TableCell className='flex justify-center gap-2'>
-                    <Button variant='destructive' size='icon'>
+                    <Button
+                      variant='destructive'
+                      size='icon'
+                      title='Delete Share'
+                    >
                       <Trash />
                     </Button>
                   </TableCell>

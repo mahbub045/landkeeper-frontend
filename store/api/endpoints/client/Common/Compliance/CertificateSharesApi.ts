@@ -12,7 +12,7 @@ export const CertificateSharesApi = baseApi.injectEndpoints({
     }),
     getTenantFilterList: builder.query({
       query: () => ({
-        url: '/tenant-filter-list',
+        url: '/tenant/list',
         method: 'GET',
       }),
       providesTags: ['CertificateShares'],
