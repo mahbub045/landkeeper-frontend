@@ -7,11 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-
-interface AddNewShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-}
+import { AddNewShareDialogProps } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 
 const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
   open,

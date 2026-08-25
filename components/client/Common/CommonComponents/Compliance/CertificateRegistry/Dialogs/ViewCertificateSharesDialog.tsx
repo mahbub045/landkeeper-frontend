@@ -13,6 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
+import { useGetCertificateSharesQuery } from '@/store/api/endpoints/client/Common/Compliance/CertificateSharesApi';
 import { ViewCertificateSharesDialogProps } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import { Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
@@ -20,9 +22,20 @@ import AddNewShareDialog from './AddNewShareDialog';
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
-> = ({ open, onClose }) => {
+> = ({ open, onClose, selectedCertificate }) => {
   const [isOpenAddNewShareDialogOpen, setIsOpenAddNewShareDialogOpen] =
     useState(false);
+
+  const { data: certificateShares, isLoading: isCertificateSharesLoading } =
+    useGetCertificateSharesQuery({
+      certificateAlias: selectedCertificate?.alias || '',
+      params: {
+        page: 1,
+        limit: PAGE_LIMIT,
+      },
+    });
+
+  console.log('SC::', selectedCertificate?.alias);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -50,15 +63,15 @@ const ViewCertificateSharesDialog: React.FC<
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>User</TableHead>
+                  <TableHead>SL NO.</TableHead>
+                  <TableHead>Tenant</TableHead>
                   <TableHead>Group</TableHead>
                   <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <tbody>
                 <TableRow>
-                  <TableCell>1</TableCell>
+                  <TableCell>#1</TableCell>
                   <TableCell>John Doe</TableCell>
                   <TableCell>Admins</TableCell>
                   <TableCell className='flex justify-center gap-2'>

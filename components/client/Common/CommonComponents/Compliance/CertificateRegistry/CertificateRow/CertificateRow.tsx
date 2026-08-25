@@ -52,6 +52,13 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
   const status = getCertStatus(cert.expiry_date);
   const { color, dot } = statusConfig[status];
   const [isOpenViewShares, setIsOpenViewShares] = useState(false);
+  const [selectedCertificate, setSelectedCertificate] =
+    useState<ApiCertificate | null>(null);
+
+  const handleViewShares = (certificate: ApiCertificate) => {
+    setSelectedCertificate(certificate);
+    setIsOpenViewShares(true);
+  };
 
   return (
     <>
@@ -132,7 +139,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
               size='icon'
               title='View Certificate Shares'
               className='rounded-lg'
-              onClick={() => setIsOpenViewShares(true)}
+              onClick={() => handleViewShares(cert)}
             >
               <ShieldUser />
             </Button>
@@ -163,6 +170,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
       <ViewCertificateSharesDialog
         open={isOpenViewShares}
         onClose={() => setIsOpenViewShares(false)}
+        selectedCertificate={selectedCertificate}
       />
 
       <UpdateCertificateDialog
