@@ -3,7 +3,17 @@ import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErr
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { CERTIFICATE_STYLES } from '@/data/client/common/compliance/ComplianceData';
+import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { useGetTenantDocumentsQuery } from '@/store/api/endpoints/client/Tenant/Documents/DocumentsApi';
 import { CertificateDocument } from '@/types/client/Tenant/Documents/DocumentsType';
@@ -12,15 +22,37 @@ import { Building2, Calendar, Download, Hash, UserCheck } from 'lucide-react';
 import { useState } from 'react';
 
 const DocumentList: React.FC = () => {
+  const [page, setPage] = useState(1);
+
   const {
     data: documents,
     isLoading,
     isError,
-  } = useGetTenantDocumentsQuery(undefined);
+  } = useGetTenantDocumentsQuery({ page, limit: PAGE_LIMIT });
 
   const results = documents?.results || [];
+  const totalCount = documents?.count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
 
-  const { downloadFile, isDownloading } = useDownloadFile();
+  const getPageNumbers = (): (number | '...')[] => {
+    const pages: (number | '...')[] = [];
+    const delta = 1;
+
+    for (let p = 1; p <= totalPages; p++) {
+      if (
+        p === 1 ||
+        p === totalPages ||
+        (p >= page - delta && p <= page + delta)
+      ) {
+        pages.push(p);
+      } else if (pages[pages.length - 1] !== '...') {
+        pages.push('...');
+      }
+    }
+    return pages;
+  };
+
+  const { downloadFile } = useDownloadFile();
   const [downloadingFileAlias, setDownloadingFileAlias] = useState<
     string | null
   >(null);
@@ -158,6 +190,63 @@ const DocumentList: React.FC = () => {
               </div>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination footer */}
+      {!isLoading && !isError && results.length > 0 && (
+        <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+          <p className='text-muted-foreground text-sm whitespace-nowrap'>
+            Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+            {Math.min(page * PAGE_LIMIT, totalCount)} of {totalCount} documents
+          </p>
+          {totalPages > 1 && (
+            <Pagination className='justify-center sm:justify-end'>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => page > 1 && setPage((p) => p - 1)}
+                    aria-disabled={page === 1}
+                    className={
+                      page === 1
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+
+                {getPageNumbers().map((p, i) =>
+                  p === '...' ? (
+                    <PaginationItem key={`ellipsis-${i}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        isActive={p === page}
+                        onClick={() => setPage(p as number)}
+                        className='cursor-pointer'
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => page < totalPages && setPage((p) => p + 1)}
+                    aria-disabled={page === totalPages}
+                    className={
+                      page === totalPages
+                        ? 'pointer-events-none opacity-50'
+                        : 'cursor-pointer'
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
     </div>
