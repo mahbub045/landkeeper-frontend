@@ -34,6 +34,7 @@ import formatChoiceFieldValue from '@/utils/formatters';
 import { Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import AddNewShareDialog from './AddNewShareDialog';
+import DeleteShareDialog from './DeleteShareDialog';
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
@@ -41,6 +42,16 @@ const ViewCertificateSharesDialog: React.FC<
   const [page, setPage] = useState(1);
   const [isOpenAddNewShareDialogOpen, setIsOpenAddNewShareDialogOpen] =
     useState(false);
+  const [isOpenDeleteShareDialogOpen, setIsOpenDeleteShareDialogOpen] =
+    useState(false);
+  const [selectedShareAlias, setSelectedShareAlias] = useState<string | null>(
+    null,
+  );
+
+  const handleDeleteShare = (shareAlias: string) => {
+    setSelectedShareAlias(shareAlias);
+    setIsOpenDeleteShareDialogOpen(true);
+  };
 
   const {
     data: certificateShares,
@@ -151,6 +162,7 @@ const ViewCertificateSharesDialog: React.FC<
                           variant='destructive'
                           size='icon'
                           title='Delete Share'
+                          onClick={() => handleDeleteShare(share.alias)}
                         >
                           <Trash />
                         </Button>
@@ -227,6 +239,12 @@ const ViewCertificateSharesDialog: React.FC<
         open={isOpenAddNewShareDialogOpen}
         onClose={() => setIsOpenAddNewShareDialogOpen(false)}
         certificateAlias={selectedCertificate?.alias || ''}
+      />
+      <DeleteShareDialog
+        open={isOpenDeleteShareDialogOpen}
+        onClose={() => setIsOpenDeleteShareDialogOpen(false)}
+        certificateAlias={selectedCertificate?.alias || ''}
+        shareAlias={selectedShareAlias || ''}
       />
     </Dialog>
   );
