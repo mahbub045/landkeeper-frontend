@@ -1,5 +1,6 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
@@ -34,10 +35,20 @@ import {
   ViewCertificateSharesDialogProps,
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 import AddNewShareDialog from './AddNewShareDialog';
 import DeleteShareDialog from './DeleteShareDialog';
+
+const getShareFullName = (share: CirtificateShare) =>
+  [
+    share.title ? formatChoiceFieldValue(share.title) : '',
+    share.first_name || '',
+    share.middle_name || '',
+    share.last_name || '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
@@ -53,13 +64,16 @@ const ViewCertificateSharesDialog: React.FC<
     data: certificateShares,
     isLoading: isCertificateSharesLoading,
     isError,
-  } = useGetCertificateSharesQuery({
-    certificateAlias: selectedCertificate?.alias || '',
-    params: {
-      page,
-      limit: PAGE_LIMIT,
+  } = useGetCertificateSharesQuery(
+    {
+      certificateAlias: selectedCertificate?.alias || '',
+      params: {
+        page,
+        limit: PAGE_LIMIT,
+      },
     },
-  });
+    { skip: !selectedCertificate?.alias },
+  );
 
   const results = certificateShares?.results || [];
   const totalCount = certificateShares?.count ?? 0;
@@ -211,9 +225,20 @@ const ViewCertificateSharesDialog: React.FC<
                       </TableCell>
                       <TableCell>#{index + 1}</TableCell>
                       <TableCell>
-                        {formatChoiceFieldValue(share.title || '')}{' '}
-                        {share.first_name || ''} {share.middle_name || ''}{' '}
-                        {share.last_name || ''}
+                        <div className='flex items-center gap-2'>
+                          <Avatar className='size-8 shrink-0'>
+                            <AvatarImage
+                              src={share.avatar ?? undefined}
+                              alt={getShareFullName(share)}
+                            />
+                            <AvatarFallback>
+                              <User className='size-4' />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className='truncate'>
+                            {getShareFullName(share)}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell>{share.email}</TableCell>
                       <TableCell className='text-center'>

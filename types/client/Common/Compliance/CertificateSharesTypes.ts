@@ -14,6 +14,7 @@ export interface AddNewShareDialogProps {
 
 export interface CirtificateShare {
   alias: string;
+  avatar: string | null;
   title: string;
   first_name: string;
   middle_name: string;
