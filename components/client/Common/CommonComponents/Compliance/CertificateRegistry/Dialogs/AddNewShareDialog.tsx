@@ -47,6 +47,7 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
   open,
   onClose,
   certificateAlias,
+  propertyAlias,
 }) => {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -56,7 +57,7 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
   );
 
   const { data: tenantList, isLoading: isTenantListLoading } =
-    useGetTenantFilterListQuery({ search });
+    useGetTenantFilterListQuery({ search, property_alias: propertyAlias });
   const [addNewShare, { isLoading: isAddNewShareLoading }] =
     useAddNewShareMutation();
 
@@ -129,19 +130,63 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
         </DialogHeader>
 
         {/* Body */}
-        <div className='flex flex-col gap-3 overflow-y-auto px-6 py-5'>
+        <div className='flex flex-col gap-3 overflow-y-auto px-6'>
+          {/* Selected tenants */}
+          {selectedTenants.length > 0 && (
+            <div className='flex flex-wrap gap-2'>
+              {selectedTenants.map((tenant) => (
+                <Badge
+                  size='lg'
+                  key={tenant.alias}
+                  variant='secondary'
+                  className='flex h-8 items-center gap-2 pr-1 pl-1.5'
+                >
+                  <Avatar className='size-5 shrink-0'>
+                    <AvatarImage
+                      src={tenant.avatar ?? undefined}
+                      alt={getTenantFullName(tenant)}
+                    />
+                    <AvatarFallback>
+                      <User className='size-3' />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className='flex min-w-0 flex-col leading-tight'>
+                    <span className='truncate font-medium'>
+                      {getTenantFullName(tenant)}
+                    </span>
+                    {tenant.email && (
+                      <span className='truncate text-[10px] opacity-80'>
+                        {tenant.email}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => handleRemoveTenant(tenant.alias)}
+                    className='hover:bg-muted-foreground/20 shrink-0 cursor-pointer rounded-full p-0.5'
+                  >
+                    <X className='size-3' />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
-              <div className='relative w-full'>
-                <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
-                <Input
-                  type='text'
-                  placeholder='Search tenants by name or email...'
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                  onFocus={() => setIsPopoverOpen(true)}
-                  className='w-full pl-8!'
-                />
+              <div>
+                <h2 className='text-sm font-medium'>Select Tenants</h2>
+                <div className='relative w-full'>
+                  <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
+                  <Input
+                    type='text'
+                    placeholder='Search tenants by name or email...'
+                    value={searchInput}
+                    onChange={handleSearchChange}
+                    onFocus={() => setIsPopoverOpen(true)}
+                    className='w-full pl-8!'
+                  />
+                </div>
               </div>
             </PopoverTrigger>
             <PopoverContent
@@ -206,32 +251,10 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
               </div>
             </PopoverContent>
           </Popover>
-
-          {/* Selected tenants */}
-          {selectedTenants.length > 0 && (
-            <div className='flex flex-wrap gap-2'>
-              {selectedTenants.map((tenant) => (
-                <Badge
-                  key={tenant.alias}
-                  variant='secondary'
-                  className='flex items-center gap-1.5 py-1 pr-1 pl-2.5'
-                >
-                  {getTenantFullName(tenant)}
-                  <button
-                    type='button'
-                    onClick={() => handleRemoveTenant(tenant.alias)}
-                    className='hover:bg-muted-foreground/20 cursor-pointer rounded-full p-0.5'
-                  >
-                    <X className='size-3' />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Footer */}
-        <DialogFooter className='my-2 shrink-0 border-t px-6'>
+        <DialogFooter className='my-1 shrink-0 border-t px-6'>
           <Button type='button' variant='outline' onClick={handleClose}>
             Cancel
           </Button>

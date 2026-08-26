@@ -171,6 +171,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
         open={isOpenViewShares}
         onClose={() => setIsOpenViewShares(false)}
         selectedCertificate={selectedCertificate}
+        propertyAlias={cert.property?.alias || ''}
       />
 
       <UpdateCertificateDialog

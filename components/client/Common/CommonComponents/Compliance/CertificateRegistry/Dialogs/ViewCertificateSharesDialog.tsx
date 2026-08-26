@@ -1,8 +1,8 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -52,7 +52,7 @@ const getShareFullName = (share: CirtificateShare) =>
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
-> = ({ open, onClose, selectedCertificate }) => {
+> = ({ open, onClose, selectedCertificate, propertyAlias }) => {
   const [page, setPage] = useState(1);
   const [isOpenAddNewShareDialogOpen, setIsOpenAddNewShareDialogOpen] =
     useState(false);
@@ -323,6 +323,7 @@ const ViewCertificateSharesDialog: React.FC<
         open={isOpenAddNewShareDialogOpen}
         onClose={() => setIsOpenAddNewShareDialogOpen(false)}
         certificateAlias={selectedCertificate?.alias || ''}
+        propertyAlias={propertyAlias || ''}
       />
       <DeleteShareDialog
         open={isOpenDeleteShareDialogOpen}
