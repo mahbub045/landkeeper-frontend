@@ -7,7 +7,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import {
   useAllReadNotificationMutation,
   useGetNotificationsQuery,
@@ -15,6 +14,7 @@ import {
   useUnreadNotificationCountQuery,
 } from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
@@ -290,7 +290,10 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='relative mt-1.5 flex h-2 w-2 shrink-0'>
+                      <span className='bg-danger absolute inline-flex h-full w-full animate-ping rounded-full opacity-90' />
+                      <span className='bg-danger relative inline-flex h-2 w-2 rounded-full' />
+                    </span>
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
@@ -312,7 +315,7 @@ const Notification: React.FC = () => {
                       </p>
                     )}
                     {notification.created_at && (
-                      <p className='text-/70 mt-1 text-[11px]'>
+                      <p className='text-muted-foreground/70 mt-1 text-[11px]'>
                         {formatDateAndTime(notification.created_at)}
                       </p>
                     )}
@@ -329,7 +332,10 @@ const Notification: React.FC = () => {
                   }`}
                 >
                   {!notification.is_read && (
-                    <span className='bg-danger mt-1.5 h-2 w-2 shrink-0 rounded-full' />
+                    <span className='relative mt-1.5 flex h-2 w-2 shrink-0'>
+                      <span className='bg-danger absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
+                      <span className='bg-danger relative inline-flex h-2 w-2 rounded-full' />
+                    </span>
                   )}
                   <div className={notification.is_read ? 'pl-4' : ''}>
                     <p
@@ -351,7 +357,7 @@ const Notification: React.FC = () => {
                       </p>
                     )}
                     {notification.created_at && (
-                      <p className='text-/70 mt-1 text-[11px]'>
+                      <p className='text-muted-foreground/70 mt-1 text-[11px]'>
                         {formatDateAndTime(notification.created_at)}
                       </p>
                     )}
@@ -371,7 +377,7 @@ const Notification: React.FC = () => {
               disabled={!hasPrevious || isFetching}
               className='text-muted-foreground h-7 px-2 text-xs'
             >
-              <ChevronLeft className='mr-1 size-3.5' />
+              <ChevronLeft className='size-3.5' />
               Previous
             </Button>
             <span className='text-muted-foreground text-xs'>
@@ -385,7 +391,7 @@ const Notification: React.FC = () => {
               className='text-muted-foreground h-7 px-2 text-xs'
             >
               Next
-              <ChevronRight className='ml-1 size-3.5' />
+              <ChevronRight className='size-3.5' />
             </Button>
           </div>
         )}

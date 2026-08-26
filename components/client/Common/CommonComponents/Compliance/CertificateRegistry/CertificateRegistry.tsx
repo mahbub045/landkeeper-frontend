@@ -18,7 +18,7 @@ import {
   CertificateRegistryProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { FileBadge, Plus, Search } from 'lucide-react';
-import CertificateRow from '../CertificateRow/CertificateRow';
+import CertificateRow from './CertificateRow/CertificateRow';
 
 const TABLE_COLUMNS = [
   'Property',

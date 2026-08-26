@@ -196,6 +196,10 @@ export const getSupportTicketDetailsUrl = (
     return `/client/letting-agent/support-tickets/${ticketalias}`;
   }
 
+  if (role === 'MORTGAGE_ADVISER') {
+    return `/client/mortgage-adviser/support-tickets/${ticketalias}`;
+  }
+
   return '/auth/login';
 };
 

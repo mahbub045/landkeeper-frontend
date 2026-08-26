@@ -87,10 +87,16 @@ const PropertyDetails: React.FC = () => {
               )?.label ?? property.status}
             </span>
           </Badge>
-          <Button size='sm' variant='outline' onClick={() => setEditOpen(true)}>
-            <Pencil className='mr-1.5 size-3.5' />
-            Edit
-          </Button>
+          {property.can_edit && (
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={() => setEditOpen(true)}
+            >
+              <Pencil className='size-3.5' />
+              Edit
+            </Button>
+          )}
         </div>
       </div>
 

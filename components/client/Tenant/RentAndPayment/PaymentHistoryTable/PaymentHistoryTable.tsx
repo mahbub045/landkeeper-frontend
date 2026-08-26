@@ -31,13 +31,13 @@ import {
   PAYMENT_METHOD_PROVIDER_CONFIG,
   STATUS_CONFIG,
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
 import { useGetPaymentHistoryQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
   ApiRentPayment,
   PaymentStatus,
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,

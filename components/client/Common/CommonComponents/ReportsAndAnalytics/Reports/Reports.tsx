@@ -1,19 +1,23 @@
 'use client';
 
-import ReportList from './ReportList/ReportList';
+import type { FC } from 'react';
 
-const Reports: React.FC = () => {
+import ComplianceReport from './ComplianceReport/ComplianceReport';
+import ExpenseReport from './ExpenseReport/ExpenseReport';
+import IncomeReport from './IncomeReport/IncomeReport';
+import MortgageSummaryReport from './MortgageSummaryReport/MortgageSummaryReport';
+import PortfolioSummaryReport from './PortfolioSummaryReport/PortfolioSummaryReport';
+import TaxPreparationReport from './TaxPreparationReport/TaxPreparationReport';
+
+const Reports: FC = () => {
   return (
-    <div className='space-y-6'>
-      <div>
-        <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-          Reports
-        </h1>
-        <p className='text-muted-foreground text-sm'>
-          Generate and export portfolio reports
-        </p>
-      </div>
-      <ReportList />
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+      <PortfolioSummaryReport />
+      <IncomeReport />
+      <ExpenseReport />
+      <ComplianceReport />
+      <TaxPreparationReport />
+      <MortgageSummaryReport />
     </div>
   );
 };

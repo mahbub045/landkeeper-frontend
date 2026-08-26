@@ -120,14 +120,16 @@ const MortgageDetails: React.FC = () => {
               <ArrowLeft />
               Back
             </Button>
-            <Button
-              size='sm'
-              variant='default'
-              onClick={() => setEditOpen(true)}
-            >
-              <Edit />
-              Edit
-            </Button>
+            {mortgageData?.can_edit && (
+              <Button
+                size='sm'
+                variant='default'
+                onClick={() => setEditOpen(true)}
+              >
+                <Edit />
+                Edit
+              </Button>
+            )}
           </div>
 
           <Badge variant='secondary' className='font-mono text-xs'>

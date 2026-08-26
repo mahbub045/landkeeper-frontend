@@ -18,9 +18,9 @@ import {
 
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import AddTransactionDialog from '../Dialogs/AddTransactionDialog';
 import TransactionTable from './TransactionTable';
 
@@ -31,7 +31,7 @@ const TransactionList: React.FC = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [search]);
 

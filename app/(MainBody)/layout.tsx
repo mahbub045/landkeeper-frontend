@@ -1,4 +1,5 @@
 import MainBodyShell from '@/components/layout/MainBodyShell';
+import SessionExpiryReload from '@/components/SessionExpiryReload';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
@@ -14,5 +15,10 @@ export default async function MainBodyLayout({
     redirect('/auth/signin');
   }
 
-  return <MainBodyShell>{children}</MainBodyShell>;
+  return (
+    <>
+      <SessionExpiryReload />
+      <MainBodyShell>{children}</MainBodyShell>
+    </>
+  );
 }

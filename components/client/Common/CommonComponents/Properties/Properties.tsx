@@ -18,12 +18,12 @@ import {
   PROPERTY_STATUS_OPTIONS,
   propertyTypeMap,
 } from '@/data/client/common/properties/PropertiesData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -41,7 +41,10 @@ const Properties: React.FC = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

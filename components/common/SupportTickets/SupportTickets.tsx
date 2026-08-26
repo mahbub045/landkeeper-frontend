@@ -10,8 +10,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -30,7 +30,10 @@ const SupportTicket: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

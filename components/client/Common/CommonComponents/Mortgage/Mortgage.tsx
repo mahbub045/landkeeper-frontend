@@ -14,8 +14,8 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetMortgagesQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -93,7 +93,10 @@ const Mortgage: React.FC = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

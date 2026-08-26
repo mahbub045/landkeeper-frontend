@@ -1,0 +1,43 @@
+import { ApiCertificate } from './ComplianceTypes';
+
+export interface ViewCertificateSharesDialogProps {
+  open: boolean;
+  onClose: () => void;
+  selectedCertificate: ApiCertificate | null;
+  propertyAlias: string;
+}
+
+export interface AddNewShareDialogProps {
+  open: boolean;
+  onClose: () => void;
+  certificateAlias: string;
+  propertyAlias: string;
+}
+
+export interface CirtificateShare {
+  alias: string;
+  avatar: string | null;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  email: string;
+}
+
+export interface TenantFilterItem {
+  alias: string;
+  avatar: string | null;
+  title: string | null;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  email: string;
+}
+
+export interface DeleteShareDialogProps {
+  open: boolean;
+  onClose: () => void;
+  certificateAlias: string;
+  tenantAliases: string[];
+  onDeleted?: () => void;
+}

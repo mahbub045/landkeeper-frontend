@@ -28,6 +28,7 @@ export const TAG_TYPES = [
   'Mortgage',
   'Tenants',
   'Compliance',
+  'CertificateShares',
   'Document',
   'Templates',
   'Finance',

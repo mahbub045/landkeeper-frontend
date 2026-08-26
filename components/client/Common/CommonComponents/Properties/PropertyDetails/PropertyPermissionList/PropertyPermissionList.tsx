@@ -18,7 +18,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
 import { useUpdatePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { useGetPropertyPermissionsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
@@ -26,6 +25,7 @@ import {
   PropertyPermission,
   PropertyPermissionListProps,
 } from '@/types/client/Common/Properties/PropertyPermissionTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,
