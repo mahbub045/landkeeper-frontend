@@ -21,26 +21,6 @@ export const FIELD_TAB_MAP: Record<string, Tab> = {
   documents: 'Property Picture',
 };
 
-export const filterTabs: FilterTab[] = [
-  'All',
-  'Residential',
-  'HMO',
-  'Commercial',
-  'Mixed Use',
-  'Holiday Let',
-  'Occupied',
-  'Vacant',
-  'Under Maintenance',
-];
-
-export const propertyTypeMap: Partial<Record<FilterTab, string>> = {
-  Residential: 'RESIDENTIAL',
-  HMO: 'HMO',
-  Commercial: 'COMMERCIAL',
-  'Mixed Use': 'MIXED_USE',
-  'Holiday Let': 'HOLIDAY_LET',
-};
-
 export const PROPERTY_STATUS_OPTIONS = [
   { value: 'OCCUPIED', label: 'Occupied' },
   { value: 'VACANT', label: 'Vacant' },
@@ -62,6 +42,11 @@ export const PROPERTY_TYPE_OPTIONS = [
   { value: 'HMO', label: 'HMO' },
   { value: 'COMMERCIAL', label: 'Commercial' },
   { value: 'HOLIDAY_LET', label: 'Holiday Let' },
+];
+
+export const FILTER_TABS: FilterTab[] = [
+  'All',
+  ...(PROPERTY_TYPE_OPTIONS.map((opt) => opt.label) as FilterTab[]),
 ];
 
 export const PROPERTY_OWNER_OPTIONS = [
