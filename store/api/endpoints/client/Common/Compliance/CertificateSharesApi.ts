@@ -11,17 +11,18 @@ export const CertificateSharesApi = baseApi.injectEndpoints({
       providesTags: ['CertificateShares'],
     }),
     getTenantFilterList: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: '/tenant/list',
         method: 'GET',
+        params,
       }),
       providesTags: ['CertificateShares'],
     }),
     addNewShare: builder.mutation({
-      query: ({ certificateAlias, body }) => ({
+      query: ({ certificateAlias, payload }) => ({
         url: `/compliance-certificates/${certificateAlias}/share`,
         method: 'POST',
-        body,
+        body: payload,
       }),
       invalidatesTags: ['CertificateShares'],
     }),

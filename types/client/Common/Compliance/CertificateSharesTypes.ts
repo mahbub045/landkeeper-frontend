@@ -9,4 +9,14 @@ export interface ViewCertificateSharesDialogProps {
 export interface AddNewShareDialogProps {
   open: boolean;
   onClose: () => void;
+  certificateAlias: string;
+}
+
+export interface CirtificateShare {
+  alias: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  email: string;
 }

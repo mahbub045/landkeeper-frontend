@@ -26,20 +26,14 @@ import {
 } from '@/components/ui/table';
 import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetCertificateSharesQuery } from '@/store/api/endpoints/client/Common/Compliance/CertificateSharesApi';
-import { ViewCertificateSharesDialogProps } from '@/types/client/Common/Compliance/CertificateSharesTypes';
+import {
+  CirtificateShare,
+  ViewCertificateSharesDialogProps,
+} from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import AddNewShareDialog from './AddNewShareDialog';
-
-export interface CirtificateShare {
-  alias: string;
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-}
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
@@ -232,6 +226,7 @@ const ViewCertificateSharesDialog: React.FC<
       <AddNewShareDialog
         open={isOpenAddNewShareDialogOpen}
         onClose={() => setIsOpenAddNewShareDialogOpen(false)}
+        certificateAlias={selectedCertificate?.alias || ''}
       />
     </Dialog>
   );
