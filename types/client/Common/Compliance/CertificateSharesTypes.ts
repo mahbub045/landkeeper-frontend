@@ -33,3 +33,11 @@ export interface TenantFilterItem {
   last_name: string;
   email: string;
 }
+
+export interface DeleteShareDialogProps {
+  open: boolean;
+  onClose: () => void;
+  certificateAlias: string;
+  tenantAliases: string[];
+  onDeleted?: () => void;
+}

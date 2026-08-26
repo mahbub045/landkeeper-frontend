@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GetRoleBadge } from '@/data/client/common/tools/teamAccess/TeamAccessData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/InvitedUsersTypes';
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import {
   Mail,

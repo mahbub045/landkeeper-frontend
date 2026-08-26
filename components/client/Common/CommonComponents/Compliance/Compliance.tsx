@@ -14,12 +14,12 @@ import {
   complianceBreakdown,
   upcomingExpirations,
 } from '@/data/client/common/compliance/ComplianceData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetCompliancesQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import {
   ApiCertificate,
   CertStatus,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { useEffect, useMemo, useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceScore from './ComplianceScore/ComplianceScore';
@@ -45,7 +45,10 @@ const Compliance: React.FC = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

@@ -28,12 +28,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetCertificateSharesQuery } from '@/store/api/endpoints/client/Common/Compliance/CertificateSharesApi';
 import {
   CirtificateShare,
   ViewCertificateSharesDialogProps,
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { Plus, Trash2, User } from 'lucide-react';
 import { useState } from 'react';

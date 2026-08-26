@@ -11,15 +11,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useDeleteShareMutation } from '@/store/api/endpoints/client/Common/Compliance/CertificateSharesApi';
+import { DeleteShareDialogProps } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import { toast } from 'sonner';
-
-export interface DeleteShareDialogProps {
-  open: boolean;
-  onClose: () => void;
-  certificateAlias: string;
-  tenantAliases: string[];
-  onDeleted?: () => void;
-}
 
 const DeleteShareDialog: React.FC<DeleteShareDialogProps> = ({
   open,

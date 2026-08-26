@@ -45,13 +45,13 @@ import {
   STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/PropertyMaintenance/PropertyMaintenanceData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
   useGetPropertyMaintenanceQuery,
 } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
 import { Check, Copy, Edit, Filter, Plus, Search, User, X } from 'lucide-react';
@@ -62,8 +62,6 @@ import { toast } from 'sonner';
 import DeleteMaintenanceRequestDialog from '../Dialogs/DeleteMaintenanceRequestDialog';
 import EditMaintenanceRequestDialog from '../Dialogs/EditMaintenanceRequestDialog';
 import MaintenanceRequestDialog from '../Dialogs/MaintenanceRequestDialog';
-
-const SEARCH_DEBOUNCE_MS = 400;
 
 const PropertyMaintenanceList: React.FC = () => {
   const { data: session } = useSession();

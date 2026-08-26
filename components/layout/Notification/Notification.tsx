@@ -7,7 +7,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import {
   useAllReadNotificationMutation,
   useGetNotificationsQuery,
@@ -15,6 +14,7 @@ import {
   useUnreadNotificationCountQuery,
 } from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';

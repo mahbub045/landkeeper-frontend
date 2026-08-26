@@ -19,12 +19,12 @@ import {
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { filterTabs } from '@/data/client/common/DocumentsAndTemplates/DocumentsData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { useGetDocumentsQuery } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/DocumentsApi';
 import {
   FilterTab,
   PropertyDocument,
 } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';
@@ -37,7 +37,10 @@ const Documents: React.FC = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

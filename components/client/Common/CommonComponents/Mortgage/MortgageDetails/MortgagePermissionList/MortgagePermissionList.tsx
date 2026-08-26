@@ -18,7 +18,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import { cn } from '@/lib/utils';
 import { useGetMortgagePermissionsQuery } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
 import { useUpdatePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
@@ -26,6 +25,7 @@ import {
   MortgagePermission,
   MortgagePermissionListProps,
 } from '@/types/client/Common/Mortgage/MortgagePermissionTypes';
+import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,

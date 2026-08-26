@@ -36,12 +36,12 @@ import {
   avatarColor,
   TABLE_COLUMNS,
 } from '@/data/client/common/tenants/TenantsData';
-import { PAGE_LIMIT } from '@/data/common/PaginationData';
 import {
   useGetTenantsQuery,
   useUpdateTenantMutation,
 } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
 import { TenantTypes } from '@/types/client/Common/Tenants/TenantsTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatDate,
   formatDateAndTime,
@@ -95,7 +95,10 @@ const TenantList: React.FC = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [search]);
 

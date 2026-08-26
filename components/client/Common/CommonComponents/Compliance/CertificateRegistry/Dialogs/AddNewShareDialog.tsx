@@ -26,12 +26,11 @@ import {
   AddNewShareDialogProps,
   TenantFilterItem,
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
+import { SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { Check, Search, User, X } from 'lucide-react';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-
-const SEARCH_DEBOUNCE_MS = 400;
 
 const getTenantFullName = (tenant: TenantFilterItem) =>
   [
