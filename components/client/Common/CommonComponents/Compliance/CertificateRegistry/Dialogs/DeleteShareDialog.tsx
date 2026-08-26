@@ -17,22 +17,32 @@ export interface DeleteShareDialogProps {
   open: boolean;
   onClose: () => void;
   certificateAlias: string;
-  shareAlias: string;
+  tenantAliases: string[];
+  onDeleted?: () => void;
 }
 
 const DeleteShareDialog: React.FC<DeleteShareDialogProps> = ({
   open,
   onClose,
   certificateAlias,
-  shareAlias,
+  tenantAliases,
+  onDeleted,
 }) => {
   const [deleteShare, { isLoading: isDeleteShareLoading }] =
     useDeleteShareMutation();
 
   const handleDelete = async () => {
     try {
-      await deleteShare({ certificateAlias, shareAlias }).unwrap();
-      toast.success('Share removed successfully.');
+      await deleteShare({
+        certificateAlias: certificateAlias,
+        payload: { tenant: tenantAliases },
+      }).unwrap();
+      toast.success(
+        tenantAliases.length > 1
+          ? 'Shares removed successfully.'
+          : 'Share removed successfully.',
+      );
+      onDeleted?.();
       onClose();
     } catch (error) {
       toast.error('Failed to remove share.');
@@ -44,12 +54,13 @@ const DeleteShareDialog: React.FC<DeleteShareDialogProps> = ({
       <DialogContent className='sm:max-w-100'>
         <DialogHeader>
           <DialogTitle className='text-foreground text-xl font-bold'>
-            Remove Share
+            Remove {tenantAliases.length > 1 ? 'Shares' : 'Share'}
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to remove this share? This tenant will no
-            longer have access to this certificate. This action cannot be
-            undone.
+            {tenantAliases.length > 1
+              ? `Are you sure you want to remove these ${tenantAliases.length} shares? These tenants will no longer have access to this certificate.`
+              : 'Are you sure you want to remove this share? This tenant will no longer have access to this certificate.'}{' '}
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
@@ -66,12 +77,15 @@ const DeleteShareDialog: React.FC<DeleteShareDialogProps> = ({
             type='button'
             variant='destructive'
             onClick={handleDelete}
-            disabled={isDeleteShareLoading}
+            disabled={isDeleteShareLoading || tenantAliases.length === 0}
           >
-            {isDeleteShareLoading && (
-              <Loading className='text-danger! size-4' />
+            {isDeleteShareLoading ? (
+              <>
+                <Loading className='text-danger! size-4' /> Removeing...
+              </>
+            ) : (
+              `Remove${tenantAliases.length > 1 ? ` (${tenantAliases.length})` : ''}`
             )}
-            Remove Share
           </Button>
         </DialogFooter>
       </DialogContent>

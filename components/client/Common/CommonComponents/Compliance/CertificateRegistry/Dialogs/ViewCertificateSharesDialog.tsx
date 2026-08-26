@@ -1,6 +1,9 @@
+'use client';
+
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +34,7 @@ import {
   ViewCertificateSharesDialogProps,
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
-import { Plus, Trash } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import AddNewShareDialog from './AddNewShareDialog';
 import DeleteShareDialog from './DeleteShareDialog';
@@ -44,14 +47,7 @@ const ViewCertificateSharesDialog: React.FC<
     useState(false);
   const [isOpenDeleteShareDialogOpen, setIsOpenDeleteShareDialogOpen] =
     useState(false);
-  const [selectedShareAlias, setSelectedShareAlias] = useState<string | null>(
-    null,
-  );
-
-  const handleDeleteShare = (shareAlias: string) => {
-    setSelectedShareAlias(shareAlias);
-    setIsOpenDeleteShareDialogOpen(true);
-  };
+  const [selectedAliases, setSelectedAliases] = useState<string[]>([]);
 
   const {
     data: certificateShares,
@@ -60,7 +56,7 @@ const ViewCertificateSharesDialog: React.FC<
   } = useGetCertificateSharesQuery({
     certificateAlias: selectedCertificate?.alias || '',
     params: {
-      page: 1,
+      page,
       limit: PAGE_LIMIT,
     },
   });
@@ -87,6 +83,48 @@ const ViewCertificateSharesDialog: React.FC<
     return pages;
   };
 
+  const isAllSelected =
+    results.length > 0 &&
+    results.every((share: CirtificateShare) =>
+      selectedAliases.includes(share.alias),
+    );
+
+  const handleToggleAll = () => {
+    if (isAllSelected) {
+      setSelectedAliases((prev) =>
+        prev.filter(
+          (alias) => !results.some((r: CirtificateShare) => r.alias === alias),
+        ),
+      );
+    } else {
+      setSelectedAliases((prev) => [
+        ...prev,
+        ...results
+          .map((r: CirtificateShare) => r.alias)
+          .filter((alias: string) => !prev.includes(alias)),
+      ]);
+    }
+  };
+
+  const handleToggleRow = (alias: string) => {
+    setSelectedAliases((prev) =>
+      prev.includes(alias) ? prev.filter((a) => a !== alias) : [...prev, alias],
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    setIsOpenDeleteShareDialogOpen(true);
+  };
+
+  const handleDeleteRow = (alias: string) => {
+    setSelectedAliases([alias]);
+    setIsOpenDeleteShareDialogOpen(true);
+  };
+
+  const handleDeleted = () => {
+    setSelectedAliases([]);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
@@ -104,15 +142,30 @@ const ViewCertificateSharesDialog: React.FC<
         <div>
           <div className='flex items-center justify-between border-b px-6 pb-4'>
             <h2 className='text-xl font-semibold'>Share List</h2>
-            <Button onClick={() => setIsOpenAddNewShareDialogOpen(true)}>
-              <Plus />
-              Add New Share
-            </Button>
+            <div className='flex items-center gap-2'>
+              {selectedAliases.length > 0 && (
+                <Button variant='destructive' onClick={handleDeleteSelected}>
+                  <Trash2 />
+                  Delete Selected ({selectedAliases.length})
+                </Button>
+              )}
+              <Button onClick={() => setIsOpenAddNewShareDialogOpen(true)}>
+                <Plus />
+                Add New Share
+              </Button>
+            </div>
           </div>
           <div className='overflow-auto px-6 py-4'>
             <Table>
               <TableHeader>
                 <TableRow className='bg-muted'>
+                  <TableHead className='w-10'>
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={handleToggleAll}
+                      disabled={results.length === 0}
+                    />
+                  </TableHead>
                   <TableHead>SL NO.</TableHead>
                   <TableHead>Tenant</TableHead>
                   <TableHead>Email</TableHead>
@@ -122,7 +175,7 @@ const ViewCertificateSharesDialog: React.FC<
               <tbody>
                 {isCertificateSharesLoading && (
                   <TableRow>
-                    <TableCell colSpan={4} className='py-6 text-center'>
+                    <TableCell colSpan={5} className='py-6 text-center'>
                       <Loading className='mx-auto size-5' />
                     </TableCell>
                   </TableRow>
@@ -130,7 +183,7 @@ const ViewCertificateSharesDialog: React.FC<
 
                 {!isCertificateSharesLoading && isError && (
                   <TableRow>
-                    <TableCell colSpan={4} className='py-10 text-center'>
+                    <TableCell colSpan={5} className='py-10 text-center'>
                       <CustomErrorMessage title='shares' />
                     </TableCell>
                   </TableRow>
@@ -140,7 +193,7 @@ const ViewCertificateSharesDialog: React.FC<
                   !isError &&
                   results.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className='py-5 text-center'>
+                      <TableCell colSpan={5} className='py-5 text-center'>
                         <p className='text-sm text-gray-900'>No User Found</p>
                       </TableCell>
                     </TableRow>
@@ -150,6 +203,12 @@ const ViewCertificateSharesDialog: React.FC<
                   !isError &&
                   results.map((share: CirtificateShare, index: number) => (
                     <TableRow key={share.alias}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedAliases.includes(share.alias)}
+                          onCheckedChange={() => handleToggleRow(share.alias)}
+                        />
+                      </TableCell>
                       <TableCell>#{index + 1}</TableCell>
                       <TableCell>
                         {formatChoiceFieldValue(share.title || '')}{' '}
@@ -157,14 +216,14 @@ const ViewCertificateSharesDialog: React.FC<
                         {share.last_name || ''}
                       </TableCell>
                       <TableCell>{share.email}</TableCell>
-                      <TableCell className='flex justify-center gap-2'>
+                      <TableCell className='text-center'>
                         <Button
                           variant='destructive'
                           size='icon'
                           title='Delete Share'
-                          onClick={() => handleDeleteShare(share.alias)}
+                          onClick={() => handleDeleteRow(share.alias)}
                         >
-                          <Trash />
+                          <Trash2 />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -244,7 +303,8 @@ const ViewCertificateSharesDialog: React.FC<
         open={isOpenDeleteShareDialogOpen}
         onClose={() => setIsOpenDeleteShareDialogOpen(false)}
         certificateAlias={selectedCertificate?.alias || ''}
-        shareAlias={selectedShareAlias || ''}
+        tenantAliases={selectedAliases}
+        onDeleted={handleDeleted}
       />
     </Dialog>
   );
