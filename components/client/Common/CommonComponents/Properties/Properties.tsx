@@ -14,15 +14,11 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
-  filterTabs,
-  PROPERTY_STATUS_OPTIONS,
-  propertyTypeMap,
+  FILTER_TABS,
+  PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import {
-  FilterTab,
-  Property,
-} from '@/types/client/Common/Properties/PropertyTypes';
+import { FilterTab, Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
@@ -48,17 +44,16 @@ const Properties: React.FC = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
+  const typeOption = PROPERTY_TYPE_OPTIONS.find(
+    (opt) => opt.label === activeFilter,
+  );
+
   const queryParams = {
     page,
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
-    ...(propertyTypeMap[activeFilter] && {
-      property_type: propertyTypeMap[activeFilter],
-    }),
-    ...(PROPERTY_STATUS_OPTIONS.find((opt) => opt.label === activeFilter) && {
-      status: PROPERTY_STATUS_OPTIONS.find((opt) => opt.label === activeFilter)
-        ?.value,
-    }),
+    ...(activeFilter !== 'All' &&
+      typeOption && { property_type: typeOption.value }),
   };
 
   const { data, isLoading, isError } = useGetPropertiesQuery(queryParams);
@@ -127,7 +122,7 @@ const Properties: React.FC = () => {
       </div>
 
       <PropertyFilter
-        filterTabs={filterTabs}
+        filterTabs={FILTER_TABS}
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
       />

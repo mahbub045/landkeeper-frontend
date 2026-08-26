@@ -1,17 +1,17 @@
 export type PropertyStatus = 'Occupied' | 'Vacant';
 export type PropertyType = 'residential' | 'hmo' | 'commercial';
+export type Tab = 'Details' | 'Mortgage' | 'Property Picture';
 export type FilterTab =
   | 'All'
+  | 'House'
+  | 'Flat'
+  | 'Maisonette'
+  | 'Bungalow'
   | 'Residential'
   | 'HMO'
   | 'Commercial'
-  | 'Mixed Use'
-  | 'Holiday Let'
-  | 'Occupied'
-  | 'Vacant'
-  | 'Under Maintenance';
+  | 'Holiday Let';
 
-export type Tab = 'Details' | 'Mortgage' | 'Property Picture';
 export interface PropertyDocument {
   id: number;
   image: string;
