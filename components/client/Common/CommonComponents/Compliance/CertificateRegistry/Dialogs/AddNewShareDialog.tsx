@@ -57,7 +57,12 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
   );
 
   const { data: tenantList, isLoading: isTenantListLoading } =
-    useGetTenantFilterListQuery({ search, property_alias: propertyAlias });
+    useGetTenantFilterListQuery(
+      { search, property_alias: propertyAlias },
+      {
+        skip: !isPopoverOpen || !propertyAlias,
+      },
+    );
   const [addNewShare, { isLoading: isAddNewShareLoading }] =
     useAddNewShareMutation();
 
