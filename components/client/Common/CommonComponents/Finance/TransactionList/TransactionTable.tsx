@@ -78,7 +78,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       <Table>
         <TableHeader className='bg-card'>
           <TableRow>
-            <TableHead className='pl-4'>Date</TableHead>
+            <TableHead className='pl-4'>#</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Property</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Category</TableHead>
@@ -90,14 +91,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </TableHeader>
 
         <TableBody>
-          {transactions.map((tx) => {
-            const fileUrl = tx.receipt_files[0]?.file;
-
+          {transactions.map((tx, index) => {
             return (
               <TableRow key={tx.alias} className='hover:bg-accent/40'>
                 <TableCell className='pl-4 text-xs tabular-nums'>
-                  {formatDate(tx.date)}
+                  {index + 1}.
                 </TableCell>
+                <TableCell className='text-xs'>{formatDate(tx.date)}</TableCell>
 
                 <TableCell className='text-foreground text-xs'>
                   {tx.property.property_name}
