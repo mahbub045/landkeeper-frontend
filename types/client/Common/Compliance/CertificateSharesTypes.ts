@@ -5,6 +5,7 @@ export interface ViewCertificateSharesDialogProps {
   onClose: () => void;
   selectedCertificate: ApiCertificate | null;
   propertyAlias: string;
+  complianceAlias: string;
 }
 
 export interface AddNewShareDialogProps {
@@ -12,6 +13,7 @@ export interface AddNewShareDialogProps {
   onClose: () => void;
   certificateAlias: string;
   propertyAlias: string;
+  complianceAlias: string;
 }
 
 export interface CirtificateShare {
