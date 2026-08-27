@@ -369,7 +369,7 @@ const PropertyMaintenanceList: React.FC = () => {
                 <TableRow key={i}>
                   {Array.from({ length: 12 }).map((__, j) => (
                     <TableCell key={j} className=''>
-                      <div className='h-10 w-full max-w-35 animate-pulse rounded bg-gray-100' />
+                      <div className='h-10 w-full max-w-35 animate-pulse rounded bg-gray-100 dark:bg-[#262626]' />
                     </TableCell>
                   ))}
                 </TableRow>
