@@ -178,6 +178,7 @@ const ViewCertificateSharesDialog: React.FC<
                       checked={isAllSelected}
                       onCheckedChange={handleToggleAll}
                       disabled={results.length === 0}
+                      className={`border-danger ${isAllSelected ? 'bg-danger! border-danger!' : ''}`}
                     />
                   </TableHead>
                   <TableHead>SL NO.</TableHead>
@@ -221,6 +222,7 @@ const ViewCertificateSharesDialog: React.FC<
                         <Checkbox
                           checked={selectedAliases.includes(share.alias)}
                           onCheckedChange={() => handleToggleRow(share.alias)}
+                          className={`border-danger ${selectedAliases.includes(share.alias) ? 'bg-danger! border-danger!' : ''}`}
                         />
                       </TableCell>
                       <TableCell>#{index + 1}</TableCell>

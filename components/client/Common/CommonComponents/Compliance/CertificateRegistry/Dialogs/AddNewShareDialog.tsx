@@ -224,7 +224,7 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
                         className={`flex size-4 shrink-0 items-center justify-center rounded-sm border ${
                           isSelected(tenant.alias)
                             ? 'bg-primary border-primary text-primary-foreground'
-                            : 'border-input'
+                            : 'border-primary'
                         }`}
                       >
                         {isSelected(tenant.alias) && (
