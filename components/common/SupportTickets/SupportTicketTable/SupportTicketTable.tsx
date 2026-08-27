@@ -346,7 +346,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
             <Button
-              variant='outline'
+              variant='success'
               size='icon'
               className='rounded-lg'
               title={expanded ? 'Hide details' : 'See details'}
@@ -359,7 +359,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
               />
             </Button>
             <Button
-              variant='outline'
+              variant='default'
               size='icon'
               className='rounded-lg'
               title='Edit'
@@ -368,7 +368,7 @@ const SupportTicketRow: React.FC<SupportTicketRowProps> = ({
               <Pencil />
             </Button>
             <Button
-              variant='destructive'
+              variant='danger'
               size='icon'
               className='rounded-lg'
               title='Delete'

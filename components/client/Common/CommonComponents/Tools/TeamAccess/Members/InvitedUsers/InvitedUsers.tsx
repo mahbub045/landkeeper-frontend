@@ -155,7 +155,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
 
                 <div className='flex shrink-0 items-center gap-1.5'>
                   <Button
-                    variant='outline'
+                    variant='success'
                     size='sm'
                     title='Resend invite email'
                     onClick={() => handleResendEmailDialogOpen(invite)}
@@ -165,7 +165,7 @@ const InvitedUsers: React.FC<InvitedUsersProps> = ({
                   </Button>
 
                   <Button
-                    variant='destructive'
+                    variant='danger'
                     size='sm'
                     title='Delete invite'
                     onClick={() => handleDeleteInvitedUserDialogOpen(invite)}
