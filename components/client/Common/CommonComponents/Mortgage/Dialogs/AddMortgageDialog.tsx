@@ -10,7 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -32,7 +37,11 @@ import {
   MortgageForm,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
+import {
+  getCurrencySign,
+  sanitizeEpcRating,
+  snakeToCamel,
+} from '@/utils/formatters';
 
 import { Paperclip, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
@@ -454,11 +463,7 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 maxLength={1}
                 value={form.epc_rating}
                 onChange={(e) => {
-                  const letterOnly = e.target.value
-                    .replace(/[^a-zA-Z]/g, '')
-                    .slice(0, 1)
-                    .toUpperCase();
-                  set('epc_rating', letterOnly);
+                  set('epc_rating', sanitizeEpcRating(e.target.value));
                 }}
                 aria-invalid={!!fieldErrors.epc_rating}
                 className={
@@ -468,6 +473,9 @@ const AddMortgageDialog: React.FC<AddMortgageDialogProps> = ({
                 }
               />
               <FieldError errors={[{ message: fieldErrors.epc_rating }]} />
+              <FieldDescription className='text-muted-foreground text-xs'>
+                Enter a letter from A to G. Leave blank if unknown.
+              </FieldDescription>
             </Field>
 
             <Field data-invalid={!!fieldErrors.epc_certificate_expiry_date}>

@@ -127,3 +127,19 @@ export function getDaysUntilDue(
   now.setHours(0, 0, 0, 0);
   return Math.round((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
+
+//epc
+export function sanitizeEpcRating(value: string): string {
+  return value
+    .replace(/[^a-gA-G]/g, '')
+    .slice(0, 1)
+    .toUpperCase();
+}
+
+// Council Tax Band
+export function sanitizeCouncilTaxBand(value: string): string {
+  return value
+    .replace(/[^a-hA-H]/g, '')
+    .slice(0, 1)
+    .toUpperCase();
+}
