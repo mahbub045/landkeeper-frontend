@@ -1,5 +1,4 @@
 'use client';
-import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setActiveTab } from '@/store/slices/permissionTabsSlice';
 import { TabKey } from '@/types/client/Common/Tools/Permission/PermissionTypes';
@@ -11,10 +10,6 @@ const Permission: React.FC = () => {
   const activeTab = useAppSelector(
     (state) => state.permissionAccessTabs.activeTab,
   );
-  const { data: authUsers, isLoading: isAuthUsersLoading } =
-    useGetAuthUserListQuery({
-      role: 'MORTGAGE_ADVISER',
-    });
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'properties', label: 'Properties Permission' },
@@ -40,12 +35,8 @@ const Permission: React.FC = () => {
       </div>
 
       <div className='mt-4'>
-        {activeTab === 'properties' && (
-          <PropertiesPermission authUsers={authUsers} />
-        )}
-        {activeTab === 'mortgages' && (
-          <MortgagesPermission authUsers={authUsers} />
-        )}
+        {activeTab === 'properties' && <PropertiesPermission />}
+        {activeTab === 'mortgages' && <MortgagesPermission />}
       </div>
     </div>
   );

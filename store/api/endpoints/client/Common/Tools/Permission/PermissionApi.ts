@@ -4,7 +4,7 @@ export const PermissionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPropertiesForPermission: builder.query({
       query: (userAlias) => ({
-        url: `/permissions/user/${userAlias}/properties`,
+        url: `/permissions/user/${userAlias}/bulk-property`,
         method: 'GET',
       }),
       providesTags: ['Permission'],
@@ -27,7 +27,7 @@ export const PermissionApi = baseApi.injectEndpoints({
     }),
     getMortgagesForPermission: builder.query({
       query: (userAlias) => ({
-        url: `/permissions/user/${userAlias}/mortgages`,
+        url: `/permissions/user/${userAlias}/bulk-mortgage`,
         method: 'GET',
       }),
       providesTags: ['Permission'],
