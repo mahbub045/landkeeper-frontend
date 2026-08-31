@@ -11,21 +11,9 @@ export interface Mortgage {
 }
 
 export interface PropertiesPermissionType {
+  alias: string;
   can_view: boolean;
   can_edit: boolean;
   property: Property;
   mortgage: Mortgage;
-}
-
-export interface BulkPropertyPermissionResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: PropertiesPermissionType[];
-}
-
-export interface BulkPropertyPermissionPayload {
-  property: string[];
-  can_view: boolean;
-  can_edit: boolean;
 }
