@@ -99,8 +99,8 @@ const ICON_COLORS = [
   '#0d9488', // teal-dark
   '#dc2626', // red-dark
   '#65a30d', // lime-dark
-  '#7c3aed', // violet-dark
   '#ea580c', // orange-dark
+  '#7c3aed', // violet-dark
   '#0891b2', // cyan-dark
   '#db2777', // pink-dark
   '#059669', // emerald-dark

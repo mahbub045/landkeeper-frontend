@@ -33,6 +33,7 @@ export const TAG_TYPES = [
   'Templates',
   'Finance',
   'TeamAccess',
+  'Permission',
   'PropertyMaintenance',
   'PropertyMaintenanceComments',
 
