@@ -5,18 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
@@ -43,30 +31,8 @@ import { Check, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
-import AddablePropertieCard from './AddablePropertieCard/AddablePropertieCard';
-import GrantedPropertieCard from './GrantedPropertieCard/GrantedPropertieCard';
-
-const getPageNumbers = (
-  page: number,
-  totalPages: number,
-): (number | '...')[] => {
-  const delta = 1;
-  const range: (number | '...')[] = [];
-
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === 1 ||
-      i === totalPages ||
-      (i >= page - delta && i <= page + delta)
-    ) {
-      range.push(i);
-    } else if (range[range.length - 1] !== '...') {
-      range.push('...');
-    }
-  }
-
-  return range;
-};
+import AddPropertiesTab from './Tabs/AddPropertiesTab/AddPropertiesTab';
+import ManageExistingTab from './Tabs/ManageExistingTab/ManageExistingTab';
 
 const PropertiesPermission: React.FC = () => {
   // --- user search state ---
@@ -451,264 +417,39 @@ const PropertiesPermission: React.FC = () => {
 
       {/* ================= ADD PROPERTIES TAB ================= */}
       {activeTab === 'add' && (
-        <>
-          {isLoadingAddable && (
-            <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className='h-16 rounded-xl' />
-              ))}
-            </div>
-          )}
-
-          {!isLoadingAddable && userAlias && addableProperties.length > 0 && (
-            <>
-              <div className='flex items-center justify-end'>
-                <Button size='sm' variant='outline' onClick={toggleSelectAll}>
-                  {allSelected ? (
-                    <span className='flex items-center gap-1'>
-                      <X />
-                      Clear all on this page
-                    </span>
-                  ) : (
-                    <span className='flex items-center gap-1'>
-                      <Check />
-                      Select all on this page
-                    </span>
-                  )}
-                </Button>
-              </div>
-
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-                {addableProperties.map((item) => {
-                  const alias = item.alias;
-                  const selected = selectedAliases.includes(alias);
-
-                  return (
-                    <AddablePropertieCard
-                      key={alias}
-                      item={item}
-                      selected={selected}
-                      toggleProperty={toggleProperty}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* --- pagination --- */}
-              <div className='flex items-center justify-between'>
-                {addableCount > 0 && (
-                  <p className='text-muted-foreground text-sm whitespace-nowrap'>
-                    Showing {(addablePage - 1) * PAGE_LIMIT + 1} to{' '}
-                    {Math.min(addablePage * PAGE_LIMIT, addableCount)} of{' '}
-                    {addableCount} Properties
-                  </p>
-                )}
-                {addableTotalPages > 1 && (
-                  <Pagination className='justify-end'>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() =>
-                            addablePage > 1 && setAddablePage((p) => p - 1)
-                          }
-                          aria-disabled={addablePage === 1}
-                          className={
-                            addablePage === 1
-                              ? 'pointer-events-none opacity-50'
-                              : 'cursor-pointer'
-                          }
-                        />
-                      </PaginationItem>
-
-                      {getPageNumbers(addablePage, addableTotalPages).map(
-                        (p, i) =>
-                          p === '...' ? (
-                            <PaginationItem key={`addable-ellipsis-${i}`}>
-                              <PaginationEllipsis />
-                            </PaginationItem>
-                          ) : (
-                            <PaginationItem key={p}>
-                              <PaginationLink
-                                isActive={p === addablePage}
-                                onClick={() => setAddablePage(p as number)}
-                                className='cursor-pointer'
-                              >
-                                {p}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ),
-                      )}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() =>
-                            addablePage < addableTotalPages &&
-                            setAddablePage((p) => p + 1)
-                          }
-                          aria-disabled={addablePage === addableTotalPages}
-                          className={
-                            addablePage === addableTotalPages
-                              ? 'pointer-events-none opacity-50'
-                              : 'cursor-pointer'
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                )}
-              </div>
-
-              {/* --- permission toggles + submit --- */}
-              <div className='flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-4'>
-                <Badge variant='success' className='gap-1.5 font-normal'>
-                  <Check className='h-3 w-3' strokeWidth={3} />
-                  Can view
-                  <span>(always granted)</span>
-                </Badge>
-
-                <div className='flex items-center gap-2.5'>
-                  <Switch
-                    id='can-edit'
-                    checked={canEdit}
-                    onCheckedChange={setCanEdit}
-                    className='bg-success/10 data-[state=checked]:bg-success cursor-pointer'
-                  />
-                  <Label
-                    htmlFor='can-edit'
-                    className='cursor-pointer text-sm font-normal'
-                  >
-                    Can edit
-                  </Label>
-                </div>
-
-                <Button
-                  onClick={handleSubmit}
-                  disabled={selectedAliases.length === 0 || isSaving}
-                  className='ml-auto'
-                >
-                  {isSaving ? (
-                    <>
-                      <Loading className='h-3.5 w-3.5 text-white!' />
-                      Saving…
-                    </>
-                  ) : (
-                    `Apply to ${selectedAliases.length} selected`
-                  )}
-                </Button>
-              </div>
-            </>
-          )}
-
-          {!isLoadingAddable && userAlias && addableProperties.length === 0 && (
-            <Card className='text-muted-foreground border-dashed p-8 text-center text-sm shadow-none'>
-              This user already has access to every property.
-            </Card>
-          )}
-        </>
+        <AddPropertiesTab
+          isLoadingAddable={isLoadingAddable}
+          userAlias={userAlias}
+          addableProperties={addableProperties}
+          addableCount={addableCount}
+          addableTotalPages={addableTotalPages}
+          addablePage={addablePage}
+          setAddablePage={setAddablePage}
+          selectedAliases={selectedAliases}
+          toggleProperty={toggleProperty}
+          toggleSelectAll={toggleSelectAll}
+          canEdit={canEdit}
+          setCanEdit={setCanEdit}
+          handleSubmit={handleSubmit}
+          isSaving={isSaving}
+          allSelected={allSelected}
+        />
       )}
 
       {/* ================= MANAGE EXISTING TAB ================= */}
       {activeTab === 'manage' && (
-        <>
-          {isLoadingGranted && (
-            <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className='h-20 rounded-xl' />
-              ))}
-            </div>
-          )}
-
-          {!isLoadingGranted && userAlias && grantedProperties.length > 0 && (
-            <>
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-                {grantedProperties.map((item: PropertiesPermissionType) => {
-                  const permissionAlias = item.alias;
-                  const isPending = pendingAliases.has(permissionAlias);
-
-                  return (
-                    <GrantedPropertieCard
-                      key={permissionAlias}
-                      item={item}
-                      isPending={isPending}
-                      handleToggleCanEdit={handleToggleCanEdit}
-                      handleRevoke={handleRevoke}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* --- pagination --- */}
-              <div className='flex items-center justify-between'>
-                {grantedCount > 0 && (
-                  <p className='text-muted-foreground text-sm whitespace-nowrap'>
-                    Showing {(grantedPage - 1) * PAGE_LIMIT + 1} to{' '}
-                    {Math.min(grantedPage * PAGE_LIMIT, grantedCount)} of{' '}
-                    {grantedCount} Properties
-                  </p>
-                )}
-                {grantedTotalPages > 1 && (
-                  <Pagination className='justify-end'>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() =>
-                            grantedPage > 1 && setGrantedPage((p) => p - 1)
-                          }
-                          aria-disabled={grantedPage === 1}
-                          className={
-                            grantedPage === 1
-                              ? 'pointer-events-none opacity-50'
-                              : 'cursor-pointer'
-                          }
-                        />
-                      </PaginationItem>
-
-                      {getPageNumbers(grantedPage, grantedTotalPages).map(
-                        (p, i) =>
-                          p === '...' ? (
-                            <PaginationItem key={`granted-ellipsis-${i}`}>
-                              <PaginationEllipsis />
-                            </PaginationItem>
-                          ) : (
-                            <PaginationItem key={p}>
-                              <PaginationLink
-                                isActive={p === grantedPage}
-                                onClick={() => setGrantedPage(p as number)}
-                                className='cursor-pointer'
-                              >
-                                {p}
-                              </PaginationLink>
-                            </PaginationItem>
-                          ),
-                      )}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() =>
-                            grantedPage < grantedTotalPages &&
-                            setGrantedPage((p) => p + 1)
-                          }
-                          aria-disabled={grantedPage === grantedTotalPages}
-                          className={
-                            grantedPage === grantedTotalPages
-                              ? 'pointer-events-none opacity-50'
-                              : 'cursor-pointer'
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                )}
-              </div>
-            </>
-          )}
-
-          {!isLoadingGranted && userAlias && grantedProperties.length === 0 && (
-            <Card className='text-muted-foreground border-dashed p-8 text-center text-sm shadow-none'>
-              This user has no property permissions yet.
-            </Card>
-          )}
-        </>
+        <ManageExistingTab
+          isLoadingGranted={isLoadingGranted}
+          userAlias={userAlias}
+          grantedProperties={grantedProperties}
+          grantedCount={grantedCount}
+          grantedTotalPages={grantedTotalPages}
+          grantedPage={grantedPage}
+          setGrantedPage={setGrantedPage}
+          pendingAliases={pendingAliases}
+          handleToggleCanEdit={handleToggleCanEdit}
+          handleRevoke={handleRevoke}
+        />
       )}
     </div>
   );
