@@ -4,7 +4,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -20,7 +25,7 @@ import {
 } from '@/data/client/common/mortgage/MortgageData';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { MortgageStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { getCurrencySign, sanitizeEpcRating } from '@/utils/formatters';
 import { CloudUpload, X } from 'lucide-react';
 import { forwardRef, useCallback, useRef, useState } from 'react';
 
@@ -233,11 +238,7 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
               maxLength={1}
               value={value.epc_rating}
               onChange={(e) => {
-                const letterOnly = e.target.value
-                  .replace(/[^a-zA-Z]/g, '')
-                  .slice(0, 1)
-                  .toUpperCase();
-                set('epc_rating', letterOnly);
+                set('epc_rating', sanitizeEpcRating(e.target.value));
               }}
               aria-invalid={!!errors.epc_rating}
               className={
@@ -247,6 +248,9 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
               }
             />
             <FieldError errors={[{ message: errors.epc_rating }]} />
+            <FieldDescription className='text-muted-foreground text-xs'>
+              Enter a letter from A to G. Leave blank if unknown.
+            </FieldDescription>
           </Field>
 
           <Field data-invalid={!!errors.epc_certificate_expiry_date}>

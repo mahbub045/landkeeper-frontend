@@ -3,6 +3,7 @@ import { authApi } from './api/authApi';
 import { baseApi } from './api/baseApi';
 import authReducer from './slices/authSlice';
 import calculatorTabsReducer from './slices/calculatorTabsSlice';
+import permissionAccessTabsReducer from './slices/permissionTabsSlice';
 import teamAccessUiReducer from './slices/teamAccessUiSlice';
 
 export const store = configureStore({
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth: authReducer,
     calculatorTabs: calculatorTabsReducer,
     teamAccessUi: teamAccessUiReducer,
+    permissionAccessTabs: permissionAccessTabsReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },

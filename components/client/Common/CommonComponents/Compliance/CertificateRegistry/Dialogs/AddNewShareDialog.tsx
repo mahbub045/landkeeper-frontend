@@ -47,6 +47,7 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
   onClose,
   certificateAlias,
   propertyAlias,
+  complianceAlias,
 }) => {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -57,7 +58,11 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
 
   const { data: tenantList, isLoading: isTenantListLoading } =
     useGetTenantFilterListQuery(
-      { search, property_alias: propertyAlias },
+      {
+        search,
+        property_alias: propertyAlias,
+        compliance_alias: complianceAlias,
+      },
       {
         skip: !isPopoverOpen || !propertyAlias,
       },
@@ -224,7 +229,7 @@ const AddNewShareDialog: React.FC<AddNewShareDialogProps> = ({
                         className={`flex size-4 shrink-0 items-center justify-center rounded-sm border ${
                           isSelected(tenant.alias)
                             ? 'bg-primary border-primary text-primary-foreground'
-                            : 'border-input'
+                            : 'border-primary'
                         }`}
                       >
                         {isSelected(tenant.alias) && (

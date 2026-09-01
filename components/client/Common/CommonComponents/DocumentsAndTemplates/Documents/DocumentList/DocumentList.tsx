@@ -147,25 +147,25 @@ const DocumentList: React.FC<DocumentListProps> = ({
               <div className='flex shrink-0 items-center gap-2'>
                 <div className='text-center'>
                   {doc.files.length === 0 ? (
-                    <Button variant='outline' size='sm' disabled>
+                    <Button variant='secondary' size='sm' disabled>
                       <Eye />
-                      View
+                      View File
                     </Button>
                   ) : doc.files.length === 1 ? (
                     <Button
-                      variant='outline'
+                      variant='secondary'
                       size='sm'
                       onClick={() => window.open(doc.files[0].file, '_blank')}
                     >
                       <Eye />
-                      View
+                      View File
                     </Button>
                   ) : (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant='outline' size='sm'>
+                        <Button variant='secondary' size='sm'>
                           <Eye />
-                          View ({doc.files.length})
+                          View ({doc.files.length}) Files
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className='w-64 p-2' align='center'>
@@ -194,23 +194,21 @@ const DocumentList: React.FC<DocumentListProps> = ({
                 </div>
 
                 <Button
-                  variant='outline'
-                  size='icon'
+                  variant='default'
                   aria-label='Edit'
                   title='Edit Document'
                   onClick={() => setEditingDoc(doc)}
                 >
-                  <Pencil />
+                  <Pencil /> Edit
                 </Button>
 
                 <Button
-                  variant='destructive'
-                  size='icon'
+                  variant='danger'
                   aria-label='Delete'
                   title='Delete Document'
                   onClick={() => setDeletingDoc(doc)}
                 >
-                  <Trash2 />
+                  <Trash2 /> Delete
                 </Button>
               </div>
             </CardContent>

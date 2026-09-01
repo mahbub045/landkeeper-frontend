@@ -231,7 +231,7 @@ const AcceptedUsers: React.FC<AcceptedUsersProps> = ({
               <div className='flex shrink-0 items-center gap-2'>
                 <Button
                   aria-label='Edit'
-                  variant='outline'
+                  variant='default'
                   size='icon'
                   title='Edit User'
                   className='rounded-lg'

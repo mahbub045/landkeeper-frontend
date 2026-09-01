@@ -78,7 +78,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       <Table>
         <TableHeader className='bg-card'>
           <TableRow>
-            <TableHead className='pl-4'>Date</TableHead>
+            <TableHead className='pl-4'>#</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Property</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Category</TableHead>
@@ -90,14 +91,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </TableHeader>
 
         <TableBody>
-          {transactions.map((tx) => {
-            const fileUrl = tx.receipt_files[0]?.file;
-
+          {transactions.map((tx, index) => {
             return (
               <TableRow key={tx.alias} className='hover:bg-accent/40'>
                 <TableCell className='pl-4 text-xs tabular-nums'>
-                  {formatDate(tx.date)}
+                  {index + 1}.
                 </TableCell>
+                <TableCell className='text-xs'>{formatDate(tx.date)}</TableCell>
 
                 <TableCell className='text-foreground text-xs'>
                   {tx.property.property_name}
@@ -136,13 +136,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
                 <TableCell className='text-center'>
                   {tx.receipt_files.length === 0 ? (
-                    <Button variant='outline' size='sm' disabled>
+                    <Button variant='secondary' size='sm' disabled>
                       <Eye />
                       View
                     </Button>
                   ) : tx.receipt_files.length === 1 ? (
                     <Button
-                      variant='outline'
+                      variant='secondary'
                       size='sm'
                       onClick={() =>
                         window.open(tx.receipt_files[0].file, '_blank')
@@ -154,7 +154,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   ) : (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant='outline' size='sm'>
+                        <Button variant='secondary' size='sm'>
                           <Eye />
                           View ({tx.receipt_files.length})
                         </Button>
@@ -187,7 +187,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <TableCell className='pr-4'>
                   <div className='flex items-center justify-end gap-2'>
                     <Button
-                      variant='outline'
+                      variant='default'
                       size='icon'
                       aria-label='Edit'
                       title='Edit Transaction'
@@ -197,7 +197,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                     </Button>
 
                     <Button
-                      variant='destructive'
+                      variant='danger'
                       size='icon'
                       aria-label='Delete'
                       title='Delete Transaction'

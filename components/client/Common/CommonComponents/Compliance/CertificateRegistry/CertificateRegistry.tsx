@@ -71,18 +71,18 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
         </div>
       </CardHeader>
 
-      <div className='overflow-x-auto'>
+      <div className='overflow-x-auto px-2'>
         <Table>
           <TableHeader>
             <TableRow>
-              {TABLE_COLUMNS.map((col) => (
-                <TableHead
-                  key={col}
-                  className='px-6 text-center font-semibold tracking-wider'
-                >
-                  {col}
-                </TableHead>
-              ))}
+              <TableHead>#</TableHead>
+              <TableHead>Property</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Certificate No</TableHead>
+              <TableHead>Issue & Expiry Date</TableHead>
+              <TableHead className='text-center'>Documents</TableHead>
+              <TableHead className='text-center'>Status</TableHead>
+              <TableHead className='text-center'>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -112,8 +112,8 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              certificates.map((cert: ApiCertificate) => {
-                return <CertificateRow key={cert.alias} cert={cert} />;
+              certificates.map((cert: ApiCertificate, index: number) => {
+                return <CertificateRow key={cert.alias} cert={cert} index={index} />;
               })
             )}
           </TableBody>

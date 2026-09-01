@@ -4,7 +4,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -23,7 +28,10 @@ import {
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  getCurrencySign,
+  sanitizeCouncilTaxBand,
+} from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -685,9 +693,11 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
             </FieldLabel>
             <Input
               type='text'
-              placeholder='e.g. A, B, C...'
+              placeholder='e.g. A'
               value={value.council_tax_band}
-              onChange={(e) => set('council_tax_band', e.target.value)}
+              onChange={(e) =>
+                set('council_tax_band', sanitizeCouncilTaxBand(e.target.value))
+              }
               aria-invalid={!!errors.council_tax_band}
               className={
                 errors.council_tax_band
@@ -696,6 +706,9 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               }
             />
             <FieldError errors={[{ message: errors.council_tax_band }]} />
+            <FieldDescription className='text-muted-foreground text-xs'>
+              Enter a letter from A to H. Leave blank if unknown.
+            </FieldDescription>
           </Field>
           <Field data-invalid={!!errors.local_authority}>
             <FieldLabel className='text-sm font-semibold'>

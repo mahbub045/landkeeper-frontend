@@ -133,6 +133,11 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
             icon: UserKey,
           },
           {
+            label: 'Permission',
+            href: '/client/landlord/tools/permission',
+            icon: ShieldUser,
+          },
+          {
             label: 'Calculators',
             href: '/client/landlord/tools/calculators',
             icon: Calculator,

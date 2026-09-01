@@ -25,6 +25,7 @@ const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
 
 interface CertificateRowProps {
   cert: ApiCertificate;
+  index: number;
 }
 
 const humanizeCertType = (type: string) =>
@@ -44,7 +45,7 @@ const getCertStatus = (expiryDate: string): CertStatus => {
   return 'Valid';
 };
 
-const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
+const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const router = useRouter();
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
@@ -62,14 +63,15 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
 
   return (
     <>
-      <TableRow className='text-center'>
-        <TableCell className='px-6 text-sm'>
+      <TableRow className='text-centers'>
+        <TableCell className='text-sm'>{index + 1}.</TableCell>
+        <TableCell className='text-sm'>
           {cert.property?.property_name || (
             <span className='text-muted-foreground text-xs'>Not Available</span>
           )}
         </TableCell>
-        <TableCell className='px-6 text-sm'>
-          <span className='flex items-center justify-center gap-2'>
+        <TableCell className='text-sm'>
+          <span className='flex items-center justify-start gap-2'>
             <span className='text-primary'>✳</span>
             {cert.certificate_type ? (
               humanizeCertType(cert.certificate_type)
@@ -80,12 +82,12 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
             )}
           </span>
         </TableCell>
-        <TableCell className='px-6 text-sm'>
+        <TableCell className='text-sm'>
           {cert.certificate_number || (
             <span className='text-muted-foreground text-xs'>Not Available</span>
           )}
         </TableCell>
-        <TableCell className='px-6 text-sm'>
+        <TableCell className='text-sm'>
           <div className='flex flex-col gap-0.5'>
             <span>
               Issue:{' '}
@@ -105,7 +107,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
             </span>
           </div>
         </TableCell>
-        <TableCell className='px-6'>
+        <TableCell className='text-center'>
           {cert.certificate_file ? (
             <Button variant='outline' size='sm' className='rounded-lg' asChild>
               <a
@@ -120,7 +122,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
             <span className='text-muted-foreground text-xs'>Not Available</span>
           )}
         </TableCell>
-        <TableCell className='px-6'>
+        <TableCell className='text-center'>
           <Badge
             className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
           >
@@ -132,7 +134,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
             )}
           </Badge>
         </TableCell>
-        <TableCell className='px-6'>
+        <TableCell>
           <div className='flex items-center justify-center gap-2'>
             <Button
               variant='secondary'
@@ -172,6 +174,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert }) => {
         onClose={() => setIsOpenViewShares(false)}
         selectedCertificate={selectedCertificate}
         propertyAlias={cert.property?.alias || ''}
+        complianceAlias={cert?.alias || ''}
       />
 
       <UpdateCertificateDialog

@@ -10,7 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -41,6 +46,7 @@ import {
 } from '@/types/client/Common/Properties/PropertyTypes';
 import formatChoiceFieldValue, {
   getCurrencySign,
+  sanitizeCouncilTaxBand,
   snakeToCamel,
 } from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
@@ -1106,9 +1112,11 @@ const DetailsTab: React.FC<{
           </FieldLabel>
           <Input
             type='text'
-            placeholder='e.g. A, B, C...'
+            placeholder='e.g. A'
             value={form.council_tax_band}
-            onChange={(e) => set('council_tax_band', e.target.value)}
+            onChange={(e) =>
+              set('council_tax_band', sanitizeCouncilTaxBand(e.target.value))
+            }
             aria-invalid={!!errors.council_tax_band}
             className={
               errors.council_tax_band
@@ -1117,6 +1125,9 @@ const DetailsTab: React.FC<{
             }
           />
           <FieldError errors={[{ message: errors.council_tax_band }]} />
+          <FieldDescription className='text-muted-foreground text-xs'>
+            Enter a letter from A to H. Leave blank if unknown.
+          </FieldDescription>
         </Field>
         <Field data-invalid={!!errors.local_authority}>
           <FieldLabel className='text-sm font-semibold'>
