@@ -18,7 +18,7 @@ import { Switch } from '@/components/ui/switch';
 import { AddPropertiesTabProps } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, X } from 'lucide-react';
-import AddablePropertieCard from './AddablePropertieCard/AddablePropertieCard';
+import AddablePropertieCard from './AddablePropertyCard/AddablePropertyCard';
 
 const getPageNumbers = (
   page: number,

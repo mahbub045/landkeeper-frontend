@@ -1,14 +1,6 @@
 'use client';
 
-import { AuthUser } from '@/types/auth/AuthUsersType';
-
-export interface MortgagesPermissionProps {
-  authUsers?: AuthUser;
-}
-
-const MortgagesPermission: React.FC<MortgagesPermissionProps> = ({
-  authUsers,
-}) => {
+const MortgagesPermission: React.FC = () => {
   return (
     <div>
       <h2 className='mb-2 text-lg font-semibold'>Mortgages Permission</h2>

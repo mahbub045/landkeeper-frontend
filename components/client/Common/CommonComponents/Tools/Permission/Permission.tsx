@@ -1,9 +1,10 @@
 'use client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setActiveTab } from '@/store/slices/permissionTabsSlice';
-import { TabKey } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import MortgagesPermission from './Tabs/MortgagesPermission/MortgagesPermission';
 import PropertiesPermission from './Tabs/PropertiesPermission/PropertiesPermission';
+
+export type TabKey = 'properties' | 'mortgages';
 
 const Permission: React.FC = () => {
   const dispatch = useAppDispatch();
