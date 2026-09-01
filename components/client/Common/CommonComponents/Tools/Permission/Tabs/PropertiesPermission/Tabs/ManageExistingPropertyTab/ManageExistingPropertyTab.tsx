@@ -39,7 +39,7 @@ const getPageNumbers = (
   return range;
 };
 
-const ManageExistingTab: React.FC<ManageExistingTabProps> = ({
+const ManageExistingPropertyTab: React.FC<ManageExistingTabProps> = ({
   isLoadingGranted,
   userAlias,
   grantedProperties,
@@ -154,4 +154,4 @@ const ManageExistingTab: React.FC<ManageExistingTabProps> = ({
   );
 };
 
-export default ManageExistingTab;
+export default ManageExistingPropertyTab;

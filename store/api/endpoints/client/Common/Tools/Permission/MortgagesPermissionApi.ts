@@ -2,7 +2,7 @@ import { baseApi } from '@/store/api/baseApi';
 
 export const MortgagesPermissionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    addMortgagePermission: builder.mutation({
+    addMortgagesPermission: builder.mutation({
       query: ({ userAlias, payload }) => ({
         url: `/permissions/user/${userAlias}/bulk-mortgage`,
         method: 'POST',
@@ -22,6 +22,6 @@ export const MortgagesPermissionApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useAddMortgagesPermissionMutation,
   useGetMortgagesForPermissionQuery,
-  useAddMortgagePermissionMutation,
 } = MortgagesPermissionApi;

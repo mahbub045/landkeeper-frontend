@@ -1,75 +1,62 @@
-
+export interface MortgageProperty {
+  address?: string;
+}
 
 export interface Mortgage {
   id: number;
   alias: string;
-  property_name: string;
-  address?: string;
-  property_type?: string;
-  status?: string;
-  documents?: {
-    id: number;
-    image: string;
-  }[];
-}
-
-export interface Mortgage {
   lender_name: string;
+  interest_rate_type?: string;
+  interest_rate?: number | null;
+  interest_rate_expiry_date?: string | null;
+  outstanding_balance?: number | null;
+  monthly_payment?: number | null;
+  remaining_mortgage?: number | null;
 }
 
-export interface PropertiesPermissionType {
+export interface MortgagesPermissionType {
   alias: string;
   can_view: boolean;
   can_edit: boolean;
-  property: Property;
+  property: MortgageProperty;
   mortgage: Mortgage;
 }
 
-export type PropertyForPermissionType = {
-  id: number;
+export type MortgageForPermissionType = {
   alias: string;
-  property_name: string;
-  address: string;
-  property_owner: string;
-  company_name: string;
-  property_type: string;
-  status: string;
+  lender_name: string;
+  interest_rate_type: string;
+  interest_rate: number | null;
+  interest_rate_expiry_date: string | null;
+  outstanding_balance: number | null;
+  monthly_payment: number | null;
+  remaining_mortgage: number | null;
+  property: MortgageProperty;
 };
 
-export interface GrantedPropertieCardProps {
-  item: PropertiesPermissionType;
+export interface GrantedMortgageCardProps {
+  item: MortgagesPermissionType;
   isPending: boolean;
   handleToggleCanEdit: (alias: string, checked: boolean) => void;
   handleRevoke: (alias: string) => void;
 }
 
-export interface AddablePropertieCardProps {
-  item: {
-    id: number;
-    alias: string;
-    property_name: string;
-    address: string;
-    property_type: string;
-    status: string;
-    documents?: {
-      id: number;
-      image: string;
-    }[];
-  };
+export interface AddableMortgageCardProps {
+  item: MortgageForPermissionType;
   selected: boolean;
-  toggleProperty: (alias: string) => void;
+  toggleMortgage: (alias: string) => void;
 }
 
-export interface AddPropertiesTabProps {
+export interface AddMortgagesTabProps {
   isLoadingAddable: boolean;
   userAlias: string | undefined;
-  addableProperties: PropertyForPermissionType[];
+  addableMortgages: MortgageForPermissionType[];
   addableCount: number;
   addableTotalPages: number;
   addablePage: number;
   setAddablePage: (page: number | ((prev: number) => number)) => void;
   selectedAliases: string[];
-  toggleProperty: (alias: string) => void;
+  toggleMortgage: (alias: string) => void;
   toggleSelectAll: () => void;
   canEdit: boolean;
   setCanEdit: (value: boolean) => void;
@@ -78,10 +65,10 @@ export interface AddPropertiesTabProps {
   allSelected: boolean;
 }
 
-export interface ManageExistingTabProps {
+export interface ManageExistingMortgageTabProps {
   isLoadingGranted: boolean;
   userAlias: string | undefined;
-  grantedProperties: PropertiesPermissionType[];
+  grantedMortgages: MortgagesPermissionType[];
   grantedCount: number;
   grantedTotalPages: number;
   grantedPage: number;

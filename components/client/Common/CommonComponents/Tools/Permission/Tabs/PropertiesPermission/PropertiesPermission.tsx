@@ -32,7 +32,7 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import AddPropertiesTab from './Tabs/AddPropertiesTab/AddPropertiesTab';
-import ManageExistingTab from './Tabs/ManageExistingTab/ManageExistingTab';
+import ManageExistingTab from './Tabs/ManageExistingPropertyTab/ManageExistingPropertyTab';
 
 const PropertiesPermission: React.FC = () => {
   // --- user search state ---
