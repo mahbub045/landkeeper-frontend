@@ -41,6 +41,8 @@ import {
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 import AddablePropertieCard from './AddablePropertieCard/AddablePropertieCard';
 import GrantedPropertieCard from './GrantedPropertieCard/GrantedPropertieCard';
 
@@ -254,7 +256,19 @@ const PropertiesPermission: React.FC = () => {
 
   const handleRevoke = async (permissionAlias: string) => {
     if (!userAlias) return;
-    if (!window.confirm('Revoke access to this property?')) return;
+
+    const result = await Swal.fire({
+      title: 'Revoke access to this property?',
+      text: 'This mortgage adviser will lose view and edit access.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Revoke',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc2626',
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
 
     setPendingAliases((prev) => new Set(prev).add(permissionAlias));
     try {
@@ -264,6 +278,9 @@ const PropertiesPermission: React.FC = () => {
       setGrantedPage(1);
       refetchGranted();
       refetchAddable();
+      toast.success('Property access revoked.');
+    } catch {
+      toast.error('Failed to revoke access. Please try again.');
     } finally {
       setPendingAliases((prev) => {
         const next = new Set(prev);

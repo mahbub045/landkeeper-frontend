@@ -82,11 +82,10 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
 
         <Button
           type='button'
-          variant='outline'
+          variant='destructive'
           size='sm'
           disabled={isPending}
           onClick={() => handleRevoke(item.alias)}
-          className='text-destructive hover:text-destructive h-auto text-xs'
         >
           {isPending ? (
             <Loading className='text-danger! h-3.5 w-3.5' />
