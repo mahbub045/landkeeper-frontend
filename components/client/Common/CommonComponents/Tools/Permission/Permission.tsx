@@ -1,7 +1,7 @@
 'use client';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setActiveTab } from '@/store/slices/permissionTabsSlice';
-import { TabKey } from '@/types/client/Common/Tools/Permission/PropertyPermissionTypes';
+import { TabKey } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import MortgagesPermission from './Tabs/MortgagesPermission/MortgagesPermission';
 import PropertiesPermission from './Tabs/PropertiesPermission/PropertiesPermission';
 

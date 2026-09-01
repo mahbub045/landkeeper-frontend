@@ -15,7 +15,7 @@ import {
 import {
   useAddPropertiesPermissionMutation,
   useGetPropertiesForPermissionQuery,
-} from '@/store/api/endpoints/client/Common/Tools/Permission/PropertyPermissionApi';
+} from '@/store/api/endpoints/client/Common/Tools/Permission/PropertiesPermissionApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   PropertiesPermissionTabKey,
@@ -25,7 +25,7 @@ import { AuthUser } from '@/types/auth/AuthUsersType';
 import {
   PropertiesPermissionType,
   PropertyForPermissionType,
-} from '@/types/client/Common/Tools/Permission/PropertyPermissionTypes';
+} from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, RefreshCcw, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';

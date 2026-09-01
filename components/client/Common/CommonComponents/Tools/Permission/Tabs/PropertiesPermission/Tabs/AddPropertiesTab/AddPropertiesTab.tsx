@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { AddPropertiesTabProps } from '@/types/client/Common/Tools/Permission/PropertyPermissionTypes';
+import { AddPropertiesTabProps } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, X } from 'lucide-react';
 import AddablePropertieCard from './AddablePropertieCard/AddablePropertieCard';
