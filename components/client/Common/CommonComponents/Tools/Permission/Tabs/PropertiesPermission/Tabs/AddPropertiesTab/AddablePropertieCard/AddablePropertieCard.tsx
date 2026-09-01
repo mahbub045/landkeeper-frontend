@@ -2,7 +2,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { AddablePropertieCardProps } from '@/types/client/Common/Tools/Permission/PermissionTypes';
+import { AddablePropertieCardProps } from '@/types/client/Common/Tools/Permission/PropertyPermissionTypes';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { Check, ImageOff } from 'lucide-react';
 import Image from 'next/image';

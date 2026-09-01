@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   ManageExistingTabProps,
   PropertiesPermissionType,
-} from '@/types/client/Common/Tools/Permission/PermissionTypes';
+} from '@/types/client/Common/Tools/Permission/PropertyPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import GrantedPropertieCard from './GrantedPropertieCard/GrantedPropertieCard';
 
