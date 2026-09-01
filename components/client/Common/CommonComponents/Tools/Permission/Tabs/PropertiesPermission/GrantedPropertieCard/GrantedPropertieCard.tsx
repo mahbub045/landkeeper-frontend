@@ -1,4 +1,5 @@
 import Loading from '@/components/common/CustomLoader/Loading';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { GrantedPropertieCardProps } from '@/types/client/Common/Tools/Permission/PermissionTypes';
 import { formatChoiceFieldValue } from '@/utils/formatters';
+import { ImageOff, X } from 'lucide-react';
+import Image from 'next/image';
 
 const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
   item,
@@ -13,24 +16,46 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
   handleToggleCanEdit,
   handleRevoke,
 }) => {
+  const thumbnail = item.property.documents?.[0]?.image;
+
   return (
-    <Card key={item.alias} className='p-3.5'>
-      <div className='truncate text-sm font-medium'>
-        {item.property.address || 'Untitled property'}
+    <Card key={item.alias} className='relative overflow-hidden p-3.5'>
+      <div className='-mx-3.5 -mt-3.5 mb-3'>
+        <AspectRatio ratio={16 / 9} className='bg-muted relative'>
+          {thumbnail ? (
+            <Image
+              src={thumbnail}
+              alt={item.property.address || 'Property image'}
+              fill
+              className='object-cover'
+              sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
+            />
+          ) : (
+            <div className='text-muted-foreground flex h-full w-full items-center justify-center'>
+              <ImageOff className='h-6 w-6' />
+            </div>
+          )}
+        </AspectRatio>
       </div>
-      {item.property.property_type && (
-        <Badge
-          variant='default'
-          className='bg-primary/30 absolute right-2 bottom-2 mt-1 truncate text-xs text-black dark:text-white'
-        >
-          {formatChoiceFieldValue(item.property.property_type)}
-        </Badge>
-      )}
+
+      <div className='flex justify-between gap-1'>
+        <div className='truncate text-sm font-medium'>
+          {item.property.address || 'Untitled property'}
+        </div>
+        {item.property.property_type && (
+          <Badge
+            variant='default'
+            className='bg-primary/30 truncate text-xs text-black dark:text-white'
+          >
+            {formatChoiceFieldValue(item.property.property_type)}
+          </Badge>
+        )}
+      </div>
 
       {item.property.status && (
         <Badge
           variant='secondary'
-          className='bg-secondary/30 absolute right-2 bottom-2 mt-1 truncate text-xs text-black dark:text-white'
+          className='bg-secondary/70 absolute top-2 right-2 mt-1 truncate text-xs text-black dark:text-white'
         >
           {formatChoiceFieldValue(item.property.status)}
         </Badge>
@@ -45,7 +70,7 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
             onCheckedChange={(checked) =>
               handleToggleCanEdit(item.alias, checked)
             }
-            className='cursor-pointer'
+            className='bg-success/10 data-[state=checked]:bg-success cursor-pointer'
           />
           <Label
             htmlFor={`can-edit-${item.alias}`}
@@ -57,13 +82,20 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
 
         <Button
           type='button'
-          variant='ghost'
+          variant='outline'
           size='sm'
           disabled={isPending}
           onClick={() => handleRevoke(item.alias)}
-          className='text-destructive hover:text-destructive h-auto p-0 text-xs'
+          className='text-destructive hover:text-destructive h-auto text-xs'
         >
-          {isPending ? <Loading className='h-3.5 w-3.5' /> : 'Revoke'}
+          {isPending ? (
+            <Loading className='text-danger! h-3.5 w-3.5' />
+          ) : (
+            <span className='flex items-center gap-1'>
+              <X />
+              Revoke Permission
+            </span>
+          )}
         </Button>
       </div>
     </Card>

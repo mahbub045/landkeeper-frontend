@@ -34,8 +34,6 @@ export type PropertyForPermissionType = {
   company_name: string;
   property_type: string;
   status: string;
-  created_at: string;
-  updated_at: string;
 };
 
 export interface GrantedPropertieCardProps {
@@ -53,8 +51,10 @@ export interface AddablePropertieCardProps {
     address: string;
     property_type: string;
     status: string;
-    created_at: string;
-    updated_at: string;
+    documents?: {
+      id: number;
+      image: string;
+    }[];
   };
   selected: boolean;
   toggleProperty: (alias: string) => void;
