@@ -4,6 +4,13 @@ export interface Property {
   id: number;
   alias: string;
   property_name: string;
+  address?: string;
+  property_type?: string;
+  status?: string;
+  documents?: {
+    id: number;
+    image: string;
+  }[];
 }
 
 export interface Mortgage {
@@ -16,4 +23,39 @@ export interface PropertiesPermissionType {
   can_edit: boolean;
   property: Property;
   mortgage: Mortgage;
+}
+
+export type PropertyForPermissionType = {
+  id: number;
+  alias: string;
+  property_name: string;
+  address: string;
+  property_owner: string;
+  company_name: string;
+  property_type: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export interface GrantedPropertieCardProps {
+  item: PropertiesPermissionType;
+  isPending: boolean;
+  handleToggleCanEdit: (alias: string, checked: boolean) => void;
+  handleRevoke: (alias: string) => void;
+}
+
+export interface AddablePropertieCardProps {
+  item: {
+    id: number;
+    alias: string;
+    property_name: string;
+    address: string;
+    property_type: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+  };
+  selected: boolean;
+  toggleProperty: (alias: string) => void;
 }

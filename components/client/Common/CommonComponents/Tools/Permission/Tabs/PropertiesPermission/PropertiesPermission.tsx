@@ -1,4 +1,5 @@
 'use client';
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,8 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-// NOTE: assumes shadcn's Tabs component exists at this path (standard shadcn/ui generator output).
-// If your project doesn't have it yet: `npx shadcn add tabs`.
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useGetAuthUserListQuery } from '@/store/api/endpoints/auth/AuthUserListApi';
@@ -20,26 +19,20 @@ import {
   useAddPropertiesPermissionMutation,
   useGetPropertiesForPermissionQuery,
 } from '@/store/api/endpoints/client/Common/Tools/Permission/PermissionApi';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  PropertiesPermissionTabKey,
+  setPropertiesPermissionActiveTab,
+} from '@/store/slices/permissionTabsSlice';
 import { AuthUser } from '@/types/auth/AuthUsersType';
-import { PropertiesPermissionType } from '@/types/client/Common/Tools/Permission/PermissionTypes';
-import { Check, Loader2, Search, Users, X } from 'lucide-react';
+import {
+  PropertiesPermissionType,
+  PropertyForPermissionType,
+} from '@/types/client/Common/Tools/Permission/PermissionTypes';
+import { Check, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-
-// --- NOTE: assumed type matching the "not_added" endpoint shape (flat property object,
-// no `property` / `mortgage` wrapper). Move this into your types file once confirmed. ---
-type PropertyForPermissionType = {
-  id: number;
-  alias: string;
-  property_name: string;
-  property_owner: string;
-  company_name: string;
-  property_type: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
-
-type TabKey = 'add' | 'manage';
+import AddablePropertieCard from './AddablePropertieCard/AddablePropertieCard';
+import GrantedPropertieCard from './GrantedPropertieCard/GrantedPropertieCard';
 
 const PropertiesPermission: React.FC = () => {
   // --- user search state ---
@@ -50,7 +43,10 @@ const PropertiesPermission: React.FC = () => {
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // --- tab state ---
-  const [activeTab, setActiveTab] = useState<TabKey>('add');
+  const dispatch = useAppDispatch();
+  const activeTab = useAppSelector(
+    (state) => state.propertiesPermissionTabs.activeTab,
+  );
 
   // --- "Add Properties" tab state ---
   const [selectedAliases, setSelectedAliases] = useState<string[]>([]);
@@ -124,12 +120,6 @@ const PropertiesPermission: React.FC = () => {
   const hasGrantedNext = Boolean(grantedPropertyData?.next);
   const hasGrantedPrevious = Boolean(grantedPropertyData?.previous);
 
-  // reset to page 1 whenever the selected user or active tab changes
-  useEffect(() => {
-    setAddablePage(1);
-    setGrantedPage(1);
-  }, [userAlias]);
-
   const [addPropertiesPermission, { isLoading: isSaving }] =
     useAddPropertiesPermissionMutation();
   const [updatePropertyPermission] = useUpdatePermissionMutation();
@@ -152,18 +142,20 @@ const PropertiesPermission: React.FC = () => {
     setDebouncedSearch('');
     setSelectedAliases([]);
     setCanEdit(false);
-    setActiveTab('add');
     setIsDropdownOpen(false);
+    setAddablePage(1);
+    setGrantedPage(1);
   };
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setIsDropdownOpen(true);
     if (selectedUser) {
-      // user is editing the search again — clear the previous selection
       setSelectedUser(null);
       setSelectedAliases([]);
       setCanEdit(false);
+      setAddablePage(1);
+      setGrantedPage(1);
     }
   };
 
@@ -174,6 +166,8 @@ const PropertiesPermission: React.FC = () => {
     setSelectedAliases([]);
     setCanEdit(false);
     setIsDropdownOpen(true);
+    setAddablePage(1);
+    setGrantedPage(1);
   };
 
   const toggleProperty = (alias: string) => {
@@ -280,7 +274,7 @@ const PropertiesPermission: React.FC = () => {
           />
 
           {isSearching && (
-            <Loader2 className='text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin' />
+            <Loading className='text-muted-foreground! absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2' />
           )}
 
           {!isSearching && search && (
@@ -391,24 +385,18 @@ const PropertiesPermission: React.FC = () => {
       {selectedUser && (
         <Tabs
           value={activeTab}
-          onValueChange={(v) => setActiveTab(v as TabKey)}
+          onValueChange={(v) =>
+            dispatch(
+              setPropertiesPermissionActiveTab(v as PropertiesPermissionTabKey),
+            )
+          }
         >
-          <TabsList>
-            <TabsTrigger value='add'>
+          <TabsList className='bg-primary/5 w-full'>
+            <TabsTrigger value='add' className='cursor-pointer'>
               Add properties
-              {addableProperties.length > 0 && (
-                <Badge variant='secondary' className='ml-2'>
-                  {addableProperties.length}
-                </Badge>
-              )}
             </TabsTrigger>
-            <TabsTrigger value='manage'>
+            <TabsTrigger value='manage' className='cursor-pointer'>
               Manage existing
-              {grantedProperties.length > 0 && (
-                <Badge variant='secondary' className='ml-2'>
-                  {grantedProperties.length}
-                </Badge>
-              )}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -450,48 +438,12 @@ const PropertiesPermission: React.FC = () => {
                   const selected = selectedAliases.includes(alias);
 
                   return (
-                    <Card
+                    <AddablePropertieCard
                       key={alias}
-                      role='button'
-                      tabIndex={0}
-                      onClick={() => toggleProperty(alias)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          toggleProperty(alias);
-                        }
-                      }}
-                      className={cn(
-                        'group relative cursor-pointer p-3.5 pr-9 text-left transition-all hover:shadow-sm',
-                        selected &&
-                          'border-primary/40 bg-primary/5 ring-primary/20 ring-2',
-                      )}
-                    >
-                      <div className='truncate text-sm font-medium'>
-                        {item.property_name || 'Untitled property'}
-                      </div>
-                      {item.company_name && (
-                        <div className='text-muted-foreground mt-1 truncate text-xs'>
-                          {item.company_name}
-                        </div>
-                      )}
-
-                      <span
-                        className={cn(
-                          'absolute top-1/2 right-3 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full border transition-colors',
-                          selected
-                            ? 'border-primary bg-primary'
-                            : 'border-input bg-background group-hover:border-muted-foreground',
-                        )}
-                      >
-                        {selected && (
-                          <Check
-                            className='text-primary-foreground h-3 w-3'
-                            strokeWidth={3}
-                          />
-                        )}
-                      </span>
-                    </Card>
+                      item={item}
+                      selected={selected}
+                      toggleProperty={toggleProperty}
+                    />
                   );
                 })}
               </div>
@@ -536,7 +488,7 @@ const PropertiesPermission: React.FC = () => {
                     id='can-edit'
                     checked={canEdit}
                     onCheckedChange={setCanEdit}
-                    className='cursor-pointer'
+                    className='bg-success/10 data-[state=checked]:bg-success cursor-pointer'
                   />
                   <Label
                     htmlFor='can-edit'
@@ -553,7 +505,7 @@ const PropertiesPermission: React.FC = () => {
                 >
                   {isSaving ? (
                     <>
-                      <Loader2 className='h-3.5 w-3.5 animate-spin' />
+                      <Loading className='h-3.5 w-3.5 text-white!' />
                       Saving…
                     </>
                   ) : (
@@ -595,51 +547,13 @@ const PropertiesPermission: React.FC = () => {
                   const isPending = pendingAliases.has(permissionAlias);
 
                   return (
-                    <Card key={permissionAlias} className='p-3.5'>
-                      <div className='truncate text-sm font-medium'>
-                        {item.property.property_name || 'Untitled property'}
-                      </div>
-                      {item.mortgage?.lender_name && (
-                        <div className='text-muted-foreground mt-1 truncate text-xs'>
-                          {item.mortgage.lender_name}
-                        </div>
-                      )}
-
-                      <div className='mt-3 flex items-center justify-between border-t pt-3'>
-                        <div className='flex items-center gap-2'>
-                          <Switch
-                            id={`can-edit-${permissionAlias}`}
-                            checked={item.can_edit}
-                            disabled={isPending}
-                            onCheckedChange={(checked) =>
-                              handleToggleCanEdit(permissionAlias, checked)
-                            }
-                            className='cursor-pointer'
-                          />
-                          <Label
-                            htmlFor={`can-edit-${permissionAlias}`}
-                            className='cursor-pointer text-xs font-normal'
-                          >
-                            Can edit
-                          </Label>
-                        </div>
-
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='sm'
-                          disabled={isPending}
-                          onClick={() => handleRevoke(permissionAlias)}
-                          className='text-destructive hover:text-destructive h-auto p-0 text-xs'
-                        >
-                          {isPending ? (
-                            <Loader2 className='h-3.5 w-3.5 animate-spin' />
-                          ) : (
-                            'Revoke'
-                          )}
-                        </Button>
-                      </div>
-                    </Card>
+                    <GrantedPropertieCard
+                      key={permissionAlias}
+                      item={item}
+                      isPending={isPending}
+                      handleToggleCanEdit={handleToggleCanEdit}
+                      handleRevoke={handleRevoke}
+                    />
                   );
                 })}
               </div>
