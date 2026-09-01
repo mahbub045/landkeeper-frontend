@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 import { GrantedPropertieCardProps } from '@/types/client/Common/Tools/Permission/PermissionTypes';
 import { formatChoiceFieldValue } from '@/utils/formatters';
 import { ImageOff, X } from 'lucide-react';
@@ -19,7 +20,10 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
   const thumbnail = item.property.documents?.[0]?.image;
 
   return (
-    <Card key={item.alias} className='relative overflow-hidden p-3.5'>
+    <Card
+      key={item.alias}
+      className='group relative overflow-hidden p-3 transition-all hover:shadow-md'
+    >
       <div className='-mx-3.5 -mt-3.5 mb-3'>
         <AspectRatio ratio={16 / 9} className='bg-muted relative'>
           {thumbnail ? (
@@ -27,7 +31,10 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
               src={thumbnail}
               alt={item.property.address || 'Property image'}
               fill
-              className='object-cover'
+              className={cn(
+                'object-cover transition-transform duration-300',
+                'group-hover:scale-105',
+              )}
               sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
             />
           ) : (
