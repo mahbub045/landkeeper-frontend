@@ -43,10 +43,7 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
           {item.property.address || 'Untitled property'}
         </div>
         {item.property.property_type && (
-          <Badge
-            variant='default'
-            className='bg-primary/30 truncate text-xs text-black dark:text-white'
-          >
+          <Badge variant='default' className='bg-primary/70 truncate text-xs'>
             {formatChoiceFieldValue(item.property.property_type)}
           </Badge>
         )}
@@ -55,7 +52,7 @@ const GrantedPropertieCard: React.FC<GrantedPropertieCardProps> = ({
       {item.property.status && (
         <Badge
           variant='secondary'
-          className='bg-secondary/70 absolute top-2 right-2 mt-1 truncate text-xs text-black dark:text-white'
+          className='bg-secondary/70 absolute top-2 right-2 mt-1 truncate text-xs'
         >
           {formatChoiceFieldValue(item.property.status)}
         </Badge>

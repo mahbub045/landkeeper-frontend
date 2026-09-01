@@ -27,7 +27,7 @@ import {
   PropertyForPermissionType,
 } from '@/types/client/Common/Tools/Permission/PermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
-import { Check, Search, Users, X } from 'lucide-react';
+import { Check, RefreshCcw, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
@@ -362,27 +362,45 @@ const PropertiesPermission: React.FC = () => {
 
       {/* --- selected user summary / empty state --- */}
       {selectedUser ? (
-        <Card className='flex items-center gap-3 p-4'>
-          <Avatar className='h-9 w-9 shrink-0'>
+        <Card className='border-primary/15 from-primary/4 flex items-center gap-4 bg-linear-to-br to-transparent p-4'>
+          <Avatar className='ring-primary/10 h-12 w-12 shrink-0 ring-4'>
             <AvatarImage
               src={selectedUser.user.profile_image || undefined}
               alt={getFullName(selectedUser)}
             />
-            <AvatarFallback className='text-xs'>
+            <AvatarFallback className='bg-primary/10 text-primary text-sm font-semibold'>
               {getInitials(selectedUser)}
             </AvatarFallback>
           </Avatar>
-          <div className='min-w-0'>
-            <div className='truncate text-sm font-medium'>
+
+          <div className='min-w-0 flex-1 space-y-0.5'>
+            <div className='truncate text-sm font-semibold'>
               {getFullName(selectedUser)}
             </div>
             <div className='text-muted-foreground truncate text-xs'>
               {selectedUser.user.email}
             </div>
           </div>
-          <Badge variant='secondary' className='ml-auto shrink-0'>
-            Mortgage adviser
-          </Badge>
+
+          <div className='flex shrink-0 items-center gap-3'>
+            <Badge
+              variant='secondary'
+              className='border-primary/20 bg-primary/10 text-primary gap-1 font-normal'
+            >
+              <Check className='h-3 w-3' strokeWidth={3} />
+              Mortgage adviser
+            </Badge>
+
+            <Button
+              type='button'
+              variant='destructive'
+              size='xs'
+              onClick={handleClearSearch}
+            >
+              <RefreshCcw />
+              Change
+            </Button>
+          </div>
         </Card>
       ) : (
         <Card className='flex flex-col items-center gap-2 border-dashed p-8 text-center shadow-none'>

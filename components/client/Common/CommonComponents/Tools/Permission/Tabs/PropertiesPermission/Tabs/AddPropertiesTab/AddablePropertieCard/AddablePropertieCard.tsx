@@ -77,7 +77,7 @@ const AddablePropertieCard: React.FC<AddablePropertieCardProps> = ({
           {item.status && (
             <Badge
               variant='secondary'
-              className='absolute bottom-2 left-2 truncate bg-white/90 text-xs text-black backdrop-blur-sm dark:bg-black/70 dark:text-white'
+              className='bg-secondary/90 absolute top-2 left-2 truncate text-xs backdrop-blur-sm'
             >
               {formatChoiceFieldValue(item.status)}
             </Badge>
@@ -93,7 +93,7 @@ const AddablePropertieCard: React.FC<AddablePropertieCardProps> = ({
 
         <div className='flex flex-wrap items-center gap-1.5 pt-0.5'>
           {item.property_type && (
-            <Badge className='bg-primary/30 truncate text-xs text-black dark:text-white'>
+            <Badge className='bg-primary/70 truncate text-xs'>
               {formatChoiceFieldValue(item.property_type)}
             </Badge>
           )}
