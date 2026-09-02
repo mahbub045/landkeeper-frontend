@@ -24,7 +24,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
       <div className='from-primary via-secondary to-primary absolute -inset-2 z-0 rounded-[24px] bg-linear-to-r opacity-0 blur-xl transition-all duration-700 group-hover:opacity-100' />
 
       <Card className='relative z-10 min-w-0 py-0 shadow-md transition-all duration-700 group-hover:-translate-y-1.5 group-hover:shadow-xl'>
-        <CardContent className='min-w-0 space-y-5 p-4 sm:p-6'>
+        <CardContent className='min-w-0 space-y-3 p-4 sm:p-6'>
           {/* Header */}
           <div className='flex items-start justify-between gap-3'>
             <div className='min-w-0'>
@@ -46,7 +46,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
                 variant='outline'
                 className={`shrink-0 font-mono text-xs ${epcStyles(mortgage.epc_rating)}`}
               >
-                EPC {mortgage.epc_rating}
+                EPC:{mortgage.epc_rating}
               </Badge>
             )}
           </div>
@@ -54,7 +54,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
           {/* Stats */}
           <div className='flex min-w-0 flex-wrap items-end justify-between gap-4'>
             <div className='min-w-0'>
-              <p className='truncate text-lg font-bold tracking-tight sm:text-xl'>
+              <p className='truncate text-sm font-bold tracking-tight'>
                 {getCurrencySign()}
                 {parseFloat(mortgage.outstanding_balance ?? '0').toLocaleString(
                   'en-GB',
@@ -65,24 +65,23 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
               </p>
             </div>
 
-            <div className='flex min-w-0 shrink-0 gap-4 text-right sm:gap-6'>
+            <div className='mt-4 flex min-w-0 shrink-0 gap-4 text-start sm:gap-6'>
               <div>
-                <p className='font-mono text-lg font-semibold'>
+                <p className='font-mono text-sm font-semibold'>
                   {parseFloat(mortgage.interest_rate ?? '0')}%
                 </p>
-                <p className='text-muted-foreground text-xs'>Interest Rate</p>
+                <p className='text-muted-foreground text-xs'>Rate</p>
               </div>
-              {mortgage.monthly_payment && (
-                <div>
-                  <p className='font-mono text-lg font-semibold'>
-                    {getCurrencySign()}
-                    {parseFloat(mortgage.monthly_payment).toLocaleString(
-                      'en-GB',
-                    )}
-                  </p>
-                  <p className='text-muted-foreground text-xs'>Per Month</p>
-                </div>
-              )}
+
+              <div>
+                <p className='font-mono text-sm font-semibold'>
+                  {getCurrencySign()}
+                  {parseFloat(mortgage?.monthly_payment ?? '0').toLocaleString(
+                    'en-GB',
+                  )}
+                </p>
+                <p className='text-muted-foreground text-xs'>Per Month</p>
+              </div>
             </div>
           </div>
 

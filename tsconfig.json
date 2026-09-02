@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "components/client/Common/CommonComponents/Tools/Permission/Tabs/MortgagesPermission/Tabs/AddMortgagesTab"  ],
   "exclude": ["node_modules"]
 }

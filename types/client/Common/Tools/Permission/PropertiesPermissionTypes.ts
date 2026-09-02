@@ -1,5 +1,3 @@
-export type TabKey = 'properties' | 'mortgages';
-
 export interface Property {
   id: number;
   alias: string;

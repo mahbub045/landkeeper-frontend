@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { GrantedPropertieCardProps } from '@/types/client/Common/Tools/Permission/PermissionTypes';
+import { GrantedPropertieCardProps } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import { formatChoiceFieldValue } from '@/utils/formatters';
 import { ImageOff, X } from 'lucide-react';
 import Image from 'next/image';

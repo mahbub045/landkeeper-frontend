@@ -15,10 +15,10 @@ import {
 } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { AddPropertiesTabProps } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
+import { AddMortgagesTabProps } from '@/types/client/Common/Tools/Permission/MortgagesPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, X } from 'lucide-react';
-import AddablePropertieCard from './AddablePropertyCard/AddablePropertyCard';
+import AddableMortgageCard from './AddableMortgageCard/AddableMortgageCard';
 
 const getPageNumbers = (
   page: number,
@@ -42,16 +42,16 @@ const getPageNumbers = (
   return range;
 };
 
-const AddPropertiesTab: React.FC<AddPropertiesTabProps> = ({
+const AddMortgagesTab: React.FC<AddMortgagesTabProps> = ({
   isLoadingAddable,
   userAlias,
-  addableProperties,
+  addableMortgages,
   addableCount,
   addableTotalPages,
   addablePage,
   setAddablePage,
   selectedAliases,
-  toggleProperty,
+  toggleMortgage,
   toggleSelectAll,
   canEdit,
   setCanEdit,
@@ -69,7 +69,7 @@ const AddPropertiesTab: React.FC<AddPropertiesTabProps> = ({
         </div>
       )}
 
-      {!isLoadingAddable && userAlias && addableProperties.length > 0 && (
+      {!isLoadingAddable && userAlias && addableMortgages.length > 0 && (
         <>
           <div className='flex items-center justify-end'>
             <Button size='sm' variant='outline' onClick={toggleSelectAll}>
@@ -88,16 +88,16 @@ const AddPropertiesTab: React.FC<AddPropertiesTabProps> = ({
           </div>
 
           <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
-            {addableProperties.map((item) => {
+            {addableMortgages.map((item) => {
               const alias = item.alias;
               const selected = selectedAliases.includes(alias);
 
               return (
-                <AddablePropertieCard
+                <AddableMortgageCard
                   key={alias}
                   item={item}
                   selected={selected}
-                  toggleProperty={toggleProperty}
+                  toggleMortgage={toggleMortgage}
                 />
               );
             })}
@@ -109,7 +109,7 @@ const AddPropertiesTab: React.FC<AddPropertiesTabProps> = ({
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(addablePage - 1) * PAGE_LIMIT + 1} to{' '}
                 {Math.min(addablePage * PAGE_LIMIT, addableCount)} of{' '}
-                {addableCount} Properties
+                {addableCount} Mortgages
               </p>
             )}
             {addableTotalPages > 1 && (
@@ -207,13 +207,13 @@ const AddPropertiesTab: React.FC<AddPropertiesTabProps> = ({
         </>
       )}
 
-      {!isLoadingAddable && userAlias && addableProperties.length === 0 && (
+      {!isLoadingAddable && userAlias && addableMortgages.length === 0 && (
         <Card className='text-muted-foreground border-dashed p-8 text-center text-sm shadow-none'>
-          This user already has access to every property.
+          This user already has access to every mortgage.
         </Card>
       )}
     </>
   );
 };
 
-export default AddPropertiesTab;
+export default AddMortgagesTab;

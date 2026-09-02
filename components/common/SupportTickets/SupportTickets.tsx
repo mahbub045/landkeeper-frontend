@@ -10,7 +10,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { STATUS_LABELS } from '@/data/common/SupportTickets/SupportTicketsData';
 import { useGetSupportTicketsQuery } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
+import { SupportTicketStatus } from '@/types/common/SupportTickets/SupportTicketTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -18,6 +20,8 @@ import { useEffect, useState } from 'react';
 import CustomErrorMessage from '../CustomErrorMessage/CustomErrorMessage';
 import AddSupportTicketDialog from './Dialogs/AddSupportTicketDialog';
 import SupportTicketTable from './SupportTicketTable/SupportTicketTable';
+
+
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();

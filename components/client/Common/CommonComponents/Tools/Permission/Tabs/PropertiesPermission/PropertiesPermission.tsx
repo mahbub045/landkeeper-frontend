@@ -15,7 +15,7 @@ import {
 import {
   useAddPropertiesPermissionMutation,
   useGetPropertiesForPermissionQuery,
-} from '@/store/api/endpoints/client/Common/Tools/Permission/PermissionApi';
+} from '@/store/api/endpoints/client/Common/Tools/Permission/PropertiesPermissionApi';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   PropertiesPermissionTabKey,
@@ -25,14 +25,14 @@ import { AuthUser } from '@/types/auth/AuthUsersType';
 import {
   PropertiesPermissionType,
   PropertyForPermissionType,
-} from '@/types/client/Common/Tools/Permission/PermissionTypes';
+} from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import { Check, RefreshCcw, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import AddPropertiesTab from './Tabs/AddPropertiesTab/AddPropertiesTab';
-import ManageExistingTab from './Tabs/ManageExistingTab/ManageExistingTab';
+import ManageExistingTab from './Tabs/ManageExistingPropertyTab/ManageExistingPropertyTab';
 
 const PropertiesPermission: React.FC = () => {
   // --- user search state ---

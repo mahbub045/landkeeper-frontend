@@ -15,7 +15,7 @@ const MortgageList: React.FC<{ mortgages: Mortgage[]; isLoading: boolean }> = ({
   const { data: session } = useSession();
   if (isLoading)
     return (
-      <div className='space-y-4'>
+      <div className='grid min-w-0 grid-cols-1 gap-4 space-y-4 sm:grid-cols-2 xl:grid-cols-3'>
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className='h-84 rounded-2xl' />
         ))}

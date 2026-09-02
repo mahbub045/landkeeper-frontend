@@ -4,6 +4,7 @@ import { baseApi } from './api/baseApi';
 import authReducer from './slices/authSlice';
 import calculatorTabsReducer from './slices/calculatorTabsSlice';
 import permissionAccessTabsReducer, {
+  mortgagesPermissionTabsReducer,
   propertiesPermissionTabsReducer,
 } from './slices/permissionTabsSlice';
 import teamAccessUiReducer from './slices/teamAccessUiSlice';
@@ -15,6 +16,7 @@ export const store = configureStore({
     teamAccessUi: teamAccessUiReducer,
     permissionAccessTabs: permissionAccessTabsReducer,
     propertiesPermissionTabs: propertiesPermissionTabsReducer,
+    mortgagesPermissionTabs: mortgagesPermissionTabsReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },

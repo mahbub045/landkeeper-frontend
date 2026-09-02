@@ -8,9 +8,9 @@ import { Check, CheckCheck, CircleAlert, Loader, X } from 'lucide-react';
 
 export const TABLE_COLUMNS = [
   'Ticket ID',
+  'Status',
   'Type',
   'Priority',
-  'Status',
   'Subject',
   'Created By',
   'Files',
@@ -128,3 +128,11 @@ export const STATUS_DESCRIPTIONS: Record<string, string> = {
   RESOLVED: 'The issue has been fixed and everything is working.',
   CLOSED: 'The ticket has been closed and no further action is required.',
 };
+
+export const STATUS_CONTROL_OPTIONS: Array<{
+  value: SupportTicketStatus;
+  label: string;
+}> = Object.entries(STATUS_LABELS).map(([value, label]) => ({
+  value: value as SupportTicketStatus,
+  label,
+}));
