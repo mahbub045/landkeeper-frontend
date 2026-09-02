@@ -1,15 +1,26 @@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import {
+  epcStyles,
+  expiryUrgencyStyles,
+} from '@/data/client/common/mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { AddableMortgageCardProps } from '@/types/client/Common/Tools/Permission/MortgagesPermissionTypes';
-import formatChoiceFieldValue from '@/utils/formatters';
-import { Check } from 'lucide-react';
+import formatChoiceFieldValue, {
+  formatDate,
+  getCurrencySign,
+  getDaysUntilDue,
+} from '@/utils/formatters';
+import { Calendar, Check } from 'lucide-react';
 
 const AddableMortgageCard: React.FC<AddableMortgageCardProps> = ({
   item,
   selected,
   toggleMortgage,
 }) => {
+  const rateExpiryDays = getDaysUntilDue(item.interest_rate_expiry_date);
+
   return (
     <Card
       key={item.alias}
@@ -23,7 +34,7 @@ const AddableMortgageCard: React.FC<AddableMortgageCardProps> = ({
         }
       }}
       className={cn(
-        'group relative cursor-pointer p-3.5 text-left transition-all hover:shadow-md',
+        'group relative min-w-0 cursor-pointer space-y-2 p-4 text-left transition-all hover:shadow-md sm:p-6',
         selected
           ? 'border-primary ring-primary/20 ring-2'
           : 'hover:border-primary/40',
@@ -32,43 +43,103 @@ const AddableMortgageCard: React.FC<AddableMortgageCardProps> = ({
       {/* --- selection checkmark --- */}
       <span
         className={cn(
-          'absolute top-2.5 right-2.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors',
+          'absolute top-4 right-4 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors sm:top-6 sm:right-6',
           selected
             ? 'border-primary bg-primary'
             : 'border-muted-foreground/30 group-hover:border-primary/50',
         )}
       >
         {selected && (
-          <Check
-            className='text-primary-foreground h-3 w-3'
-            strokeWidth={3}
-          />
+          <Check className='text-primary-foreground h-3 w-3' strokeWidth={3} />
         )}
       </span>
 
-      {/* --- content --- */}
-      <div className='space-y-1.5 pr-6'>
-        <div className='flex items-start justify-between gap-2'>
-          <div className='truncate text-sm font-medium'>
-            {item.lender_name || 'Untitled mortgage'}
-          </div>
-          {item.outstanding_balance != null && (
-            <Badge className='bg-primary/70 shrink-0 truncate text-xs'>
-              £{item.outstanding_balance.toLocaleString()}
-            </Badge>
+      {/* --- header --- */}
+      <div className='min-w-0 pr-8'>
+        <p className='text-muted-foreground truncate text-sm'>
+          {item.property?.address || 'Untitled property'}
+        </p>
+        <h2 className='mt-0.5 truncate text-lg font-bold'>
+          {item.lender_name}
+        </h2>
+        <p className='text-muted-foreground mt-0.5 text-xs'>
+          {formatChoiceFieldValue(item.interest_rate_type)}
+          {item.remaining_mortgage != null &&
+            ` · ${item.remaining_mortgage} yrs remaining`}
+        </p>
+      </div>
+
+      {item.epc_rating && (
+        <Badge
+          variant='outline'
+          className={cn(
+            'absolute top-4 right-4 font-mono text-xs sm:top-6 sm:right-6',
+            epcStyles(item.epc_rating),
           )}
+          style={{ marginTop: '1.75rem' }}
+        >
+          EPC:{item.epc_rating}
+        </Badge>
+      )}
+
+      {/* --- stats --- */}
+      <div>
+        <div className='min-w-0'>
+          <p className='truncate text-lg font-bold tracking-tight sm:text-xl'>
+            {getCurrencySign()}
+            {parseFloat(
+              item.outstanding_balance?.toString() ?? '0',
+            ).toLocaleString('en-GB')}
+          </p>
+          <p className='text-muted-foreground mt-1 text-xs'>
+            Outstanding Balance
+          </p>
         </div>
 
-        {item.property?.address && (
-          <div className='text-muted-foreground truncate text-xs'>
-            {item.property.address}
+        <div className='mt-4 flex min-w-0 shrink-0 justify-between gap-4 sm:gap-6'>
+          <div>
+            <p className='font-mono text-lg font-semibold'>
+              {parseFloat(item.interest_rate?.toString() ?? '0')}%
+            </p>
+            <p className='text-muted-foreground text-xs'>Interest Rate</p>
           </div>
-        )}
 
-        {item.interest_rate_type && (
-          <Badge variant='secondary' className='truncate text-xs'>
-            {formatChoiceFieldValue(item.interest_rate_type)}
-          </Badge>
+          <div>
+            <p className='font-mono text-lg font-semibold'>
+              {getCurrencySign()}
+              {parseFloat(
+                item?.monthly_payment?.toString() ?? '0',
+              ).toLocaleString('en-GB')}
+            </p>
+            <p className='text-muted-foreground text-xs'>Per Month</p>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* --- footer --- */}
+      <div className='flex items-start gap-3'>
+        {item.interest_rate_expiry_date ? (
+          <div
+            className={cn(
+              'flex items-center gap-1.5 text-xs',
+              expiryUrgencyStyles(rateExpiryDays),
+            )}
+          >
+            <Calendar className='size-3.5' />
+            <span className='min-w-0'>
+              Rate fixed until {formatDate(item.interest_rate_expiry_date)}
+              {rateExpiryDays !== null && rateExpiryDays >= 0 && (
+                <span className='ml-1 opacity-80'>({rateExpiryDays}d)</span>
+              )}
+            </span>
+          </div>
+        ) : (
+          <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
+            <Calendar className='size-3.5' />
+            <span>Rate not fixed</span>
+          </div>
         )}
       </div>
     </Card>

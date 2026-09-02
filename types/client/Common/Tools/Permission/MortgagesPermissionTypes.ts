@@ -32,6 +32,7 @@ export type MortgageForPermissionType = {
   monthly_payment: number | null;
   remaining_mortgage: number | null;
   property: MortgageProperty;
+  epc_rating?: string | null;
 };
 
 export interface GrantedMortgageCardProps {
