@@ -54,7 +54,7 @@ const ManageExistingPropertyTab: React.FC<ManageExistingTabProps> = ({
   return (
     <>
       {isLoadingGranted && (
-        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
+        <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className='h-20 rounded-xl' />
           ))}
@@ -63,7 +63,7 @@ const ManageExistingPropertyTab: React.FC<ManageExistingTabProps> = ({
 
       {!isLoadingGranted && userAlias && grantedProperties.length > 0 && (
         <>
-          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
             {grantedProperties.map((item: PropertiesPermissionType) => {
               const permissionAlias = item.alias;
               const isPending = pendingAliases.has(permissionAlias);

@@ -83,9 +83,9 @@ const AddableMortgageCard: React.FC<AddableMortgageCardProps> = ({
       )}
 
       {/* --- stats --- */}
-      <div>
+      <div className='flex min-w-0 flex-wrap items-end justify-between gap-4'>
         <div className='min-w-0'>
-          <p className='truncate text-lg font-bold tracking-tight sm:text-xl'>
+          <p className='truncate text-sm font-bold tracking-tight'>
             {getCurrencySign()}
             {parseFloat(
               item.outstanding_balance?.toString() ?? '0',
@@ -96,16 +96,16 @@ const AddableMortgageCard: React.FC<AddableMortgageCardProps> = ({
           </p>
         </div>
 
-        <div className='mt-4 flex min-w-0 shrink-0 justify-between gap-4 sm:gap-6'>
+        <div className='mt-4 flex min-w-0 shrink-0 gap-4 text-start sm:gap-6'>
           <div>
-            <p className='font-mono text-lg font-semibold'>
+            <p className='font-mono text-sm font-semibold'>
               {parseFloat(item.interest_rate?.toString() ?? '0')}%
             </p>
-            <p className='text-muted-foreground text-xs'>Interest Rate</p>
+            <p className='text-muted-foreground text-xs'>Rate</p>
           </div>
 
           <div>
-            <p className='font-mono text-lg font-semibold'>
+            <p className='font-mono text-sm font-semibold'>
               {getCurrencySign()}
               {parseFloat(
                 item?.monthly_payment?.toString() ?? '0',

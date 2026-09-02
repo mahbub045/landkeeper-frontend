@@ -1,5 +1,7 @@
 export interface MortgageProperty {
+  alias: string;
   address?: string;
+  property_type?: string;
 }
 
 export interface Mortgage {
@@ -7,6 +9,7 @@ export interface Mortgage {
   alias: string;
   lender_name: string;
   interest_rate_type?: string;
+  epc_rating?: string | null;
   interest_rate?: number | null;
   interest_rate_expiry_date?: string | null;
   outstanding_balance?: number | null;
