@@ -377,6 +377,15 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
               'Something went wrong. Please try again.',
           );
         }
+
+        // Always surface a toast too, in addition to the field/banner errors
+        // shown inline. Keep it generic when there are per-field errors so
+        // we don't duplicate the same detailed messages twice.
+        toast.error(
+          hasFieldErrors
+            ? 'Please fix the highlighted fields and try again.'
+            : getErrorMessage(data),
+        );
       } else {
         toast.error(getErrorMessage(err));
       }
