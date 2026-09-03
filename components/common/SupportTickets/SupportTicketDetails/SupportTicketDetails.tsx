@@ -338,7 +338,7 @@ const SupportTicketDetails: React.FC = () => {
               Ticket Description
             </h2>
           </div>
-          <div className='border-primary max-h-72 overflow-y-auto border-l-2 pl-4'>
+          <div className='border-primary max-h-96 overflow-y-auto border-l-2 pl-4'>
             <p className='text-foreground text-sm whitespace-pre-line'>
               {ticketDetails.description}
             </p>
@@ -353,7 +353,7 @@ const SupportTicketDetails: React.FC = () => {
           {ticketDetails.files.length === 0 ? (
             <p className='text-muted-foreground text-sm'>No attachments.</p>
           ) : (
-            <ul className='space-y-3'>
+            <ul className='max-h-96 space-y-3 overflow-y-auto'>
               {ticketDetails.files.map((f) => {
                 const filename = getFileName(f.file);
                 return (

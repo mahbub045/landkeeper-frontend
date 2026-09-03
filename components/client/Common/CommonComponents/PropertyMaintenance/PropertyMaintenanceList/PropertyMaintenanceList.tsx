@@ -205,6 +205,21 @@ const PropertyMaintenanceList: React.FC = () => {
     }
   };
 
+  const TABLE_COLUMNS = [
+    { header: 'Request ID' },
+    ...(session?.user?.role !== 'TENANT' ? [{ header: 'Tenant' }] : []),
+    ...(session?.user?.role !== 'TENANT' ? [{ header: 'Property' }] : []),
+    { header: 'Issue', individualClass: 'text-center' },
+    { header: 'Status', individualClass: 'text-center' },
+    { header: 'Priority', individualClass: 'text-center' },
+    { header: 'Category', individualClass: 'text-center' },
+    { header: 'Created At', individualClass: 'text-center' },
+    { header: 'Updated At', individualClass: 'text-center' },
+    ...(session?.user?.role === 'TENANT'
+      ? [{ header: 'Action', individualClass: 'text-center' }]
+      : []),
+  ];
+
   return (
     <div className='w-full'>
       {/* Header */}
@@ -345,29 +360,21 @@ const PropertyMaintenanceList: React.FC = () => {
         <Table className='min-w-180'>
           <TableHeader>
             <TableRow>
-              <TableHead>Request ID</TableHead>
-              {session?.user?.role !== 'TENANT' && (
-                <>
-                  <TableHead>Tenant</TableHead>
-                  <TableHead>Property</TableHead>
-                </>
-              )}
-              <TableHead>Issue</TableHead>
-              <TableHead className='text-center'>Status</TableHead>
-              <TableHead className='text-center'>Priority</TableHead>
-              <TableHead className='text-center'>Category</TableHead>
-              <TableHead className='text-center'>Created At</TableHead>
-              <TableHead className='text-center'>Updated At</TableHead>
-              {session?.user?.role === 'TENANT' && (
-                <TableHead className='text-center'>Action</TableHead>
-              )}
+              {TABLE_COLUMNS.map((col) => (
+                <TableHead
+                  key={col.header}
+                  className={`text-sm font-medium ${col.individualClass || ''}`}
+                >
+                  {col.header}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {showTableLoading &&
               Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={i}>
-                  {Array.from({ length: 12 }).map((__, j) => (
+                  {Array.from({ length: TABLE_COLUMNS.length }).map((__, j) => (
                     <TableCell key={j} className=''>
                       <div className='h-10 w-full max-w-35 animate-pulse rounded bg-gray-100 dark:bg-[#262626]' />
                     </TableCell>
@@ -377,7 +384,10 @@ const PropertyMaintenanceList: React.FC = () => {
 
             {!showTableLoading && isError && (
               <TableRow>
-                <TableCell colSpan={12} className='py-10 text-center'>
+                <TableCell
+                  colSpan={TABLE_COLUMNS.length}
+                  className='py-10 text-center'
+                >
                   <CustomErrorMessage title='maintenance requests' />
                 </TableCell>
               </TableRow>
@@ -387,7 +397,10 @@ const PropertyMaintenanceList: React.FC = () => {
               !isError &&
               maintenanceRequests.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={12} className='py-10 text-center'>
+                  <TableCell
+                    colSpan={TABLE_COLUMNS.length}
+                    className='py-10 text-center'
+                  >
                     <p className='text-sm text-gray-900'>
                       {search
                         ? 'No matching requests'
