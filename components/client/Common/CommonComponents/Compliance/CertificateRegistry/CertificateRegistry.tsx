@@ -21,13 +21,14 @@ import { FileBadge, Plus, Search } from 'lucide-react';
 import CertificateRow from './CertificateRow/CertificateRow';
 
 const TABLE_COLUMNS = [
-  'Property',
-  'Type',
-  'Certificate No',
-  'Issue & Expiry Date',
-  'Documents',
-  'Status',
-  'Actions',
+  { label: '#', individualClass: '' },
+  { label: 'Property', individualClass: '' },
+  { label: 'Type', individualClass: '' },
+  { label: 'Certificate No', individualClass: '' },
+  { label: 'Issue & Expiry Date', individualClass: '' },
+  { label: 'Documents', individualClass: 'text-center' },
+  { label: 'Status', individualClass: 'text-center' },
+  { label: 'Actions', individualClass: 'text-center' },
 ];
 
 interface CertificateRegistryComponentProps extends CertificateRegistryProps {
@@ -75,14 +76,11 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>#</TableHead>
-              <TableHead>Property</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Certificate No</TableHead>
-              <TableHead>Issue & Expiry Date</TableHead>
-              <TableHead className='text-center'>Documents</TableHead>
-              <TableHead className='text-center'>Status</TableHead>
-              <TableHead className='text-center'>Actions</TableHead>
+              {TABLE_COLUMNS.map((column, index) => (
+                <TableHead key={index} className={`${column.individualClass}`}>
+                  {column.label}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,7 +111,9 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
               </TableRow>
             ) : (
               certificates.map((cert: ApiCertificate, index: number) => {
-                return <CertificateRow key={cert.alias} cert={cert} index={index} />;
+                return (
+                  <CertificateRow key={cert.alias} cert={cert} index={index} />
+                );
               })
             )}
           </TableBody>
