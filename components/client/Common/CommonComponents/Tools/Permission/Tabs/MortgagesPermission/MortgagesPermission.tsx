@@ -422,12 +422,12 @@ const MortgagesPermission: React.FC = () => {
             )
           }
         >
-          <TabsList className='bg-primary/5 w-full'>
-            <TabsTrigger value='add' className='cursor-pointer'>
-              Add mortgages
+          <TabsList className='bg-primary/5 w-full py-5'>
+            <TabsTrigger value='add' className='cursor-pointer p-4'>
+              Add mortgages{addableCount > 0 ? ` (${addableCount})` : ''}
             </TabsTrigger>
-            <TabsTrigger value='manage' className='cursor-pointer'>
-              Manage existing
+            <TabsTrigger value='manage' className='cursor-pointer p-4'>
+              Manage existing{grantedCount > 0 ? ` (${grantedCount})` : ''}
             </TabsTrigger>
           </TabsList>
         </Tabs>

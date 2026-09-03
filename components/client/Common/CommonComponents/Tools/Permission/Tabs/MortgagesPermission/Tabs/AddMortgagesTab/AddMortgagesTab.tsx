@@ -13,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { AddMortgagesTabProps } from '@/types/client/Common/Tools/Permission/MortgagesPermissionTypes';
@@ -86,6 +87,47 @@ const AddMortgagesTab: React.FC<AddMortgagesTabProps> = ({
               )}
             </Button>
           </div>
+
+          {/* --- permission toggles + submit --- */}
+          <div className='bg-primary/5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg p-4 pb-4'>
+            <Badge variant='success' className='gap-1.5 font-normal'>
+              <Check className='h-3 w-3' strokeWidth={3} />
+              Can view
+              <span>(always granted)</span>
+            </Badge>
+
+            <div className='flex items-center gap-2.5'>
+              <Switch
+                id='can-edit'
+                checked={canEdit}
+                onCheckedChange={setCanEdit}
+                className='bg-success/10 data-[state=checked]:bg-success border-success cursor-pointer'
+              />
+              <Label
+                htmlFor='can-edit'
+                className='cursor-pointer text-sm font-normal'
+              >
+                Can edit
+              </Label>
+            </div>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={selectedAliases.length === 0 || isSaving}
+              className='ml-auto'
+            >
+              {isSaving ? (
+                <>
+                  <Loading className='h-3.5 w-3.5 text-white!' />
+                  Saving…
+                </>
+              ) : (
+                `Apply to ${selectedAliases.length} selected`
+              )}
+            </Button>
+          </div>
+
+          <Separator />
 
           <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
             {addableMortgages.map((item) => {
@@ -164,45 +206,6 @@ const AddMortgagesTab: React.FC<AddMortgagesTabProps> = ({
                 </PaginationContent>
               </Pagination>
             )}
-          </div>
-
-          {/* --- permission toggles + submit --- */}
-          <div className='flex flex-wrap items-center gap-x-6 gap-y-3 border-t pt-4'>
-            <Badge variant='success' className='gap-1.5 font-normal'>
-              <Check className='h-3 w-3' strokeWidth={3} />
-              Can view
-              <span>(always granted)</span>
-            </Badge>
-
-            <div className='flex items-center gap-2.5'>
-              <Switch
-                id='can-edit'
-                checked={canEdit}
-                onCheckedChange={setCanEdit}
-                className='bg-success/10 data-[state=checked]:bg-success cursor-pointer'
-              />
-              <Label
-                htmlFor='can-edit'
-                className='cursor-pointer text-sm font-normal'
-              >
-                Can edit
-              </Label>
-            </div>
-
-            <Button
-              onClick={handleSubmit}
-              disabled={selectedAliases.length === 0 || isSaving}
-              className='ml-auto'
-            >
-              {isSaving ? (
-                <>
-                  <Loading className='h-3.5 w-3.5 text-white!' />
-                  Saving…
-                </>
-              ) : (
-                `Apply to ${selectedAliases.length} selected`
-              )}
-            </Button>
           </div>
         </>
       )}
