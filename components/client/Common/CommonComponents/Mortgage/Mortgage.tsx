@@ -28,7 +28,7 @@ import SummaryCards from './SummaryCards/SummaryCards';
 function SummaryCardsSkeleton() {
   return (
     <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
-      {Array.from({ length: 4 }).map((_, i) => (
+      {Array.from({ length: 3 }).map((_, i) => (
         <div
           key={i}
           className='border-border bg-card space-y-3 rounded-xl border p-4'

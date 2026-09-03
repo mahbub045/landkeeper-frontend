@@ -38,15 +38,92 @@ import {
   UpdateMortgageDialogProps,
 } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import {
-  getCurrencySign,
-  sanitizeEpcRating,
-  snakeToCamel,
-} from '@/utils/formatters';
+import { getCurrencySign, sanitizeEpcRating } from '@/utils/formatters';
 
 import { Paperclip, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+
+// ── Error message flattening (for generic / non-field errors) ───────────────
+function getErrorMessage(err: unknown): string {
+  if (!err) return 'Unknown error';
+  if (typeof err === 'string') return err;
+  if (typeof (err as { data?: unknown })?.data === 'string')
+    return (err as { data: string }).data;
+
+  const collect = (value: unknown): string[] => {
+    if (value == null) return [];
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value))
+      return value.map((v) => (typeof v === 'string' ? v : JSON.stringify(v)));
+    if (typeof value === 'object') {
+      try {
+        return Object.values(value as Record<string, unknown>).flatMap((v) =>
+          collect(v),
+        );
+      } catch {
+        return [String(value)];
+      }
+    }
+    return [String(value)];
+  };
+
+  if (err && typeof err === 'object') {
+    const msgs = collect(err);
+    if (msgs.length) return msgs.join(', ');
+  }
+
+  const asErr = err as {
+    data?: { message?: string } | Record<string, unknown>;
+    error?: unknown;
+    message?: string;
+  };
+
+  if (
+    asErr?.data &&
+    typeof asErr.data === 'object' &&
+    'message' in asErr.data &&
+    typeof (asErr.data as { message?: unknown }).message === 'string'
+  ) {
+    return String((asErr.data as { message: string }).message);
+  }
+  if (asErr?.data && typeof asErr.data === 'object') {
+    const msgs = collect(asErr.data);
+    if (msgs.length) return msgs.join(', ');
+  }
+  if (asErr?.error) return String(asErr.error);
+  if (asErr?.message) {
+    if (/status code/i.test(asErr.message)) return 'Server returned an error';
+    return String(asErr.message);
+  }
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+}
+
+// Known backend keys that map to actual form fields (plus the 'term' ->
+// 'remaining_mortgage' rename). Anything else in the error response
+// (detail, message, non_field_errors, or an unrecognized key) is treated
+// as a general error and shown via the banner instead of being dropped or
+// forced onto a field that doesn't exist.
+const FIELD_KEYS = new Set([
+  'property',
+  'lender_name',
+  'interest_rate_type',
+  'interest_rate',
+  'interest_rate_expiry_date',
+  'outstanding_balance',
+  'monthly_payment',
+  'remaining_mortgage',
+  'term',
+  'epc_rating',
+  'epc_certificate_expiry_date',
+  'notes',
+  'mortgage_documents',
+  'file',
+]);
 
 const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
   open,
@@ -268,19 +345,32 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
 
       if (data && typeof data === 'object') {
         const mapped: Record<string, string> = {};
-        let hasFieldErrors = false;
+        const leftover: Record<string, unknown> = {};
 
         for (const [backendKey, value] of Object.entries(data)) {
           if (backendKey === 'detail' || backendKey === 'message') continue;
-          const formKey =
-            backendKey === 'term' ? 'termYears' : snakeToCamel(backendKey);
-          mapped[formKey] = Array.isArray(value) ? value[0] : (value as string);
-          hasFieldErrors = true;
+
+          if (FIELD_KEYS.has(backendKey)) {
+            const formKey =
+              backendKey === 'term' ? 'remaining_mortgage' : backendKey;
+            mapped[formKey] = Array.isArray(value)
+              ? value[0]
+              : (value as string);
+          } else {
+            leftover[backendKey] = value;
+          }
         }
+
+        const hasFieldErrors = Object.keys(mapped).length > 0;
+        const hasLeftover = Object.keys(leftover).length > 0;
 
         if (hasFieldErrors) {
           setFieldErrors(mapped);
-        } else {
+        }
+
+        if (hasLeftover || (!hasFieldErrors && !data.detail && !data.message)) {
+          setBannerError(getErrorMessage(leftover));
+        } else if (!hasFieldErrors) {
           setBannerError(
             data?.detail ??
               data?.message ??
@@ -288,7 +378,7 @@ const UpdateMortgageDialog: React.FC<UpdateMortgageDialogProps> = ({
           );
         }
       } else {
-        toast.error('Something went wrong. Please try again.');
+        toast.error(getErrorMessage(err));
       }
     }
   }
