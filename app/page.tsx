@@ -7,5 +7,13 @@ import { redirect } from 'next/navigation';
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const userRole = session?.user?.role;
-  redirect(session ? getDashboardPath(userRole as UserRole) : '/auth/signin');
+  if (!session) {
+    redirect('/auth/signin');
+  }
+
+  if (userRole === 'LANDLORD' && session.user.has_subscription !== true) {
+    redirect('/client/landlord/billing-and-plans/pricing-plans');
+  }
+
+  redirect(getDashboardPath(userRole as UserRole));
 }

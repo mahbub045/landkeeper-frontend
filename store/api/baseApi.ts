@@ -37,6 +37,9 @@ export const TAG_TYPES = [
   'PropertyMaintenance',
   'PropertyMaintenanceComments',
 
+  //Landlord Tags
+  'PricingPlans',
+
   // Payments
   'PaymentMethods',
   'RentPayments',

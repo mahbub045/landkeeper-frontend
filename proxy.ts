@@ -9,6 +9,9 @@ const SHARED_CLIENT_PATHS = [
   // add other shared paths here
 ];
 
+const LANDLORD_PRICING_PATH =
+  '/client/landlord/billing-and-plans/pricing-plans';
+
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
 
@@ -43,6 +46,14 @@ export default withAuth(
     }
 
     const userRole = token.role as UserRole | undefined;
+
+    if (
+      userRole === 'LANDLORD' &&
+      token.has_subscription !== true &&
+      path !== LANDLORD_PRICING_PATH
+    ) {
+      return NextResponse.redirect(new URL(LANDLORD_PRICING_PATH, req.url));
+    }
 
     // Redirect root to appropriate dashboard or access denied if invalid role
     if (path === '/' || path === '') {
