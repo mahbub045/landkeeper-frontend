@@ -20,3 +20,12 @@ export type PricingPlansResponse = {
   previous: string | null;
   results: PricingPlan[];
 };
+
+export type SelectPricingPlanRequest = {
+  plan: string;
+  payment_method_id: string;
+};
+
+export type SelectPricingPlanResponse = {
+  redirect_url: string;
+};

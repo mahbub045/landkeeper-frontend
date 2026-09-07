@@ -1,4 +1,8 @@
 import { baseApi } from '@/store/api/baseApi';
+import {
+  SelectPricingPlanRequest,
+  SelectPricingPlanResponse,
+} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 
 export const PricingPlansApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +13,10 @@ export const PricingPlansApi = baseApi.injectEndpoints({
       }),
       providesTags: ['PricingPlans'],
     }),
-    selectPricingPlan: builder.mutation({
+    selectPricingPlan: builder.mutation<
+      SelectPricingPlanResponse,
+      { payload: SelectPricingPlanRequest }
+    >({
       query: ({ payload }) => ({
         url: `/subscription/plans/select`,
         method: 'POST',

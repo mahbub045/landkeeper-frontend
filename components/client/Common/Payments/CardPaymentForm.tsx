@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { getCurrencySign } from '@/utils/formatters';
 import {
   CardElement,
   Elements,
@@ -152,7 +153,7 @@ function CardPaymentFormInner({
           disabled={!stripe || !elements || isBusy}
           className='bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm disabled:opacity-50'
         >
-          {isBusy ? 'Processing…' : `Pay $${amount}`}
+          {isBusy ? 'Processing…' : `Pay ${getCurrencySign()}${amount}`}
         </Button>
       </div>
     </form>
