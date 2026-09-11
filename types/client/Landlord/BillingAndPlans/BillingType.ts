@@ -48,7 +48,8 @@ export interface BillingHistoryResponse {
 }
 
 export interface PaymentMethod {
-  id: string;
+  id: number;
+  alias: string;
   card_brand: string;
   last_four: string;
   expiry_month: number;

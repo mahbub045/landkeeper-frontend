@@ -32,6 +32,21 @@ export const BillingApi = baseApi.injectEndpoints({
       }),
       providesTags: ['BillingDetails'],
     }),
+    updatePaymentMethod: builder.mutation({
+      query: ({ card_alias, is_default }) => ({
+        url: `/subscription/cards/${card_alias}`,
+        method: 'PATCH',
+        body: { is_default },
+      }),
+      invalidatesTags: ['BillingDetails'],
+    }),
+    deletePaymentMethod: builder.mutation({
+      query: ({ card_alias }) => ({
+        url: `/subscription/cards/${card_alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['BillingDetails'],
+    }),
   }),
 });
 
@@ -40,4 +55,6 @@ export const {
   useUpdateAutoRenewMutation,
   useBillingHistoryQuery,
   usePaymewntMethodsQuery,
+  useUpdatePaymentMethodMutation,
+  useDeletePaymentMethodMutation,
 } = BillingApi;
