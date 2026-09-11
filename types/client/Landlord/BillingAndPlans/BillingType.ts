@@ -46,3 +46,12 @@ export interface BillingHistoryResponse {
   previous: string | null;
   results: BillingHistoryItem[];
 }
+
+export interface PaymentMethod {
+  id: string;
+  card_brand: string;
+  last_four: string;
+  expiry_month: number;
+  expiry_year: number;
+  is_default: boolean;
+}

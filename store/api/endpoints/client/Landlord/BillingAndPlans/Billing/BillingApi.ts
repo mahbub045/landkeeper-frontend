@@ -25,6 +25,13 @@ export const BillingApi = baseApi.injectEndpoints({
       }),
       providesTags: ['BillingDetails'],
     }),
+    paymewntMethods: builder.query({
+      query: () => ({
+        url: `/subscription/cards`,
+        method: 'GET',
+      }),
+      providesTags: ['BillingDetails'],
+    }),
   }),
 });
 
@@ -32,4 +39,5 @@ export const {
   useSubscriptionPlanDetailsQuery,
   useUpdateAutoRenewMutation,
   useBillingHistoryQuery,
+  usePaymewntMethodsQuery,
 } = BillingApi;
