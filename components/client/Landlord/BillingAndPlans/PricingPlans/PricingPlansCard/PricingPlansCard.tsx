@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useGetPricingPlansQuery,
@@ -8,41 +9,13 @@ import {
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
 import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import {
-  ArrowRight,
-  Check,
-  Crown,
-  Gem,
-  LoaderCircle,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowRight, Check, LoaderCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import PricingPlanPaymentDialog from './PricingPlanPaymentDialog';
 import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
-
-const planMeta = {
-  BASIC: {
-    eyebrow: 'A focused start',
-    accent:
-      'border-slate-200 bg-white dark:border-white/10 dark:bg-white/[0.04]',
-    icon: Sparkles,
-  },
-  STANDARD: {
-    eyebrow: 'Most popular',
-    accent:
-      'border-primary/50 bg-primary/[0.04] shadow-[0_18px_60px_-30px_var(--primary)] dark:bg-primary/[0.08]',
-    icon: Crown,
-  },
-  PREMIUM: {
-    eyebrow: 'For serious portfolios',
-    accent:
-      'border-amber-300/80 bg-amber-50/70 dark:border-amber-300/30 dark:bg-amber-300/[0.08]',
-    icon: Gem,
-  },
-} as const;
 
 const PricingPlansCard: React.FC = () => {
   const { update } = useSession();
@@ -153,7 +126,8 @@ const PricingPlansCard: React.FC = () => {
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {
           const meta =
-            planMeta[plan.plan_type as keyof typeof planMeta] ?? planMeta.BASIC;
+            pricingPlanMeta[plan.plan_type as keyof typeof pricingPlanMeta] ??
+            pricingPlanMeta.BASIC;
           const Icon = meta.icon;
           const visibleFeatures = plan.features.slice(0, 7);
           const remainingFeatures =
