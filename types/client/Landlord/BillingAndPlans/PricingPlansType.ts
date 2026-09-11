@@ -12,6 +12,7 @@ export type PricingPlan = {
   max_properties: number;
   referral_discount_percent: string;
   features: PricingPlanFeature[];
+  current_plan: boolean;
 };
 
 export type PricingPlansResponse = {

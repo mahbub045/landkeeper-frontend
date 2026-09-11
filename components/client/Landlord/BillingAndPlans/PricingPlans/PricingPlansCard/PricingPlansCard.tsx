@@ -329,7 +329,7 @@ const PricingPlansCard: React.FC = () => {
                   variant={isPopular ? 'default' : 'outline'}
                   size='lg'
                   className='mt-7 w-full'
-                  disabled={isSelectingPlan}
+                  disabled={isSelectingPlan || plan.current_plan === true}
                   onClick={() => handleSelectPlan(plan)}
                 >
                   {isSelectingPlan && selectedPlanType === plan.alias ? (
@@ -339,7 +339,8 @@ const PricingPlansCard: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      Choose {plan.name}
+                      {plan?.current_plan ? 'Current plan' : 'Choose'}{' '}
+                      {plan.name}
                       <ArrowRight data-icon='inline-end' />
                     </>
                   )}
