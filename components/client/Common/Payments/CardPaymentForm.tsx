@@ -14,7 +14,13 @@ import { useState, useSyncExternalStore } from 'react';
 
 interface CardPaymentFormProps {
   amount: string; // display only, e.g. "500.00"
-  onSuccess: (paymentMethodId: string) => Promise<void> | void;
+  // Called once Stripe has created a PaymentMethod. Must resolve with the
+  // client_secret of the PaymentIntent returned by your backend so this
+  // component can confirm the card payment.
+  onSuccess: (paymentMethodId: string) => Promise<{ clientSecret: string }>;
+  // Called once the PaymentIntent has actually been confirmed as
+  // succeeded/processing. This is the real "payment is done" signal.
+  onConfirmed: () => Promise<void> | void;
   onCancel?: () => void;
 }
 
@@ -49,6 +55,7 @@ export function CardPaymentForm(props: CardPaymentFormProps) {
 function CardPaymentFormInner({
   amount,
   onSuccess,
+  onConfirmed,
   onCancel,
 }: CardPaymentFormProps) {
   const resolvedTheme = useResolvedTheme();
@@ -93,6 +100,7 @@ function CardPaymentFormInner({
       return;
     }
 
+    // Step 1: create a PaymentMethod from the card details.
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement,
@@ -105,7 +113,37 @@ function CardPaymentFormInner({
     }
 
     try {
-      await onSuccess(paymentMethod.id);
+      // Step 2: tell the backend which plan + payment method to use.
+      // It creates the subscription and returns a PaymentIntent client_secret.
+      const { clientSecret } = await onSuccess(paymentMethod.id);
+
+      // Step 3: confirm the PaymentIntent with Stripe using that secret.
+      // This is also what triggers any 3D Secure / SCA challenge if needed.
+      const { error: confirmError, paymentIntent } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: paymentMethod.id,
+        });
+
+      if (confirmError) {
+        setCardError(
+          confirmError.message ??
+            'Payment could not be confirmed. Please try again.',
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      if (
+        paymentIntent?.status !== 'succeeded' &&
+        paymentIntent?.status !== 'processing'
+      ) {
+        setCardError('Payment was not completed. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Step 4: only now is the payment actually done.
+      await onConfirmed();
     } catch (callbackError) {
       const message =
         callbackError instanceof Error

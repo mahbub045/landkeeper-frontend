@@ -7,7 +7,11 @@ import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlan
 interface PricingPlanPaymentDialogProps {
   selectedPlan: PricingPlan | null;
   onOpenChange: (open: boolean) => void;
-  onPaymentMethod: (paymentMethodId: string) => Promise<void>;
+  // Resolves with the PaymentIntent client_secret returned by the backend
+  // after the subscription/plan-select call.
+  onPaymentMethod: (paymentMethodId: string) => Promise<{ clientSecret: string }>;
+  // Fired once Stripe has actually confirmed the PaymentIntent succeeded.
+  onConfirmed: () => Promise<void> | void;
   onCancel: () => void;
 }
 
@@ -15,6 +19,7 @@ export default function PricingPlanPaymentDialog({
   selectedPlan,
   onOpenChange,
   onPaymentMethod,
+  onConfirmed,
   onCancel,
 }: PricingPlanPaymentDialogProps) {
   return (
@@ -29,6 +34,7 @@ export default function PricingPlanPaymentDialog({
           <CardPaymentForm
             amount={Number(selectedPlan.monthly_price).toFixed(2)}
             onSuccess={onPaymentMethod}
+            onConfirmed={onConfirmed}
             onCancel={onCancel}
           />
         )}

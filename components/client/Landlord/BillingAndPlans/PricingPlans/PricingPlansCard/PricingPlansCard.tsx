@@ -16,6 +16,7 @@ import {
   LoaderCircle,
   Sparkles,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -43,6 +44,7 @@ const planMeta = {
 } as const;
 
 const PricingPlansCard: React.FC = () => {
+  const { update } = useSession();
   const router = useRouter();
   const [selectPricingPlan, { isLoading: isSelectingPlan }] =
     useSelectPricingPlanMutation();
@@ -58,27 +60,38 @@ const PricingPlansCard: React.FC = () => {
     setSelectedPlan(plan);
   };
 
-  const handlePaymentMethod = async (paymentMethodId: string) => {
-    if (!selectedPlan) return;
+  // Step A: hits /subscription/plans/select. The backend creates the
+  // subscription in an "incomplete" state and returns a PaymentIntent
+  // client_secret, which CardPaymentForm uses to confirm the card payment.
+  // NOTE: this does NOT mean the subscription is active yet — that only
+  // happens once Stripe confirms the PaymentIntent (see handlePaymentConfirmed).
+  const handlePaymentMethod = async (
+    paymentMethodId: string,
+  ): Promise<{ clientSecret: string }> => {
+    if (!selectedPlan) {
+      throw new Error('No plan selected.');
+    }
 
-    setSelectedPlanType(selectedPlan.plan_type);
+    setSelectedPlanType(selectedPlan.alias);
 
     try {
-      const result = await selectPricingPlan({
+      const response = await selectPricingPlan({
         payload: {
-          plan: selectedPlan.plan_type,
-          payment_method_id: paymentMethodId,
+          plan_id: selectedPlan.alias,
         },
       }).unwrap();
 
-      toast.success('Subscription started successfully! Redirecting...');
-      router.push('/client/landlord/billing-and-plans/billing');
+      if (!response?.client_secret) {
+        throw new Error('Could not start payment. Please try again.');
+      }
+
+      return { clientSecret: response.client_secret };
     } catch (error: unknown) {
       console.error('Failed to start subscription payment:', error);
 
       const errorData =
         error && typeof error === 'object' && 'data' in error
-          ? error.data
+          ? (error as { data?: unknown }).data
           : null;
       const errorMessage =
         errorData && typeof errorData === 'object'
@@ -86,10 +99,35 @@ const PricingPlansCard: React.FC = () => {
             (errorData as { detail?: string; message?: string }).message
           : null;
 
-      toast.error(errorMessage || 'Could not start payment. Please try again.');
+      const message =
+        errorMessage ||
+        (error instanceof Error ? error.message : null) ||
+        'Could not start payment. Please try again.';
+
+      toast.error(message);
       setSelectedPlanType(null);
-      throw new Error(errorMessage || 'Could not start payment.');
+      throw new Error(message);
     }
+  };
+
+  // Step B: only called once Stripe has actually confirmed the PaymentIntent.
+  const handlePaymentConfirmed = async () => {
+    try {
+      // Sync has_subscription into the JWT/session so any subscription-gated
+      // pages, layouts, or middleware see the up-to-date value immediately.
+      await update({ has_subscription: true });
+    } catch (error) {
+      // Don't let a session-sync failure block the redirect — the payment
+      // already succeeded at this point. Log it and continue.
+      console.error('Failed to sync session after payment:', error);
+    }
+
+    toast.success('Subscription started successfully! Redirecting...');
+    setSelectedPlan(null);
+    setSelectedPlanType(null);
+
+    router.push('/client/landlord/billing-and-plans/billing');
+    router.refresh(); // re-renders server components (e.g. layout checks) with fresh session
   };
 
   if (isLoading) {
@@ -188,6 +226,7 @@ const PricingPlansCard: React.FC = () => {
           }
         }}
         onPaymentMethod={handlePaymentMethod}
+        onConfirmed={handlePaymentConfirmed}
         onCancel={() => {
           setSelectedPlan(null);
           setSelectedPlanType(null);
@@ -293,7 +332,7 @@ const PricingPlansCard: React.FC = () => {
                   disabled={isSelectingPlan}
                   onClick={() => handleSelectPlan(plan)}
                 >
-                  {isSelectingPlan && selectedPlanType === plan.plan_type ? (
+                  {isSelectingPlan && selectedPlanType === plan.alias ? (
                     <>
                       <LoaderCircle className='animate-spin' />
                       Opening checkout...

@@ -22,10 +22,10 @@ export type PricingPlansResponse = {
 };
 
 export type SelectPricingPlanRequest = {
-  plan: string;
-  payment_method_id: string;
+  plan_id: string;
 };
 
-export type SelectPricingPlanResponse = {
+export interface SelectPricingPlanResponse {
   redirect_url: string;
-};
+  client_secret: string;
+}
