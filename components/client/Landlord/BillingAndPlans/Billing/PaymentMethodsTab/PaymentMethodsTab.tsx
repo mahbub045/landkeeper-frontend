@@ -19,7 +19,10 @@ export default function PaymentMethodsTab() {
 
       {paymentMethods.length === 0 ? (
         <div className='border-border/70 flex flex-col items-center justify-center rounded-xl border border-dashed py-14 text-center'>
-          <CreditCard className='text-muted-foreground mb-3 size-8' aria-hidden='true' />
+          <CreditCard
+            className='text-muted-foreground mb-3 size-8'
+            aria-hidden='true'
+          />
           <p className='font-medium'>No payment methods saved</p>
           <p className='text-muted-foreground mt-1 max-w-xs text-sm'>
             Add a card to make future subscription payments faster.

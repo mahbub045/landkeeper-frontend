@@ -39,6 +39,7 @@ export const TAG_TYPES = [
 
   //Landlord Tags
   'PricingPlans',
+  'BillingDetails',
 
   // Payments
   'PaymentMethods',

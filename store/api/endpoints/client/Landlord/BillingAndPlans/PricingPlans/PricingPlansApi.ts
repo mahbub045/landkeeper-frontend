@@ -24,27 +24,8 @@ export const PricingPlansApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['PricingPlans'],
     }),
-    subscriptionPlanDetails: builder.query({
-      query: () => ({
-        url: `/subscription`,
-        method: 'GET',
-      }),
-      providesTags: ['PricingPlans'],
-    }),
-    updateAutoRenew: builder.mutation({
-      query: ({ auto_renew }) => ({
-        url: `/subscription`,
-        method: 'PATCH',
-        body: { auto_renew },
-      }),
-      invalidatesTags: ['PricingPlans'],
-    }),
   }),
 });
 
-export const {
-  useGetPricingPlansQuery,
-  useSelectPricingPlanMutation,
-  useSubscriptionPlanDetailsQuery,
-  useUpdateAutoRenewMutation,
-} = PricingPlansApi;
+export const { useGetPricingPlansQuery, useSelectPricingPlanMutation } =
+  PricingPlansApi;

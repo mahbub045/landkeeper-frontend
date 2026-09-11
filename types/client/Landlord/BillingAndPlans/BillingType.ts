@@ -28,3 +28,21 @@ export interface SubscriptionDetails {
   auto_renew: boolean;
   cancelled_at: string | null;
 }
+
+export interface BillingHistoryItem {
+  alias: string;
+  plan_name: string;
+  amount: string;
+  currency: string;
+  status: string;
+  attempt_number: number;
+  created_at: string;
+  invoice_pdf_url: string;
+}
+
+export interface BillingHistoryResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: BillingHistoryItem[];
+}

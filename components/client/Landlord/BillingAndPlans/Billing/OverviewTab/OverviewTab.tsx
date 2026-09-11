@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import {
   useSubscriptionPlanDetailsQuery,
   useUpdateAutoRenewMutation,
-} from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
+} from '@/store/api/endpoints/client/Landlord/BillingAndPlans/Billing/BillingApi';
 import {
   SubscriptionDetails,
   SubscriptionFeature,
