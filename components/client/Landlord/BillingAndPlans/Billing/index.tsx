@@ -1,10 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RootState } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setActiveTab } from '@/store/slices/billingTabSlice';
 import { CreditCard, Sparkles } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 import BillingHistoryTab from './BillingHistoryTab/BillingHistoryTab';
 import OverviewTab from './OverviewTab/OverviewTab';
 import PaymentMethodsTab from './PaymentMethodsTab/PaymentMethodsTab';
@@ -15,10 +17,13 @@ const TABS = [
   { key: 'billing-history', label: 'Billing History' },
 ] as const;
 
-type TabKey = (typeof TABS)[number]['key'];
+type BillingTab = (typeof TABS)[number]['key'];
 
 const BillingContainer: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const dispatch = useAppDispatch();
+  const activeTab = useAppSelector(
+    (state: RootState) => state.billingTabs.activeTab,
+  );
 
   return (
     <div>
@@ -54,34 +59,35 @@ const BillingContainer: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className='border-border mb-6 flex gap-6 border-b'>
-        {TABS.map((tab) => {
-          const isActive = tab.key === activeTab;
-          return (
-            <button
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => dispatch(setActiveTab(value as BillingTab))}
+      >
+        <TabsList
+          variant='line'
+          className='mb-6 h-auto w-full justify-start gap-6 rounded-none border-b bg-transparent p-1'
+        >
+          {TABS.map((tab) => (
+            <TabsTrigger
               key={tab.key}
-              type='button'
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                'relative -mb-px pb-3 text-sm font-medium transition-colors',
-                isActive
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
+              value={tab.key}
+              className='cursor-pointer'
             >
               {tab.label}
-              {isActive && (
-                <span className='bg-primary absolute inset-x-0 -bottom-px h-0.5 rounded-full' />
-              )}
-            </button>
-          );
-        })}
-      </div>
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      {/* Tab content */}
-      {activeTab === 'overview' && <OverviewTab />}
-      {activeTab === 'payment-methods' && <PaymentMethodsTab />}
-      {activeTab === 'billing-history' && <BillingHistoryTab />}
+        <TabsContent value='overview'>
+          <OverviewTab />
+        </TabsContent>
+        <TabsContent value='payment-methods'>
+          <PaymentMethodsTab />
+        </TabsContent>
+        <TabsContent value='billing-history'>
+          <BillingHistoryTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

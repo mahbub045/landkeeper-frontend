@@ -9,7 +9,10 @@ import { PaymentMethod } from '@/types/client/Landlord/BillingAndPlans/BillingTy
 import { CreditCard, MoreVertical, Plus, Star } from 'lucide-react';
 
 export default function PaymentMethodsTab() {
-  const { data: cards, isLoading } = usePaymewntMethodsQuery(undefined);
+  const { data: paymentMethodsData, isLoading } =
+    usePaymewntMethodsQuery(undefined);
+
+  const cards = paymentMethodsData?.cards ?? [];
 
   return (
     <div className='border-border/70 rounded-2xl border bg-white p-6 dark:bg-white/4'>
