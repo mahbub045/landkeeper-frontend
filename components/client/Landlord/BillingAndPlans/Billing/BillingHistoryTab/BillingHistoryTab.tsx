@@ -125,7 +125,7 @@ export default function BillingHistoryTab() {
                   <th className='px-4 py-3 text-center'>Plan</th>
                   <th className='px-4 py-3 text-center'>Amount</th>
                   <th className='px-4 py-3 text-center'>Status</th>
-                  <th className='px-4 py-3 text-center'>Receipt</th>
+                  <th className='px-4 py-3 text-center'>Invoice</th>
                 </tr>
               </thead>
               <tbody className='divide-border/70 divide-y'>
