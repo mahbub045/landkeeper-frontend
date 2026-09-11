@@ -57,18 +57,26 @@ export default function OverviewTab() {
 
   if (isLoading) {
     return (
-      <div className='grid gap-5 lg:grid-cols-3'>
-        <div className='border-border/70 col-span-2 space-y-6 rounded-2xl border bg-white p-6 dark:bg-white/4'>
+      <>
+        <div className='grid gap-5 lg:grid-cols-3'>
+          <div className='border-border/70 col-span-2 space-y-6 rounded-2xl border bg-white p-6 dark:bg-white/4'>
+            <div className='bg-muted h-6 w-32 animate-pulse rounded' />
+            <div className='bg-muted h-9 w-40 animate-pulse rounded' />
+            <div className='bg-muted h-10 w-32 animate-pulse rounded' />
+          </div>
+          <div className='border-border/70 space-y-4 rounded-2xl border bg-white p-6 dark:bg-white/4'>
+            <div className='bg-muted h-5 w-40 animate-pulse rounded' />
+            <div className='bg-muted h-4 w-full animate-pulse rounded' />
+            <div className='bg-muted h-4 w-full animate-pulse rounded' />
+          </div>
+        </div>
+
+        <div className='border-border/70 col-span-2 mt-4 space-y-6 rounded-2xl border bg-white p-6 dark:bg-white/4'>
           <div className='bg-muted h-6 w-32 animate-pulse rounded' />
           <div className='bg-muted h-9 w-40 animate-pulse rounded' />
           <div className='bg-muted h-10 w-32 animate-pulse rounded' />
         </div>
-        <div className='border-border/70 space-y-4 rounded-2xl border bg-white p-6 dark:bg-white/4'>
-          <div className='bg-muted h-5 w-40 animate-pulse rounded' />
-          <div className='bg-muted h-4 w-full animate-pulse rounded' />
-          <div className='bg-muted h-4 w-full animate-pulse rounded' />
-        </div>
-      </div>
+      </>
     );
   }
 
