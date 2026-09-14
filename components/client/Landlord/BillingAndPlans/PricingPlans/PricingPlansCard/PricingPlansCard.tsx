@@ -24,6 +24,10 @@ const PricingPlansCard: React.FC = () => {
     useSelectPricingPlanMutation();
   const [selectedPlanType, setSelectedPlanType] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [expandedPlans, setExpandedPlans] = useState<Record<string, boolean>>(
+    {},
+  );
+
   const {
     data: pricingPlans,
     isLoading,
@@ -102,6 +106,10 @@ const PricingPlansCard: React.FC = () => {
 
     router.push('/client/landlord/billing-and-plans/billing');
     router.refresh(); // re-renders server components (e.g. layout checks) with fresh session
+  };
+
+  const toggleFeatures = (alias: string) => {
+    setExpandedPlans((prev) => ({ ...prev, [alias]: !prev[alias] }));
   };
 
   if (isLoading) {
@@ -207,19 +215,45 @@ const PricingPlansCard: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+
                 {remainingFeatures > 0 && (
-                  <p className='text-muted-foreground mt-3 pl-6 text-xs font-medium'>
-                    + {remainingFeatures} more feature
-                    {remainingFeatures === 1 ? '' : 's'}
-                  </p>
+                  <>
+                    <Button
+                      variant='link'
+                      onClick={() => toggleFeatures(plan.alias)}
+                      className='mt-1 pl-6 text-xs'
+                      aria-expanded={!!expandedPlans[plan.alias]}
+                    >
+                      {expandedPlans[plan.alias]
+                        ? 'Show less'
+                        : `+ ${remainingFeatures} more feature${remainingFeatures === 1 ? '' : 's'}`}
+                    </Button>
+
+                    {expandedPlans[plan.alias] && (
+                      <ul className='mt-3 max-h-32 space-y-3 overflow-y-auto pr-1'>
+                        {plan.features.slice(7).map((feature) => (
+                          <li
+                            key={feature.code}
+                            className='text-muted-foreground flex gap-2.5 text-sm'
+                          >
+                            <Check
+                              className='text-primary mt-0.5 size-4 shrink-0'
+                              aria-hidden='true'
+                            />
+                            <span>{feature.name}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
                 )}
               </div>
-              <div className='mt-2'>
+              <div className='mt-3'>
                 <Button
                   type='button'
                   variant={isPopular ? 'default' : 'outline'}
                   size='lg'
-                  className='mt-7 w-full'
+                  className='w-full'
                   disabled={isSelectingPlan || plan.current_plan === true}
                   onClick={() => handleSelectPlan(plan)}
                 >

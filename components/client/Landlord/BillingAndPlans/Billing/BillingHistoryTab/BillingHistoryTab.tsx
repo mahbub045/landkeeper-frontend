@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import {
   Pagination,
   PaginationContent,
@@ -19,7 +18,7 @@ import formatChoiceFieldValue, {
   formatDateAndTime,
   getCurrencySign,
 } from '@/utils/formatters';
-import { Download, Receipt } from 'lucide-react';
+import { Receipt } from 'lucide-react';
 import { useState } from 'react';
 
 export const statusDotStyles: Record<string, string> = {
@@ -121,16 +120,20 @@ export default function BillingHistoryTab() {
             <table className='w-full text-sm'>
               <thead className='bg-muted/60 text-muted-foreground text-xs font-semibold tracking-wide'>
                 <tr>
+                  <th className='px-4 py-3 text-left'>#</th>
                   <th className='px-4 py-3 text-left'>Date</th>
                   <th className='px-4 py-3 text-center'>Plan</th>
                   <th className='px-4 py-3 text-center'>Amount</th>
                   <th className='px-4 py-3 text-center'>Status</th>
-                  <th className='px-4 py-3 text-center'>Invoice</th>
+                  {/* <th className='px-4 py-3 text-center'>Invoice</th> */}
                 </tr>
               </thead>
               <tbody className='divide-border/70 divide-y'>
-                {invoices.map((invoice) => (
+                {invoices.map((invoice, index) => (
                   <tr key={invoice.alias}>
+                    <td className='px-4 py-3 whitespace-nowrap'>
+                      {index + 1 + (page - 1) * PAGE_LIMIT}
+                    </td>
                     <td className='px-4 py-3 whitespace-nowrap'>
                       {formatDateAndTime(invoice.created_at)}
                     </td>
@@ -155,7 +158,7 @@ export default function BillingHistoryTab() {
                         {formatChoiceFieldValue(invoice.status)}
                       </span>
                     </td>
-                    <td className='px-4 py-3 text-center'>
+                    {/* <td className='px-4 py-3 text-center'>
                       <Button
                         size='sm'
                         variant='outline'
@@ -168,7 +171,7 @@ export default function BillingHistoryTab() {
                       >
                         <Download className='size-4' />
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

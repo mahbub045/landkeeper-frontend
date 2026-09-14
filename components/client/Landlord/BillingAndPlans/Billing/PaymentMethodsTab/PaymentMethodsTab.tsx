@@ -29,7 +29,6 @@ import {
   CreditCard,
   LoaderCircle,
   MoreVertical,
-  Plus,
   Star,
   Trash2,
 } from 'lucide-react';
@@ -111,10 +110,10 @@ export default function PaymentMethodsTab() {
     <div className='border-border/70 rounded-2xl border bg-white p-6 dark:bg-white/4'>
       <div className='mb-5 flex items-center justify-between'>
         <p className='text-sm font-semibold'>Saved payment methods</p>
-        <Button size='sm'>
+        {/* <Button size='sm'>
           <Plus />
           Add payment method
-        </Button>
+        </Button> */}
       </div>
 
       {isLoading ? (

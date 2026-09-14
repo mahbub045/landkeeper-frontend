@@ -24,14 +24,6 @@ export const PricingPlansApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['PricingPlans'],
     }),
-    // subscriptionValidation: builder.mutation({
-    //   query: (payload) => ({
-    //     url: `/subscription/validation`,
-    //     method: 'POST',
-    //     body: payload,
-    //   }),
-    //   invalidatesTags: ['PricingPlans'],
-    // }),
   }),
 });
 
