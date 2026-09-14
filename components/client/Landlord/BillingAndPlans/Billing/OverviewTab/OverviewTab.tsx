@@ -87,6 +87,12 @@ export default function OverviewTab() {
         <p className='text-muted-foreground mt-1 text-sm'>
           Please refresh and try again.
         </p>
+        <Link href='/client/landlord/billing-and-plans/pricing-plans'>
+          <Button variant='outline' className='mt-4'>
+            <Sparkles className='text-success h-4 w-4' />
+            View pricing plans
+          </Button>
+        </Link>
       </div>
     );
   }

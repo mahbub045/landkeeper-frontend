@@ -37,10 +37,18 @@ export default async function Home() {
   const userRole = session.user?.role as UserRole | undefined;
   const profileData = await getProfileInfo(session.user?.accessToken);
 
+  const isNewUser =
+    profileData?.has_subscription === false &&
+    profileData?.subscription_status === null;
+
   const isSubscribed =
     profileData?.has_subscription === true &&
     (profileData?.subscription_status === 'ACTIVE' ||
       profileData?.subscription_status === 'TRIALING');
+
+  if (isNewUser) {
+    redirect('/client/landlord/billing-and-plans/pricing-plans');
+  }
 
   if (userRole === 'LANDLORD' && !isSubscribed) {
     redirect('/client/landlord/billing-and-plans/billing');
