@@ -105,7 +105,7 @@ const PricingPlansCard: React.FC = () => {
     setSelectedPlanType(null);
 
     router.push('/client/landlord/billing-and-plans/billing');
-    router.refresh(); // re-renders server components (e.g. layout checks) with fresh session
+    window.location.reload(); // reloads the page to ensure all client components see the updated session
   };
 
   const toggleFeatures = (alias: string) => {
