@@ -28,13 +28,41 @@ export type NavItem = {
   icon: LucideIcon;
   badge?: number;
   children?: NavItem[];
+  visibleToPlans?: string[];
 };
 
 interface BuildItemsOptions {
   role: UserRole | undefined;
+  // Current subscription plan, e.g. profileData?.plan. Used to hide
+  // plan-gated nav items (MTD, Property Maintenance) for Basic-plan users.
+  plan?: string;
 }
 
-export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
+// Adjust these to match the actual plan enum values returned by your API
+// (check the keys of pricingPlanBadgeStyles if unsure of casing).
+const STANDARD_PREMIUM_PLANS = ['STANDARD', 'PREMIUM'];
+
+function isVisibleForPlan(item: NavItem, plan?: string): boolean {
+  if (!item.visibleToPlans) return true;
+  return !!plan && item.visibleToPlans.includes(plan);
+}
+
+// Recursively filters out plan-restricted items the current plan doesn't
+// grant access to. If a parent's children are all filtered out, the parent
+// itself is kept (as long as it isn't restricted) but with an empty
+// children array — NavMenu already treats children.length === 0 the same
+// as "no children" via `Array.isArray(item.children) && item.children.length > 0`.
+function filterByPlan(items: NavItem[], plan?: string): NavItem[] {
+  return items
+    .filter((item) => isVisibleForPlan(item, plan))
+    .map((item) =>
+      item.children
+        ? { ...item, children: filterByPlan(item.children, plan) }
+        : item,
+    );
+}
+
+function buildItemsForRole(role: UserRole | undefined): NavItem[] {
   if (role === 'SUPER_ADMIN') {
     return [
       {
@@ -102,11 +130,13 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Making Tax Digital (MTD)',
         href: '/client/landlord/making-tax-digital',
         icon: FileSpreadsheet,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
       },
       {
         label: 'Property Maintenance',
         href: '/client/landlord/property-maintenance',
         icon: Wrench,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
       },
       {
         label: 'Reports & Analytics',
@@ -194,11 +224,13 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
         label: 'Making Tax Digital (MTD)',
         href: '/client/admin/making-tax-digital',
         icon: FileSpreadsheet,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
       },
       {
         label: 'Property Maintenance',
         href: '/client/admin/property-maintenance',
         icon: Wrench,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
       },
       {
         label: 'Reports & Analytics',
@@ -345,4 +377,9 @@ export const buildItems = ({ role }: BuildItemsOptions): NavItem[] => {
   }
 
   return [];
+}
+
+export const buildItems = ({ role, plan }: BuildItemsOptions): NavItem[] => {
+  const items = buildItemsForRole(role);
+  return filterByPlan(items, plan);
 };

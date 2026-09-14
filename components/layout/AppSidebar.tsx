@@ -410,9 +410,12 @@ const AppSidebar: React.FC = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const userRole = user?.role as UserRole | undefined;
-  const navItems = buildItems({ role: userRole });
 
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+
+  // navItems now depends on profileData.plan, so it's built after the
+  // profile query instead of immediately after session resolves.
+  const navItems = buildItems({ role: userRole, plan: profileData?.plan });
 
   // Landlords without an active/trialing subscription get a locked sidebar —
   // only the paths in LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION stay usable.
@@ -482,7 +485,7 @@ const AppSidebar: React.FC = () => {
               'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
             }
           >
-            {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'}
+            {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'} Plan
           </Badge>
         )}
       </SidebarHeader>
