@@ -20,3 +20,10 @@ export const pricingPlanMeta = {
     icon: Gem,
   },
 } as const;
+
+export const pricingPlanBadgeStyles = {
+  BASIC: 'bg-slate-400 text-slate-700 dark:bg-slate-800 dark:text-slate-400',
+  STANDARD: 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary',
+  PREMIUM:
+    'bg-amber-100 text-amber-700 dark:bg-amber-300/20 dark:text-amber-300',
+} as const;

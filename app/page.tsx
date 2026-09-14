@@ -11,8 +11,13 @@ export default async function Home() {
     redirect('/auth/signin');
   }
 
-  if (userRole === 'LANDLORD' && session.user.has_subscription !== true) {
-    redirect('/client/landlord/billing-and-plans/pricing-plans');
+  const isSubscribed =
+    session.user.has_subscription === true &&
+    (session.user.subscription_status === 'ACTIVE' ||
+      session.user.subscription_status === 'TRIALING');
+
+  if (userRole === 'LANDLORD' && !isSubscribed) {
+    redirect('/client/landlord/billing-and-plans/billing');
   }
 
   redirect(getDashboardPath(userRole as UserRole));

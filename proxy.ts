@@ -9,8 +9,23 @@ const SHARED_CLIENT_PATHS = [
   // add other shared paths here
 ];
 
-const LANDLORD_PRICING_PATH =
-  '/client/landlord/billing-and-plans/pricing-plans';
+function landlordNeedsSubscription(token: {
+  has_subscription?: boolean;
+  subscription_status?: string;
+}): boolean {
+  const isSubscribed =
+    token.has_subscription === true &&
+    (token.subscription_status === 'ACTIVE' ||
+      token.subscription_status === 'TRIALING');
+
+  return !isSubscribed;
+}
+
+const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
+  '/client/landlord/billing-and-plans/billing',
+  '/client/landlord/billing-and-plans/pricing-plans',
+  '/client/profile-settings',
+];
 
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
@@ -49,10 +64,14 @@ export default withAuth(
 
     if (
       userRole === 'LANDLORD' &&
-      token.has_subscription !== true &&
-      path !== LANDLORD_PRICING_PATH
+      landlordNeedsSubscription(token) &&
+      !LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
+        path.startsWith(p),
+      )
     ) {
-      return NextResponse.redirect(new URL(LANDLORD_PRICING_PATH, req.url));
+      return NextResponse.redirect(
+        new URL(LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION[0], req.url),
+      );
     }
 
     // Redirect root to appropriate dashboard or access denied if invalid role

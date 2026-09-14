@@ -9,11 +9,15 @@ export type UserRole =
   | 'MORTGAGE_ADVISER'
   | 'TENANT';
 
+export type SubscriptionStatus =
+  'ACTIVE' | 'PENDING' | 'TRIALING' | 'PAST_DUE' | 'CANCELED' | 'EXPIRED';
+
 declare module 'next-auth' {
   interface User {
     id: string;
     role: UserRole;
     has_subscription: boolean;
+    subscription_status: SubscriptionStatus;
     accessToken: string;
     refreshToken: string;
   }
@@ -24,6 +28,7 @@ declare module 'next-auth' {
       email: string;
       role: string;
       has_subscription: boolean;
+      subscription_status: SubscriptionStatus;
       accessToken: string;
       refreshToken: string;
     };
@@ -35,6 +40,7 @@ declare module 'next-auth/jwt' {
     id: string;
     role: string;
     has_subscription: boolean;
+    subscription_status: SubscriptionStatus;
     accessToken: string;
     refreshToken: string;
   }
