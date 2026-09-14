@@ -57,8 +57,6 @@ export const authOptions: NextAuthOptions = {
           id: profile.id,
           email: profile.email,
           role: profile.role,
-          has_subscription: profile.has_subscription === true,
-          subscription_status: profile.subscription_status,
           accessToken: access,
           refreshToken: refresh,
         };
@@ -114,8 +112,6 @@ export const authOptions: NextAuthOptions = {
               token.id = profile.id;
               token.email = profile.email;
               token.role = profile.role;
-              token.has_subscription = profile.has_subscription === true;
-              token.subscription_status = profile.subscription_status;
               token.accessToken = access;
               token.refreshToken = refresh;
             }
@@ -134,8 +130,6 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
-        token.has_subscription = user.has_subscription;
-        token.subscription_status = user.subscription_status;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
@@ -147,8 +141,6 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id;
       session.user.email = token.email || '';
       session.user.role = token.role;
-      session.user.subscription_status = token.subscription_status;
-      session.user.has_subscription = token.has_subscription;
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       return session;

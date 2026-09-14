@@ -1,6 +1,7 @@
 import type { UserRole } from '@/types/next-auth';
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import { ProfileInfo } from './types/common/ProfileSettings/SettingsTypes';
 import { getDashboardPath } from './utils/redirectPath';
 
 const SHARED_CLIENT_PATHS = [
@@ -9,23 +10,42 @@ const SHARED_CLIENT_PATHS = [
   // add other shared paths here
 ];
 
-function landlordNeedsSubscription(token: {
-  has_subscription?: boolean;
-  subscription_status?: string;
-}): boolean {
-  const isSubscribed =
-    token.has_subscription === true &&
-    (token.subscription_status === 'ACTIVE' ||
-      token.subscription_status === 'TRIALING');
-
-  return !isSubscribed;
-}
-
 const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
   '/client/landlord/billing-and-plans/billing',
   '/client/landlord/billing-and-plans/pricing-plans',
   '/client/profile-settings',
 ];
+
+// Live check against the backend instead of the JWT's has_subscription/
+// subscription_status, since those only refresh on explicit update() calls
+// and can go stale (e.g. a webhook-driven cancellation or renewal).
+// Only called for LANDLORD requests on a path outside the allowlist, so it
+// doesn't add a network round trip to every single request.
+async function fetchIsSubscribed(accessToken?: string): Promise<boolean> {
+  if (!accessToken) return false;
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) return false;
+
+    const profile: ProfileInfo = await res.json();
+    return (
+      profile.has_subscription === true &&
+      (profile.subscription_status === 'ACTIVE' ||
+        profile.subscription_status === 'TRIALING')
+    );
+  } catch (error) {
+    console.error('Middleware: failed to fetch profile info:', error);
+    return false; // fail closed — treat as unsubscribed on error
+  }
+}
 
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
   if (!role) return false;
@@ -52,7 +72,7 @@ function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
 }
 
 export default withAuth(
-  function proxy(req) {
+  async function proxy(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
@@ -61,17 +81,23 @@ export default withAuth(
     }
 
     const userRole = token.role as UserRole | undefined;
-
-    if (
-      userRole === 'LANDLORD' &&
-      landlordNeedsSubscription(token) &&
-      !LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
+    const isOnAllowedLandlordPath =
+      LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
         path.startsWith(p),
-      )
-    ) {
-      return NextResponse.redirect(
-        new URL(LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION[0], req.url),
       );
+
+    // Only hit the profile endpoint when it can actually change the
+    // outcome: landlord role, and not already on an allowed path.
+    if (userRole === 'LANDLORD' && !isOnAllowedLandlordPath) {
+      const isSubscribed = await fetchIsSubscribed(
+        token.accessToken as string | undefined,
+      );
+
+      if (!isSubscribed) {
+        return NextResponse.redirect(
+          new URL(LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION[0], req.url),
+        );
+      }
     }
 
     // Redirect root to appropriate dashboard or access denied if invalid role

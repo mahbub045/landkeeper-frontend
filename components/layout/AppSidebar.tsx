@@ -62,8 +62,8 @@ import { Badge } from '../ui/badge';
 // Paths that stay usable even without an active subscription — keep this
 // in sync with LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION in middleware.ts
 const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
-  '/client/landlord/billing-and-plans/pricing-plans',
   '/client/landlord/billing-and-plans/billing',
+  '/client/landlord/billing-and-plans/pricing-plans',
   '/client/profile-settings',
 ];
 
@@ -253,7 +253,7 @@ function NavMenu({
                         <ChevronRight className='ml-auto' />
                       </SidebarMenuButton>
                     </TooltipTrigger>
-                    <TooltipContent side='left'>
+                    <TooltipContent side='right'>
                       Subscribe to unlock this section
                     </TooltipContent>
                   </Tooltip>
@@ -416,7 +416,10 @@ const AppSidebar: React.FC = () => {
 
   // Landlords without an active/trialing subscription get a locked sidebar —
   // only the paths in LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION stay usable.
-  const sidebarLocked = userRole === 'LANDLORD' && !isSubscribed(user);
+  // Sourced from useGetProfileInfoQuery (live data) rather than the
+  // session/JWT, since the JWT's has_subscription/subscription_status only
+  // update when update() is explicitly called and can go stale otherwise.
+  const sidebarLocked = userRole === 'LANDLORD' && !isSubscribed(profileData);
 
   if (isLoading) {
     return (
