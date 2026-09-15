@@ -463,30 +463,51 @@ const AppSidebar: React.FC = () => {
           />
         </div>
 
-        <div className='group-data-[collapsible=icon]:hidden'>
-          {sidebarLocked ? (
-            <Link href='/client/landlord/billing-and-plans/billing'>
-              <Badge
-                variant='destructive'
-                className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
-              >
-                Subscribe to unlock
-              </Badge>
-            </Link>
-          ) : (
-            <Badge
-              variant='secondary'
-              className={
-                pricingPlanBadgeStyles[
-                  profileData?.plan as keyof typeof pricingPlanBadgeStyles
-                ] ||
-                'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-              }
-            >
-              {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'} Plan
-            </Badge>
-          )}
+        <div className='hidden items-center group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-center'>
+          <Image
+            src='/images/logo-black-icon.png'
+            alt='Sebagriho'
+            width={200}
+            height={150}
+            className='h-5.5 w-6 dark:hidden'
+            loading='eager'
+          />
+          <Image
+            src='/images/logo-white-icon.png'
+            alt='Sebagriho'
+            width={200}
+            height={150}
+            className='hidden h-5.5 w-6 dark:block'
+            loading='eager'
+          />
         </div>
+
+        {session?.user?.role !== 'SUPER_ADMIN' && (
+          <div className='group-data-[collapsible=icon]:hidden'>
+            {sidebarLocked ? (
+              <Link href='/client/landlord/billing-and-plans/billing'>
+                <Badge
+                  variant='destructive'
+                  className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
+                >
+                  Subscribe to unlock
+                </Badge>
+              </Link>
+            ) : (
+              <Badge
+                variant='secondary'
+                className={
+                  pricingPlanBadgeStyles[
+                    profileData?.plan as keyof typeof pricingPlanBadgeStyles
+                  ] ||
+                  'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                }
+              >
+                {formatChoiceFieldValue(profileData?.plan) || 'Unknown'} Plan
+              </Badge>
+            )}
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />
