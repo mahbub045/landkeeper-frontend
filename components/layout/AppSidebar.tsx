@@ -474,25 +474,17 @@ const AppSidebar: React.FC = () => {
               </Badge>
             </Link>
           ) : (
-            <div className='flex gap-1 items-center'>
-              <Badge
-                variant='secondary'
-                className={
-                  pricingPlanBadgeStyles[
-                    profileData?.plan as keyof typeof pricingPlanBadgeStyles
-                  ] ||
-                  'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                }
-              >
-                {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'}{' '}
-                Plan
-              </Badge>
-              {profileData?.subscription_status === 'TRIALING' && (
-                <small className='text-danger text-xs'>
-                  {profileData?.trial_days_left ?? 0} days left in trial
-                </small>
-              )}
-            </div>
+            <Badge
+              variant='secondary'
+              className={
+                pricingPlanBadgeStyles[
+                  profileData?.plan as keyof typeof pricingPlanBadgeStyles
+                ] ||
+                'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
+              }
+            >
+              {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'} Plan
+            </Badge>
           )}
         </div>
       </SidebarHeader>

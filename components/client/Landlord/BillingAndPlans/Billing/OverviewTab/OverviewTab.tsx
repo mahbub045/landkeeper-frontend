@@ -103,7 +103,7 @@ export default function OverviewTab() {
         {/* Current plan */}
         <div
           className={cn(
-            "border-border/70 relative col-span-2 flex h-full flex-col overflow-hidden rounded-2xl border bg-white py-6 pr-6 pl-7 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] dark:bg-white/4",
+            "border-border/70 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white py-6 pr-6 pl-7 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] lg:col-span-2 dark:bg-white/4",
             planTierAccent[subscription.plan.plan_type] ?? 'before:bg-border',
           )}
         >
