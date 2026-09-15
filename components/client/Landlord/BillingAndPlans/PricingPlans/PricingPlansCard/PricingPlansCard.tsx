@@ -45,7 +45,7 @@ const PricingPlansCard: React.FC = () => {
   // happens once Stripe confirms the PaymentIntent (see handlePaymentConfirmed).
   const handlePaymentMethod = async (
     paymentMethodId: string,
-  ): Promise<{ clientSecret: string }> => {
+  ): Promise<{ clientSecret: string; mode?: 'payment' | 'setup' }> => {
     if (!selectedPlan) {
       throw new Error('No plan selected.');
     }
@@ -63,7 +63,7 @@ const PricingPlansCard: React.FC = () => {
         throw new Error('Could not start payment. Please try again.');
       }
 
-      return { clientSecret: response.client_secret };
+      return { clientSecret: response.client_secret, mode: response.mode };
     } catch (error: unknown) {
       console.error('Failed to start subscription payment:', error);
 

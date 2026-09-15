@@ -15,9 +15,12 @@ import { useState, useSyncExternalStore } from 'react';
 interface CardPaymentFormProps {
   amount: string; // display only, e.g. "500.00"
   // Called once Stripe has created a PaymentMethod. Must resolve with the
-  // client_secret of the PaymentIntent returned by your backend so this
-  // component can confirm the card payment.
-  onSuccess: (paymentMethodId: string) => Promise<{ clientSecret: string }>;
+  // client_secret returned by your backend so this component can confirm
+  // it. `mode` tells us whether that secret belongs to a PaymentIntent
+  // ("payment") or a SetupIntent ("setup", e.g. trials / $0 due now).
+  onSuccess: (
+    paymentMethodId: string,
+  ) => Promise<{ clientSecret: string; mode?: 'payment' | 'setup' }>;
   // Called once the PaymentIntent has actually been confirmed as
   // succeeded/processing. This is the real "payment is done" signal.
   onConfirmed: () => Promise<void> | void;
@@ -114,15 +117,33 @@ function CardPaymentFormInner({
 
     try {
       // Step 2: tell the backend which plan + payment method to use.
-      // It creates the subscription and returns a PaymentIntent client_secret.
-      const { clientSecret } = await onSuccess(paymentMethod.id);
+      // It creates the subscription and returns a client_secret for either
+      // a PaymentIntent ("payment") or a SetupIntent ("setup").
+      const { clientSecret, mode = 'payment' } = await onSuccess(
+        paymentMethod.id,
+      );
 
-      // Step 3: confirm the PaymentIntent with Stripe using that secret.
+      // Step 3: confirm with Stripe using that secret. Which method we call
+      // must match what the secret was issued for, or Stripe rejects it.
       // This is also what triggers any 3D Secure / SCA challenge if needed.
-      const { error: confirmError, paymentIntent } =
-        await stripe.confirmCardPayment(clientSecret, {
+      let confirmError: import('@stripe/stripe-js').StripeError | undefined;
+      let isOk = false;
+
+      if (mode === 'setup') {
+        const result = await stripe.confirmCardSetup(clientSecret, {
           payment_method: paymentMethod.id,
         });
+        confirmError = result.error;
+        isOk = result.setupIntent?.status === 'succeeded';
+      } else {
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: paymentMethod.id,
+        });
+        confirmError = result.error;
+        isOk =
+          result.paymentIntent?.status === 'succeeded' ||
+          result.paymentIntent?.status === 'processing';
+      }
 
       if (confirmError) {
         setCardError(
@@ -133,10 +154,7 @@ function CardPaymentFormInner({
         return;
       }
 
-      if (
-        paymentIntent?.status !== 'succeeded' &&
-        paymentIntent?.status !== 'processing'
-      ) {
+      if (!isOk) {
         setCardError('Payment was not completed. Please try again.');
         setSubmitting(false);
         return;

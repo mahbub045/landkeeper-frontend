@@ -7,9 +7,11 @@ import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlan
 interface PricingPlanPaymentDialogProps {
   selectedPlan: PricingPlan | null;
   onOpenChange: (open: boolean) => void;
-  // Resolves with the PaymentIntent client_secret returned by the backend
+  // Resolves with the client_secret (and its mode) returned by the backend
   // after the subscription/plan-select call.
-  onPaymentMethod: (paymentMethodId: string) => Promise<{ clientSecret: string }>;
+  onPaymentMethod: (
+    paymentMethodId: string,
+  ) => Promise<{ clientSecret: string; mode?: 'payment' | 'setup' }>;
   // Fired once Stripe has actually confirmed the PaymentIntent succeeded.
   onConfirmed: () => Promise<void> | void;
   onCancel: () => void;

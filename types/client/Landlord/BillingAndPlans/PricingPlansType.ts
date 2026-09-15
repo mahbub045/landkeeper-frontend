@@ -29,4 +29,5 @@ export type SelectPricingPlanRequest = {
 export interface SelectPricingPlanResponse {
   redirect_url: string;
   client_secret: string;
+  mode: 'payment' | 'setup';
 }
