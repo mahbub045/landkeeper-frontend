@@ -27,6 +27,7 @@ export interface SubscriptionDetails {
   next_billing_date: string | null;
   auto_renew: boolean;
   cancelled_at: string | null;
+  trial_days_left: number | null;
 }
 
 export interface BillingHistoryItem {

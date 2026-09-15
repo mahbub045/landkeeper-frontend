@@ -463,31 +463,38 @@ const AppSidebar: React.FC = () => {
           />
         </div>
 
-        {sidebarLocked ? (
-          <Link
-            href='/client/landlord/billing-and-plans/billing'
-            className='group-data-[collapsible=icon]:hidden'
-          >
-            <Badge
-              variant='destructive'
-              className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
-            >
-              Subscribe to unlock
-            </Badge>
-          </Link>
-        ) : (
-          <Badge
-            variant='secondary'
-            className={
-              pricingPlanBadgeStyles[
-                profileData?.plan as keyof typeof pricingPlanBadgeStyles
-              ] ||
-              'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-            }
-          >
-            {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'} Plan
-          </Badge>
-        )}
+        <div className='group-data-[collapsible=icon]:hidden'>
+          {sidebarLocked ? (
+            <Link href='/client/landlord/billing-and-plans/billing'>
+              <Badge
+                variant='destructive'
+                className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
+              >
+                Subscribe to unlock
+              </Badge>
+            </Link>
+          ) : (
+            <div className='flex gap-1 items-center'>
+              <Badge
+                variant='secondary'
+                className={
+                  pricingPlanBadgeStyles[
+                    profileData?.plan as keyof typeof pricingPlanBadgeStyles
+                  ] ||
+                  'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                }
+              >
+                {formatChoiceFieldValue(profileData?.plan) || 'Unknown Plan'}{' '}
+                Plan
+              </Badge>
+              {profileData?.subscription_status === 'TRIALING' && (
+                <small className='text-danger text-xs'>
+                  {profileData?.trial_days_left ?? 0} days left in trial
+                </small>
+              )}
+            </div>
+          )}
+        </div>
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />

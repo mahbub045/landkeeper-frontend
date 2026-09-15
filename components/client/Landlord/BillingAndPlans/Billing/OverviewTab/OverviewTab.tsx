@@ -115,20 +115,28 @@ export default function OverviewTab() {
               />
               <span className='text-sm font-semibold'>Current plan</span>
             </div>
-            <span
-              className={
-                'border-border/70 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ' +
-                statusBgStyles[subscription.status]
-              }
-            >
+
+            <div className='flex flex-col items-center gap-1'>
               <span
-                className={cn(
-                  'size-1.5 rounded-full',
-                  statusDotStyles[subscription.status],
-                )}
-              />
-              {formatChoiceFieldValue(subscription.status)}
-            </span>
+                className={
+                  'border-border/70 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ' +
+                  statusBgStyles[subscription.status]
+                }
+              >
+                <span
+                  className={cn(
+                    'size-1.5 rounded-full',
+                    statusDotStyles[subscription.status],
+                  )}
+                />
+                {formatChoiceFieldValue(subscription.status)}
+              </span>
+              {subscription.status === 'TRIALING' && (
+                <span className='text-danger text-xs'>
+                  {subscription.trial_days_left ?? 0} days left in trial
+                </span>
+              )}
+            </div>
           </div>
 
           <div className='mt-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-1'>
