@@ -7,11 +7,13 @@ import {
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
-import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import {
+  PricingPlan,
+  SelectPricingPlanResponse,
+} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
 import { ArrowRight, Check, LoaderCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import PricingPlanPaymentDialog from './PricingPlanPaymentDialog';
@@ -19,11 +21,14 @@ import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
 
 const PricingPlansCard: React.FC = () => {
   const { update } = useSession();
-  const router = useRouter();
   const [selectPricingPlan, { isLoading: isSelectingPlan }] =
     useSelectPricingPlanMutation();
   const [selectedPlanType, setSelectedPlanType] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+  const [pendingPayment, setPendingPayment] = useState<Pick<
+    SelectPricingPlanResponse,
+    'client_secret' | 'mode'
+  > | null>(null);
   const [expandedPlans, setExpandedPlans] = useState<Record<string, boolean>>(
     {},
   );
@@ -34,62 +39,104 @@ const PricingPlansCard: React.FC = () => {
     isError,
   } = useGetPricingPlansQuery(undefined);
 
-  const handleSelectPlan = async (plan: PricingPlan) => {
-    setSelectedPlan(plan);
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    const errorData =
+      error && typeof error === 'object' && 'data' in error
+        ? (error as { data?: unknown }).data
+        : null;
+    const errorMessage =
+      errorData && typeof errorData === 'object'
+        ? (errorData as { detail?: string; message?: string }).detail ||
+          (errorData as { detail?: string; message?: string }).message
+        : null;
+
+    return (
+      errorMessage ||
+      (error instanceof Error ? error.message : null) ||
+      fallback
+    );
   };
 
-  // Step A: hits /subscription/plans/select. The backend creates the
-  // subscription in an "incomplete" state and returns a PaymentIntent
-  // client_secret, which CardPaymentForm uses to confirm the card payment.
+  // Hits /subscription/plans/select. If the backend returns a client_secret,
+  // a payment/setup confirmation is required, so we open the Stripe dialog
+  // to collect a card. If it doesn't (e.g. a downgrade/upgrade with nothing
+  // due now), the plan change is already complete and no Stripe UI is needed.
+  const handleSelectPlan = async (plan: PricingPlan) => {
+    setSelectedPlanType(plan.alias);
+
+    try {
+      const response = await selectPricingPlan({
+        payload: {
+          plan_id: plan.alias,
+        },
+      }).unwrap();
+
+      if (!response?.client_secret) {
+        let successMessage = response?.message;
+
+        if (!successMessage) {
+          const currentPlan = pricingPlans?.results?.find(
+            (p: PricingPlan) => p.current_plan,
+          );
+          const isUpgrade =
+            currentPlan &&
+            Number(plan.monthly_price) > Number(currentPlan.monthly_price);
+          const isDowngrade =
+            currentPlan &&
+            Number(plan.monthly_price) < Number(currentPlan.monthly_price);
+
+          successMessage = isUpgrade
+            ? 'Plan upgraded successfully!'
+            : isDowngrade
+              ? 'Plan downgraded successfully!'
+              : 'Plan updated successfully!';
+        }
+
+        await handlePaymentConfirmed(`${successMessage} Redirecting...`);
+        return;
+      }
+
+      // Payment/setup confirmation is required — open the Stripe dialog with
+      // the secret we already have so CardPaymentForm doesn't have to ask
+      // the backend again.
+      setPendingPayment({
+        client_secret: response.client_secret,
+        mode: response.mode,
+      });
+      setSelectedPlan(plan);
+    } catch (error: unknown) {
+      console.error('Failed to select plan:', error);
+      toast.error(
+        getErrorMessage(error, 'Could not change plan. Please try again.'),
+      );
+      setSelectedPlanType(null);
+    }
+  };
+
+  // Step A: called from CardPaymentForm once Stripe has created a
+  // PaymentMethod. Returns the client_secret obtained by handleSelectPlan so
+  // CardPaymentForm can confirm the card payment.
   // NOTE: this does NOT mean the subscription is active yet — that only
   // happens once Stripe confirms the PaymentIntent (see handlePaymentConfirmed).
   const handlePaymentMethod = async (
     paymentMethodId: string,
   ): Promise<{ clientSecret: string; mode?: 'payment' | 'setup' }> => {
-    if (!selectedPlan) {
+    if (!selectedPlan || !pendingPayment?.client_secret) {
       throw new Error('No plan selected.');
     }
 
-    setSelectedPlanType(selectedPlan.alias);
-
-    try {
-      const response = await selectPricingPlan({
-        payload: {
-          plan_id: selectedPlan.alias,
-        },
-      }).unwrap();
-
-      if (!response?.client_secret) {
-        throw new Error('Could not start payment. Please try again.');
-      }
-
-      return { clientSecret: response.client_secret, mode: response.mode };
-    } catch (error: unknown) {
-      console.error('Failed to start subscription payment:', error);
-
-      const errorData =
-        error && typeof error === 'object' && 'data' in error
-          ? (error as { data?: unknown }).data
-          : null;
-      const errorMessage =
-        errorData && typeof errorData === 'object'
-          ? (errorData as { detail?: string; message?: string }).detail ||
-            (errorData as { detail?: string; message?: string }).message
-          : null;
-
-      const message =
-        errorMessage ||
-        (error instanceof Error ? error.message : null) ||
-        'Could not start payment. Please try again.';
-
-      toast.error(message);
-      setSelectedPlanType(null);
-      throw new Error(message);
-    }
+    return {
+      clientSecret: pendingPayment.client_secret,
+      mode: pendingPayment.mode,
+    };
   };
 
-  // Step B: only called once Stripe has actually confirmed the PaymentIntent.
-  const handlePaymentConfirmed = async () => {
+  // Step B: called once the plan change is actually finalized — either
+  // Stripe has confirmed the PaymentIntent, or no payment confirmation was
+  // needed at all (e.g. a downgrade/upgrade with nothing due now).
+  const handlePaymentConfirmed = async (
+    successMessage = 'Subscription started successfully! Redirecting...',
+  ) => {
     try {
       // Sync has_subscription into the JWT/session so any subscription-gated
       // pages, layouts, or middleware see the up-to-date value immediately.
@@ -100,11 +147,16 @@ const PricingPlansCard: React.FC = () => {
       console.error('Failed to sync session after payment:', error);
     }
 
-    toast.success('Subscription started successfully! Redirecting...');
+    toast.success(successMessage);
     setSelectedPlan(null);
     setSelectedPlanType(null);
+    setPendingPayment(null);
 
-    window.location.href = '/client/landlord/billing-and-plans/billing';
+    // Give the toast a moment to render before the full-page navigation
+    // unmounts everything.
+    setTimeout(() => {
+      window.location.href = '/client/landlord/billing-and-plans/billing';
+    }, 1500);
   };
 
   const toggleFeatures = (alias: string) => {
@@ -259,7 +311,7 @@ const PricingPlansCard: React.FC = () => {
                   {isSelectingPlan && selectedPlanType === plan.alias ? (
                     <>
                       <LoaderCircle className='animate-spin' />
-                      Opening checkout...
+                      Processing...
                     </>
                   ) : (
                     <>
@@ -280,13 +332,15 @@ const PricingPlansCard: React.FC = () => {
           if (!open && !isSelectingPlan) {
             setSelectedPlan(null);
             setSelectedPlanType(null);
+            setPendingPayment(null);
           }
         }}
         onPaymentMethod={handlePaymentMethod}
-        onConfirmed={handlePaymentConfirmed}
+        onConfirmed={() => handlePaymentConfirmed()}
         onCancel={() => {
           setSelectedPlan(null);
           setSelectedPlanType(null);
+          setPendingPayment(null);
         }}
       />
     </>
