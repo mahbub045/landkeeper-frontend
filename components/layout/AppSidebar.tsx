@@ -443,8 +443,8 @@ const AppSidebar: React.FC = () => {
 
   return (
     <Sidebar collapsible='icon'>
-      <SidebarHeader className='gap-0 px-4 py-4 group-data-[collapsible=icon]:px-2'>
-        <div className='flex items-center gap-2 group-data-[collapsible=icon]:hidden'>
+      <SidebarHeader className='gap-0 px-4 py-3 group-data-[collapsible=icon]:px-2'>
+        <div className='flex items-center gap-1 group-data-[collapsible=icon]:hidden'>
           <Image
             src='/images/logo-black.png'
             alt='Landkeeper'
