@@ -18,7 +18,11 @@ import {
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { FilterTab, Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { useGetCommonPermissionsQuery } from '@/store/api/endpoints/common/Permissions/CommonPermissionsApi';
+import {
+  FilterTab,
+  Property,
+} from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
@@ -57,6 +61,7 @@ const Properties: React.FC = () => {
   };
 
   const { data, isLoading, isError } = useGetPropertiesQuery(queryParams);
+  const { data: commonPermissions } = useGetCommonPermissionsQuery(undefined);
 
   const properties: Property[] = data?.results ?? [];
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
@@ -112,12 +117,13 @@ const Properties: React.FC = () => {
             <HoverInfoPopover text='You can search using Property Name and Address.' />
           </div>
 
-          {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
-            <Button onClick={() => setModalOpen(true)}>
-              <Plus />
-              Add Property
-            </Button>
-          )}
+          {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) &&
+            commonPermissions?.can_create_property && (
+              <Button onClick={() => setModalOpen(true)}>
+                <Plus />
+                Add Property
+              </Button>
+            )}
         </div>
       </div>
 

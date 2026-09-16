@@ -22,6 +22,7 @@ export const TAG_TYPES = [
   'SupportTicketComments',
   'NewJourney',
   'Permissions',
+  'CommonPermissions',
 
   // Common Tags
   'Property',
