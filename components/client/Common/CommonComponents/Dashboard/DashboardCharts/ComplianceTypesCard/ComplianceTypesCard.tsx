@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   COMPLIANCE_TYPE_COLORS,
   FALLBACK_COLOR,
-} from '@/data/client/Landlord/dashboard/DashboardData';
-import { useGetDashboardComplianceTypesQuery } from '@/store/api/endpoints/client/Landlord/Dashboard/DashboardApi';
+} from '@/data/client/common/Dashboard/DashboardData';
+import { useGetDashboardComplianceTypesQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
 import { Activity, PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import ComplianceTypesCardSkeleton from './ComplianceTypesCardSkeleton';

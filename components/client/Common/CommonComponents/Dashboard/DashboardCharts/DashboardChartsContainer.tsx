@@ -3,7 +3,7 @@ import ComplianceTypesCard from './ComplianceTypesCard/ComplianceTypesCard';
 import IncomeExpensesChart from './IncomeExpensesChart/IncomeExpensesChart';
 import PropertyTypesChart from './PropertyTypesChart/PropertyTypesChart';
 
-const LandlordChartsContainer: React.FC = () => {
+const DashboardChartsContainer: React.FC = () => {
   return (
     <div className='grid grid-cols-1 gap-4 xl:grid-cols-2'>
       <IncomeExpensesChart />
@@ -14,4 +14,4 @@ const LandlordChartsContainer: React.FC = () => {
   );
 };
 
-export default LandlordChartsContainer;
+export default DashboardChartsContainer;

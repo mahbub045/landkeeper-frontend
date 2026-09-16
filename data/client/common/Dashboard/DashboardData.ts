@@ -1,7 +1,7 @@
 import {
   AlertItem,
   BadgeVariant,
-} from '@/types/client/Landlord/Dashboard/DashboardTypes';
+} from '@/types/client/Common/Dashboard/DashboardTypes';
 import { AlertCircle, Clock, FileText, RefreshCw } from 'lucide-react';
 
 export const badgeStyles: Record<BadgeVariant, string> = {

@@ -2,12 +2,13 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { useGetDashboardSummaryQuery } from '@/store/api/endpoints/client/Landlord/Dashboard/DashboardApi';
+import { badgeStyles } from '@/data/client/common/Dashboard/DashboardData';
+import { useGetDashboardSummaryQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
 import {
   BadgeVariant,
   DashboardData,
   StatCard,
-} from '@/types/client/Landlord/Dashboard/DashboardTypes';
+} from '@/types/client/Common/Dashboard/DashboardTypes';
 import {
   Home,
   Landmark,
@@ -16,10 +17,7 @@ import {
   TriangleAlert,
   Users,
 } from 'lucide-react';
-import LandlordStatsSkeleton from './LandlordStatsSkeleton';
-import { badgeStyles } from '@/data/client/Landlord/dashboard/DashboardData';
-
-
+import DashboardStatsSkeleton from './DashboardStatsSkeleton';
 
 const buildStats = (summary: DashboardData): StatCard[] => {
   const profitMargin =
@@ -82,7 +80,7 @@ const buildStats = (summary: DashboardData): StatCard[] => {
   ];
 };
 
-const LandlordStatsContainer: React.FC = () => {
+const DashboardStatsContainer: React.FC = () => {
   const {
     data: dashboardSummary,
     isLoading,
@@ -90,7 +88,7 @@ const LandlordStatsContainer: React.FC = () => {
   } = useGetDashboardSummaryQuery();
 
   if (isLoading) {
-    return <LandlordStatsSkeleton />;
+    return <DashboardStatsSkeleton />;
   }
 
   if (isError || !dashboardSummary) {
@@ -140,4 +138,4 @@ const LandlordStatsContainer: React.FC = () => {
   );
 };
 
-export default LandlordStatsContainer;
+export default DashboardStatsContainer;

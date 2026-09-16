@@ -3,25 +3,25 @@ import {
   ComplianceTypesResponse,
   DashboardData,
   PropertyTypesResponse,
-} from '@/types/client/Landlord/Dashboard/DashboardTypes';
+} from '@/types/client/Common/Dashboard/DashboardTypes';
 
 export const DashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDashboardSummary: builder.query<DashboardData, void>({
       query: () => ({
-        url: '/dashboard/landlord/summary',
+        url: '/dashboard/summary',
         method: 'GET',
       }),
     }),
     getDashboardPropertyTypes: builder.query<PropertyTypesResponse, void>({
       query: () => ({
-        url: '/dashboard/landlord/property-types',
+        url: '/dashboard/property-types',
         method: 'GET',
       }),
     }),
     getDashboardComplianceTypes: builder.query<ComplianceTypesResponse, void>({
       query: () => ({
-        url: '/dashboard/landlord/compliance-types',
+        url: '/dashboard/compliance-types',
         method: 'GET',
       }),
     }),

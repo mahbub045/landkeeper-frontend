@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { alerts } from '@/data/client/Landlord/dashboard/DashboardData';
+import { alerts } from '@/data/client/common/Dashboard/DashboardData';
 import { Bell } from 'lucide-react';
 
 const AlertsReminders: React.FC = () => {

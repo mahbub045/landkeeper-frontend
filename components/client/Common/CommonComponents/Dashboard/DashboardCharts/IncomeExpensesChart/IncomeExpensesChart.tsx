@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { incomeExpensesData } from '@/data/client/Landlord/dashboard/DashboardData';
+import { incomeExpensesData } from '@/data/client/common/Dashboard/DashboardData';
 import { BarChart2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useSyncExternalStore } from 'react';
