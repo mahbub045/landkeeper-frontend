@@ -32,3 +32,42 @@ export interface StatCard {
     variant: BadgeVariant;
   };
 }
+
+export interface DashboardData {
+  properties: {
+    total: number;
+    occupied: number;
+    vacant: number;
+    under_maintenance: number;
+  };
+  tenants: {
+    total: number;
+    active: number;
+    inactive: number;
+  };
+  financial: {
+    monthly_rental_income: string;
+    mortgage_outstanding: string;
+    monthly_mortgage_payment: string;
+    current_month_income: string;
+    current_month_expense: string;
+    current_month_net: string;
+  };
+  compliance: {
+    total: number;
+    expired: number;
+    expiring_soon: number;
+  };
+  documents: {
+    total: number;
+  };
+  subscription: {
+    plan: string;
+    status: string;
+    current_period_end: string;
+  };
+  support: {
+    open: number;
+    in_progress: number;
+  };
+}
