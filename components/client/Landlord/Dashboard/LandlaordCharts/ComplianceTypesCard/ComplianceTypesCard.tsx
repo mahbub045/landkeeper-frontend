@@ -11,6 +11,23 @@ import { Activity, PieChartIcon } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import ComplianceTypesCardSkeleton from './ComplianceTypesCardSkeleton';
 
+const shadeColor = (hex: string, percent: number) => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(
+    255,
+    Math.max(0, ((num >> 16) & 0xff) + Math.round(2.55 * percent)),
+  );
+  const g = Math.min(
+    255,
+    Math.max(0, ((num >> 8) & 0xff) + Math.round(2.55 * percent)),
+  );
+  const b = Math.min(
+    255,
+    Math.max(0, (num & 0xff) + Math.round(2.55 * percent)),
+  );
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
 const ComplianceTypesCard: React.FC = () => {
   const {
     data: complianceTypesData,
@@ -49,23 +66,58 @@ const ComplianceTypesCard: React.FC = () => {
         <CardContent className='flex flex-col items-center pb-6'>
           <ResponsiveContainer width='100%' height={240}>
             <PieChart>
+              <defs>
+                {data.map((entry) => {
+                  const base =
+                    COMPLIANCE_TYPE_COLORS[entry.type] ?? FALLBACK_COLOR;
+                  return (
+                    <linearGradient
+                      key={`grad-${entry.type}`}
+                      id={`grad-${entry.type}`}
+                      x1='0%'
+                      y1='0%'
+                      x2='100%'
+                      y2='100%'
+                    >
+                      <stop offset='0%' stopColor={shadeColor(base, 25)} />
+                      <stop offset='55%' stopColor={base} />
+                      <stop offset='100%' stopColor={shadeColor(base, -25)} />
+                    </linearGradient>
+                  );
+                })}
+                <filter
+                  id='pie3dShadow'
+                  x='-20%'
+                  y='-20%'
+                  width='140%'
+                  height='150%'
+                >
+                  <feDropShadow
+                    dx='0'
+                    dy='14'
+                    stdDeviation='7'
+                    floodColor='#000000'
+                    floodOpacity='0.35'
+                  />
+                </filter>
+              </defs>
               <Pie
                 data={data}
                 cx='50%'
                 cy='50%'
-                innerRadius={70}
+                innerRadius={0}
                 outerRadius={110}
                 paddingAngle={2}
                 dataKey='percentage'
                 nameKey='label'
                 startAngle={90}
                 endAngle={-270}
+                stroke='#fff'
+                strokeWidth={1}
+                filter='url(#pie3dShadow)'
               >
                 {data.map((entry) => (
-                  <Cell
-                    key={entry.type}
-                    fill={COMPLIANCE_TYPE_COLORS[entry.type] ?? FALLBACK_COLOR}
-                  />
+                  <Cell key={entry.type} fill={`url(#grad-${entry.type})`} />
                 ))}
               </Pie>
             </PieChart>

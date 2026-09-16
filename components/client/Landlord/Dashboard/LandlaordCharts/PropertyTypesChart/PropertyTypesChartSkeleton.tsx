@@ -13,7 +13,7 @@ export default function PropertyTypesChartSkeleton() {
         </div>
       </CardHeader>
       <CardContent className='flex flex-col items-center pb-6'>
-        <div className='bg-muted size-[240px] animate-pulse rounded-full' />
+        <div className='bg-muted size-60 animate-pulse rounded-full' />
         <div className='mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2'>
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className='flex items-center gap-1.5'>
