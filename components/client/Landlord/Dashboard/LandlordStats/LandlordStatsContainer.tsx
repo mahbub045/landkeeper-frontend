@@ -17,13 +17,9 @@ import {
   Users,
 } from 'lucide-react';
 import LandlordStatsSkeleton from './LandlordStatsSkeleton';
+import { badgeStyles } from '@/data/client/Landlord/dashboard/DashboardData';
 
-const badgeStyles: Record<BadgeVariant, string> = {
-  up: 'bg-success/15 text-success border-transparent',
-  down: 'bg-danger/15 text-danger border-transparent',
-  alert:
-    'bg-transparent text-foreground border-transparent font-semibold text-sm shadow-none',
-};
+
 
 const buildStats = (summary: DashboardData): StatCard[] => {
   const profitMargin =

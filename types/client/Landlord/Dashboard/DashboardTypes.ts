@@ -33,6 +33,18 @@ export interface StatCard {
   };
 }
 
+export interface PropertyTypeItem {
+  type: string;
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface PropertyTypesResponse {
+  total: number;
+  data: PropertyTypeItem[];
+}
+
 export interface DashboardData {
   properties: {
     total: number;

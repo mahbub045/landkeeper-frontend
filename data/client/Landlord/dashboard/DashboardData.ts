@@ -1,6 +1,7 @@
 import {
   ActivityItem,
   AlertItem,
+  BadgeVariant,
 } from '@/types/client/Landlord/Dashboard/DashboardTypes';
 import {
   AlertCircle,
@@ -12,6 +13,26 @@ import {
   UserPlus,
   Wrench,
 } from 'lucide-react';
+
+export const badgeStyles: Record<BadgeVariant, string> = {
+  up: 'bg-success/15 text-success border-transparent',
+  down: 'bg-danger/15 text-danger border-transparent',
+  alert:
+    'bg-transparent text-foreground border-transparent font-semibold text-sm shadow-none',
+};
+
+export const PROPERTY_TYPE_COLORS: Record<string, string> = {
+  RESIDENTIAL: '#4f6ef7',
+  HMO: '#f59e0b',
+  COMMERCIAL: '#a78bfa',
+  BUNGALOW: '#22c55e',
+  HOUSE: '#ec4899',
+  FLAT: '#06b6d4',
+  MAISONETTE: '#f97316',
+  HOLIDAY_LET: '#14b8a6',
+};
+
+export const FALLBACK_COLOR = '#94a3b8';
 
 export const activities: ActivityItem[] = [
   {
@@ -102,10 +123,4 @@ export const incomeExpensesData = [
   { month: 'Apr', income: 4150, expenses: 1600 },
   { month: 'May', income: 4250, expenses: 1560 },
   { month: 'Jun', income: 4200, expenses: 1510 },
-];
-
-export const portfolioData = [
-  { name: 'Residential', value: 55, color: '#4f6ef7' },
-  { name: 'HMO', value: 25, color: '#f59e0b' },
-  { name: 'Commercial', value: 20, color: '#a78bfa' },
 ];
