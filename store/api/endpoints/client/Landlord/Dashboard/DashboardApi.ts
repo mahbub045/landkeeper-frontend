@@ -1,5 +1,6 @@
 import { baseApi } from '@/store/api/baseApi';
 import {
+  ComplianceTypesResponse,
   DashboardData,
   PropertyTypesResponse,
 } from '@/types/client/Landlord/Dashboard/DashboardTypes';
@@ -18,9 +19,9 @@ export const DashboardApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
-    getDashboardComplianceTypes: builder.query({
+    getDashboardComplianceTypes: builder.query<ComplianceTypesResponse, void>({
       query: () => ({
-        url: '/dashboard/landlord/compliance-type',
+        url: '/dashboard/landlord/compliance-types',
         method: 'GET',
       }),
     }),

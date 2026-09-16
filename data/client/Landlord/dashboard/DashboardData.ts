@@ -1,18 +1,8 @@
 import {
-  ActivityItem,
   AlertItem,
   BadgeVariant,
 } from '@/types/client/Landlord/Dashboard/DashboardTypes';
-import {
-  AlertCircle,
-  Clock,
-  FileText,
-  PoundSterling,
-  RefreshCw,
-  Upload,
-  UserPlus,
-  Wrench,
-} from 'lucide-react';
+import { AlertCircle, Clock, FileText, RefreshCw } from 'lucide-react';
 
 export const badgeStyles: Record<BadgeVariant, string> = {
   up: 'bg-success/15 text-success border-transparent',
@@ -34,52 +24,16 @@ export const PROPERTY_TYPE_COLORS: Record<string, string> = {
 
 export const FALLBACK_COLOR = '#94a3b8';
 
-export const activities: ActivityItem[] = [
-  {
-    id: 1,
-    icon: Upload,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-    iconColor: 'text-blue-500',
-    accentColor: 'bg-blue-500',
-    title: 'Document Uploaded',
-    titleColor: 'text-blue-600 dark:text-blue-400',
-    subtitle: 'Tenancy Agreement · 14 Oak Street',
-    time: '2 hours ago',
-  },
-  {
-    id: 2,
-    icon: PoundSterling,
-    iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
-    iconColor: 'text-emerald-500',
-    accentColor: 'bg-emerald-500',
-    title: 'Rent Received',
-    titleColor: 'text-emerald-600 dark:text-emerald-400',
-    subtitle: '£850 from Sarah Johnson · 14 Oak Street',
-    time: '5 hours ago',
-  },
-  {
-    id: 3,
-    icon: Wrench,
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
-    iconColor: 'text-amber-500',
-    accentColor: 'bg-amber-500',
-    title: 'Maintenance Request',
-    titleColor: 'text-amber-600 dark:text-amber-400',
-    subtitle: 'Plumbing issue reported · 42 Maple Avenue',
-    time: '1 day ago',
-  },
-  {
-    id: 4,
-    icon: UserPlus,
-    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
-    iconColor: 'text-purple-500',
-    accentColor: 'bg-purple-500',
-    title: 'New Tenant Added',
-    titleColor: 'text-purple-600 dark:text-purple-400',
-    subtitle: 'Michael Brown · 8 Pine Road',
-    time: '2 days ago',
-  },
-];
+export const COMPLIANCE_TYPE_COLORS: Record<string, string> = {
+  GAS_SAFETY_CERTIFICATE: '#4f6ef7',
+  EPC_CERTIFICATE: '#f59e0b',
+  ELECTRICAL_SAFETY_CERTIFICATE: '#a78bfa',
+  FIRE_RISK_ASSESSMENT: '#ef4444',
+  HMO_LICENCE: '#f97316',
+  PAT_TESTING: '#8b5cf6',
+  LEGIONELLA_ASSESSMENT: '#22c55e',
+  INSURANCE_DOCUMENT: '#06b6d4',
+};
 
 export const alerts: AlertItem[] = [
   {

@@ -45,6 +45,18 @@ export interface PropertyTypesResponse {
   data: PropertyTypeItem[];
 }
 
+export interface ComplianceTypeItem {
+  type: string;
+  label: string;
+  count: number;
+  percentage: number;
+}
+
+export interface ComplianceTypesResponse {
+  total: number;
+  data: ComplianceTypeItem[];
+}
+
 export interface DashboardData {
   properties: {
     total: number;

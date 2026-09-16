@@ -1,7 +1,7 @@
 import AlertsReminders from './AlertsReminders/AlertsReminders';
+import ComplianceTypesCard from './ComplianceTypesCard/ComplianceTypesCard';
 import IncomeExpensesChart from './IncomeExpensesChart/IncomeExpensesChart';
 import PropertyTypesChart from './PropertyTypesChart/PropertyTypesChart';
-import RecentActivity from './RecentActivity/RecentActivity';
 
 const LandlordChartsContainer: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const LandlordChartsContainer: React.FC = () => {
       <IncomeExpensesChart />
       <AlertsReminders />
       <PropertyTypesChart />
-      <RecentActivity />
+      <ComplianceTypesCard />
     </div>
   );
 };
