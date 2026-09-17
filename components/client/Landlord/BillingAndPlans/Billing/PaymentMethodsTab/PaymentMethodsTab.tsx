@@ -35,8 +35,8 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import CardBrandLogo from '../../../../../../data/common/CardBrandLogo';
 import AddPaymentMethodDialog from './AddPaymentMethodDialog';
-import CardBrandLogo from './CardBrandLogo';
 
 export default function PaymentMethodsTab() {
   const { data: paymentMethodsData, isLoading } =

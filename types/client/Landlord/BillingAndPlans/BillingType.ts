@@ -39,6 +39,8 @@ export interface BillingHistoryItem {
   attempt_number: number;
   created_at: string;
   invoice_pdf_url: string;
+  card_brand?: string;
+  last_four?: string;
 }
 
 export interface BillingHistoryResponse {

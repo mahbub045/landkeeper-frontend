@@ -20,6 +20,8 @@ import formatChoiceFieldValue, {
 } from '@/utils/formatters';
 import { Receipt } from 'lucide-react';
 import { useState } from 'react';
+import CardBrandLogo from '@/data/common/CardBrandLogo';
+import { cardBrandLabels } from '@/data/client/Landlord/BillingAndPlans/BillingData';
 
 export const statusDotStyles: Record<string, string> = {
   PENDING: 'bg-amber-500',
@@ -124,6 +126,7 @@ export default function BillingHistoryTab() {
                   <th className='px-4 py-3 text-left'>Date</th>
                   <th className='px-4 py-3 text-center'>Plan</th>
                   <th className='px-4 py-3 text-center'>Amount</th>
+                  <th className='px-4 py-3 text-center'>Payment method</th>
                   <th className='px-4 py-3 text-center'>Status</th>
                   {/* <th className='px-4 py-3 text-center'>Invoice</th> */}
                 </tr>
@@ -143,6 +146,24 @@ export default function BillingHistoryTab() {
                     <td className='px-4 py-3 text-center font-medium whitespace-nowrap'>
                       {getCurrencySign()}
                       {invoice.amount}
+                    </td>
+                    <td className='px-4 py-3 text-center'>
+                      {invoice.card_brand && invoice.last_four ? (
+                        <div className='flex items-center justify-center gap-2'>
+                          <CardBrandLogo
+                            brand={invoice.card_brand}
+                            className='flex size-6 shrink-0 items-center justify-center'
+                          />
+                          <span className='text-muted-foreground whitespace-nowrap'>
+                            {cardBrandLabels[
+                              invoice.card_brand.toLowerCase()
+                            ] ?? invoice.card_brand}{' '}
+                            •••• {invoice.last_four}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className='text-muted-foreground'>—</span>
+                      )}
                     </td>
                     <td className='px-4 py-3 text-center'>
                       <span
