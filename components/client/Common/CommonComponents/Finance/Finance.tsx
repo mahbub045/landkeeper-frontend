@@ -1,9 +1,6 @@
 'use client';
 
-
-import CategoryChart from './Charts/CategoryChart';
-import MonthlyChart from './Charts/MonthlyChart';
-import StatCards from './StatCards/StatCards';
+import FinanceSummary from './FinanceSummary/FinanceSummary';
 import TransactionList from './TransactionList/TransactionList';
 
 const Finance: React.FC = () => {
@@ -18,12 +15,7 @@ const Finance: React.FC = () => {
         </p>
       </div>
 
-      <StatCards />
-
-      <div className='grid grid-cols-1 gap-5 lg:grid-cols-[1.3fr_1fr]'>
-        <MonthlyChart />
-        <CategoryChart />
-      </div>
+      <FinanceSummary />
 
       <TransactionList />
     </div>
