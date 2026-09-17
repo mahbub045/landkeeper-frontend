@@ -1,15 +1,6 @@
 'use client';
 
 import Loading from '@/components/common/CustomLoader/Loading';
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -32,12 +23,12 @@ import {
   Plus,
   Star,
   Trash2,
-  TriangleAlert,
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import CardBrandLogo from '../../../../../../data/common/CardBrandLogo';
-import AddPaymentMethodDialog from './AddPaymentMethodDialog';
+import AddPaymentMethodDialog from './Dialogs/AddPaymentMethodDialog';
+import DeleteCardDialog from './Dialogs/DeleteCardDialog';
 
 export default function PaymentMethodsTab() {
   const { data: paymentMethodsData, isLoading } =
@@ -221,57 +212,14 @@ export default function PaymentMethodsTab() {
         </ul>
       )}
 
-      <AlertDialog
-        open={cardToDelete !== null}
+      <DeleteCardDialog
+        cardToDelete={cardToDelete}
         onOpenChange={(open) => {
           if (!open) setCardToDelete(null);
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove this card?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {cardToDelete && (
-                <>
-                  {cardBrandLabels[cardToDelete.card_brand.toLowerCase()] ??
-                    cardToDelete.card_brand}{' '}
-                  ending in{' '}
-                  <span className='text-primary font-semibold'>
-                    {cardToDelete.last_four}
-                  </span>{' '}
-                  will no longer be available for future payments.
-                </>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          {cardToDelete?.is_default && (
-            <div className='border-danger/20 bg-danger/10 text-danger flex gap-2 rounded-lg border p-3 text-sm'>
-              <TriangleAlert
-                className='mt-0.5 size-4 shrink-0'
-                aria-hidden='true'
-              />
-              <span>
-                This is your default payment method. If you have an active
-                subscription, removing it may cause future payments to fail
-                unless you set another card as default first.
-              </span>
-            </div>
-          )}
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button variant='destructive' onClick={handleConfirmDelete}>
-              {isDeletePending ? (
-                <Loading className='text-danger! size-4' />
-              ) : (
-                <Trash2 className='size-4' aria-hidden='true' />
-              )}
-              Remove card
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onConfirm={handleConfirmDelete}
+        isDeletePending={isDeletePending}
+      />
 
       <AddPaymentMethodDialog
         open={addCardOpen}
