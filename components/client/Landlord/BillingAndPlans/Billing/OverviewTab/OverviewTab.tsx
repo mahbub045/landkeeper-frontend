@@ -12,7 +12,7 @@ import {
   SubscriptionFeature,
   SubscriptionStatus,
 } from '@/types/client/Landlord/BillingAndPlans/BillingType';
-import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { CalendarDays, CreditCard, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -224,7 +224,7 @@ export default function OverviewTab() {
                   <dt className='text-muted-foreground'>Start date</dt>
                   <dd className='font-medium'>
                     {subscription.start_date
-                      ? formatDate(subscription.start_date)
+                      ? formatDateAndTime(subscription.start_date)
                       : 'N/A'}
                   </dd>
                 </div>
@@ -232,7 +232,7 @@ export default function OverviewTab() {
                   <dt className='text-muted-foreground'>End date</dt>
                   <dd className='font-medium'>
                     {subscription.end_date
-                      ? formatDate(subscription.end_date)
+                      ? formatDateAndTime(subscription.end_date)
                       : 'N/A'}
                   </dd>
                 </div>
@@ -240,7 +240,7 @@ export default function OverviewTab() {
                   <dt className='text-muted-foreground'>Next billing</dt>
                   <dd className='font-medium'>
                     {subscription.next_billing_date
-                      ? formatDate(subscription.next_billing_date)
+                      ? formatDateAndTime(subscription.next_billing_date)
                       : 'N/A'}
                   </dd>
                 </div>

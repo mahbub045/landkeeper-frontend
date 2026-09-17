@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
@@ -12,7 +23,12 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import { ArrowRight, Check, LoaderCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  LoaderCircle,
+  TriangleAlert,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -31,6 +47,9 @@ const PricingPlansCard: React.FC = () => {
   > | null>(null);
   const [expandedPlans, setExpandedPlans] = useState<Record<string, boolean>>(
     {},
+  );
+  const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(
+    null,
   );
 
   const {
@@ -161,6 +180,31 @@ const PricingPlansCard: React.FC = () => {
 
   const toggleFeatures = (alias: string) => {
     setExpandedPlans((prev) => ({ ...prev, [alias]: !prev[alias] }));
+  };
+
+  const isDowngradePlan = (plan: PricingPlan) => {
+    const currentPlan = pricingPlans?.results?.find(
+      (p: PricingPlan) => p.current_plan,
+    );
+    return Boolean(
+      currentPlan &&
+        Number(plan.monthly_price) < Number(currentPlan.monthly_price),
+    );
+  };
+
+  const onChoosePlan = (plan: PricingPlan) => {
+    if (isDowngradePlan(plan)) {
+      setDowngradePlan(plan);
+      return;
+    }
+    handleSelectPlan(plan);
+  };
+
+  const confirmDowngrade = () => {
+    if (!downgradePlan) return;
+    const plan = downgradePlan;
+    setDowngradePlan(null);
+    handleSelectPlan(plan);
   };
 
   if (isLoading) {
@@ -306,7 +350,7 @@ const PricingPlansCard: React.FC = () => {
                   size='lg'
                   className='w-full'
                   disabled={isSelectingPlan || plan.current_plan === true}
-                  onClick={() => handleSelectPlan(plan)}
+                  onClick={() => onChoosePlan(plan)}
                 >
                   {isSelectingPlan && selectedPlanType === plan.alias ? (
                     <>
@@ -326,6 +370,55 @@ const PricingPlansCard: React.FC = () => {
           );
         })}
       </div>
+      <AlertDialog
+        open={!!downgradePlan}
+        onOpenChange={(open) => {
+          if (!open) setDowngradePlan(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogMedia className='bg-danger/10 text-danger'>
+              <TriangleAlert aria-hidden='true' />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Confirm plan downgrade</AlertDialogTitle>
+            <AlertDialogDescription>
+              This change takes effect immediately.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className='flex items-center justify-center gap-3 py-1 text-sm font-medium'>
+            <span className='text-muted-foreground rounded-full border px-3 py-1'>
+              {
+                pricingPlans?.results?.find(
+                  (p: PricingPlan) => p.current_plan,
+                )?.name
+              }
+            </span>
+            <ArrowRight
+              className='text-muted-foreground size-4 shrink-0'
+              aria-hidden='true'
+            />
+            <span className='bg-primary/10 text-primary rounded-full px-3 py-1'>
+              {downgradePlan?.name}
+            </span>
+          </div>
+
+          <div className='border-danger/20 bg-danger/10 text-danger rounded-lg border p-3 text-sm'>
+            You&apos;ve already paid for your current plan this billing
+            cycle — that payment won&apos;t be refunded.
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDowngradePlan(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDowngrade}>
+              Agreed
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <PricingPlanPaymentDialog
         selectedPlan={selectedPlan}
         onOpenChange={(open) => {
