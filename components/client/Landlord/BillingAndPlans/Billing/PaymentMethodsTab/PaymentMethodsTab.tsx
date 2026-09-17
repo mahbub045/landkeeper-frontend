@@ -206,6 +206,7 @@ export default function PaymentMethodsTab() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         variant='destructive'
+                        disabled={card.is_default}
                         onClick={() => setCardToDelete(card)}
                         className='cursor-pointer'
                       >
@@ -237,8 +238,6 @@ export default function PaymentMethodsTab() {
                     cardToDelete.card_brand}{' '}
                   ending in {cardToDelete.last_four} will no longer be available
                   for future payments.
-                  {cardToDelete.is_default &&
-                    ' This is your default payment method.'}
                 </>
               )}
             </AlertDialogDescription>
