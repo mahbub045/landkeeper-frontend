@@ -1,18 +1,10 @@
 'use client';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
+import {
+  pricingPlanBadgeStyles,
+  pricingPlanMeta,
+} from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useGetPricingPlansQuery,
@@ -23,17 +15,12 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import {
-  ArrowRight,
-  Building2,
-  Check,
-  LoaderCircle,
-  TriangleAlert,
-} from 'lucide-react';
+import { ArrowRight, Building2, Check, LoaderCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import PricingPlanPaymentDialog from './PricingPlanPaymentDialog';
+import PricingPlanDowngradeDialog from './Dialogs/PricingPlanDowngradeDialog';
+import PricingPlanPaymentDialog from './Dialogs/PricingPlanPaymentDialog';
 import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
 
 const PricingPlansCard: React.FC = () => {
@@ -279,7 +266,14 @@ const PricingPlansCard: React.FC = () => {
               </div>
 
               <div className='mt-3'>
-                <span className='bg-muted/60 text-muted-foreground inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
+                    pricingPlanBadgeStyles[
+                      plan.plan_type as keyof typeof pricingPlanBadgeStyles
+                    ] ?? pricingPlanBadgeStyles.BASIC,
+                  )}
+                >
                   <Building2 className='size-3.5' aria-hidden='true' />
                   {plan.max_properties} properties
                 </span>
@@ -287,8 +281,17 @@ const PricingPlansCard: React.FC = () => {
 
               <div className='border-border/70 mt-3 flex-1 border-t pt-5'>
                 <p className='text-sm font-semibold'>Included in this plan</p>
-                <ul className='mt-3 space-y-3'>
-                  {visibleFeatures.map((feature) => (
+                <ul
+                  className={cn(
+                    'mt-3 space-y-3',
+                    expandedPlans[plan.alias] &&
+                      'max-h-52 overflow-y-auto pr-1',
+                  )}
+                >
+                  {(expandedPlans[plan.alias]
+                    ? plan.features
+                    : visibleFeatures
+                  ).map((feature) => (
                     <li
                       key={feature.code}
                       className='text-muted-foreground flex gap-2.5 text-sm'
@@ -303,35 +306,16 @@ const PricingPlansCard: React.FC = () => {
                 </ul>
 
                 {remainingFeatures > 0 && (
-                  <>
-                    <Button
-                      variant='link'
-                      onClick={() => toggleFeatures(plan.alias)}
-                      className='mt-1 pl-6 text-xs'
-                      aria-expanded={!!expandedPlans[plan.alias]}
-                    >
-                      {expandedPlans[plan.alias]
-                        ? 'Show less'
-                        : `+ ${remainingFeatures} more feature${remainingFeatures === 1 ? '' : 's'}`}
-                    </Button>
-
-                    {expandedPlans[plan.alias] && (
-                      <ul className='mt-3 max-h-32 space-y-3 overflow-y-auto pr-1'>
-                        {plan.features.slice(7).map((feature) => (
-                          <li
-                            key={feature.code}
-                            className='text-muted-foreground flex gap-2.5 text-sm'
-                          >
-                            <Check
-                              className='text-primary mt-0.5 size-4 shrink-0'
-                              aria-hidden='true'
-                            />
-                            <span>{feature.name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </>
+                  <Button
+                    variant='link'
+                    onClick={() => toggleFeatures(plan.alias)}
+                    className='mt-1 pl-6 text-xs'
+                    aria-expanded={!!expandedPlans[plan.alias]}
+                  >
+                    {expandedPlans[plan.alias]
+                      ? 'Show less'
+                      : `+ ${remainingFeatures} more feature${remainingFeatures === 1 ? '' : 's'}`}
+                  </Button>
                 )}
               </div>
               <div className='mt-3'>
@@ -361,58 +345,16 @@ const PricingPlansCard: React.FC = () => {
           );
         })}
       </div>
-      <AlertDialog
-        open={!!downgradePlan}
+      <PricingPlanDowngradeDialog
+        currentPlanName={
+          pricingPlans?.results?.find((p: PricingPlan) => p.current_plan)?.name
+        }
+        downgradePlan={downgradePlan}
         onOpenChange={(open) => {
           if (!open) setDowngradePlan(null);
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogMedia className='bg-danger/10 text-danger'>
-              <TriangleAlert aria-hidden='true' />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Confirm plan downgrade</AlertDialogTitle>
-            <AlertDialogDescription>
-              This change takes effect on your{' '}
-              <span className='text-foreground font-semibold'>
-                next billing cycle
-              </span>
-              .
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className='flex items-center justify-center gap-3 py-1 text-sm font-medium'>
-            <span className='text-muted-foreground rounded-full border px-3 py-1'>
-              {
-                pricingPlans?.results?.find((p: PricingPlan) => p.current_plan)
-                  ?.name
-              }
-            </span>
-            <ArrowRight
-              className='text-muted-foreground size-4 shrink-0'
-              aria-hidden='true'
-            />
-            <span className='bg-primary/10 text-primary rounded-full px-3 py-1'>
-              {downgradePlan?.name}
-            </span>
-          </div>
-
-          <div className='border-danger/20 bg-danger/10 text-danger rounded-lg border p-3 text-sm'>
-            You&apos;ll keep your current plan and its benefits until the end of
-            this billing cycle. The new plan starts on your next billing date.
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDowngradePlan(null)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDowngrade}>
-              Agreed
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        onConfirm={confirmDowngrade}
+      />
       <PricingPlanPaymentDialog
         selectedPlan={selectedPlan}
         onOpenChange={(open) => {
