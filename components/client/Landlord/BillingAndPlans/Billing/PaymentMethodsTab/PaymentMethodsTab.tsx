@@ -36,6 +36,7 @@ import {
 import { useState } from 'react';
 import { toast } from 'sonner';
 import AddPaymentMethodDialog from './AddPaymentMethodDialog';
+import CardBrandLogo from './CardBrandLogo';
 
 export default function PaymentMethodsTab() {
   const { data: paymentMethodsData, isLoading } =
@@ -144,12 +145,7 @@ export default function PaymentMethodsTab() {
                 key={card.alias}
                 className='border-border flex items-center gap-3 rounded-md border px-4 py-3'
               >
-                <div className='bg-muted flex size-9 shrink-0 items-center justify-center rounded-lg'>
-                  <CreditCard
-                    className='text-muted-foreground size-4'
-                    aria-hidden='true'
-                  />
-                </div>
+                <CardBrandLogo brand={card.card_brand} />
 
                 <div className='flex-1'>
                   <p className='text-sm font-medium'>
