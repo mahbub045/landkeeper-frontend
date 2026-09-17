@@ -77,6 +77,14 @@ export interface DashboardData {
     current_month_expense: string;
     current_month_net: string;
   };
+  mortgages: {
+    total: number;
+    total_outstanding: string;
+    fixed_rate: number;
+    variable_rate: number;
+    tracker: number;
+    offset: number;
+  };
   compliance: {
     total: number;
     expired: number;
