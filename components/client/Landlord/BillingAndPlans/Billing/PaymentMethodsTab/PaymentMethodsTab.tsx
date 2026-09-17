@@ -18,6 +18,7 @@ import {
 import { PaymentMethod } from '@/types/client/Landlord/BillingAndPlans/BillingType';
 import {
   CreditCard,
+  Info,
   LoaderCircle,
   MoreVertical,
   Plus,
@@ -110,6 +111,14 @@ export default function PaymentMethodsTab() {
           <Plus />
           Add payment method
         </Button>
+      </div>
+
+      <div className='bg-warning/10 text-warning mb-5 flex items-start gap-2 rounded-md p-3 text-xs'>
+        <Info className='mt-0.5 size-4 shrink-0' aria-hidden='true' />
+        <p>
+          Your next bill will be charged to your default card. To use a
+          different card, add it below and set it as default.
+        </p>
       </div>
 
       {isLoading ? (
