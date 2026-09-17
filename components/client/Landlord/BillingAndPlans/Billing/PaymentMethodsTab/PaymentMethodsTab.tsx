@@ -20,7 +20,6 @@ import {
 import { cardBrandLabels } from '@/data/client/Landlord/BillingAndPlans/BillingData';
 import { cn } from '@/lib/utils';
 import {
-  useAddPaymentMethodMutation,
   useDeletePaymentMethodMutation,
   usePaymewntMethodsQuery,
   useUpdatePaymentMethodMutation,
@@ -36,12 +35,11 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import AddPaymentMethodDialog from './AddPaymentMethodDialog';
 
 export default function PaymentMethodsTab() {
   const { data: paymentMethodsData, isLoading } =
     usePaymewntMethodsQuery(undefined);
-  const [addPaymentMethod, { isLoading: isAddPaymentPending }] =
-    useAddPaymentMethodMutation();
   const [updatePaymentMethod, { isLoading: isUpdatePending }] =
     useUpdatePaymentMethodMutation();
   const [deletePaymentMethod, { isLoading: isDeletePending }] =
@@ -53,8 +51,9 @@ export default function PaymentMethodsTab() {
     PaymentMethod['alias'] | null
   >(null);
   const [cardToDelete, setCardToDelete] = useState<PaymentMethod | null>(null);
+  const [addCardOpen, setAddCardOpen] = useState(false);
 
-  const cards = paymentMethodsData?.cards ?? [];
+  const cards = paymentMethodsData?.results ?? [];
 
   const handleSetDefault = async (card: PaymentMethod) => {
     if (card.is_default) return;
@@ -114,7 +113,7 @@ export default function PaymentMethodsTab() {
     <div className='border-border/70 rounded-2xl border bg-white p-6 dark:bg-white/4'>
       <div className='mb-5 flex items-center justify-between'>
         <p className='text-sm font-semibold'>Saved payment methods</p>
-        <Button size='sm'>
+        <Button size='sm' onClick={() => setAddCardOpen(true)}>
           <Plus />
           Add payment method
         </Button>
@@ -259,6 +258,12 @@ export default function PaymentMethodsTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AddPaymentMethodDialog
+        open={addCardOpen}
+        onClose={() => setAddCardOpen(false)}
+        onSuccess={() => setAddCardOpen(false)}
+      />
     </div>
   );
 }

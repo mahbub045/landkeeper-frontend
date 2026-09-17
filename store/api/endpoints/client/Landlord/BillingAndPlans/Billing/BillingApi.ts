@@ -33,10 +33,10 @@ export const BillingApi = baseApi.injectEndpoints({
       providesTags: ['BillingDetails'],
     }),
     addPaymentMethod: builder.mutation({
-      query: ({ card }) => ({
+      query: ({ payment_method_id, is_default }) => ({
         url: `/subscription/cards`,
         method: 'POST',
-        body: { card },
+        body: { payment_method_id, is_default },
       }),
       invalidatesTags: ['BillingDetails'],
     }),
