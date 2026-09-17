@@ -1,11 +1,8 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { badgeStyles } from '@/data/client/common/Dashboard/DashboardData';
 import { useGetDashboardSummaryQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
 import {
-  BadgeVariant,
   DashboardData,
   StatCard,
 } from '@/types/client/Common/Dashboard/DashboardTypes';
@@ -98,38 +95,29 @@ const DashboardStatsContainer: React.FC = () => {
   const stats = buildStats(dashboardSummary);
 
   return (
-    <div className='grid grid-cols-2 gap-4 xl:grid-cols-3'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
       {stats.map((stat) => {
         const Icon = stat.icon;
 
         return (
           <Card
             key={stat.title}
-            className='border-border rounded-2xl border shadow-sm'
+            className='border-border rounded-2xl shadow-md'
           >
-            <CardContent className='px-5 py-2'>
-              <div className='mb-4 flex items-start justify-between'>
-                <div className={`rounded-xl p-2.5 ${stat.iconBg}`}>
-                  <Icon className={`size-5 ${stat.iconColor}`} />
+            <CardContent className='px-6 py-3'>
+              <div className='flex items-center justify-between'>
+                <div
+                  className={`mb-4 flex h-8 w-8 items-center justify-center rounded-lg ${stat.iconBg}`}
+                >
+                  <Icon className={`size-4 ${stat.iconColor}`} />
                 </div>
 
-                {stat.badge && (
-                  <Badge
-                    variant='outline'
-                    className={`rounded-full px-2 py-1 text-xs font-medium ${
-                      badgeStyles[stat.badge.variant as BadgeVariant]
-                    }`}
-                  >
-                    {stat.badge.label}
-                  </Badge>
-                )}
+                <p className='text-foreground text-2xl font-bold'>
+                  {stat.value}
+                </p>
               </div>
 
-              <p className='text-foreground mb-1 text-2xl font-bold'>
-                {stat.value}
-              </p>
-
-              <p className='text-muted-foreground text-sm'>{stat.title}</p>
+              <p className='text-muted-foreground mt-1 text-sm'>{stat.title}</p>
             </CardContent>
           </Card>
         );
