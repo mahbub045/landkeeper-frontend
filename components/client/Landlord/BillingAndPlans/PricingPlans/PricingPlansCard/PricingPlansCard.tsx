@@ -23,12 +23,7 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import {
-  ArrowRight,
-  Check,
-  LoaderCircle,
-  TriangleAlert,
-} from 'lucide-react';
+import { ArrowRight, Check, LoaderCircle, TriangleAlert } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -48,9 +43,7 @@ const PricingPlansCard: React.FC = () => {
   const [expandedPlans, setExpandedPlans] = useState<Record<string, boolean>>(
     {},
   );
-  const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(
-    null,
-  );
+  const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(null);
 
   const {
     data: pricingPlans,
@@ -107,7 +100,7 @@ const PricingPlansCard: React.FC = () => {
           successMessage = isUpgrade
             ? 'Plan upgraded successfully!'
             : isDowngrade
-              ? 'Plan downgraded successfully!'
+              ? 'Plan will change on your next billing cycle.'
               : 'Plan updated successfully!';
         }
 
@@ -188,7 +181,7 @@ const PricingPlansCard: React.FC = () => {
     );
     return Boolean(
       currentPlan &&
-        Number(plan.monthly_price) < Number(currentPlan.monthly_price),
+      Number(plan.monthly_price) < Number(currentPlan.monthly_price),
     );
   };
 
@@ -383,16 +376,19 @@ const PricingPlansCard: React.FC = () => {
             </AlertDialogMedia>
             <AlertDialogTitle>Confirm plan downgrade</AlertDialogTitle>
             <AlertDialogDescription>
-              This change takes effect immediately.
+              This change takes effect on your{' '}
+              <span className='text-foreground font-semibold'>
+                next billing cycle
+              </span>
+              .
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <div className='flex items-center justify-center gap-3 py-1 text-sm font-medium'>
             <span className='text-muted-foreground rounded-full border px-3 py-1'>
               {
-                pricingPlans?.results?.find(
-                  (p: PricingPlan) => p.current_plan,
-                )?.name
+                pricingPlans?.results?.find((p: PricingPlan) => p.current_plan)
+                  ?.name
               }
             </span>
             <ArrowRight
@@ -405,8 +401,8 @@ const PricingPlansCard: React.FC = () => {
           </div>
 
           <div className='border-danger/20 bg-danger/10 text-danger rounded-lg border p-3 text-sm'>
-            You&apos;ve already paid for your current plan this billing
-            cycle — that payment won&apos;t be refunded.
+            You&apos;ll keep your current plan and its benefits until the end of
+            this billing cycle. The new plan starts on your next billing date.
           </div>
 
           <AlertDialogFooter>

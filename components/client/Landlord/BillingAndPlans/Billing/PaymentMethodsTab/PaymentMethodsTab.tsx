@@ -32,6 +32,7 @@ import {
   Plus,
   Star,
   Trash2,
+  TriangleAlert,
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -205,7 +206,6 @@ export default function PaymentMethodsTab() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         variant='destructive'
-                        disabled={card.is_default}
                         onClick={() => setCardToDelete(card)}
                         className='cursor-pointer'
                       >
@@ -235,12 +235,30 @@ export default function PaymentMethodsTab() {
                 <>
                   {cardBrandLabels[cardToDelete.card_brand.toLowerCase()] ??
                     cardToDelete.card_brand}{' '}
-                  ending in {cardToDelete.last_four} will no longer be available
-                  for future payments.
+                  ending in{' '}
+                  <span className='text-primary font-semibold'>
+                    {cardToDelete.last_four}
+                  </span>{' '}
+                  will no longer be available for future payments.
                 </>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          {cardToDelete?.is_default && (
+            <div className='border-danger/20 bg-danger/10 text-danger flex gap-2 rounded-lg border p-3 text-sm'>
+              <TriangleAlert
+                className='mt-0.5 size-4 shrink-0'
+                aria-hidden='true'
+              />
+              <span>
+                This is your default payment method. If you have an active
+                subscription, removing it may cause future payments to fail
+                unless you set another card as default first.
+              </span>
+            </div>
+          )}
+
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button variant='destructive' onClick={handleConfirmDelete}>
