@@ -13,7 +13,7 @@ import {
   SubscriptionStatus,
 } from '@/types/client/Landlord/BillingAndPlans/BillingType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
-import { CalendarDays, CreditCard, Sparkles } from 'lucide-react';
+import { Building2, CalendarDays, CreditCard, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 const statusDotStyles: Record<SubscriptionStatus, string> = {
@@ -139,39 +139,27 @@ export default function OverviewTab() {
             </div>
           </div>
 
-          <div className='mt-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-1'>
-            <h2 className='text-3xl font-semibold tracking-tight'>
-              {subscription.plan.name}
-            </h2>
-            <div className='text-right'>
-              <span className='text-3xl font-semibold tracking-[-0.02em]'>
-                ${Number(subscription.plan.monthly_price).toFixed(2)}
+          <div className='mt-5 flex flex-wrap items-start justify-between gap-x-6 gap-y-3'>
+            <div>
+              <h2 className='text-3xl font-semibold tracking-tight'>
+                {subscription.plan.name}
+              </h2>
+              <p className='text-muted-foreground mt-1.5 max-w-md text-sm'>
+                {subscription.plan.description || 'No description provided.'}
+              </p>
+            </div>
+
+            <div className='flex flex-col items-end gap-2'>
+              <div className='text-right'>
+                <span className='text-3xl font-semibold tracking-[-0.02em]'>
+                  ${Number(subscription.plan.monthly_price).toFixed(2)}
+                </span>
+                <span className='text-muted-foreground text-sm'> /month</span>
+              </div>
+              <span className='bg-primary text-white inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                <Building2 className='size-3.5' aria-hidden='true' />
+                {subscription.plan.max_properties} max properties
               </span>
-              <span className='text-muted-foreground text-sm'> /month</span>
-            </div>
-          </div>
-
-          <p className='text-muted-foreground mt-1.5 max-w-md text-sm'>
-            {subscription.plan.description || 'No description provided.'}
-          </p>
-
-          <div className='border-border/70 mt-3 flex items-center gap-6 border-t p-1'>
-            <div>
-              <div className='text-lg font-semibold'>
-                {subscription.plan.max_properties}
-              </div>
-              <div className='text-muted-foreground text-sm'>
-                Max properties
-              </div>
-            </div>
-            <div className='bg-border/70 h-8 w-px' />
-            <div>
-              <div className='text-lg font-semibold'>
-                {subscription.plan.referral_discount_percent}%
-              </div>
-              <div className='text-muted-foreground text-sm'>
-                Referral discount
-              </div>
             </div>
           </div>
 

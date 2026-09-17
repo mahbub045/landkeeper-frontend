@@ -23,7 +23,13 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import { ArrowRight, Check, LoaderCircle, TriangleAlert } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  Check,
+  LoaderCircle,
+  TriangleAlert,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -272,22 +278,14 @@ const PricingPlansCard: React.FC = () => {
                 </span>
               </div>
 
-              <div className='border-border/70 mt-5 grid grid-cols-2 gap-2 border-y py-4 text-sm'>
-                <div>
-                  <p className='text-muted-foreground'>Portfolio limit</p>
-                  <p className='mt-1 font-semibold'>
-                    {plan.max_properties} properties
-                  </p>
-                </div>
-                <div>
-                  <p className='text-muted-foreground'>Referral discount</p>
-                  <p className='mt-1 font-semibold'>
-                    {plan.referral_discount_percent}%
-                  </p>
-                </div>
+              <div className='mt-3'>
+                <span className='bg-muted/60 text-muted-foreground inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                  <Building2 className='size-3.5' aria-hidden='true' />
+                  {plan.max_properties} properties
+                </span>
               </div>
 
-              <div className='mt-5 flex-1'>
+              <div className='border-border/70 mt-3 flex-1 border-t pt-5'>
                 <p className='text-sm font-semibold'>Included in this plan</p>
                 <ul className='mt-3 space-y-3'>
                   {visibleFeatures.map((feature) => (
