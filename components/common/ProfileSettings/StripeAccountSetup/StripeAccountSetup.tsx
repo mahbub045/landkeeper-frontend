@@ -9,11 +9,12 @@ import {
   useLazyGetStripeAccountSetupLinkQuery,
   useLazySetStripeOAuthCodeQuery,
 } from '@/store/api/endpoints/common/ProfileSettings/StripeAccountSetupApi';
-import { CheckCircle2, CircleDashed, ExternalLink } from 'lucide-react';
+import { CheckCircle2, CircleDashed, ExternalLink, Trash } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Loading from '../../CustomLoader/Loading';
+import DisconnectStripeDialog from './Dialogs/DisconnectStripeDialog';
 
 const REQUIREMENTS = [
   { key: 'details_submitted', label: 'Business details submitted' },
@@ -35,6 +36,8 @@ const StripeAccountSetup: React.FC = () => {
     useLazyGetStripeAccountSetupLinkQuery();
   const [triggerSetOAuthCode, { isFetching: isCompletingOAuth }] =
     useLazySetStripeOAuthCodeQuery();
+
+  const [isDisconnectDialogOpen, setIsDisconnectDialogOpen] = useState(false);
 
   const hasHandledCallback = useRef(false);
 
@@ -156,29 +159,45 @@ const StripeAccountSetup: React.FC = () => {
                   );
                 })}
               </div>
-
-              {!isFullySetup && (
-                <Button
-                  onClick={handleConnect}
-                  disabled={isSetupLinkLoading}
-                  className='w-full sm:w-auto'
-                >
-                  {isSetupLinkLoading ? (
-                    <Loading size={16} className='text-primary-foreground' />
-                  ) : (
-                    <ExternalLink data-icon='inline-start' />
-                  )}
-                  {isSetupLinkLoading
-                    ? 'Redirecting to Stripe…'
-                    : stripeStatus?.details_submitted
-                      ? 'Continue setup on Stripe'
-                      : 'Connect with Stripe'}
-                </Button>
-              )}
+              <div className='flex items-center justify-end gap-3'>
+                {isFullySetup ? (
+                  <Button
+                    variant='destructive'
+                    onClick={() => setIsDisconnectDialogOpen(true)}
+                    className='w-full sm:w-auto'
+                  >
+                    <Trash />
+                    Disconnect Stripe account
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleConnect}
+                    disabled={isSetupLinkLoading}
+                    className='w-full sm:w-auto'
+                  >
+                    {isSetupLinkLoading ? (
+                      <Loading size={16} className='text-primary-foreground' />
+                    ) : (
+                      <ExternalLink data-icon='inline-start' />
+                    )}
+                    {isSetupLinkLoading
+                      ? 'Redirecting to Stripe…'
+                      : stripeStatus?.details_submitted
+                        ? 'Continue setup on Stripe'
+                        : 'Connect with Stripe'}
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
       </Card>
+
+      <DisconnectStripeDialog
+        open={isDisconnectDialogOpen}
+        onOpenChange={setIsDisconnectDialogOpen}
+        onDisconnected={refetchStripeStatus}
+      />
     </>
   );
 };
