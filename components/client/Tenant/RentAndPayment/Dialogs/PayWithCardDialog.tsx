@@ -174,20 +174,23 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               setFormErrors([]);
 
               try {
-                await payWithCard({
+                const result = await payWithCard({
                   due_date: dueDate,
                   payment_method_id: paymentMethodId,
                   amount,
                 }).unwrap();
 
-                onSuccess?.();
-                resetAndClose();
+                return { clientSecret: result.client_secret };
               } catch (err) {
                 console.error('Failed to complete card payment:', err);
                 const messages = getApiErrorMessages(err);
                 setFormErrors(messages);
                 throw new Error(messages.join(' | '));
               }
+            }}
+            onConfirmed={() => {
+              onSuccess?.();
+              resetAndClose();
             }}
             onCancel={resetAndClose}
           />

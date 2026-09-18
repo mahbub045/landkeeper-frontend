@@ -1,56 +1,83 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Mortgage } from '@/types/client/Common/Mortgage/MortgageTypes';
+import { useGetDashboardSummaryQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
 import { getCurrencySign } from '@/utils/formatters';
-import { Building2, CreditCard, TrendingDown } from 'lucide-react';
+import {
+  Anchor,
+  ArrowLeftRight,
+  Building2,
+  Gauge,
+  LineChart,
+  TrendingDown,
+} from 'lucide-react';
 
-const SummaryCards: React.FC<{ data: Mortgage[] }> = ({ data }) => {
-  const totalOutstanding = data.reduce(
-    (sum, m) => sum + parseFloat(m.outstanding_balance ?? '0'),
-    0,
-  );
-  const totalMonthly = data.reduce(
-    (sum, m) => sum + parseFloat(m.monthly_payment ?? '0'),
-    0,
-  );
-  const count = data.length;
+const SummaryCards: React.FC = () => {
+  const { data: dashboardSummary } = useGetDashboardSummaryQuery();
+
+  const mortgages = dashboardSummary?.mortgages;
 
   const stats = [
     {
-      label: 'Total Outstanding',
-      value: `${getCurrencySign()}${totalOutstanding.toLocaleString('en-GB', { maximumFractionDigits: 0 })}`,
-      icon: TrendingDown,
-      iconBg: 'bg-danger/10',
-      iconColor: 'text-danger',
-    },
-    {
-      label: 'Monthly Payments',
-      value: `${getCurrencySign()}${totalMonthly.toLocaleString('en-GB', { maximumFractionDigits: 0 })}`,
-      icon: CreditCard,
-      iconBg: 'bg-primary/10',
-      iconColor: 'text-primary',
-    },
-    {
-      label: 'Active Mortgages',
-      value: count.toString(),
+      label: 'Total Mortgages',
+      value: String(mortgages?.total ?? 0),
       icon: Building2,
-      iconBg: 'bg-success/10',
-      iconColor: 'text-success',
+      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+      iconColor: 'text-blue-600 dark:text-blue-400',
+    },
+    {
+      label: 'Total Outstanding',
+      value: `${getCurrencySign()}${parseFloat(
+        mortgages?.total_outstanding ?? '0',
+      ).toLocaleString('en-GB')}`,
+      icon: TrendingDown,
+      iconBg: 'bg-red-100 dark:bg-red-900/30',
+      iconColor: 'text-red-500 dark:text-red-400',
+    },
+    {
+      label: 'Fixed Rate',
+      value: String(mortgages?.fixed_rate ?? 0),
+      icon: Anchor,
+      iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+      iconColor: 'text-purple-600 dark:text-purple-400',
+    },
+    {
+      label: 'Variable Rate',
+      value: String(mortgages?.variable_rate ?? 0),
+      icon: LineChart,
+      iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+      iconColor: 'text-amber-600 dark:text-amber-400',
+    },
+    {
+      label: 'Tracker',
+      value: String(mortgages?.tracker ?? 0),
+      icon: Gauge,
+      iconBg: 'bg-teal-100 dark:bg-teal-900/30',
+      iconColor: 'text-teal-600 dark:text-teal-400',
+    },
+    {
+      label: 'Offset',
+      value: String(mortgages?.offset ?? 0),
+      icon: ArrowLeftRight,
+      iconBg: 'bg-indigo-100 dark:bg-indigo-900/30',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
     },
   ];
 
   return (
-    <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
       {stats.map((stat) => (
         <Card key={stat.label} className='border-border rounded-2xl shadow-md'>
           <CardContent className='px-6 py-3'>
-            <div
-              className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${stat.iconBg}`}
-            >
-              <stat.icon className={`size-6 ${stat.iconColor}`} />
+            <div className='flex items-center justify-between'>
+              <div
+                className={`mb-4 flex h-8 w-8 items-center justify-center rounded-lg ${stat.iconBg}`}
+              >
+                <stat.icon className={`size-4 ${stat.iconColor}`} />
+              </div>
+              <p className='text-foreground text-2xl font-bold'>{stat.value}</p>
             </div>
-            <p className='text-foreground text-2xl font-bold'>{stat.value}</p>
+
             <p className='text-muted-foreground mt-1 text-sm'>{stat.label}</p>
           </CardContent>
         </Card>

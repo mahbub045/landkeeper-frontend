@@ -38,12 +38,15 @@ export function PaymentProvider({ children }: { children: React.ReactNode }) {
             <CardPaymentForm
               amount={request.amount}
               onSuccess={async (paymentMethodId) => {
-                await payWithCard({
+                const result = await payWithCard({
                   due_date: request.dueDate,
                   payment_method_id: paymentMethodId,
                   amount: request.amount,
                 }).unwrap();
 
+                return { clientSecret: result.client_secret };
+              }}
+              onConfirmed={() => {
                 request.onSuccess?.();
                 handleClose();
               }}

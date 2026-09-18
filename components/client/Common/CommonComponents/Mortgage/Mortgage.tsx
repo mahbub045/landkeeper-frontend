@@ -27,8 +27,8 @@ import SummaryCards from './SummaryCards/SummaryCards';
 // Skeleton for the summary stat cards row (matches a typical 4-card grid).
 function SummaryCardsSkeleton() {
   return (
-    <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'>
-      {Array.from({ length: 4 }).map((_, i) => (
+    <div className='grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
+      {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
           className='border-border bg-card space-y-3 rounded-xl border p-4'
@@ -144,11 +144,7 @@ const Mortgage: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <SummaryCardsSkeleton />
-      ) : (
-        <SummaryCards data={data?.results ?? []} />
-      )}
+      {isLoading ? <SummaryCardsSkeleton /> : <SummaryCards />}
 
       <div className='mt-15 flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
         <div className='min-w-0'>

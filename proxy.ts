@@ -1,12 +1,23 @@
 import type { UserRole } from '@/types/next-auth';
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import {
+  fetchProfileInfo,
+  isLandlordSubscribed,
+  isNewLandlord,
+} from './lib/subscription';
 import { getDashboardPath } from './utils/redirectPath';
 
 const SHARED_CLIENT_PATHS = [
   '/client/profile-settings',
   '/client/notifications',
   // add other shared paths here
+];
+
+const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
+  '/client/landlord/billing-and-plans/billing',
+  '/client/landlord/billing-and-plans/pricing-plans',
+  '/client/profile-settings',
 ];
 
 function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
@@ -34,7 +45,7 @@ function hasAccessToPath(role: UserRole | undefined, path: string): boolean {
 }
 
 export default withAuth(
-  function proxy(req) {
+  async function proxy(req) {
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
@@ -43,9 +54,32 @@ export default withAuth(
     }
 
     const userRole = token.role as UserRole | undefined;
+    const isOnAllowedLandlordPath =
+      LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
+        path.startsWith(p),
+      );
 
-    // Redirect root to appropriate dashboard or access denied if invalid role
+    // Only hit the profile endpoint when it can actually change the
+    // outcome: landlord role, and not already on an allowed path.
+    if (userRole === 'LANDLORD' && !isOnAllowedLandlordPath) {
+      const profile = await fetchProfileInfo(
+        token.accessToken as string | undefined,
+      );
+
+      if (!isLandlordSubscribed(profile)) {
+        const target = isNewLandlord(profile)
+          ? '/client/landlord/billing-and-plans/pricing-plans'
+          : '/client/landlord/billing-and-plans/billing';
+
+        return NextResponse.redirect(new URL(target, req.url));
+      }
+    }
+
+    // Redirect root to appropriate dashboard, or access denied if invalid role
     if (path === '/' || path === '') {
+      if (!userRole) {
+        return NextResponse.redirect(new URL('/auth/access-denied', req.url));
+      }
       return NextResponse.redirect(
         new URL(getDashboardPath(userRole), req.url),
       );

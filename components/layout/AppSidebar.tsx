@@ -28,6 +28,12 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { pricingPlanBadgeStyles } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { buildItems, type NavItem } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
@@ -52,6 +58,32 @@ import React from 'react';
 import Loading from '../common/CustomLoader/Loading';
 import { handleSignOut } from '../SignOut';
 import { Badge } from '../ui/badge';
+
+// Paths that stay usable even without an active subscription — keep this
+// in sync with LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION in middleware.ts
+const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
+  '/client/landlord/billing-and-plans/billing',
+  '/client/landlord/billing-and-plans/pricing-plans',
+  '/client/profile-settings',
+];
+
+function isSubscribed(user?: {
+  has_subscription?: boolean;
+  subscription_status?: string;
+}): boolean {
+  return (
+    user?.has_subscription === true &&
+    (user?.subscription_status === 'ACTIVE' ||
+      user?.subscription_status === 'TRIALING')
+  );
+}
+
+function isAllowedWithoutSubscription(href?: string): boolean {
+  if (!href) return false;
+  return LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
+    href.startsWith(p),
+  );
+}
 
 function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -130,7 +162,15 @@ function getIconColor(key: string) {
   return ICON_COLORS[Math.abs(hash) % ICON_COLORS.length];
 }
 
-function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
+function NavMenu({
+  items,
+  pathname,
+  locked,
+}: {
+  items: NavItem[];
+  pathname: string;
+  locked: boolean;
+}) {
   // Initialize from the current route instead of always starting empty, so
   // a hard reload lands with the correct submenu already expanded.
   const [openItems, setOpenItems] = React.useState<Set<string>>(
@@ -186,61 +226,115 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
           Array.isArray(item.children) && item.children.length > 0;
         const isActive = isParentActive(item);
 
+        // A parent group is unlocked if it itself is an allowed path, or has
+        // at least one allowed child — otherwise the whole group is disabled.
+        const parentUnlocked =
+          isAllowedWithoutSubscription(item.href) ||
+          (hasChildren &&
+            item.children!.some((c) => isAllowedWithoutSubscription(c.href)));
+        const parentDisabled = locked && !parentUnlocked;
+
         return (
           <SidebarMenuItem key={key}>
             {hasChildren ? (
               <>
-                <SidebarMenuButton
-                  onClick={() => toggleOpen(item.label)}
-                  isActive={isActive}
-                  tooltip={item.label}
-                  style={
-                    isActive
-                      ? { borderBottomColor: getIconColor(item.label) }
-                      : undefined
-                  }
-                  className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
-                >
-                  <item.icon style={{ color: getIconColor(item.label) }} />
-                  <span>{item.label}</span>
-                  <ChevronRight
-                    className={cn(
-                      'ml-auto transition-transform',
-                      openItems.has(item.label) && 'rotate-90',
-                    )}
-                  />
-                </SidebarMenuButton>
+                {parentDisabled ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        aria-disabled={parentDisabled}
+                        className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                      >
+                        <item.icon
+                          style={{ color: getIconColor(item.label) }}
+                        />
+                        <span>{item.label}</span>
+                        <ChevronRight className='ml-auto' />
+                      </SidebarMenuButton>
+                    </TooltipTrigger>
+                    <TooltipContent side='right'>
+                      Subscribe to unlock this section
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <SidebarMenuButton
+                    onClick={() => toggleOpen(item.label)}
+                    isActive={isActive}
+                    tooltip={item.label}
+                    style={
+                      isActive
+                        ? { borderBottomColor: getIconColor(item.label) }
+                        : undefined
+                    }
+                    className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                  >
+                    <item.icon style={{ color: getIconColor(item.label) }} />
+                    <span>{item.label}</span>
+                    <ChevronRight
+                      className={cn(
+                        'ml-auto transition-transform',
+                        openItems.has(item.label) && 'rotate-90',
+                      )}
+                    />
+                  </SidebarMenuButton>
+                )}
                 {openItems.has(item.label) && (
                   <SidebarMenuSub>
                     {item.children!.map((child) => {
                       const childActive = child.href
                         ? isNavActive(pathname, child.href)
                         : false;
+                      const childDisabled =
+                        locked && !isAllowedWithoutSubscription(child.href);
+
                       return (
                         <SidebarMenuSubItem key={child.href || child.label}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={childActive}
-                            style={
-                              childActive
-                                ? {
-                                    borderBottomColor: getIconColor(
-                                      child.label,
-                                    ),
-                                  }
-                                : undefined
-                            }
-                            className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
-                          >
-                            <Link href={child.href || '#'}>
-                              <child.icon
-                                style={{ color: getIconColor(child.label) }}
-                                className='h-4 w-4'
-                              />
-
-                              <span>{child.label}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
+                          {childDisabled ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <SidebarMenuSubButton
+                                  isActive={childActive}
+                                  aria-disabled={childDisabled}
+                                  className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                                >
+                                  <child.icon
+                                    style={{
+                                      color: getIconColor(child.label),
+                                    }}
+                                    className='h-4 w-4'
+                                  />
+                                  <span>{child.label}</span>
+                                </SidebarMenuSubButton>
+                              </TooltipTrigger>
+                              <TooltipContent side='right'>
+                                Subscribe to unlock this section
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={childActive}
+                              style={
+                                childActive
+                                  ? {
+                                      borderBottomColor: getIconColor(
+                                        child.label,
+                                      ),
+                                    }
+                                  : undefined
+                              }
+                              className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                            >
+                              <Link href={child.href || '#'}>
+                                <child.icon
+                                  style={{ color: getIconColor(child.label) }}
+                                  className='h-4 w-4'
+                                />
+                                <span>{child.label}</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          )}
                         </SidebarMenuSubItem>
                       );
                     })}
@@ -248,31 +342,61 @@ function NavMenu({ items, pathname }: { items: NavItem[]; pathname: string }) {
                 )}
               </>
             ) : (
-              item.href && (
-                <>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isNavActive(pathname, item.href)}
-                    tooltip={item.label}
-                    style={
-                      isNavActive(pathname, item.href)
-                        ? { borderBottomColor: getIconColor(item.label) }
-                        : undefined
-                    }
-                    className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
-                  >
-                    <Link href={item.href}>
-                      <item.icon style={{ color: getIconColor(item.label) }} />
-                      <span>{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  {item.badge ? (
-                    <SidebarMenuBadge className='bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white!'>
-                      {item.badge}
-                    </SidebarMenuBadge>
-                  ) : null}
-                </>
-              )
+              item.href &&
+              (() => {
+                const itemDisabled =
+                  locked && !isAllowedWithoutSubscription(item.href);
+
+                if (itemDisabled) {
+                  return (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          isActive={isNavActive(pathname, item.href)}
+                          aria-disabled={itemDisabled}
+                          className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                        >
+                          <item.icon
+                            style={{ color: getIconColor(item.label) }}
+                          />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side='right'>
+                        Subscribe to unlock this section
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                return (
+                  <>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isNavActive(pathname, item.href)}
+                      tooltip={item.label}
+                      style={
+                        isNavActive(pathname, item.href)
+                          ? { borderBottomColor: getIconColor(item.label) }
+                          : undefined
+                      }
+                      className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                    >
+                      <Link href={item.href}>
+                        <item.icon
+                          style={{ color: getIconColor(item.label) }}
+                        />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    {item.badge ? (
+                      <SidebarMenuBadge className='bg-danger rounded-full px-1.5 text-[10px] font-semibold text-white!'>
+                        {item.badge}
+                      </SidebarMenuBadge>
+                    ) : null}
+                  </>
+                );
+              })()
             )}
           </SidebarMenuItem>
         );
@@ -286,9 +410,19 @@ const AppSidebar: React.FC = () => {
   const { data: session } = useSession();
   const user = session?.user;
   const userRole = user?.role as UserRole | undefined;
-  const navItems = buildItems({ role: userRole });
 
   const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+
+  // navItems now depends on profileData.plan, so it's built after the
+  // profile query instead of immediately after session resolves.
+  const navItems = buildItems({ role: userRole, plan: profileData?.plan });
+
+  // Landlords without an active/trialing subscription get a locked sidebar —
+  // only the paths in LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION stay usable.
+  // Sourced from useGetProfileInfoQuery (live data) rather than the
+  // session/JWT, since the JWT's has_subscription/subscription_status only
+  // update when update() is explicitly called and can go stale otherwise.
+  const sidebarLocked = userRole === 'LANDLORD' && !isSubscribed(profileData);
 
   if (isLoading) {
     return (
@@ -309,8 +443,8 @@ const AppSidebar: React.FC = () => {
 
   return (
     <Sidebar collapsible='icon'>
-      <SidebarHeader className='gap-0 px-4 py-4 group-data-[collapsible=icon]:px-2'>
-        <div className='flex items-center gap-2 group-data-[collapsible=icon]:hidden'>
+      <SidebarHeader className='gap-0 px-4 py-3 group-data-[collapsible=icon]:px-2'>
+        <div className='flex items-center gap-1 group-data-[collapsible=icon]:hidden'>
           <Image
             src='/images/logo-black.png'
             alt='Landkeeper'
@@ -329,26 +463,73 @@ const AppSidebar: React.FC = () => {
           />
         </div>
 
-        <Badge
-          variant='secondary'
-          className='group-data-[collapsible=icon]:hidden'
-        >
-          Premium Plan
-        </Badge>
+        <div className='hidden items-center group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:text-center'>
+          <Image
+            src='/images/logo-black-icon.png'
+            alt='Sebagriho'
+            width={200}
+            height={150}
+            className='h-5.5 w-6 dark:hidden'
+            loading='eager'
+          />
+          <Image
+            src='/images/logo-white-icon.png'
+            alt='Sebagriho'
+            width={200}
+            height={150}
+            className='hidden h-5.5 w-6 dark:block'
+            loading='eager'
+          />
+        </div>
+
+        {session?.user?.role !== 'SUPER_ADMIN' && (
+          <div className='group-data-[collapsible=icon]:hidden'>
+            {sidebarLocked ? (
+              <Link href='/client/landlord/billing-and-plans/billing'>
+                <Badge
+                  variant='destructive'
+                  className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
+                >
+                  Subscribe to unlock
+                </Badge>
+              </Link>
+            ) : (
+              <Badge
+                variant='secondary'
+                className={
+                  pricingPlanBadgeStyles[
+                    profileData?.plan as keyof typeof pricingPlanBadgeStyles
+                  ] ||
+                  'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                }
+              >
+                {formatChoiceFieldValue(profileData?.plan) || 'Unknown'} Plan
+              </Badge>
+            )}
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />
 
       {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
         <Link
-          href={getStartNewJourneyUrl(session)}
+          href={sidebarLocked ? '#' : getStartNewJourneyUrl(session)}
           passHref
-          className='flex justify-center px-3'
+          aria-disabled={sidebarLocked}
+          onClick={(e) => {
+            if (sidebarLocked) e.preventDefault();
+          }}
+          className={cn(
+            'flex justify-center px-3',
+            sidebarLocked && 'pointer-events-none',
+          )}
         >
           <Button
             type='button'
             size='lg'
             variant='secondary'
+            disabled={sidebarLocked}
             className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
           >
             <Plus className='size-4' />
@@ -365,7 +546,11 @@ const AppSidebar: React.FC = () => {
             Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <NavMenu items={navItems} pathname={pathname} />
+            <NavMenu
+              items={navItems}
+              pathname={pathname}
+              locked={sidebarLocked}
+            />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

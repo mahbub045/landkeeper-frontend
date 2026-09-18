@@ -38,10 +38,35 @@ export const handleSignOut = async () => {
   } finally {
     // Always clear local data regardless of API result
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      clearClientStorage();
     }
 
     await signOut({ callbackUrl: '/auth/signin' });
+  }
+};
+
+const clearClientStorage = () => {
+  // Preserve theme preference, clear everything else in localStorage
+  const theme = localStorage.getItem('theme');
+  localStorage.clear();
+  if (theme !== null) {
+    localStorage.setItem('theme', theme);
+  }
+
+  sessionStorage.clear();
+
+  // Clear all cookies accessible to JS
+  document.cookie.split(';').forEach((cookie) => {
+    const name = cookie.split('=')[0].trim();
+    if (!name) return;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+  });
+
+  // Clear Shared Storage API, if available
+  const sharedStorage = (window as Window & { sharedStorage?: { clear: () => Promise<void> } })
+    .sharedStorage;
+  if (sharedStorage) {
+    sharedStorage.clear().catch(() => {});
   }
 };

@@ -10,33 +10,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-  complianceBreakdown,
-  upcomingExpirations,
-} from '@/data/client/common/compliance/ComplianceData';
 import { useGetCompliancesQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
-import {
-  ApiCertificate,
-  CertStatus,
-} from '@/types/client/Common/Compliance/ComplianceTypes';
+import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { useEffect, useMemo, useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
-import ComplianceScore from './ComplianceScore/ComplianceScore';
+import ComplianceSummary from './ComplianceSummary/ComplianceSummary';
 import AddCertificateDialog from './Dialogs/AddCertificateDialog';
-import UpcomingExpirations from './UpcomingExpirations/UpcomingExpirations';
-
-const COMPLIANCE_SCORE = 87;
-
-const getCertStatus = (expiryDate: string): CertStatus => {
-  const daysUntilExpiry = Math.ceil(
-    (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-  );
-
-  if (daysUntilExpiry < 0) return 'Expired';
-  if (daysUntilExpiry <= 30) return 'Expiring Soon';
-  return 'Valid';
-};
 
 const Compliance: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -66,11 +46,6 @@ const Compliance: React.FC = () => {
     () => data?.results ?? [],
     [data?.results],
   );
-
-  const validCount = apiCertificates.filter(
-    (cert) => getCertStatus(cert.expiry_date) === 'Valid',
-  ).length;
-  const totalCount = apiCertificates.length;
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value);
@@ -106,14 +81,8 @@ const Compliance: React.FC = () => {
         </div>
       </div>
 
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
-        <ComplianceScore
-          percent={COMPLIANCE_SCORE}
-          validCount={validCount}
-          totalCount={totalCount}
-          breakdown={complianceBreakdown}
-        />
-        <UpcomingExpirations items={upcomingExpirations} />
+      <div>
+        <ComplianceSummary />
       </div>
 
       {isError ? (

@@ -21,14 +21,14 @@ import { FileBadge, Plus, Search } from 'lucide-react';
 import CertificateRow from './CertificateRow/CertificateRow';
 
 const TABLE_COLUMNS = [
-  { label: '#', individualClass: '' },
-  { label: 'Property', individualClass: '' },
-  { label: 'Type', individualClass: '' },
-  { label: 'Certificate No', individualClass: '' },
-  { label: 'Issue & Expiry Date', individualClass: '' },
-  { label: 'Documents', individualClass: 'text-center' },
-  { label: 'Status', individualClass: 'text-center' },
-  { label: 'Actions', individualClass: 'text-center' },
+  { header: '#' },
+  { header: 'Property' },
+  { header: 'Type' },
+  { header: 'Certificate No' },
+  { header: 'Issue & Expiry Date' },
+  { header: 'Documents', individualClass: 'text-center' },
+  { header: 'Status', individualClass: 'text-center' },
+  { header: 'Actions', individualClass: 'text-center' },
 ];
 
 interface CertificateRegistryComponentProps extends CertificateRegistryProps {
@@ -78,7 +78,7 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
             <TableRow>
               {TABLE_COLUMNS.map((column, index) => (
                 <TableHead key={index} className={`${column.individualClass}`}>
-                  {column.label}
+                  {column.header}
                 </TableHead>
               ))}
             </TableRow>

@@ -3,6 +3,15 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: '/auth/signin',
+  },
+
+  session: {
+    strategy: 'jwt',
+    maxAge: 12 * 60 * 60, // 12 hours
+  },
+
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -73,6 +82,13 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      // ✅ Called after a successful subscription payment to sync
+      // has_subscription into the session without a full re-login.
+      if (trigger === 'update' && session?.has_subscription !== undefined) {
+        token.has_subscription = session.has_subscription === true;
+        return token;
+      }
+
       // ✅ Google sign-in flow
       if (account?.provider === 'google' && account.access_token) {
         try {
@@ -138,15 +154,10 @@ export const authOptions: NextAuthOptions = {
       session.user.refreshToken = token.refreshToken;
       return session;
     },
-  },
 
-  pages: {
-    signIn: '/auth/signin',
-  },
-
-  session: {
-    strategy: 'jwt',
-    maxAge: 12 * 60 * 60, // 12 hours
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : baseUrl;
+    },
   },
 
   secret: process.env.NEXTAUTH_SECRET,

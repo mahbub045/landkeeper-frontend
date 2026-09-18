@@ -1,5 +1,5 @@
-import LandlordChartsContainer from './LandlaordCharts/LandlordChartsContainer';
-import LandlordStatsContainer from './LandlordStats/LandlordStatsContainer';
+import DashboardChartsContainer from '../../Common/CommonComponents/Dashboard/DashboardCharts/DashboardChartsContainer';
+import DashboardStatsContainer from '../../Common/CommonComponents/Dashboard/DashboardStats/DashboardStatsContainer';
 
 const LandlordDashboardContainer: React.FC = () => {
   return (
@@ -12,8 +12,8 @@ const LandlordDashboardContainer: React.FC = () => {
           Welcome back. Here&apos;s your portfolio overview.
         </p>
       </div>
-      <LandlordStatsContainer />
-      <LandlordChartsContainer />
+      <DashboardStatsContainer />
+      <DashboardChartsContainer />
     </div>
   );
 };

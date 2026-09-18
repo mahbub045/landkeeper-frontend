@@ -9,6 +9,8 @@ export interface ProfileInfo {
   phone?: string;
   is_active?: boolean;
   is_password_available?: boolean;
+  has_subscription?: boolean;
+  subscription_status?: string;
 }
 
 export interface NotificationSetting {

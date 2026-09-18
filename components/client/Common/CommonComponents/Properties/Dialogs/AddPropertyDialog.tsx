@@ -48,7 +48,6 @@ import {
 import formatChoiceFieldValue, {
   getCurrencySign,
   sanitizeCouncilTaxBand,
-  snakeToCamel,
 } from '@/utils/formatters';
 
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
@@ -98,11 +97,17 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
     if (typeof body === 'object' && body !== null) {
       const apiError = body as Record<string, unknown>;
       const normalized: Record<string, string> = {};
+      const nonFieldMessages: string[] = [];
 
       Object.entries(apiError).forEach(([key, val]) => {
         if (key === 'message') return;
-        const mapped = OVERRIDE_KEY_MAP[key] ?? snakeToCamel(key);
-        normalized[mapped] = Array.isArray(val) ? val[0] : String(val);
+        const message = Array.isArray(val) ? val[0] : String(val);
+        const mapped = OVERRIDE_KEY_MAP[key] ?? key;
+        if (!(mapped in FIELD_TAB_MAP)) {
+          nonFieldMessages.push(message);
+          return;
+        }
+        normalized[mapped] = message;
       });
 
       if (Object.keys(normalized).length > 0) {
@@ -111,15 +116,24 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           Object.keys(normalized).some((field) => FIELD_TAB_MAP[field] === tab),
         );
         if (targetTab) setActiveTab(targetTab);
+        if (nonFieldMessages.length > 0) setBannerError(nonFieldMessages.join(' '));
+        toast.error('Please fix the highlighted fields and try again.');
+        return;
+      }
+
+      if (nonFieldMessages.length > 0) {
+        setBannerError(nonFieldMessages.join(' '));
         toast.error('Please fix the highlighted fields and try again.');
         return;
       }
 
       if (typeof apiError.message === 'string') {
+        setBannerError(apiError.message);
         toast.error(apiError.message);
         return;
       }
     }
+    setBannerError('Something went wrong. Please try again.');
     toast.error('Something went wrong. Please try again.');
   }
 
@@ -742,7 +756,7 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.purchasePrice}>
+        <Field data-invalid={!!errors.purchase_price}>
           <FieldLabel className='text-sm font-semibold'>
             Purchase Price
           </FieldLabel>
@@ -799,7 +813,7 @@ const DetailsTab: React.FC<{
                 : ''
             }
           />
-          <FieldError errors={[{ message: errors.rent_per_month }]} />
+          <FieldError errors={[{ message: errors.monthly_rental_income }]} />
         </Field>
 
         <Field data-invalid={!!errors.purchase_date}>

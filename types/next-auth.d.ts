@@ -9,6 +9,9 @@ export type UserRole =
   | 'MORTGAGE_ADVISER'
   | 'TENANT';
 
+export type SubscriptionStatus =
+  'ACTIVE' | 'PENDING' | 'TRIALING' | 'PAST_DUE' | 'CANCELED' | 'EXPIRED';
+
 declare module 'next-auth' {
   interface User {
     id: string;

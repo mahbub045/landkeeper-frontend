@@ -73,20 +73,28 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     );
   }
 
+  const TABLE_COLUMNS = [
+    { header: '#' },
+    { header: 'Date' },
+    { header: 'Property' },
+    { header: 'Type' },
+    { header: 'Category' },
+    { header: 'Description' },
+    { header: 'Amount', individualClass: 'text-right' },
+    { header: 'File', individualClass: 'text-center' },
+    { header: 'Actions', individualClass: 'text-right' },
+  ];
+
   return (
     <>
       <Table>
         <TableHeader className='bg-card'>
           <TableRow>
-            <TableHead className='pl-4'>#</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Property</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead className='text-right'>Amount</TableHead>
-            <TableHead className='text-center'>File</TableHead>
-            <TableHead className='pr-4 text-right'>Actions</TableHead>
+            {TABLE_COLUMNS.map((column, index) => (
+              <TableHead key={index} className={column.individualClass}>
+                {column.header}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
 

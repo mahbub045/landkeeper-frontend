@@ -18,7 +18,11 @@ import {
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
-import { FilterTab, Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { useGetCommonPermissionsQuery } from '@/store/api/endpoints/common/Permissions/CommonPermissionsApi';
+import {
+  FilterTab,
+  Property,
+} from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
@@ -27,6 +31,7 @@ import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
 import PropertyFilter from './Propertyfilter/Propertyfilter';
 import PropertyGrid from './PropertyGrid/PropertyGrid';
+import PropertySummary from './PropertySummary/PropertySummary';
 
 const Properties: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('All');
@@ -57,6 +62,7 @@ const Properties: React.FC = () => {
   };
 
   const { data, isLoading, isError } = useGetPropertiesQuery(queryParams);
+  const { data: commonPermissions } = useGetCommonPermissionsQuery(undefined);
 
   const properties: Property[] = data?.results ?? [];
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
@@ -88,120 +94,136 @@ const Properties: React.FC = () => {
   };
 
   return (
-    <div className='space-y-6'>
-      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+    <>
+      <div className='mb-6 space-y-2'>
         <div>
           <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-            Properties
+            Property Summary
           </h1>
           <p className='text-muted-foreground text-sm'>
-            Manage your property portfolio
+            Overview of your property portfolio
           </p>
         </div>
-
-        <div className='flex items-center gap-2'>
-          <div className='relative w-64'>
-            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-            <Input
-              type='text'
-              placeholder='Search...'
-              value={search}
-              onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-7!'
-            />
-            <HoverInfoPopover text='You can search using Property Name and Address.' />
-          </div>
-
-          {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) && (
-            <Button onClick={() => setModalOpen(true)}>
-              <Plus />
-              Add Property
-            </Button>
-          )}
-        </div>
+        <PropertySummary />
       </div>
-
-      <PropertyFilter
-        filterTabs={FILTER_TABS}
-        activeFilter={activeFilter}
-        onFilterChange={handleFilterChange}
-      />
-
-      {isError ? (
-        <CustomErrorMessage title='properties' />
-      ) : (
-        <>
-          <PropertyGrid
-            properties={properties}
-            activeFilter={activeFilter}
-            isLoading={isLoading}
-          />
-
-          <div className='flex items-center justify-between'>
-            {(data?.count ?? 0) > 0 && (
-              <p className='text-muted-foreground text-sm whitespace-nowrap'>
-                Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
-                {data?.count ?? 0} Properties
-              </p>
-            )}
-            {totalPages > 1 && (
-              <Pagination className='justify-end'>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => page > 1 && setPage((p) => p - 1)}
-                      aria-disabled={page === 1}
-                      className={
-                        page === 1
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer'
-                      }
-                    />
-                  </PaginationItem>
-
-                  {getPageNumbers().map((p, i) =>
-                    p === '...' ? (
-                      <PaginationItem key={`ellipsis-${i}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    ) : (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          isActive={p === page}
-                          onClick={() => setPage(p as number)}
-                          className='cursor-pointer'
-                        >
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ),
-                  )}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => page < totalPages && setPage((p) => p + 1)}
-                      aria-disabled={page === totalPages}
-                      className={
-                        page === totalPages
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer'
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
+      <div className='space-y-6'>
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+          <div>
+            <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+              Properties
+            </h1>
+            <p className='text-muted-foreground text-sm'>
+              Manage your property portfolio
+            </p>
           </div>
-        </>
-      )}
 
-      <AddPropertyDialog
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSuccess={() => setModalOpen(false)}
-      />
-    </div>
+          <div className='flex items-center gap-2'>
+            <div className='relative w-64'>
+              <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+              <Input
+                type='text'
+                placeholder='Search...'
+                value={search}
+                onChange={handleSearchChange}
+                className='h-8! w-64 pr-8! pl-7!'
+              />
+              <HoverInfoPopover text='You can search using Property Name and Address.' />
+            </div>
+
+            {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) &&
+              commonPermissions?.can_create_property && (
+                <Button onClick={() => setModalOpen(true)}>
+                  <Plus />
+                  Add Property
+                </Button>
+              )}
+          </div>
+        </div>
+
+        <PropertyFilter
+          filterTabs={FILTER_TABS}
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+        />
+
+        {isError ? (
+          <CustomErrorMessage title='properties' />
+        ) : (
+          <>
+            <PropertyGrid
+              properties={properties}
+              activeFilter={activeFilter}
+              isLoading={isLoading}
+            />
+
+            <div className='flex items-center justify-between'>
+              {(data?.count ?? 0) > 0 && (
+                <p className='text-muted-foreground text-sm whitespace-nowrap'>
+                  Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+                  {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
+                  {data?.count ?? 0} Properties
+                </p>
+              )}
+              {totalPages > 1 && (
+                <Pagination className='justify-end'>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => page > 1 && setPage((p) => p - 1)}
+                        aria-disabled={page === 1}
+                        className={
+                          page === 1
+                            ? 'pointer-events-none opacity-50'
+                            : 'cursor-pointer'
+                        }
+                      />
+                    </PaginationItem>
+
+                    {getPageNumbers().map((p, i) =>
+                      p === '...' ? (
+                        <PaginationItem key={`ellipsis-${i}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={p === page}
+                            onClick={() => setPage(p as number)}
+                            className='cursor-pointer'
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ),
+                    )}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() =>
+                          page < totalPages && setPage((p) => p + 1)
+                        }
+                        aria-disabled={page === totalPages}
+                        className={
+                          page === totalPages
+                            ? 'pointer-events-none opacity-50'
+                            : 'cursor-pointer'
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </div>
+          </>
+        )}
+
+        <AddPropertyDialog
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSuccess={() => setModalOpen(false)}
+        />
+      </div>
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { authApi } from './api/authApi';
 import { baseApi } from './api/baseApi';
 import authReducer from './slices/authSlice';
+import billingTabsReducer from './slices/billingTabSlice';
 import calculatorTabsReducer from './slices/calculatorTabsSlice';
 import permissionAccessTabsReducer, {
   mortgagesPermissionTabsReducer,
@@ -17,6 +18,7 @@ export const store = configureStore({
     permissionAccessTabs: permissionAccessTabsReducer,
     propertiesPermissionTabs: propertiesPermissionTabsReducer,
     mortgagesPermissionTabs: mortgagesPermissionTabsReducer,
+    billingTabs: billingTabsReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },

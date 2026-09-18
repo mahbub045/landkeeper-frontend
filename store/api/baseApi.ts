@@ -22,6 +22,7 @@ export const TAG_TYPES = [
   'SupportTicketComments',
   'NewJourney',
   'Permissions',
+  'CommonPermissions',
 
   // Common Tags
   'Property',
@@ -36,6 +37,10 @@ export const TAG_TYPES = [
   'Permission',
   'PropertyMaintenance',
   'PropertyMaintenanceComments',
+
+  //Landlord Tags
+  'PricingPlans',
+  'BillingDetails',
 
   // Payments
   'PaymentMethods',
