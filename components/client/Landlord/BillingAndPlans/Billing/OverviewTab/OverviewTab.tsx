@@ -16,8 +16,8 @@ import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import {
   ArrowRight,
   Building2,
-  CalendarDays,
   CalendarClock,
+  CalendarDays,
   CreditCard,
   Sparkles,
 } from 'lucide-react';
@@ -44,6 +44,19 @@ const planTierAccent: Record<string, string> = {
   STANDARD: 'before:bg-primary',
   PREMIUM: 'before:bg-amber-500',
 };
+
+function getElapsedPercent(startDate: string, effectiveDate: string) {
+  const start = new Date(startDate).getTime();
+  const end = new Date(effectiveDate).getTime();
+  const now = Date.now();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+    return 0;
+  }
+
+  const percent = ((now - start) / (end - start)) * 100;
+  return Math.min(100, Math.max(0, percent));
+}
 
 export default function OverviewTab() {
   const {
@@ -78,7 +91,7 @@ export default function OverviewTab() {
           </div>
         </div>
 
-        <div className='border-border/70 space-y-4 rounded-2xl border bg-white p-6 dark:bg-white/4'>
+        <div className='border-border/70 mt-4 space-y-4 rounded-2xl border bg-white p-6 dark:bg-white/4'>
           <div className='bg-muted h-5 w-48 animate-pulse rounded' />
           <div className='bg-muted h-4 w-full animate-pulse rounded' />
           <div className='bg-muted h-4 w-2/3 animate-pulse rounded' />
@@ -281,7 +294,9 @@ export default function OverviewTab() {
                 <p className='text-muted-foreground mt-0.5 text-xs'>
                   Takes effect on{' '}
                   <span className='text-foreground font-medium'>
-                    {formatDateAndTime(subscription.pending_plan.effective_date)}
+                    {formatDateAndTime(
+                      subscription.pending_plan.effective_date,
+                    )}
                   </span>
                 </p>
               </div>
@@ -313,6 +328,28 @@ export default function OverviewTab() {
               <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.pending_plan.max_properties} max properties
+              </span>
+            </div>
+          </div>
+
+          <div className='mt-5'>
+            <div className='bg-primary/10 relative h-2 w-full overflow-hidden rounded-full'>
+              <div
+                className='bg-primary absolute inset-y-0 left-0 rounded-full transition-[width] duration-1000 ease-out'
+                style={{
+                  width: `${getElapsedPercent(
+                    subscription.start_date,
+                    subscription.pending_plan.effective_date,
+                  )}%`,
+                }}
+              >
+                <div className='animate-shimmer absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/50 to-transparent dark:via-white/20' />
+              </div>
+            </div>
+            <div className='text-muted-foreground mt-1.5 flex items-center justify-between text-[11px]'>
+              <span>{formatDateAndTime(subscription.start_date)}</span>
+              <span>
+                {formatDateAndTime(subscription.pending_plan.effective_date)}
               </span>
             </div>
           </div>
