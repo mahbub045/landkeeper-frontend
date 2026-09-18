@@ -19,6 +19,15 @@ export interface SubscriptionPlan {
 export type SubscriptionStatus =
   'PENDING' | 'ACTIVE' | 'TRIALING' | 'PAST_DUE' | 'CANCELLED' | 'EXPIRED';
 
+export interface PendingPlan {
+  alias: string;
+  name: string;
+  plan_type: 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
+  monthly_price: string;
+  max_properties: number;
+  effective_date: string;
+}
+
 export interface SubscriptionDetails {
   status: SubscriptionStatus;
   plan: SubscriptionPlan;
@@ -28,6 +37,7 @@ export interface SubscriptionDetails {
   auto_renew: boolean;
   cancelled_at: string | null;
   trial_days_left: number | null;
+  pending_plan: PendingPlan | null;
 }
 
 export interface BillingHistoryItem {

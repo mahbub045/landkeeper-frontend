@@ -13,7 +13,14 @@ import {
   SubscriptionStatus,
 } from '@/types/client/Landlord/BillingAndPlans/BillingType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
-import { Building2, CalendarDays, CreditCard, Sparkles } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  CalendarClock,
+  CreditCard,
+  Sparkles,
+} from 'lucide-react';
 import Link from 'next/link';
 
 const statusDotStyles: Record<SubscriptionStatus, string> = {
@@ -69,6 +76,12 @@ export default function OverviewTab() {
             <div className='bg-muted h-4 w-full animate-pulse rounded' />
             <div className='bg-muted h-4 w-full animate-pulse rounded' />
           </div>
+        </div>
+
+        <div className='border-border/70 space-y-4 rounded-2xl border bg-white p-6 dark:bg-white/4'>
+          <div className='bg-muted h-5 w-48 animate-pulse rounded' />
+          <div className='bg-muted h-4 w-full animate-pulse rounded' />
+          <div className='bg-muted h-4 w-2/3 animate-pulse rounded' />
         </div>
 
         <div className='border-border/70 col-span-2 mt-4 space-y-6 rounded-2xl border bg-white p-6 dark:bg-white/4'>
@@ -156,7 +169,7 @@ export default function OverviewTab() {
                 </span>
                 <span className='text-muted-foreground text-sm'> /month</span>
               </div>
-              <span className='bg-primary text-white inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+              <span className='bg-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white'>
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.plan.max_properties} max properties
               </span>
@@ -242,12 +255,76 @@ export default function OverviewTab() {
         </div>
       </div>
 
+      {/* Pending plan change */}
+      {subscription.pending_plan && (
+        <div
+          className={cn(
+            "border-primary/20 from-primary/5 relative overflow-hidden rounded-2xl border bg-linear-to-r via-white to-white p-6 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] dark:via-white/4 dark:to-white/4",
+            planTierAccent[subscription.pending_plan.plan_type] ??
+              'before:bg-primary',
+          )}
+        >
+          <div className='flex flex-wrap items-center justify-between gap-4'>
+            <div className='flex items-center gap-3'>
+              <span className='bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full'>
+                <CalendarClock className='size-4.5' aria-hidden='true' />
+              </span>
+              <div>
+                <div className='flex items-center gap-2'>
+                  <span className='text-sm font-semibold'>
+                    Upcoming plan change
+                  </span>
+                  <span className='bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[11px] font-medium'>
+                    Scheduled
+                  </span>
+                </div>
+                <p className='text-muted-foreground mt-0.5 text-xs'>
+                  Takes effect on{' '}
+                  <span className='text-foreground font-medium'>
+                    {formatDateAndTime(subscription.pending_plan.effective_date)}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-center gap-3 sm:gap-5'>
+              <div className='flex items-center gap-2 text-sm'>
+                <span className='text-muted-foreground'>
+                  {subscription.plan.name}
+                </span>
+                <ArrowRight
+                  className='text-muted-foreground size-3.5'
+                  aria-hidden='true'
+                />
+                <span className='font-semibold'>
+                  {subscription.pending_plan.name}
+                </span>
+              </div>
+
+              <div className='bg-border/70 h-8 w-px' />
+
+              <div className='text-right'>
+                <span className='text-xl font-semibold tracking-[-0.02em]'>
+                  ${Number(subscription.pending_plan.monthly_price).toFixed(2)}
+                </span>
+                <span className='text-muted-foreground text-sm'>/month</span>
+              </div>
+
+              <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+                <Building2 className='size-3.5' aria-hidden='true' />
+                {subscription.pending_plan.max_properties} max properties
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Plan features */}
       {subscription.plan.features && subscription.plan.features.length > 0 && (
         <div className='border-border/70 rounded-2xl border bg-white p-6 dark:bg-white/4'>
           <div className='mb-4 flex items-center gap-2'>
             <Sparkles className='text-success size-4' aria-hidden='true' />
-            <span className='text-sm font-semibold'>Plan features</span>
+            <span className='text-sm font-semibold'>Current Plan features</span>
           </div>
 
           <ul className='grid gap-2.5 sm:grid-cols-2'>
