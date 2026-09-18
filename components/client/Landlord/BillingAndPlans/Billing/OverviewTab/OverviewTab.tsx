@@ -182,7 +182,7 @@ export default function OverviewTab() {
                 </span>
                 <span className='text-muted-foreground text-sm'> /month</span>
               </div>
-              <span className='bg-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-white'>
+              <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.plan.max_properties} max properties
               </span>
