@@ -22,6 +22,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
+import Swal from 'sweetalert2';
 
 const statusDotStyles: Record<SubscriptionStatus, string> = {
   PENDING: 'bg-slate-400',
@@ -71,8 +73,43 @@ export default function OverviewTab() {
   const [updateAutoRenew, { isLoading: isUpdatingAutoRenew }] =
     useUpdateAutoRenewMutation();
 
-  const handleAutoRenewToggle = (checked: boolean) => {
-    updateAutoRenew({ auto_renew: checked });
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    const errorData =
+      error && typeof error === 'object' && 'data' in error
+        ? (error as { data?: unknown }).data
+        : null;
+    const errorMessage =
+      errorData && typeof errorData === 'object'
+        ? (errorData as { detail?: string; message?: string }).detail ||
+          (errorData as { detail?: string; message?: string }).message
+        : null;
+
+    return (
+      errorMessage ||
+      (error instanceof Error ? error.message : null) ||
+      fallback
+    );
+  };
+
+  const handleAutoRenewToggle = async (checked: boolean) => {
+    try {
+      const response = await updateAutoRenew({
+        auto_renew: checked,
+      }).unwrap();
+
+      toast.success(
+        `Auto renew ${response.auto_renew ? 'enabled' : 'disabled'} successfully.`,
+      );
+    } catch (error: unknown) {
+      Swal.fire({
+        title: 'Error',
+        text: getErrorMessage(
+          error,
+          'Could not update auto renew. Please try again.',
+        ),
+        icon: 'error',
+      });
+    }
   };
 
   if (isLoading) {
@@ -182,7 +219,7 @@ export default function OverviewTab() {
                 </span>
                 <span className='text-muted-foreground text-sm'> /month</span>
               </div>
-              <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+              <span className='bg-success/10 text-success inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.plan.max_properties} max properties
               </span>
@@ -325,7 +362,7 @@ export default function OverviewTab() {
                 <span className='text-muted-foreground text-sm'>/month</span>
               </div>
 
-              <span className='bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+              <span className='bg-success/10 text-success inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.pending_plan.max_properties} max properties
               </span>
