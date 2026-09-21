@@ -72,6 +72,7 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useCreateRentPaymentMutation,
   useGetRentBalanceSummaryQuery,
   useGetPaymentHistoryQuery,
   useGetPaymentMethodsQuery,
