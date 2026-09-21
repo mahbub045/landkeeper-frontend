@@ -276,65 +276,71 @@ const TenantList: React.FC = () => {
                           )}
                         </TableCell>
 
-                        <TableCell className='flex items-center justify-center'>
-                          {tenant.is_password_set ? (
-                            <Select
-                              value={
-                                tenant.is_active ? 'active' : 'deactivated'
-                              }
-                              onValueChange={(value) =>
-                                handleStatusChange(tenant, value)
-                              }
-                              disabled={isUpdatingStatus}
-                            >
-                              <SelectTrigger
-                                size='sm'
-                                className={`h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${
-                                  tenant.is_active
-                                    ? 'border-success/30 bg-success/10 text-success'
-                                    : 'border-danger/30 bg-danger/10 text-danger'
-                                }`}
+                        <TableCell>
+                          <div className='flex items-center justify-center'>
+                            {tenant.is_password_set ? (
+                              <Select
+                                value={
+                                  tenant.is_active ? 'active' : 'deactivated'
+                                }
+                                onValueChange={(value) =>
+                                  handleStatusChange(tenant, value)
+                                }
+                                disabled={isUpdatingStatus}
                               >
-                                <span
-                                  className={`inline-block size-1.5 rounded-full ${
+                                <SelectTrigger
+                                  size='sm'
+                                  className={`h-6! w-fit gap-1.5 border px-2 py-1.5 text-xs font-semibold hover:bg-inherit ${
                                     tenant.is_active
-                                      ? 'bg-success'
-                                      : 'bg-danger'
+                                      ? 'border-success/30 bg-success/10 text-success'
+                                      : 'border-danger/30 bg-danger/10 text-danger'
                                   }`}
-                                />
-                                <SelectValue>
-                                  {tenant.is_active ? 'Active' : 'Deactivated'}
-                                </SelectValue>
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem
-                                  value='active'
-                                  className='focus:bg-success/10'
                                 >
-                                  <span className='bg-success inline-block size-1.5 rounded-full' />
-                                  Active
-                                </SelectItem>
-                                <SelectItem
-                                  value='deactivated'
-                                  className='focus:bg-danger/10'
-                                >
-                                  <span className='bg-danger inline-block size-1.5 rounded-full' />
+                                  <span
+                                    className={`inline-block size-1.5 rounded-full ${
+                                      tenant.is_active
+                                        ? 'bg-success'
+                                        : 'bg-danger'
+                                    }`}
+                                  />
+                                  <SelectValue>
+                                    {tenant.is_active
+                                      ? 'Active'
+                                      : 'Deactivated'}
+                                  </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem
+                                    value='active'
+                                    className='focus:bg-success/10'
+                                  >
+                                    <span className='bg-success inline-block size-1.5 rounded-full' />
+                                    Active
+                                  </SelectItem>
+                                  <SelectItem
+                                    value='deactivated'
+                                    className='focus:bg-danger/10'
+                                  >
+                                    <span className='bg-danger inline-block size-1.5 rounded-full' />
+                                    Deactivated
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Badge
+                                variant='destructive'
+                                className='ps-3 text-xs'
+                              >
+                                <span className='leading-none'>
                                   Deactivated
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <Badge
-                              variant='destructive'
-                              className='ps-3 text-xs'
-                            >
-                              <span>Deactivated</span>
-                              <HoverInfoPopover
-                                triggerClassName='flex size-4 items-center justify-center'
-                                content='Tenant has not set their password yet'
-                              />
-                            </Badge>
-                          )}
+                                </span>
+                                <HoverInfoPopover
+                                  triggerClassName='flex size-4 shrink-0 items-center justify-center self-center leading-none'
+                                  content='Tenant has not set their password yet'
+                                />
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className='text-sm'>
                           {tenant.created_at ? (
