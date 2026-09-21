@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock,
   CreditCard,
-  Landmark,
   Loader,
   LucideIcon,
   RotateCcw,
@@ -33,20 +32,10 @@ export const CURRENT_YEAR = new Date().getFullYear();
 export const YEARS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
 
 export const PROVIDER_ICON: Record<PaymentProvider, LucideIcon> = {
-  gocardless: Landmark,
   stripe: CreditCard,
 };
 
 export const dummyPaymentMethods: PaymentMethodOption[] = [
-  {
-    id: 'gocardless',
-    provider: 'gocardless',
-    title: 'Set up Direct Debit',
-    description:
-      'Set up hassle-free, recurring monthly transfers directly from your bank account.',
-    ctaLabel: 'Set Up Direct Debit',
-    action: 'setup',
-  },
   {
     id: 'stripe',
     provider: 'stripe',
@@ -92,12 +81,10 @@ export const PAYMENT_METHOD_PROVIDER_CONFIG: Record<
   string,
   { label: string; icon: LucideIcon }
 > = {
-  GOCARDLESS: { label: 'GoCardless', icon: Landmark },
   STRIPE: { label: 'Stripe', icon: CreditCard },
 };
 
 export const PAYMENT_METHOD_TYPE_LABEL: Record<string, string> = {
-  DIRECT_DEBIT: 'Direct Debit',
   CARD: 'Card',
 };
 

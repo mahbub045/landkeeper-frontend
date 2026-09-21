@@ -13,23 +13,6 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export const paymentMethodsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    setupDirectDebit: builder.mutation({
-      query: (body) => ({
-        url: '/tenant/payment-methods/direct-debit/setup',
-        method: 'POST',
-        body,
-      }),
-    }),
-
-    completeDirectDebit: builder.mutation({
-      query: (body) => ({
-        url: '/tenant/payment-methods/direct-debit/complete',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['PaymentMethods'],
-    }),
-
     getRentBalanceSummary: builder.query({
       query: () => '/tenant/rent-payments/balance-summary',
     }),
@@ -81,8 +64,6 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useSetupDirectDebitMutation,
-  useCompleteDirectDebitMutation,
   useGetRentBalanceSummaryQuery,
   useGetPaymentHistoryQuery,
   useGetPaymentMethodsQuery,

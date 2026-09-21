@@ -11,7 +11,7 @@ export interface ApiRentBalanceSummary {
   next_due_date: string | null;
 }
 
-export type PaymentProvider = 'gocardless' | 'stripe';
+export type PaymentProvider = 'stripe';
 
 export interface PaymentMethodOption {
   id: string;
@@ -19,14 +19,14 @@ export interface PaymentMethodOption {
   title: string;
   description: string;
   ctaLabel: string;
-  action: 'setup' | 'request-deduction';
+  action: 'setup';
 }
 
 export interface ApiPaymentMethod {
   alias: string;
   tenant: number;
-  provider: 'GOCARDLESS' | 'STRIPE' | string;
-  method_type: 'DIRECT_DEBIT' | 'CARD' | string;
+  provider: 'STRIPE' | string;
+  method_type: 'CARD' | string;
   provider_customer_id: string | null;
   provider_mandate_id: string | null;
   provider_payment_method_id: string | null;
@@ -91,26 +91,11 @@ export interface PayWithCardResponse {
   status: string;
 }
 
-export interface PayWithDirectDebitPayload {
-  rent_payment: string;
-}
-
-export interface PayWithDirectDebitResponse {
-  provider_payment_id: string;
-  status: string;
-}
-
 export interface PaymentHistoryTableProps {
   payments: ApiRentPayment[];
 }
 
 export interface PayWithCardDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
-}
-
-export interface PayWithDirectDebitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;

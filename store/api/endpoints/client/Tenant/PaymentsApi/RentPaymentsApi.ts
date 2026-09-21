@@ -19,20 +19,10 @@ export const rentPaymentsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['RentPayments'],
     }),
-
-    payWithDirectDebit: builder.mutation({
-      query: (body) => ({
-        url: '/tenant/rent-payments/pay-with-direct-debit',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['RentPayments'],
-    }),
   }),
 });
 
 export const {
   useCreateRentPaymentMutation,
   usePayWithCardMutation,
-  usePayWithDirectDebitMutation,
 } = rentPaymentsApi;
