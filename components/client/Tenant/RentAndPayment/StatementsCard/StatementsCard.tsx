@@ -83,7 +83,7 @@ export const StatementsCard: React.FC = () => {
   };
 
   return (
-    <Card className='flex h-full flex-col'>
+    <Card className='flex h-full flex-col shadow-md'>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <FileText className='text-primary h-5 w-5' />
@@ -94,7 +94,7 @@ export const StatementsCard: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className='flex flex-1 flex-col gap-3'>
-        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between'>
+        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-start gap-3'>
             <span className='bg-secondary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
               <Download className='text-secondary h-4.5 w-4.5' />
@@ -121,7 +121,7 @@ export const StatementsCard: React.FC = () => {
           </Button>
         </div>
 
-        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between'>
+        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-start gap-3'>
             <span className='bg-secondary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
               <CalendarRange className='text-secondary h-4.5 w-4.5' />
