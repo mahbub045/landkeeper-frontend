@@ -13,18 +13,26 @@ function downloadBlob(blob: Blob, filename: string) {
 
 export const paymentMethodsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getRentBalanceSummary: builder.query({
-      query: () => '/tenant/rent-payments/balance-summary',
+    createRentPayment: builder.mutation({
+      query: (body) => ({
+        url: '/tenant/rent-payments',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['RentPayments'],
     }),
 
-    // getRentPayments: builder.query({
-    //   query: ({ page }) => `/tenant/rent-payments?page=${page}`,
-    //   providesTags: ['RentPayments'],
-    // }),
+    getRentBalanceSummary: builder.query({
+      query: () => '/tenant/rent-payments/rent-balance-summary',
+      providesTags: ['RentPayments'],
+    }),
+
     getPaymentHistory: builder.query({
       query: (page) => ({
         url: '/tenant/rent-payments/payment-history',
-        page,
+        params: {
+          page,
+        },
       }),
       providesTags: ['RentPayments'],
     }),
