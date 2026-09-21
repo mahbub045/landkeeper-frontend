@@ -37,12 +37,14 @@ export const RentAndPaymentDashboard: React.FC = () => {
 
       <BalanceSummaryCard summary={balanceSummary} />
 
-      <QuickPaymentCard
-        paymentMethods={paymentMethods}
-        onSelectPaymentMethod={handleSelectPaymentMethod}
-      />
+      <div className='grid gap-6 md:grid-cols-2'>
+        <QuickPaymentCard
+          paymentMethods={paymentMethods}
+          onSelectPaymentMethod={handleSelectPaymentMethod}
+        />
 
-      <StatementsCard />
+        <StatementsCard />
+      </div>
 
       <PaymentHistoryTable />
 

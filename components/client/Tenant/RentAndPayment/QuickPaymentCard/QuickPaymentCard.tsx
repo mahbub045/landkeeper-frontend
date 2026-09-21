@@ -19,7 +19,7 @@ export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
   loadingMethodId = null,
 }) => {
   return (
-    <Card>
+    <Card className='flex h-full flex-col'>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <Wallet className='text-primary h-5 w-5' />
@@ -30,17 +30,19 @@ export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
           card payment below.
         </CardDescription>
       </CardHeader>
-      <CardContent className='grid gap-4 sm:grid-cols-1'>
+      <CardContent className='flex flex-1 flex-col gap-3'>
         {paymentMethods.map((method) => {
           const Icon = PROVIDER_ICON[method.provider];
           const isLoading = loadingMethodId === method.id;
           return (
             <div
               key={method.id}
-              className='flex flex-col justify-between gap-4 rounded-lg border p-4'
+              className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between'
             >
               <div className='flex items-start gap-3'>
-                <Icon className='text-secondary mt-0.5 h-5 w-5 shrink-0' />
+                <span className='bg-secondary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
+                  <Icon className='text-secondary h-4.5 w-4.5' />
+                </span>
                 <div>
                   <p className='font-medium'>{method.title}</p>
                   <p className='text-muted-foreground text-sm'>
@@ -48,20 +50,18 @@ export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
                   </p>
                 </div>
               </div>
-              <div className='flex justify-end'>
-                <Button
-                  onClick={() => onSelectPaymentMethod(method)}
-                  disabled={isLoading}
-                  className='w-full sm:w-fit'
-                >
-                  {isLoading ? (
-                    <Loader2 className='h-4 w-4 animate-spin' />
-                  ) : (
-                    <Icon className='h-4 w-4' />
-                  )}
-                  {isLoading ? 'Redirecting…' : method.ctaLabel}
-                </Button>
-              </div>
+              <Button
+                onClick={() => onSelectPaymentMethod(method)}
+                disabled={isLoading}
+                className='w-full shrink-0 sm:w-fit'
+              >
+                {isLoading ? (
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                ) : (
+                  <Icon className='h-4 w-4' />
+                )}
+                {isLoading ? 'Redirecting…' : method.ctaLabel}
+              </Button>
             </div>
           );
         })}
