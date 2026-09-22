@@ -1,15 +1,5 @@
 import { baseApi } from '@/store/api/baseApi';
-
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
+import { downloadBlob } from '@/utils/downloadBlob';
 
 export const paymentMethodsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -35,12 +25,6 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
         params,
       }),
       providesTags: ['RentPayments'],
-    }),
-
-    getPaymentMethods: builder.query({
-      query: () => '/tenant/payment-methods',
-      transformResponse: (response) => response.results,
-      providesTags: ['PaymentMethods'],
     }),
 
     getRentStatementPdf: builder.query<
@@ -75,6 +59,5 @@ export const {
   useCreateRentPaymentMutation,
   useGetRentBalanceSummaryQuery,
   useGetPaymentHistoryQuery,
-  useGetPaymentMethodsQuery,
   useGetRentStatementPdfQuery,
 } = paymentMethodsApi;

@@ -175,7 +175,6 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               try {
                 const result = await payWithCard({
                   amount,
-                  // payment_method_id: paymentMethodId,
                 }).unwrap();
 
                 return { clientSecret: result.client_secret };
