@@ -28,9 +28,9 @@ import {
 } from '@/components/ui/table';
 import {
   normalizePaymentStatus,
-  PAYMENT_METHOD_PROVIDER_CONFIG,
   STATUS_CONFIG,
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
+import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
 import { useGetPaymentHistoryQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
@@ -133,28 +133,21 @@ export function PaymentHistoryTable() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {payment.payment_method ? (
+                      {payment.card ? (
                         <div className='flex items-center justify-start gap-2'>
-                          {(() => {
-                            const provider = payment.payment_method.provider;
-                            const config =
-                              PAYMENT_METHOD_PROVIDER_CONFIG[provider];
-                            const Icon = config?.icon;
-                            return Icon ? (
-                              <Icon className='text-muted-foreground h-4 w-4' />
-                            ) : null;
-                          })()}
+                          {payment.card.card_brand && (
+                            <CardBrandLogo
+                              brand={payment.card.card_brand}
+                              className='flex size-8 shrink-0 items-center justify-center'
+                            />
+                          )}
                           <div className='flex flex-col leading-tight'>
-                            <span>{payment.payment_method.provider}</span>
+                            <span className='capitalize'>
+                              {payment.card.card_brand ?? 'Card'} ••••{' '}
+                              {payment.card.card_last4 ?? '----'}
+                            </span>
                             <span className='text-muted-foreground text-xs'>
-                              {formatChoiceFieldValue(
-                                payment.payment_method.method_type,
-                              )}{' '}
-                              {payment.payment_method.card_brand && (
-                                <small className='text-muted-foreground text-xs'>
-                                  ({payment.payment_method.card_brand})
-                                </small>
-                              )}
+                              {formatChoiceFieldValue(payment.card.method_type)}
                             </span>
                           </div>
                         </div>

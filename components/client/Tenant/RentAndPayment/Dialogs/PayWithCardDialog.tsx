@@ -169,13 +169,13 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
         {step === 'card' && (
           <CardPaymentForm
             amount={amount}
-            onSuccess={async (paymentMethodId) => {
+            onSuccess={async () => {
               setFormErrors([]);
 
               try {
                 const result = await payWithCard({
                   amount,
-                  payment_method_id: paymentMethodId,
+                  // payment_method_id: paymentMethodId,
                 }).unwrap();
 
                 return { clientSecret: result.client_secret };

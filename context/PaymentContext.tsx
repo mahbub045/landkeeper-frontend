@@ -1,7 +1,7 @@
 'use client';
 import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
+import { useCreateRentPaymentMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import { createContext, useContext, useState } from 'react';
 
 interface PaymentRequest {
@@ -16,7 +16,7 @@ const PaymentContext = createContext<{
 
 export function PaymentProvider({ children }: { children: React.ReactNode }) {
   const [request, setRequest] = useState<PaymentRequest | null>(null);
-  const [payWithCard, { isLoading, error }] = usePayWithCardMutation();
+  const [payWithCard, { isLoading, error }] = useCreateRentPaymentMutation();
 
   const handleClose = () => setRequest(null);
 

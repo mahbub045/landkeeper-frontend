@@ -15,7 +15,7 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createRentPayment: builder.mutation({
       query: (body) => ({
-        url: '/tenant/rent-payments',
+        url: '/tenant/card-payments',
         method: 'POST',
         body,
       }),
@@ -23,16 +23,16 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
     }),
 
     getRentBalanceSummary: builder.query({
-      query: () => '/tenant/rent-payments/rent-balance-summary',
+      query: () => ({
+        url: '/tenant/rent-payments/balance-summary',
+      }),
       providesTags: ['RentPayments'],
     }),
 
     getPaymentHistory: builder.query({
-      query: (page) => ({
-        url: '/tenant/rent-payments/payment-history',
-        params: {
-          page,
-        },
+      query: (params) => ({
+        url: '/tenant/payment-history',
+        params,
       }),
       providesTags: ['RentPayments'],
     }),

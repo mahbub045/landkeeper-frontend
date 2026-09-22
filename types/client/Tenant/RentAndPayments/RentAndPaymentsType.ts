@@ -56,12 +56,23 @@ export interface StatementRequest {
   endDate?: string;
 }
 
+export interface ApiRentPaymentCard {
+  provider: 'STRIPE' | string;
+  method_type: 'CARD' | string;
+  card_last4: string | null;
+  card_brand: string | null;
+  card_exp_month: number | null;
+  card_exp_year: number | null;
+}
+
 export interface ApiRentPayment {
   alias: string;
   tenant: number;
   property: number;
   organisation: number;
-  payment_method: ApiPaymentMethod | null;
+  payment_method?: ApiPaymentMethod | null;
+  card?: ApiRentPaymentCard | null;
+  source?: string;
   reference: string;
   amount: string;
   due_date: string;
