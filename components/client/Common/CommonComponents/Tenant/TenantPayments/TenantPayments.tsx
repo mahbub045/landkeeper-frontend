@@ -39,10 +39,11 @@ import { useEffect, useState } from 'react';
 import TenantPaymentTableRow from './TenantPaymentTableRow';
 
 const STATUS_FILTER_OPTIONS = [
-  { value: 'all', label: 'All Statuses' },
+  { value: 'all', label: 'All Statuses', config: null },
   ...Object.entries(STATUS_CONFIG).map(([value, config]) => ({
     value,
     label: config.label,
+    config,
   })),
 ];
 
@@ -141,15 +142,29 @@ const TenantPayments: React.FC = () => {
               </h2>
               <div className='flex items-center gap-2'>
                 <Select value={status} onValueChange={handleStatusChange}>
-                  <SelectTrigger className='h-9! w-40 rounded-xl'>
+                  <SelectTrigger className='h-9! w-40 rounded-xl focus-visible:ring-0'>
                     <SelectValue placeholder='Status' />
                   </SelectTrigger>
                   <SelectContent>
-                    {STATUS_FILTER_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
+                    {STATUS_FILTER_OPTIONS.map((opt) => {
+                      const Icon = opt.config?.icon;
+                      return (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          <span
+                            className={cn(
+                              'flex items-center gap-2',
+                              opt.config &&
+                                opt.config.className
+                                  .split(' ')
+                                  .find((c) => c.startsWith('text-')),
+                            )}
+                          >
+                            {Icon && <Icon className='size-3.5' />}
+                            {opt.label}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
 
