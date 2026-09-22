@@ -1,3 +1,4 @@
+'use client';
 import { useGetTenantPaymentsQuery } from '@/store/api/endpoints/client/Common/Tenant/TenantPaymentsApi';
 
 const TenantPayments: React.FC = () => {
@@ -6,7 +7,7 @@ const TenantPayments: React.FC = () => {
     isLoading,
     isError,
   } = useGetTenantPaymentsQuery(undefined);
-  
+
   return <div>{/* JSX here */} Test</div>;
 };
 

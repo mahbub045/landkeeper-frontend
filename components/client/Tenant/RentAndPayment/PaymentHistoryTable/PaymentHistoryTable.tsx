@@ -2,6 +2,7 @@
 
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,6 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Pagination,
   PaginationContent,
@@ -34,16 +41,23 @@ import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
 import { useGetPaymentHistoryQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
-  ApiRentPayment,
   PaymentStatus,
+  RentPaymentType,
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,
 } from '@/utils/formatters';
-import { CircleOff, Receipt } from 'lucide-react';
+import { CircleOff, Download, Receipt } from 'lucide-react';
 import { useState } from 'react';
+
+const NOTE_PREVIEW_LENGTH = 25;
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}...`;
+}
 
 function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   const config = STATUS_CONFIG[status];
@@ -118,10 +132,12 @@ export function PaymentHistoryTable() {
                   <TableHead className='text-center'>Amount</TableHead>
                   <TableHead className='text-center'>Status</TableHead>
                   <TableHead className='text-center'>Payment ID</TableHead>
+                  <TableHead className='text-center'>Invoice</TableHead>
+                  <TableHead className='text-center'>Note</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((payment: ApiRentPayment) => (
+                {payments.map((payment: RentPaymentType) => (
                   <TableRow key={payment.alias}>
                     <TableCell>
                       {payment.created_at ? (
@@ -171,6 +187,55 @@ export function PaymentHistoryTable() {
                         <span className='font-mono text-sm'>
                           {payment.provider_payment_id}
                         </span>
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='text-center'>
+                      {payment.invoice_url ? (
+                        <a
+                          href={payment.invoice_url}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='text-primary flex items-center justify-center'
+                        >
+                          <Download className='size-4' />
+                        </a>
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='text-center'>
+                      {payment.note ? (
+                        <div className='flex items-center justify-center gap-1.5'>
+                          <span className='text-sm'>
+                            {truncateText(payment.note, NOTE_PREVIEW_LENGTH)}
+                          </span>
+                          {payment.note.length > NOTE_PREVIEW_LENGTH && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  size='sm'
+                                  className='text-primary h-auto px-1.5 py-0.5 text-xs'
+                                >
+                                  View Note
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align='end' className='w-64'>
+                                <DropdownMenuLabel>Note</DropdownMenuLabel>
+                                <div className='text-muted-foreground px-2 pb-2 text-sm whitespace-pre-wrap'>
+                                  {payment.note}
+                                </div>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
                       ) : (
                         <span className='text-muted-foreground text-xs'>
                           Not Available

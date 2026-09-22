@@ -6,6 +6,7 @@ import { ApiRentBalanceSummary } from '@/types/client/Tenant/RentAndPayments/Ren
 import {
   formatCurrency,
   formatDate,
+  getCurrencySign,
   getDaysUntilDue,
 } from '@/utils/formatters';
 
@@ -102,7 +103,10 @@ export const BalanceSummaryCard: React.FC<{
               )}
             >
               {hasOutstandingBalance ? (
-                formatCurrency(summary!.outstanding_balance as number)
+                <span>
+                  {getCurrencySign()}
+                  {summary?.outstanding_balance?.toFixed(2)}
+                </span>
               ) : (
                 <span className='text-muted-foreground text-xs font-normal'>
                   Not Available

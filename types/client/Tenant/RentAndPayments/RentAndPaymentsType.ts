@@ -1,9 +1,5 @@
 export type PaymentStatus =
-  | 'cleared'
-  | 'pending'
-  | 'processing'
-  | 'failed'
-  | 'refunded';
+  'cleared' | 'pending' | 'processing' | 'failed' | 'refunded';
 
 export interface ApiRentBalanceSummary {
   current_rent_amount: number | null;
@@ -22,7 +18,7 @@ export interface PaymentMethodOption {
   action: 'setup';
 }
 
-export interface ApiPaymentMethod {
+export interface PaymentMethodType {
   alias: string;
   tenant: number;
   provider: 'STRIPE' | string;
@@ -56,7 +52,7 @@ export interface StatementRequest {
   endDate?: string;
 }
 
-export interface ApiRentPaymentCard {
+export interface RentPaymentCardType {
   provider: 'STRIPE' | string;
   method_type: 'CARD' | string;
   card_last4: string | null;
@@ -65,13 +61,13 @@ export interface ApiRentPaymentCard {
   card_exp_year: number | null;
 }
 
-export interface ApiRentPayment {
+export interface RentPaymentType {
   alias: string;
   tenant: number;
   property: number;
   organisation: number;
-  payment_method?: ApiPaymentMethod | null;
-  card?: ApiRentPaymentCard | null;
+  payment_method?: PaymentMethodType | null;
+  card?: RentPaymentCardType | null;
   source?: string;
   reference: string;
   amount: string;
@@ -81,6 +77,8 @@ export interface ApiRentPayment {
   provider_payment_id: string | null;
   receipt_file: string | null;
   failure_reason: string | null;
+  note?: string | null;
+  invoice_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -103,7 +101,7 @@ export interface PayWithCardResponse {
 }
 
 export interface PaymentHistoryTableProps {
-  payments: ApiRentPayment[];
+  payments: RentPaymentType[];
 }
 
 export interface PayWithCardDialogProps {

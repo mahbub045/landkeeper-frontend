@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { PayWithCardDialogProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { getCurrencySign } from '@/utils/formatters';
 import { AlertCircle } from 'lucide-react';
@@ -63,6 +64,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
 }) => {
   const [step, setStep] = useState<'details' | 'card'>('details');
   const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
   const [payWithCard, { isLoading: isInitiatingCharge }] =
@@ -73,6 +75,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
   const resetAndClose = () => {
     setStep('details');
     setAmount('');
+    setNote('');
     setFormErrors([]);
     onOpenChange(false);
   };
@@ -120,7 +123,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                   />
                 </div>
               </div>
-              {/* <div className='space-y-2'>
+              <div className='space-y-2'>
                 <Label
                   htmlFor='note'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
@@ -133,7 +136,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                   onChange={(e) => setNote(e.target.value)}
                   required
                 />
-              </div> */}
+              </div>
             </div>
 
             {formErrors.length > 0 && (
@@ -175,6 +178,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               try {
                 const result = await payWithCard({
                   amount,
+                  note,
                 }).unwrap();
 
                 return { clientSecret: result.client_secret };
