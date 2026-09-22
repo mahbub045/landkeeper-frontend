@@ -6,7 +6,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { STATUS_CONFIG } from '@/data/client/common/tenant/TenantPaymentsData';
 import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
-import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantsTypes';
+import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantPaymentsType';
 import {
   formatCurrency,
   formatDate,

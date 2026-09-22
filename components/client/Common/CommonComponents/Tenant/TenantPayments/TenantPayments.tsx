@@ -1,6 +1,7 @@
 'use client';
 
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +13,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -21,13 +29,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { STATUS_CONFIG } from '@/data/client/common/tenant/TenantPaymentsData';
 import { cn } from '@/lib/utils';
 import { useGetTenantPaymentsQuery } from '@/store/api/endpoints/client/Common/Tenant/TenantPaymentsApi';
-import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantsTypes';
+import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantPaymentsType';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import { Receipt, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import TenantPaymentTableRow from './TenantPaymentTableRow';
+
+const STATUS_FILTER_OPTIONS = [
+  { value: 'all', label: 'All Statuses' },
+  ...Object.entries(STATUS_CONFIG).map(([value, config]) => ({
+    value,
+    label: config.label,
+  })),
+];
 
 const TABLE_COLUMN = [
   { key: 'id', label: 'ID', align: 'left' },
@@ -45,6 +62,7 @@ const TABLE_COLUMN = [
 const TenantPayments: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [status, setStatus] = useState('all');
   const [page, setPage] = useState(1);
 
   useEffect(() => {
@@ -60,10 +78,16 @@ const TenantPayments: React.FC = () => {
     setPage(1);
   }
 
+  function handleStatusChange(value: string) {
+    setStatus(value);
+    setPage(1);
+  }
+
   const queryParams = {
     page,
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
+    ...(status !== 'all' && { status }),
   };
 
   const {
@@ -115,15 +139,31 @@ const TenantPayments: React.FC = () => {
               <h2 className='text-foreground text-base font-semibold'>
                 All Payments
               </h2>
-              <div className='relative w-64'>
-                <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
-                <Input
-                  type='text'
-                  placeholder='Search payments...'
-                  value={search}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  className='h-9! w-64 rounded-xl pr-8! pl-7!'
-                />
+              <div className='flex items-center gap-2'>
+                <Select value={status} onValueChange={handleStatusChange}>
+                  <SelectTrigger className='h-9! w-40 rounded-xl'>
+                    <SelectValue placeholder='Status' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_FILTER_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className='relative w-64'>
+                  <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+                  <Input
+                    type='text'
+                    placeholder='Search payments...'
+                    value={search}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    className='h-9! w-64 rounded-xl pr-8! pl-7!'
+                  />
+                  <HoverInfoPopover text='You can search using Tenant Name, Property Name and Anount.' />
+                </div>
               </div>
             </div>
 
@@ -152,7 +192,7 @@ const TenantPayments: React.FC = () => {
                           {Array.from({ length: 4 }).map((_, i) => (
                             <Skeleton
                               key={i}
-                              className='h-14 w-full rounded-xl'
+                              className='h-14 w-full animate-pulse rounded-xl'
                             />
                           ))}
                         </div>
