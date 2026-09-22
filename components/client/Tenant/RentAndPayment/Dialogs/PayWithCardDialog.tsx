@@ -1,7 +1,7 @@
 'use client';
 
-import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { CardPaymentForm } from '@/components/common/PaymentElement/CardPaymentForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
