@@ -35,12 +35,12 @@ import {
 import {
   avatarColor,
   TABLE_COLUMNS,
-} from '@/data/client/common/tenants/TenantsData';
+} from '@/data/client/common/tenant/TenantsData';
 import {
   useGetTenantsQuery,
   useUpdateTenantMutation,
-} from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
-import { TenantTypes } from '@/types/client/Common/Tenants/TenantsTypes';
+} from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
+import { TenantTypes } from '@/types/client/Common/Tenant/TenantsTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatDate,

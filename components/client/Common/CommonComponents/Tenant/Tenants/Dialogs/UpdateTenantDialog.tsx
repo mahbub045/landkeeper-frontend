@@ -25,18 +25,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { OVERRIDE_KEY_MAP } from '@/data/client/common/tenants/TenantsData';
+import { OVERRIDE_KEY_MAP } from '@/data/client/common/tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
-import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
+import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import {
   TenantForm,
   TenantTypes,
   UpdateTenantFormProps,
   UpdateTenantModalProps,
-} from '@/types/client/Common/Tenants/TenantsTypes';
+} from '@/types/client/Common/Tenant/TenantsTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 
 import { Upload, User, X } from 'lucide-react';

@@ -28,16 +28,16 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   EMPTY_FORM,
   OVERRIDE_KEY_MAP,
-} from '@/data/client/common/tenants/TenantsData';
+} from '@/data/client/common/tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
-import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenants/TenantsApi';
+import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import {
   AddTenantModalProps,
   TenantForm,
-} from '@/types/client/Common/Tenants/TenantsTypes';
+} from '@/types/client/Common/Tenant/TenantsTypes';
 import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
 import { Upload, User, X } from 'lucide-react';
 import { useRef, useState } from 'react';

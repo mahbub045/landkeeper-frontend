@@ -1,4 +1,4 @@
-import { TenantForm } from '@/types/client/Common/Tenants/TenantsTypes';
+import { TenantForm } from '@/types/client/Common/Tenant/TenantsTypes';
 
 export const AVATAR_COLORS = [
   'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400',
