@@ -15,6 +15,7 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
     getRentBalanceSummary: builder.query({
       query: () => ({
         url: '/tenant/rent-payments/balance-summary',
+        method: 'GET',
       }),
       providesTags: ['RentPayments'],
     }),

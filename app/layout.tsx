@@ -3,7 +3,6 @@ import NextAuthProvider from '@/components/providers/SessionProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { SessionSync } from '@/components/SessionSync';
 import { Toaster } from '@/components/ui/sonner';
-import { PaymentProvider } from '@/context/PaymentContext';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -44,10 +43,8 @@ export default function RootLayout({
           <NextAuthProvider>
             <SessionSync />
             <ReduxProvider>
-              <PaymentProvider>
-                {children}
-                <Toaster />
-              </PaymentProvider>
+              {children}
+              <Toaster />
             </ReduxProvider>
           </NextAuthProvider>
         </ThemeProvider>
