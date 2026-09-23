@@ -75,12 +75,24 @@ function DinersLogo() {
 function JcbLogo() {
   return (
     <svg viewBox='0 0 48 32' className='h-5 w-8' aria-hidden='true'>
-      <rect width='48' height='32' rx='4' className='fill-[#f4f4f5]' />
+      <rect width='48' height='32' rx='4' className='fill-white' />
+      <rect
+        x='1'
+        y='1'
+        width='46'
+        height='30'
+        rx='3'
+        className='fill-none stroke-[#e5e7eb]'
+        strokeWidth='1'
+      />
+      <rect x='13' y='7' width='7' height='18' rx='2' className='fill-[#0E9F6E]' />
+      <rect x='20.5' y='7' width='7' height='18' rx='2' className='fill-[#E1001A]' />
+      <rect x='28' y='7' width='7' height='18' rx='2' className='fill-[#0B4EA2]' />
       <text
         x='24'
         y='20'
         textAnchor='middle'
-        className='fill-[#0E4C96] text-[10px] font-bold'
+        className='fill-white text-[9px] font-bold italic'
         fontFamily='Arial, sans-serif'
       >
         JCB
