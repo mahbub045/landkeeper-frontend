@@ -33,6 +33,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   avatarColor,
   TABLE_COLUMNS,
 } from '@/data/client/common/tenant/TenantsData';
@@ -196,18 +201,45 @@ const TenantList: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={8} className='p-0'>
-                        <div className='space-y-3 p-6'>
-                          {Array.from({ length: 4 }).map((_, i) => (
-                            <Skeleton
-                              key={i}
-                              className='h-14 w-full rounded-xl'
-                            />
-                          ))}
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={i} className='text-center'>
+                        <TableCell>
+                          <div className='flex items-center justify-start gap-3 pl-10'>
+                            <Skeleton className='size-9 shrink-0 rounded-full' />
+                            <div className='flex flex-col items-start gap-1.5'>
+                              <Skeleton className='h-4 w-32 rounded-md' />
+                              <Skeleton className='h-3 w-24 rounded-md' />
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-4 w-24 rounded-md' />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-4 w-14 rounded-md' />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-4 w-20 rounded-md' />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-4 w-20 rounded-md' />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-6 w-24 rounded-full' />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className='mx-auto h-4 w-28 rounded-md' />
+                        </TableCell>
+                        <TableCell>
+                          <div className='flex items-center justify-center gap-2'>
+                            <Skeleton className='h-8 w-8 rounded-lg' />
+                            <Skeleton className='h-8 w-8 rounded-lg' />
+                            <Skeleton className='h-8 w-8 rounded-lg' />
+                            <Skeleton className='h-8 w-8 rounded-lg' />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
                   ) : tenants.length > 0 ? (
                     tenants.map((tenant, idx) => (
                       <TableRow key={tenant.alias} className='text-center'>
@@ -236,9 +268,16 @@ const TenantList: React.FC = () => {
                         </TableCell>
                         <TableCell className='text-sm'>
                           {tenant.property?.property_name ? (
-                            <p className='text-foreground text-sm font-semibold'>
-                              {tenant.property.property_name}
-                            </p>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <p className='text-foreground mx-auto max-w-50 truncate text-sm font-semibold'>
+                                  {tenant.property.property_name}
+                                </p>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {tenant.property.property_name}
+                              </TooltipContent>
+                            </Tooltip>
                           ) : (
                             <small className='text-muted-foreground'>
                               Not Available
