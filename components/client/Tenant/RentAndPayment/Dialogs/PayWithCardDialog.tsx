@@ -108,6 +108,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
                   Amount({getCurrencySign()})
+                  <span className='text-danger'>*</span>
                 </Label>
                 <div className='relative'>
                   <Input
@@ -128,7 +129,7 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                   htmlFor='note'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
-                  Note
+                  Note<span className='text-danger'>*</span>
                 </Label>
                 <Textarea
                   id='note'

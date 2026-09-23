@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { cardBrandLabels } from '@/data/client/Landlord/BillingAndPlans/BillingData';
 import { PaymentMethod } from '@/types/client/Landlord/BillingAndPlans/BillingType';
 import { Trash2, TriangleAlert } from 'lucide-react';
 
@@ -36,9 +35,7 @@ export default function DeleteCardDialog({
           <AlertDialogDescription>
             {cardToDelete && (
               <>
-                {cardBrandLabels[cardToDelete.card_brand.toLowerCase()] ??
-                  cardToDelete.card_brand}{' '}
-                ending in{' '}
+                {cardToDelete.card_brand ?? 'Card'} ending in{' '}
                 <span className='text-primary font-semibold'>
                   {cardToDelete.last_four}
                 </span>{' '}
@@ -56,8 +53,8 @@ export default function DeleteCardDialog({
             />
             <span>
               This is your default payment method. If you have an active
-              subscription, removing it may cause future payments to fail
-              unless you set another card as default first.
+              subscription, removing it may cause future payments to fail unless
+              you set another card as default first.
             </span>
           </div>
         )}
