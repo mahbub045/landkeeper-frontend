@@ -482,32 +482,33 @@ const AppSidebar: React.FC = () => {
           />
         </div>
 
-        {session?.user?.role !== 'SUPER_ADMIN' && (
-          <div className='group-data-[collapsible=icon]:hidden'>
-            {sidebarLocked ? (
-              <Link href='/client/landlord/billing-and-plans/billing'>
+        {session?.user?.role !== 'SUPER_ADMIN' &&
+          session?.user?.role !== 'TENANT' && (
+            <div className='group-data-[collapsible=icon]:hidden'>
+              {sidebarLocked ? (
+                <Link href='/client/landlord/billing-and-plans/billing'>
+                  <Badge
+                    variant='destructive'
+                    className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
+                  >
+                    Subscribe to unlock
+                  </Badge>
+                </Link>
+              ) : (
                 <Badge
-                  variant='destructive'
-                  className='w-full cursor-pointer justify-center py-1.5 text-xs font-medium'
+                  variant='secondary'
+                  className={
+                    pricingPlanBadgeStyles[
+                      profileData?.plan as keyof typeof pricingPlanBadgeStyles
+                    ] ||
+                    'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                  }
                 >
-                  Subscribe to unlock
+                  {formatChoiceFieldValue(profileData?.plan) || 'Unknown'} Plan
                 </Badge>
-              </Link>
-            ) : (
-              <Badge
-                variant='secondary'
-                className={
-                  pricingPlanBadgeStyles[
-                    profileData?.plan as keyof typeof pricingPlanBadgeStyles
-                  ] ||
-                  'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                }
-              >
-                {formatChoiceFieldValue(profileData?.plan) || 'Unknown'} Plan
-              </Badge>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
       </SidebarHeader>
 
       <SidebarSeparator className='mx-0 h-px!' />

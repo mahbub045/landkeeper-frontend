@@ -8,6 +8,7 @@ const MortgageSummaryReport: React.FC = () => {
       type='button'
       variant='ghost'
       className='h-auto w-full p-0 hover:bg-transparent'
+      disabled
     >
       <Card className='border-border w-full cursor-pointer shadow-md transition-all hover:shadow-md'>
         <CardContent className='flex flex-col items-center justify-center gap-4 p-8 text-center'>

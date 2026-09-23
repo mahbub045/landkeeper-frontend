@@ -23,6 +23,7 @@ export const TAG_TYPES = [
   'NewJourney',
   'Permissions',
   'CommonPermissions',
+  'StripeConnectStatus',
 
   // Common Tags
   'Property',

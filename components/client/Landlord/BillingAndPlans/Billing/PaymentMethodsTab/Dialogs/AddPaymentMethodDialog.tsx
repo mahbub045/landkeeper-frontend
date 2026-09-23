@@ -1,7 +1,7 @@
 'use client';
 
-import { getStripe } from '@/components/client/Common/Payments/CardPaymentForm';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { getStripe } from '@/components/common/PaymentElement/CardPaymentForm';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {

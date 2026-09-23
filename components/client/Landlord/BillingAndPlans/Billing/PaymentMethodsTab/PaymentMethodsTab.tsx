@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { cardBrandLabels } from '@/data/client/Landlord/BillingAndPlans/BillingData';
 import { cn } from '@/lib/utils';
 import {
   useDeletePaymentMethodMutation,
@@ -149,9 +148,8 @@ export default function PaymentMethodsTab() {
                 <CardBrandLogo brand={card.card_brand} />
 
                 <div className='flex-1'>
-                  <p className='text-sm font-medium'>
-                    {cardBrandLabels[card.card_brand.toLowerCase()] ??
-                      card.card_brand}{' '}
+                  <p className='text-sm font-medium capitalize'>
+                    {card.card_brand ?? 'Card'}{' '}
                     <span className='text-muted-foreground font-normal'>
                       •••• {card.last_four}
                     </span>

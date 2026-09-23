@@ -2,6 +2,7 @@
 
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,6 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Pagination,
   PaginationContent,
@@ -28,22 +35,29 @@ import {
 } from '@/components/ui/table';
 import {
   normalizePaymentStatus,
-  PAYMENT_METHOD_PROVIDER_CONFIG,
   STATUS_CONFIG,
 } from '@/data/client/Tenant/RentAndPaymentDashboardData/RentAndPaymentDashboardData';
+import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
 import { useGetPaymentHistoryQuery } from '@/store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import {
-  ApiRentPayment,
   PaymentStatus,
+  RentPaymentType,
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
 import { PAGE_LIMIT } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,
 } from '@/utils/formatters';
-import { CircleOff, Receipt } from 'lucide-react';
+import { CircleOff, Download, Receipt } from 'lucide-react';
 import { useState } from 'react';
+
+const NOTE_PREVIEW_LENGTH = 25;
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}...`;
+}
 
 function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   const config = STATUS_CONFIG[status];
@@ -118,10 +132,12 @@ export function PaymentHistoryTable() {
                   <TableHead className='text-center'>Amount</TableHead>
                   <TableHead className='text-center'>Status</TableHead>
                   <TableHead className='text-center'>Payment ID</TableHead>
+                  <TableHead className='text-center'>Invoice</TableHead>
+                  <TableHead className='text-center'>Note</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((payment: ApiRentPayment) => (
+                {payments.map((payment: RentPaymentType) => (
                   <TableRow key={payment.alias}>
                     <TableCell>
                       {payment.created_at ? (
@@ -133,28 +149,21 @@ export function PaymentHistoryTable() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {payment.payment_method ? (
+                      {payment.card ? (
                         <div className='flex items-center justify-start gap-2'>
-                          {(() => {
-                            const provider = payment.payment_method.provider;
-                            const config =
-                              PAYMENT_METHOD_PROVIDER_CONFIG[provider];
-                            const Icon = config?.icon;
-                            return Icon ? (
-                              <Icon className='text-muted-foreground h-4 w-4' />
-                            ) : null;
-                          })()}
+                          {payment.card.card_brand && (
+                            <CardBrandLogo
+                              brand={payment.card.card_brand}
+                              className='flex size-8 shrink-0 items-center justify-center'
+                            />
+                          )}
                           <div className='flex flex-col leading-tight'>
-                            <span>{payment.payment_method.provider}</span>
+                            <span className='capitalize'>
+                              {payment.card.card_brand ?? 'Card'} ••••{' '}
+                              {payment.card.card_last4 ?? '----'}
+                            </span>
                             <span className='text-muted-foreground text-xs'>
-                              {formatChoiceFieldValue(
-                                payment.payment_method.method_type,
-                              )}{' '}
-                              {payment.payment_method.card_brand && (
-                                <small className='text-muted-foreground text-xs'>
-                                  ({payment.payment_method.card_brand})
-                                </small>
-                              )}
+                              {formatChoiceFieldValue(payment.card.method_type)}
                             </span>
                           </div>
                         </div>
@@ -178,6 +187,55 @@ export function PaymentHistoryTable() {
                         <span className='font-mono text-sm'>
                           {payment.provider_payment_id}
                         </span>
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='text-center'>
+                      {payment.invoice_url ? (
+                        <a
+                          href={payment.invoice_url}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='text-primary flex items-center justify-center'
+                        >
+                          <Download className='size-4' />
+                        </a>
+                      ) : (
+                        <span className='text-muted-foreground text-xs'>
+                          Not Available
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className='text-center'>
+                      {payment.note ? (
+                        <div className='flex items-center justify-center gap-1.5'>
+                          <span className='text-sm'>
+                            {truncateText(payment.note, NOTE_PREVIEW_LENGTH)}
+                          </span>
+                          {payment.note.length > NOTE_PREVIEW_LENGTH && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  size='sm'
+                                  className='text-primary h-auto px-1.5 py-0.5 text-xs'
+                                >
+                                  View Note
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align='end' className='w-64'>
+                                <DropdownMenuLabel>Note</DropdownMenuLabel>
+                                <div className='text-muted-foreground px-2 pb-2 text-sm whitespace-pre-wrap'>
+                                  {payment.note}
+                                </div>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
                       ) : (
                         <span className='text-muted-foreground text-xs'>
                           Not Available

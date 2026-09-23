@@ -1,9 +1,5 @@
 export type PaymentStatus =
-  | 'cleared'
-  | 'pending'
-  | 'processing'
-  | 'failed'
-  | 'refunded';
+  'cleared' | 'pending' | 'processing' | 'failed' | 'refunded';
 
 export interface ApiRentBalanceSummary {
   current_rent_amount: number | null;
@@ -11,7 +7,7 @@ export interface ApiRentBalanceSummary {
   next_due_date: string | null;
 }
 
-export type PaymentProvider = 'gocardless' | 'stripe';
+export type PaymentProvider = 'stripe';
 
 export interface PaymentMethodOption {
   id: string;
@@ -19,14 +15,14 @@ export interface PaymentMethodOption {
   title: string;
   description: string;
   ctaLabel: string;
-  action: 'setup' | 'request-deduction';
+  action: 'setup';
 }
 
-export interface ApiPaymentMethod {
+export interface PaymentMethodType {
   alias: string;
   tenant: number;
-  provider: 'GOCARDLESS' | 'STRIPE' | string;
-  method_type: 'DIRECT_DEBIT' | 'CARD' | string;
+  provider: 'STRIPE' | string;
+  method_type: 'CARD' | string;
   provider_customer_id: string | null;
   provider_mandate_id: string | null;
   provider_payment_method_id: string | null;
@@ -56,12 +52,23 @@ export interface StatementRequest {
   endDate?: string;
 }
 
-export interface ApiRentPayment {
+export interface RentPaymentCardType {
+  provider: 'STRIPE' | string;
+  method_type: 'CARD' | string;
+  card_last4: string | null;
+  card_brand: string | null;
+  card_exp_month: number | null;
+  card_exp_year: number | null;
+}
+
+export interface RentPaymentType {
   alias: string;
   tenant: number;
   property: number;
   organisation: number;
-  payment_method: ApiPaymentMethod | null;
+  payment_method?: PaymentMethodType | null;
+  card?: RentPaymentCardType | null;
+  source?: string;
   reference: string;
   amount: string;
   due_date: string;
@@ -70,6 +77,8 @@ export interface ApiRentPayment {
   provider_payment_id: string | null;
   receipt_file: string | null;
   failure_reason: string | null;
+  note?: string | null;
+  invoice_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -91,26 +100,11 @@ export interface PayWithCardResponse {
   status: string;
 }
 
-export interface PayWithDirectDebitPayload {
-  rent_payment: string;
-}
-
-export interface PayWithDirectDebitResponse {
-  provider_payment_id: string;
-  status: string;
-}
-
 export interface PaymentHistoryTableProps {
-  payments: ApiRentPayment[];
+  payments: RentPaymentType[];
 }
 
 export interface PayWithCardDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
-}
-
-export interface PayWithDirectDebitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;

@@ -8,15 +8,10 @@ import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceType
 import { DocumentForm } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
-import { TenantForm } from '../Common/Tenants/TenantsTypes';
-
+import { TenantForm } from '../Common/Tenant/TenantsTypes';
 
 export type WizardTab =
-  | 'property'
-  | 'mortgage'
-  | 'tenant'
-  | 'compliance'
-  | 'document';
+  'property' | 'mortgage' | 'tenant' | 'compliance' | 'document';
 
 export const WIZARD_TABS: WizardTab[] = [
   'property',

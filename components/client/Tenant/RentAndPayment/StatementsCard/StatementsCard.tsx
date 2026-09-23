@@ -83,7 +83,7 @@ export const StatementsCard: React.FC = () => {
   };
 
   return (
-    <Card>
+    <Card className='flex h-full flex-col shadow-md'>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <FileText className='text-primary h-5 w-5' />
@@ -93,14 +93,24 @@ export const StatementsCard: React.FC = () => {
           Need proof of rent for a visa, loan, or personal records?
         </CardDescription>
       </CardHeader>
-      <CardContent className='grid gap-4 sm:grid-cols-2'>
-        <div className='flex flex-col justify-between gap-4 rounded-lg border p-4'>
-          <p className='text-sm'>Download Statement (Full Year)</p>
+      <CardContent className='flex flex-1 flex-col gap-3'>
+        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between'>
+          <div className='flex items-start gap-3'>
+            <span className='bg-secondary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
+              <Download className='text-secondary h-4.5 w-4.5' />
+            </span>
+            <div>
+              <p className='font-medium'>Full Year Statement</p>
+              <p className='text-muted-foreground text-sm'>
+                All payments for {CURRENT_YEAR} in one PDF.
+              </p>
+            </div>
+          </div>
           <Button
             variant='outline'
             onClick={handleDownloadFullYear}
             disabled={isDownloadingFullYear}
-            className='w-fit'
+            className='w-full shrink-0 sm:w-fit'
           >
             {isDownloadingFullYear ? (
               <Loader2 className='h-4 w-4 animate-spin' />
@@ -111,11 +121,21 @@ export const StatementsCard: React.FC = () => {
           </Button>
         </div>
 
-        <div className='flex flex-col justify-between gap-4 rounded-lg border p-4'>
-          <p className='text-sm'>Download Statement (Custom Range)</p>
+        <div className='hover:border-primary/40 hover:bg-muted/40 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between'>
+          <div className='flex items-start gap-3'>
+            <span className='bg-secondary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
+              <CalendarRange className='text-secondary h-4.5 w-4.5' />
+            </span>
+            <div>
+              <p className='font-medium'>Custom Range Statement</p>
+              <p className='text-muted-foreground text-sm'>
+                Pick a specific month and year to download.
+              </p>
+            </div>
+          </div>
           <Popover open={isCustomRangeOpen} onOpenChange={setIsCustomRangeOpen}>
             <PopoverTrigger asChild>
-              <Button variant='outline' className='w-fit'>
+              <Button variant='outline' className='w-full shrink-0 sm:w-fit'>
                 <CalendarRange className='h-4 w-4' />
                 Select Dates & Download
               </Button>

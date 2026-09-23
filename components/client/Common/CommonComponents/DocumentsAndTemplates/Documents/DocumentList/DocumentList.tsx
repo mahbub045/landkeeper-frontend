@@ -45,18 +45,6 @@ function DocIcon({ category }: { category: DocCategory }) {
   );
 }
 
-// Pulls a reasonable filename out of the file URL (strips query
-// params, decodes percent-encoding).
-function getFileName(url: string): string {
-  try {
-    const path = new URL(url).pathname;
-    const last = path.substring(path.lastIndexOf('/') + 1);
-    return decodeURIComponent(last) || 'document';
-  } catch {
-    return 'document';
-  }
-}
-
 interface DocumentListProps {
   documents: PropertyDocument[];
   activeFilterLabel: string;
@@ -68,15 +56,29 @@ const DocumentList: React.FC<DocumentListProps> = ({
   activeFilterLabel,
   isLoading,
 }) => {
-  const [downloadingAlias, setDownloadingAlias] = useState<string | null>(null);
   const [editingDoc, setEditingDoc] = useState<PropertyDocument | null>(null);
   const [deletingDoc, setDeletingDoc] = useState<PropertyDocument | null>(null);
 
   if (isLoading) {
     return (
-      <div className='space-y-3 px-6 py-2'>
+      <div className='space-y-3 px-4 py-2'>
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className='h-27 w-full rounded-xl' />
+          <Card key={i}>
+            <CardContent className='flex items-center gap-4 p-4'>
+              <Skeleton className='size-11 shrink-0 rounded-xl' />
+
+              <div className='min-w-0 flex-1 space-y-2'>
+                <Skeleton className='h-4 w-48 rounded-md' />
+                <Skeleton className='h-3 w-64 rounded-md' />
+              </div>
+
+              <div className='flex shrink-0 items-center gap-2'>
+                <Skeleton className='h-9 w-24 rounded-md' />
+                <Skeleton className='h-9 w-20 rounded-md' />
+                <Skeleton className='h-9 w-24 rounded-md' />
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     );
@@ -100,27 +102,6 @@ const DocumentList: React.FC<DocumentListProps> = ({
       </div>
     );
   }
-  function handleDownload(doc: PropertyDocument) {
-    const fileUrl = doc.files[0]?.file;
-    if (!fileUrl) return;
-
-    const filename = getFileName(fileUrl);
-
-    setDownloadingAlias(doc.alias);
-
-    const proxyUrl = `/api/document-download?url=${encodeURIComponent(
-      fileUrl,
-    )}&filename=${encodeURIComponent(filename)}`;
-
-    const link = document.createElement('a');
-    link.href = proxyUrl;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => setDownloadingAlias(null), 800);
-  }
-
   return (
     <div className='space-y-3 px-4 py-2'>
       {documents.map((doc) => {

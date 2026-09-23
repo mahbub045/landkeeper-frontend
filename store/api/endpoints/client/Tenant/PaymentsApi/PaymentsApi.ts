@@ -1,55 +1,31 @@
 import { baseApi } from '@/store/api/baseApi';
-
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
+import { downloadBlob } from '@/utils/downloadBlob';
 
 export const paymentMethodsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    setupDirectDebit: builder.mutation({
+    createRentPayment: builder.mutation({
       query: (body) => ({
-        url: '/tenant/payment-methods/direct-debit/setup',
+        url: '/tenant/card-payments',
         method: 'POST',
         body,
       }),
-    }),
-
-    completeDirectDebit: builder.mutation({
-      query: (body) => ({
-        url: '/tenant/payment-methods/direct-debit/complete',
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['PaymentMethods'],
+      invalidatesTags: ['RentPayments'],
     }),
 
     getRentBalanceSummary: builder.query({
-      query: () => '/tenant/rent-payments/balance-summary',
-    }),
-
-    // getRentPayments: builder.query({
-    //   query: ({ page }) => `/tenant/rent-payments?page=${page}`,
-    //   providesTags: ['RentPayments'],
-    // }),
-    getPaymentHistory: builder.query({
-      query: (page) => ({
-        url: '/tenant/rent-payments/payment-history',
-        page,
+      query: () => ({
+        url: '/tenant/rent-payments/balance-summary',
+        method: 'GET',
       }),
       providesTags: ['RentPayments'],
     }),
 
-    getPaymentMethods: builder.query({
-      query: () => '/tenant/payment-methods',
-      transformResponse: (response) => response.results,
-      providesTags: ['PaymentMethods'],
+    getPaymentHistory: builder.query({
+      query: (params) => ({
+        url: '/tenant/payment-history',
+        params,
+      }),
+      providesTags: ['RentPayments'],
     }),
 
     getRentStatementPdf: builder.query<
@@ -81,10 +57,8 @@ export const paymentMethodsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useSetupDirectDebitMutation,
-  useCompleteDirectDebitMutation,
+  useCreateRentPaymentMutation,
   useGetRentBalanceSummaryQuery,
   useGetPaymentHistoryQuery,
-  useGetPaymentMethodsQuery,
   useGetRentStatementPdfQuery,
 } = paymentMethodsApi;

@@ -106,9 +106,20 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         icon: Landmark,
       },
       {
-        label: 'Tenants',
-        href: '/client/landlord/tenants',
+        label: 'Tenant',
         icon: UsersRound,
+        children: [
+          {
+            label: 'Tenants',
+            href: '/client/landlord/tenant/tenants',
+            icon: UsersRound,
+          },
+          {
+            label: 'Tenant Payments',
+            href: '/client/landlord/tenant/tenant-payments',
+            icon: Banknote,
+          },
+        ],
       },
 
       {
@@ -200,9 +211,20 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         icon: Landmark,
       },
       {
-        label: 'Tenants',
-        href: '/client/admin/tenants',
+        label: 'Tenant',
         icon: UsersRound,
+        children: [
+          {
+            label: 'Tenants',
+            href: '/client/landlord/tenant/tenants',
+            icon: UsersRound,
+          },
+          {
+            label: 'Tenant Payments',
+            href: '/client/landlord/tenant/tenant-payments',
+            icon: Banknote,
+          },
+        ],
       },
 
       {

@@ -85,18 +85,41 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={TABLE_COLUMNS.length}
-                  className='text-muted-foreground py-6 text-center text-sm'
-                >
-                  <div className='flex flex-col gap-3'>
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <Skeleton key={i} className='h-14 w-full rounded-xl' />
-                    ))}
-                  </div>
-                </TableCell>
-              </TableRow>
+              Array.from({ length: 5 }).map((_, rowIdx) => (
+                <TableRow key={rowIdx}>
+                  <TableCell>
+                    <Skeleton className='h-4 w-5 rounded-md' />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className='h-4 w-28 rounded-md' />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className='h-4 w-24 rounded-md' />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className='h-4 w-20 rounded-md' />
+                  </TableCell>
+                  <TableCell>
+                    <div className='flex flex-col gap-1.5'>
+                      <Skeleton className='h-3.5 w-28 rounded-md' />
+                      <Skeleton className='h-3.5 w-28 rounded-md' />
+                    </div>
+                  </TableCell>
+                  <TableCell className='text-center'>
+                    <Skeleton className='mx-auto h-8 w-16 rounded-lg' />
+                  </TableCell>
+                  <TableCell className='text-center'>
+                    <Skeleton className='mx-auto h-6 w-24 rounded-full' />
+                  </TableCell>
+                  <TableCell>
+                    <div className='flex items-center justify-center gap-2'>
+                      <Skeleton className='h-8 w-8 rounded-lg' />
+                      <Skeleton className='h-8 w-8 rounded-lg' />
+                      <Skeleton className='h-8 w-8 rounded-lg' />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             ) : certificates.length === 0 ? (
               <TableRow>
                 <TableCell

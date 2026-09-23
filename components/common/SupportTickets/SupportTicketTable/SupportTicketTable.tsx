@@ -185,15 +185,30 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
           {/* Table Body */}
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={TABLE_COLUMNS.length} className='p-0'>
-                  <div className='space-y-3 p-6'>
-                    {Array.from({ length: 4 }).map((_, i) => (
-                      <Skeleton key={i} className='h-14 w-full rounded-xl' />
-                    ))}
-                  </div>
-                </TableCell>
-              </TableRow>
+              Array.from({ length: 5 }).map((_, rowIdx) => (
+                <TableRow key={rowIdx}>
+                  {TABLE_COLUMNS.map((col) => (
+                    <TableCell key={col} className='px-6 text-center'>
+                      {col === 'Status' ||
+                      col === 'Type' ||
+                      col === 'Priority' ? (
+                        <Skeleton className='mx-auto h-6 w-20 rounded-full' />
+                      ) : col === 'Created By' ? (
+                        <div className='flex items-center justify-center gap-2'>
+                          <Skeleton className='h-7 w-7 shrink-0 rounded-full' />
+                          <Skeleton className='h-4 w-20 rounded-md' />
+                        </div>
+                      ) : col === 'Files' || col === 'Actions' ? (
+                        <Skeleton className='mx-auto h-8 w-8 rounded-lg' />
+                      ) : col === 'Ticket ID' ? (
+                        <Skeleton className='mx-auto h-4 w-10 rounded-md' />
+                      ) : (
+                        <Skeleton className='mx-auto h-4 w-24 rounded-md' />
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : supportTicketsData.length > 0 ? (
               supportTicketsData.map((ticket, idx) => {
                 const apiTicket = apiTicketByAlias.get(ticket.alias);

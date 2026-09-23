@@ -1,7 +1,7 @@
 'use client';
 
-import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
 import Loading from '@/components/common/CustomLoader/Loading';
+import { CardPaymentForm } from '@/components/common/PaymentElement/CardPaymentForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,10 +12,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { usePayWithCardMutation } from '@/store/api/endpoints/client/Tenant/PaymentsApi/RentPaymentsApi';
+import { Textarea } from '@/components/ui/textarea';
 import { PayWithCardDialogProps } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
+import { getCurrencySign } from '@/utils/formatters';
 import { AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useCreateRentPaymentMutation } from '../../../../../store/api/endpoints/client/Tenant/PaymentsApi/PaymentsApi';
 import { PaymentDialogSteps } from './PaymentDialogSteps';
 
 function getApiErrorMessages(error: unknown) {
@@ -62,18 +64,18 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
 }) => {
   const [step, setStep] = useState<'details' | 'card'>('details');
   const [amount, setAmount] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [note, setNote] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
   const [payWithCard, { isLoading: isInitiatingCharge }] =
-    usePayWithCardMutation();
+    useCreateRentPaymentMutation();
 
   const isBusy = isInitiatingCharge;
 
   const resetAndClose = () => {
     setStep('details');
     setAmount('');
-    setDueDate('');
+    setNote('');
     setFormErrors([]);
     onOpenChange(false);
   };
@@ -105,12 +107,14 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
                   htmlFor='amount'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
-                  Amount
+                  Amount({getCurrencySign()})
+                  <span className='text-danger'>*</span>
                 </Label>
                 <div className='relative'>
                   <Input
                     id='amount'
                     type='number'
+                    placeholder='Enter amount'
                     step='0.01'
                     min='0'
                     value={amount}
@@ -122,16 +126,15 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
               </div>
               <div className='space-y-2'>
                 <Label
-                  htmlFor='due-date'
+                  htmlFor='note'
                   className='text-muted-foreground text-xs font-medium tracking-wide uppercase'
                 >
-                  Due Date
+                  Note<span className='text-danger'>*</span>
                 </Label>
-                <Input
-                  id='due-date'
-                  type='date'
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
+                <Textarea
+                  id='note'
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
                   required
                 />
               </div>
@@ -170,14 +173,13 @@ export const PayWithCardDialog: React.FC<PayWithCardDialogProps> = ({
         {step === 'card' && (
           <CardPaymentForm
             amount={amount}
-            onSuccess={async (paymentMethodId) => {
+            onSuccess={async () => {
               setFormErrors([]);
 
               try {
                 const result = await payWithCard({
-                  due_date: dueDate,
-                  payment_method_id: paymentMethodId,
                   amount,
+                  note,
                 }).unwrap();
 
                 return { clientSecret: result.client_secret };

@@ -19,9 +19,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/common/tenants/TenantsData';
+import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/common/tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
-import { TenantForm } from '@/types/client/Common/Tenants/TenantsTypes';
+import { TenantForm } from '@/types/client/Common/Tenant/TenantsTypes';
 import { TenantStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { Upload, User, X } from 'lucide-react';

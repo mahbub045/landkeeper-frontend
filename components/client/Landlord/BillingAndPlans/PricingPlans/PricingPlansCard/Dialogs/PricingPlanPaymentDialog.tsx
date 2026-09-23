@@ -1,6 +1,6 @@
 'use client';
 
-import { CardPaymentForm } from '@/components/client/Common/Payments/CardPaymentForm';
+import { CardPaymentForm } from '@/components/common/PaymentElement/CardPaymentForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 
