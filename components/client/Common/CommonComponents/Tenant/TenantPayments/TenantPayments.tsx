@@ -136,13 +136,13 @@ const TenantPayments: React.FC = () => {
       ) : (
         <>
           <Card className='border-border overflow-hidden rounded-2xl pt-0 shadow-sm'>
-            <div className='border-border flex items-center justify-between gap-1 border-b px-6 py-4'>
+            <div className='border-border flex flex-col gap-3 border-b px-6 py-4 sm:flex-row sm:items-center sm:justify-between'>
               <h2 className='text-foreground text-base font-semibold'>
                 All Payments
               </h2>
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
                 <Select value={status} onValueChange={handleStatusChange}>
-                  <SelectTrigger className='h-9! w-40 rounded-xl focus-visible:ring-0'>
+                  <SelectTrigger className='h-9! w-full rounded-xl focus-visible:ring-0 sm:w-40'>
                     <SelectValue placeholder='Status' />
                   </SelectTrigger>
                   <SelectContent>
@@ -168,14 +168,14 @@ const TenantPayments: React.FC = () => {
                   </SelectContent>
                 </Select>
 
-                <div className='relative w-64'>
+                <div className='relative w-full sm:w-64'>
                   <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
                   <Input
                     type='text'
                     placeholder='Search payments...'
                     value={search}
                     onChange={(e) => handleSearchChange(e.target.value)}
-                    className='h-9! w-64 rounded-xl pr-8! pl-7!'
+                    className='h-9! w-full rounded-xl pr-8! pl-7!'
                   />
                   <HoverInfoPopover text='You can search using Tenant Name, Property Name and Anount.' />
                 </div>
@@ -201,18 +201,47 @@ const TenantPayments: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={TABLE_COLUMN.length} className='p-0'>
-                        <div className='space-y-3 p-6'>
-                          {Array.from({ length: 4 }).map((_, i) => (
-                            <Skeleton
-                              key={i}
-                              className='h-14 w-full animate-pulse rounded-xl'
-                            />
-                          ))}
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                    Array.from({ length: 5 }).map((_, rowIdx) => (
+                      <TableRow key={rowIdx}>
+                        {TABLE_COLUMN.map((col) => (
+                          <TableCell
+                            key={col.key}
+                            className={cn(
+                              'px-6',
+                              col.align === 'center' && 'text-center',
+                            )}
+                          >
+                            {col.key === 'status' ? (
+                              <Skeleton className='mx-auto h-6 w-20 animate-pulse rounded-full' />
+                            ) : col.key === 'card' ? (
+                              <div className='flex items-center justify-center gap-2'>
+                                <Skeleton className='h-8 w-8 animate-pulse rounded-md' />
+                                <Skeleton className='h-4 w-16 animate-pulse rounded-md' />
+                              </div>
+                            ) : col.key === 'actions' || col.key === 'invoice' ? (
+                              <Skeleton className='mx-auto h-8 w-8 animate-pulse rounded-lg' />
+                            ) : col.key === 'property' ? (
+                              <div className='flex flex-col gap-1.5'>
+                                <Skeleton className='h-4 w-28 animate-pulse rounded-md' />
+                                <Skeleton className='h-3 w-20 animate-pulse rounded-md' />
+                              </div>
+                            ) : (
+                              <Skeleton
+                                className={cn(
+                                  'h-4 animate-pulse rounded-md',
+                                  col.align === 'center' ? 'mx-auto' : '',
+                                  col.key === 'id'
+                                    ? 'w-6'
+                                    : col.key === 'amount'
+                                      ? 'w-16'
+                                      : 'w-24',
+                                )}
+                              />
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
                   ) : payments.length > 0 ? (
                     payments.map((payment, idx) => (
                       <TenantPaymentTableRow

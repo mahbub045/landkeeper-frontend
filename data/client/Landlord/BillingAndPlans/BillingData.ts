@@ -1,3 +1,10 @@
+export const cardBrandLabels: Record<string, string> = {
+  visa: 'Visa',
+  mastercard: 'Mastercard',
+  amex: 'Amex',
+  discover: 'Discover',
+};
+
 export const statusDotStyles: Record<string, string> = {
   PENDING: 'bg-amber-500',
   SUCCEEDED: 'bg-emerald-500',
