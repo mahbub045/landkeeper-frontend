@@ -144,10 +144,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
                 <TableCell className='text-center'>
                   {tx.receipt_files.length === 0 ? (
-                    <Button variant='secondary' size='sm' disabled>
-                      <Eye />
-                      View
-                    </Button>
+                    <span className='text-muted-foreground text-xs'>
+                      No file found
+                    </span>
                   ) : tx.receipt_files.length === 1 ? (
                     <Button
                       variant='secondary'

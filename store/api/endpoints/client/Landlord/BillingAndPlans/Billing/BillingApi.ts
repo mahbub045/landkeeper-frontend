@@ -17,6 +17,13 @@ export const BillingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['BillingDetails'],
     }),
+    cancelPendingDowngrade: builder.mutation({
+      query: () => ({
+        url: `/subscription/cancel-pending-downgrade`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['BillingDetails'],
+    }),
     billingHistory: builder.query({
       query: (params) => ({
         url: `/subscription/billing-history`,
@@ -61,6 +68,7 @@ export const BillingApi = baseApi.injectEndpoints({
 export const {
   useSubscriptionPlanDetailsQuery,
   useUpdateAutoRenewMutation,
+  useCancelPendingDowngradeMutation,
   useBillingHistoryQuery,
   usePaymewntMethodsQuery,
   useAddPaymentMethodMutation,
