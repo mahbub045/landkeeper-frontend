@@ -1,21 +1,17 @@
-import Loading from '@/components/common/CustomLoader/Loading';
+import DeleteConfirmDialog from '@/components/common/DeleteConfirmDialog/DeleteConfirmDialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useDeletePermissionMutation } from '@/store/api/endpoints/client/Common/Permissions/PermissionsApi';
 import { DeleteUserFromPropertyPermissionDialogProps } from '@/types/client/Common/Properties/PropertyPermissionTypes';
 import { getInitials } from '@/utils/formatters';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { AlertTriangle } from 'lucide-react';
+import { Eye, Pencil, UserMinus } from 'lucide-react';
 import { useState } from 'react';
+
+const IMPACT_ITEMS = [
+  { icon: Eye, label: 'View access' },
+  { icon: Pencil, label: 'Edit access' },
+];
 
 const DeleteUserFromPropertyPermissionDialog: React.FC<
   DeleteUserFromPropertyPermissionDialogProps
@@ -65,66 +61,35 @@ const DeleteUserFromPropertyPermissionDialog: React.FC<
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className='gap-0 overflow-visible p-0 sm:max-w-100'>
-        <DialogHeader className='px-6 pt-6 pb-1'>
-          <DialogTitle className='text-lg font-semibold'>
-            Remove Property Access
-          </DialogTitle>
-          <DialogDescription className='text-muted-foreground text-sm'>
-            This will revoke this user&apos;s access to the property. This
-            action cannot be undone.
-          </DialogDescription>
-        </DialogHeader>
-
-        {submitError && (
-          <div className='bg-danger/10 border-danger px-6 py-2'>
-            <p className='text-destructive text-sm'>{submitError}</p>
-          </div>
-        )}
-
-        {userToRemove && (
-          <div className='px-6 py-4'>
-            <div className='border-input bg-muted/30 flex items-center gap-3 rounded-lg border p-3'>
-              <Avatar className='h-10 w-10 shrink-0'>
-                <AvatarFallback className='bg-muted text-sm font-medium'>
-                  {getInitials(userToRemove.user.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className='min-w-0 flex-1'>
-                <p className='truncate text-sm font-medium'>
-                  {userToRemove.user.name}
-                </p>
-                <p className='text-muted-foreground truncate text-xs'>
-                  {userToRemove.user.email}
-                </p>
-              </div>
-            </div>
-
-            <div className='text-destructive bg-destructive/5 mt-3 flex items-start gap-2 rounded-lg px-3 py-2 text-xs'>
-              <AlertTriangle className='mt-0.5 h-3.5 w-3.5 shrink-0' />
-              <span>
-                They will immediately lose view and edit access to this
-                property.
-              </span>
-            </div>
-          </div>
-        )}
-
-        <DialogFooter className='bg-muted/30 mb-1 gap-2 border-t px-6 py-4 sm:gap-2'>
-          <Button variant='outline' onClick={handleClose} disabled={isLoading}>
-            Cancel
-          </Button>
-          <Button
-            variant='destructive'
-            onClick={handleDelete}
-            disabled={isLoading || !userToRemove}
-          >
-            {isLoading && <Loading className='text-white!' />}Remove Access
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <DeleteConfirmDialog
+      open={isOpen}
+      onClose={handleClose}
+      onConfirm={handleDelete}
+      isLoading={isLoading}
+      confirmDisabled={!userToRemove}
+      icon={UserMinus}
+      title='Remove property access?'
+      description="This will revoke this user's access to the property."
+      targetLabel='User'
+      targetName={userToRemove?.user.name}
+      targetSubtext={userToRemove?.user.email}
+      targetMedia={
+        userToRemove && (
+          <Avatar className='h-12 w-12 shrink-0 ring-1 ring-red-500/30'>
+            <AvatarFallback className='bg-red-500/15 text-sm font-semibold text-red-600 dark:text-red-400'>
+              {getInitials(userToRemove.user.name)}
+            </AvatarFallback>
+          </Avatar>
+        )
+      }
+      badge={null}
+      impactTitle='Access that will be revoked'
+      impactItems={IMPACT_ITEMS}
+      impactNote='They will immediately lose view and edit access to this property.'
+      error={submitError}
+      cancelLabel='Keep Access'
+      confirmLabel='Remove Access'
+    />
   );
 };
 
