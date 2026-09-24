@@ -50,6 +50,7 @@ const DeletePropertyDialog: React.FC<DeletePropertyDialogProps> = ({
       targetName={propertyName}
       targetIcon={Building2}
       impactItems={IMPACT_ITEMS}
+      confirmText='DELETE'
       cancelLabel='Keep Property'
       confirmLabel='Delete Property'
     />

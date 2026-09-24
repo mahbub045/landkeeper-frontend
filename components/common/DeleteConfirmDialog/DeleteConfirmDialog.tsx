@@ -9,8 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { DeleteConfirmDialogProps } from '@/types/common/DeleteConfirmDialog/DeleteConfirmDialogTypes';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   open,
@@ -31,11 +33,24 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   impactItems,
   impactNote,
   error,
+  confirmText,
   cancelLabel = 'Cancel',
   confirmLabel,
 }) => {
+  const [typedText, setTypedText] = useState('');
+  const [prevOpen, setPrevOpen] = useState(open);
+
+  // Reset the typed confirmation each time the dialog opens
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) setTypedText('');
+  }
+
   const hasTarget = Boolean(targetName);
   const hasImpact = Boolean(impactItems?.length || impactNote);
+  const isConfirmTextMatched =
+    !confirmText || typedText.trim() === confirmText.trim();
+  const canConfirm = !isLoading && !confirmDisabled && isConfirmTextMatched;
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && !isLoading && onClose()}>
@@ -69,7 +84,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
         </DialogHeader>
 
         {/* Body */}
-        {(hasTarget || hasImpact || error) && (
+        {(hasTarget || hasImpact || confirmText || error) && (
           <div className='space-y-4 px-6 pb-6'>
             {/* Target ticket */}
             {hasTarget && (
@@ -132,6 +147,46 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
               </div>
             )}
 
+            {/* Type-to-confirm */}
+            {confirmText && (
+              <div className='space-y-2'>
+                <label
+                  htmlFor='delete-confirm-input'
+                  className='text-muted-foreground block text-sm'
+                >
+                  Type{' '}
+                  <span className='text-foreground rounded-md bg-red-500/10 px-1.5 py-0.5 font-mono text-[13px] font-semibold select-all'>
+                    {confirmText}
+                  </span>{' '}
+                  to confirm
+                </label>
+                <div className='relative'>
+                  <Input
+                    type='text'
+                    id='delete-confirm-input'
+                    value={typedText}
+                    onChange={(e) => setTypedText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && canConfirm) onConfirm();
+                    }}
+                    placeholder='Type to confirm'
+                    autoComplete='off'
+                    spellCheck={false}
+                    disabled={isLoading}
+                    aria-invalid={typedText.length > 0 && !isConfirmTextMatched}
+                    className={`border-danger! h-11 rounded-xl pr-10 transition-colors focus:ring-0! ${
+                      isConfirmTextMatched
+                        ? 'border-red-500 focus-visible:ring-red-500/30'
+                        : ''
+                    }`}
+                  />
+                  {isConfirmTextMatched && (
+                    <CheckCircle2 className='absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-red-500' />
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Error */}
             {error && (
               <div className='flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400'>
@@ -157,7 +212,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           <Button
             type='button'
             onClick={onConfirm}
-            disabled={isLoading || confirmDisabled}
+            disabled={!canConfirm}
             className='group min-w-40 rounded-xl bg-linear-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30 transition-all hover:from-red-500 hover:to-rose-500 hover:shadow-red-600/50'
           >
             {isLoading ? (

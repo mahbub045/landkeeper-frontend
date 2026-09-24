@@ -30,6 +30,9 @@ export interface DeleteConfirmDialogProps {
 
   error?: string | null;
 
+  /** When set, the user must type this exact text to enable the confirm button */
+  confirmText?: string;
+
   cancelLabel?: string;
   confirmLabel: string;
 }
