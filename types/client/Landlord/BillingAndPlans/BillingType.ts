@@ -69,3 +69,12 @@ export interface PaymentMethod {
   expiry_year: number;
   is_default: boolean;
 }
+
+export interface RemovePendingPlanDialogProps {
+  open: boolean;
+  pendingPlan: PendingPlan | null;
+  currentPlanName: string;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  isRemovePending: boolean;
+}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import {
+  useCancelPendingDowngradeMutation,
   useSubscriptionPlanDetailsQuery,
   useUpdateAutoRenewMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/Billing/BillingApi';
@@ -20,10 +21,13 @@ import {
   CalendarDays,
   CreditCard,
   Sparkles,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
+import RemovePendingPlanDialog from './Dialogs/RemovePendingPlanDialog';
 
 const statusDotStyles: Record<SubscriptionStatus, string> = {
   PENDING: 'bg-slate-400',
@@ -72,6 +76,9 @@ export default function OverviewTab() {
   };
   const [updateAutoRenew, { isLoading: isUpdatingAutoRenew }] =
     useUpdateAutoRenewMutation();
+  const [cancelPendingDowngrade, { isLoading: isRemovePending }] =
+    useCancelPendingDowngradeMutation();
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -109,6 +116,25 @@ export default function OverviewTab() {
         ),
         icon: 'error',
       });
+    }
+  };
+
+  const handleRemovePendingPlan = async () => {
+    try {
+      const response = await cancelPendingDowngrade(undefined).unwrap();
+
+      toast.success(
+        response?.detail ||
+          "Your scheduled plan change has been removed. You're staying on your current plan.",
+      );
+      setIsRemoveDialogOpen(false);
+    } catch (error: unknown) {
+      toast.error(
+        getErrorMessage(
+          error,
+          'Could not remove the scheduled plan. Please try again.',
+        ),
+      );
     }
   };
 
@@ -390,8 +416,28 @@ export default function OverviewTab() {
               </span>
             </div>
           </div>
+
+          <div className='mt-5 flex items-center justify-end gap-3'>
+            <Button
+              variant='destructive'
+              size='sm'
+              onClick={() => setIsRemoveDialogOpen(true)}
+            >
+              <X />
+              Remove Plan
+            </Button>
+          </div>
         </div>
       )}
+
+      <RemovePendingPlanDialog
+        open={isRemoveDialogOpen}
+        pendingPlan={subscription.pending_plan}
+        currentPlanName={subscription.plan.name}
+        onOpenChange={setIsRemoveDialogOpen}
+        onConfirm={handleRemovePendingPlan}
+        isRemovePending={isRemovePending}
+      />
 
       {/* Plan features */}
       {subscription.plan.features && subscription.plan.features.length > 0 && (
