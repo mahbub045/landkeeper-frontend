@@ -55,9 +55,6 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={(o) => !o && !isLoading && onClose()}>
       <DialogContent className='grid-cols-[minmax(0,1fr)] gap-0 overflow-hidden rounded-3xl border border-red-500/20 p-0 shadow-2xl shadow-red-950/20 sm:max-w-md'>
-        {/* Hazard stripe */}
-        <div className='h-1.5 w-full bg-[repeating-linear-gradient(135deg,#ef4444_0_10px,transparent_10px_20px)] opacity-80' />
-
         {/* Header */}
         <DialogHeader className='relative flex flex-col items-center overflow-hidden px-6 pt-8 pb-6'>
           {/* Glow backdrop */}
