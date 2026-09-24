@@ -159,8 +159,8 @@ const StripeAccountSetup: React.FC = () => {
                   );
                 })}
               </div>
-              <div className='flex items-center justify-end gap-3'>
-                {isFullySetup ? (
+              <div className='flex flex-col items-center justify-end gap-3 sm:flex-row'>
+                {completedCount > 0 && (
                   <Button
                     variant='destructive'
                     onClick={() => setIsDisconnectDialogOpen(true)}
@@ -169,7 +169,8 @@ const StripeAccountSetup: React.FC = () => {
                     <Trash />
                     Disconnect Stripe account
                   </Button>
-                ) : (
+                )}
+                {!isFullySetup && (
                   <Button
                     onClick={handleConnect}
                     disabled={isSetupLinkLoading}
