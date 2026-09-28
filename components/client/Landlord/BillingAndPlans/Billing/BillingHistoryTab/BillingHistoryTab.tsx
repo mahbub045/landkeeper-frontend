@@ -1,5 +1,7 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
+import { Button } from '@/components/ui/button';
 import {
   Pagination,
   PaginationContent,
@@ -23,12 +25,13 @@ import formatChoiceFieldValue, {
   formatDateAndTime,
   getCurrencySign,
 } from '@/utils/formatters';
-import { Receipt } from 'lucide-react';
+import { Download, Receipt } from 'lucide-react';
 import { useState } from 'react';
 
 export default function BillingHistoryTab() {
   const [page, setPage] = useState(1);
   const { downloadFile, isDownloading } = useDownloadFile();
+  const [downloadingAlias, setDownloadingAlias] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useBillingHistoryQuery({
     page,
@@ -115,7 +118,7 @@ export default function BillingHistoryTab() {
                   <th className='px-4 py-3 text-center'>Amount</th>
                   <th className='px-4 py-3 text-center'>Payment method</th>
                   <th className='px-4 py-3 text-center'>Status</th>
-                  {/* <th className='px-4 py-3 text-center'>Invoice</th> */}
+                  <th className='px-4 py-3 text-center'>Invoice</th>
                 </tr>
               </thead>
               <tbody className='divide-border/70 divide-y'>
@@ -164,20 +167,27 @@ export default function BillingHistoryTab() {
                         {formatChoiceFieldValue(invoice.status)}
                       </span>
                     </td>
-                    {/* <td className='px-4 py-3 text-center'>
+                    <td className='px-4 py-3 text-center'>
                       <Button
                         size='sm'
                         variant='outline'
-                        onClick={() =>
-                          downloadFile({
+                        disabled={isDownloading}
+                        onClick={async () => {
+                          setDownloadingAlias(invoice.alias);
+                          await downloadFile({
                             url: invoice.invoice_pdf_url,
                             filename: `${invoice.plan_name.replace(/\s+/g, '-').toLowerCase()}.pdf`,
-                          })
-                        }
+                          });
+                          setDownloadingAlias(null);
+                        }}
                       >
-                        <Download className='size-4' />
+                        {isDownloading && downloadingAlias === invoice.alias ? (
+                          <Loading className='size-4' />
+                        ) : (
+                          <Download className='size-4' />
+                        )}
                       </Button>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>
