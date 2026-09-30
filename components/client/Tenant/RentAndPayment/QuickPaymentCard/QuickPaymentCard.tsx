@@ -19,7 +19,7 @@ export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
   loadingMethodId = null,
 }) => {
   return (
-    <Card className='from-primary/5 flex h-full flex-col overflow-hidden bg-linear-to-b to-transparent'>
+    <Card className='from-primary/5 flex h-full flex-col overflow-hidden bg-linear-to-b to-transparent shadow-md'>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <span className='bg-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full'>
@@ -39,7 +39,7 @@ export const QuickPaymentCard: React.FC<QuickPaymentCardProps> = ({
           return (
             <div
               key={method.id}
-              className='group border-border/60 hover:border-primary/50 hover:bg-card hover:shadow-primary/5 relative flex flex-col gap-4 overflow-hidden rounded-xl border bg-white/60 p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:flex-row sm:items-center sm:justify-between'
+              className='group border-border/60 hover:border-primary/50 hover:bg-card hover:shadow-primary/5 relative flex flex-col gap-4 overflow-hidden rounded-xl border bg-white/60 p-4 shadow-sm transition-all duration-200 hover:shadow-md sm:flex-row sm:items-center sm:justify-between dark:bg-white/5'
             >
               <div className='flex items-start gap-3'>
                 <span className='bg-secondary/10 ring-secondary/15 group-hover:bg-secondary/15 flex h-11 w-11 shrink-0 items-center justify-center rounded-full ring-1 transition-colors'>
