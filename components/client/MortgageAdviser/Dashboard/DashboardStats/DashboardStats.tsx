@@ -6,7 +6,14 @@ import {
   DashboardData,
   StatCard,
 } from '@/types/client/Common/Dashboard/DashboardTypes';
-import { FileText, MapPin, PoundSterling } from 'lucide-react';
+import {
+  DoorOpen,
+  FileText,
+  Home,
+  MapPin,
+  PoundSterling,
+  Wrench,
+} from 'lucide-react';
 import DashboardStatsSkeleton from '../../../Common/CommonComponents/Dashboard/DashboardStats/DashboardStatsSkeleton';
 
 const buildStats = (summary: DashboardData): StatCard[] => [
@@ -16,6 +23,27 @@ const buildStats = (summary: DashboardData): StatCard[] => [
     icon: MapPin,
     iconBg: 'bg-blue-100 dark:bg-blue-900/30',
     iconColor: 'text-blue-500',
+  },
+  {
+    title: 'Occupied Properties',
+    value: String(summary.properties.occupied),
+    icon: Home,
+    iconBg: 'bg-teal-100 dark:bg-teal-900/30',
+    iconColor: 'text-teal-500',
+  },
+  {
+    title: 'Vacant Properties',
+    value: String(summary.properties.vacant),
+    icon: DoorOpen,
+    iconBg: 'bg-purple-100 dark:bg-purple-900/30',
+    iconColor: 'text-purple-500',
+  },
+  {
+    title: 'Under Maintenance',
+    value: String(summary.properties.under_maintenance),
+    icon: Wrench,
+    iconBg: 'bg-red-100 dark:bg-red-900/30',
+    iconColor: 'text-red-500',
   },
   {
     title: 'Total Mortgages',
@@ -41,7 +69,7 @@ const DashboardStats: React.FC = () => {
   } = useGetDashboardSummaryQuery();
 
   if (isLoading) {
-    return <DashboardStatsSkeleton count={3} />;
+    return <DashboardStatsSkeleton />;
   }
 
   if (isError || !dashboardSummary) {

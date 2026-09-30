@@ -1,3 +1,5 @@
+import AlertsReminders from '../../Common/CommonComponents/Dashboard/DashboardCharts/AlertsReminders/AlertsReminders';
+import PropertyTypesChart from '../../Common/CommonComponents/Dashboard/DashboardCharts/PropertyTypesChart/PropertyTypesChart';
 import DashboardStats from './DashboardStats/DashboardStats';
 
 const MortgageAdviserDashboardContainer: React.FC = () => {
@@ -11,6 +13,10 @@ const MortgageAdviserDashboardContainer: React.FC = () => {
       </div>
 
       <DashboardStats />
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+        <PropertyTypesChart />
+        <AlertsReminders />
+      </div>
     </div>
   );
 };
