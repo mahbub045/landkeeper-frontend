@@ -8,7 +8,8 @@ export function getDashboardPath(role: UserRole | undefined): string {
     ADMIN: '/client/admin/dashboard',
     LETTING_AGENT: '/client/letting-agent/dashboard',
     MORTGAGE_ADVISER: '/client/mortgage-adviser/dashboard',
-    TENANT: '/client/tenant/dashboard',
+    // TENANT: '/client/tenant/dashboard',
+    TENANT: '/client/tenant/rent-and-payments',
   };
   return role && paths[role] ? paths[role] : '/auth/access-denied';
 }

@@ -365,11 +365,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
 
   if (role === 'TENANT') {
     return [
-      {
-        label: 'Dashboard',
-        href: '/client/tenant/dashboard',
-        icon: LayoutDashboard,
-      },
+      // {
+      //   label: 'Dashboard',
+      //   href: '/client/tenant/dashboard',
+      //   icon: LayoutDashboard,
+      // },
       {
         label: 'Rent & Payments',
         href: '/client/tenant/rent-and-payments',
