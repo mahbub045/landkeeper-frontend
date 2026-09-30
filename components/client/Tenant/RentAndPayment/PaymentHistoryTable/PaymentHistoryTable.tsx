@@ -1,6 +1,5 @@
 'use client';
 
-import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +24,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -57,6 +57,40 @@ const NOTE_PREVIEW_LENGTH = 25;
 function truncateText(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength)}...`;
+}
+
+function PaymentHistorySkeletonRows() {
+  return Array.from({ length: PAGE_LIMIT }, (_, i) => (
+    <TableRow key={`skeleton-${i}`}>
+      <TableCell>
+        <Skeleton className='h-4 w-32' />
+      </TableCell>
+      <TableCell>
+        <div className='flex items-center gap-2'>
+          <Skeleton className='size-8 shrink-0' />
+          <div className='flex flex-col gap-1'>
+            <Skeleton className='h-4 w-24' />
+            <Skeleton className='h-3 w-16' />
+          </div>
+        </div>
+      </TableCell>
+      <TableCell>
+        <Skeleton className='mx-auto h-4 w-16' />
+      </TableCell>
+      <TableCell>
+        <Skeleton className='mx-auto h-5 w-20 rounded-full' />
+      </TableCell>
+      <TableCell>
+        <Skeleton className='mx-auto h-4 w-28' />
+      </TableCell>
+      <TableCell>
+        <Skeleton className='mx-auto size-4' />
+      </TableCell>
+      <TableCell>
+        <Skeleton className='mx-auto h-4 w-24' />
+      </TableCell>
+    </TableRow>
+  ));
 }
 
 function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
@@ -114,11 +148,7 @@ export function PaymentHistoryTable() {
         </div>
       </CardHeader>
       <CardContent>
-        {isRentPaymentsLoading ? (
-          <div className='flex items-center justify-center py-8'>
-            <Loading />
-          </div>
-        ) : payments.length === 0 ? (
+        {!isRentPaymentsLoading && payments.length === 0 ? (
           <p className='text-muted-foreground py-8 text-center text-sm'>
             No payments have been recorded yet.
           </p>
@@ -137,171 +167,182 @@ export function PaymentHistoryTable() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {payments.map((payment: RentPaymentType) => (
-                  <TableRow key={payment.alias}>
-                    <TableCell>
-                      {payment.created_at ? (
-                        formatDateAndTime(payment.created_at)
-                      ) : (
-                        <span className='text-muted-foreground text-xs'>
-                          Not Available
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {payment.card ? (
-                        <div className='flex items-center justify-start gap-2'>
-                          {payment.card.card_brand && (
-                            <CardBrandLogo
-                              brand={payment.card.card_brand}
-                              className='flex size-8 shrink-0 items-center justify-center'
-                            />
-                          )}
-                          <div className='flex flex-col leading-tight'>
-                            <span className='capitalize'>
-                              {payment.card.card_brand ?? 'Card'} ••••{' '}
-                              {payment.card.card_last4 ?? '----'}
-                            </span>
-                            <span className='text-muted-foreground text-xs'>
-                              {formatChoiceFieldValue(payment.card.method_type)}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <span className='text-muted-foreground flex gap-1 text-xs'>
-                          <CircleOff size={14} />
-                          Not Available
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {formatCurrency(Number(payment.amount))}
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      <PaymentStatusBadge
-                        status={normalizePaymentStatus(payment.status)}
-                      />
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {payment.provider_payment_id ? (
-                        <span className='font-mono text-sm'>
-                          {payment.provider_payment_id}
-                        </span>
-                      ) : (
-                        <span className='text-muted-foreground text-xs'>
-                          Not Available
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {payment.invoice_url ? (
-                        <a
-                          href={payment.invoice_url}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='text-primary flex items-center justify-center'
-                        >
-                          <Download className='size-4' />
-                        </a>
-                      ) : (
-                        <span className='text-muted-foreground text-xs'>
-                          Not Available
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      {payment.note ? (
-                        <div className='flex items-center justify-center gap-1.5'>
-                          <span className='text-sm'>
-                            {truncateText(payment.note, NOTE_PREVIEW_LENGTH)}
+                {isRentPaymentsLoading ? (
+                  <PaymentHistorySkeletonRows />
+                ) : (
+                  payments.map((payment: RentPaymentType) => (
+                    <TableRow key={payment.alias}>
+                      <TableCell>
+                        {payment.created_at ? (
+                          formatDateAndTime(payment.created_at)
+                        ) : (
+                          <span className='text-muted-foreground text-xs'>
+                            Not Available
                           </span>
-                          {payment.note.length > NOTE_PREVIEW_LENGTH && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  type='button'
-                                  variant='ghost'
-                                  size='sm'
-                                  className='text-primary h-auto px-1.5 py-0.5 text-xs'
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {payment.card ? (
+                          <div className='flex items-center justify-start gap-2'>
+                            {payment.card.card_brand && (
+                              <CardBrandLogo
+                                brand={payment.card.card_brand}
+                                className='flex size-8 shrink-0 items-center justify-center'
+                              />
+                            )}
+                            <div className='flex flex-col leading-tight'>
+                              <span className='capitalize'>
+                                {payment.card.card_brand ?? 'Card'} ••••{' '}
+                                {payment.card.card_last4 ?? '----'}
+                              </span>
+                              <span className='text-muted-foreground text-xs'>
+                                {formatChoiceFieldValue(
+                                  payment.card.method_type,
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className='text-muted-foreground flex gap-1 text-xs'>
+                            <CircleOff size={14} />
+                            Not Available
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {formatCurrency(Number(payment.amount))}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        <PaymentStatusBadge
+                          status={normalizePaymentStatus(payment.status)}
+                        />
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {payment.provider_payment_id ? (
+                          <span className='font-mono text-sm'>
+                            {payment.provider_payment_id}
+                          </span>
+                        ) : (
+                          <span className='text-muted-foreground text-xs'>
+                            Not Available
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {payment.invoice_url ? (
+                          <a
+                            href={payment.invoice_url}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-primary flex items-center justify-center'
+                          >
+                            <Download className='size-4' />
+                          </a>
+                        ) : (
+                          <span className='text-muted-foreground text-xs'>
+                            Not Available
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className='text-center'>
+                        {payment.note ? (
+                          <div className='flex items-center justify-center gap-1.5'>
+                            <span className='text-sm'>
+                              {truncateText(payment.note, NOTE_PREVIEW_LENGTH)}
+                            </span>
+                            {payment.note.length > NOTE_PREVIEW_LENGTH && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    type='button'
+                                    variant='ghost'
+                                    size='sm'
+                                    className='text-primary h-auto px-1.5 py-0.5 text-xs'
+                                  >
+                                    View Note
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align='end'
+                                  className='w-64'
                                 >
-                                  View Note
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align='end' className='w-64'>
-                                <DropdownMenuLabel>Note</DropdownMenuLabel>
-                                <div className='text-muted-foreground px-2 pb-2 text-sm whitespace-pre-wrap'>
-                                  {payment.note}
-                                </div>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
-                        </div>
-                      ) : (
-                        <span className='text-muted-foreground text-xs'>
-                          Not Available
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                                  <DropdownMenuLabel>Note</DropdownMenuLabel>
+                                  <div className='text-muted-foreground px-2 pb-2 text-sm whitespace-pre-wrap'>
+                                    {payment.note}
+                                  </div>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
+                          </div>
+                        ) : (
+                          <span className='text-muted-foreground text-xs'>
+                            Not Available
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
 
-            <div className='mt-4 flex items-center justify-between'>
-              <p className='text-muted-foreground text-sm whitespace-nowrap'>
-                Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                {Math.min(page * PAGE_LIMIT, count)} of {count} payments
-              </p>
-              {totalPages > 1 && (
-                <Pagination className='justify-end'>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => page > 1 && setPage((p) => p - 1)}
-                        aria-disabled={page === 1}
-                        className={
-                          page === 1
-                            ? 'pointer-events-none opacity-50'
-                            : 'cursor-pointer'
-                        }
-                      />
-                    </PaginationItem>
+            {count > 0 && (
+              <div className='mt-4 flex items-center justify-between'>
+                <p className='text-muted-foreground text-sm whitespace-nowrap'>
+                  Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+                  {Math.min(page * PAGE_LIMIT, count)} of {count} payments
+                </p>
+                {totalPages > 1 && (
+                  <Pagination className='justify-end'>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => page > 1 && setPage((p) => p - 1)}
+                          aria-disabled={page === 1}
+                          className={
+                            page === 1
+                              ? 'pointer-events-none opacity-50'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
 
-                    {getPageNumbers().map((p, i) =>
-                      p === '...' ? (
-                        <PaginationItem key={`ellipsis-${i}`}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      ) : (
-                        <PaginationItem key={p}>
-                          <PaginationLink
-                            isActive={p === page}
-                            onClick={() => setPage(p as number)}
-                            className='cursor-pointer'
-                          >
-                            {p}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ),
-                    )}
+                      {getPageNumbers().map((p, i) =>
+                        p === '...' ? (
+                          <PaginationItem key={`ellipsis-${i}`}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        ) : (
+                          <PaginationItem key={p}>
+                            <PaginationLink
+                              isActive={p === page}
+                              onClick={() => setPage(p as number)}
+                              className='cursor-pointer'
+                            >
+                              {p}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ),
+                      )}
 
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() =>
-                          page < totalPages && setPage((p) => p + 1)
-                        }
-                        aria-disabled={page === totalPages}
-                        className={
-                          page === totalPages
-                            ? 'pointer-events-none opacity-50'
-                            : 'cursor-pointer'
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              )}
-            </div>
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() =>
+                            page < totalPages && setPage((p) => p + 1)
+                          }
+                          aria-disabled={page === totalPages}
+                          className={
+                            page === totalPages
+                              ? 'pointer-events-none opacity-50'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </div>
+            )}
           </>
         )}
       </CardContent>
