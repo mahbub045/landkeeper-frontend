@@ -1,9 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
 
-export default function DashboardStatsSkeleton() {
+export default function DashboardStatsSkeleton({
+  count = 6,
+}: {
+  count?: number;
+}) {
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <Card key={i} className='border-border rounded-2xl shadow-md'>
           <CardContent className='px-6 py-3'>
             <div className='mb-4 flex items-center justify-between'>
