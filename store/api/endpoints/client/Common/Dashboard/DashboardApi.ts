@@ -2,6 +2,8 @@ import { baseApi } from '@/store/api/baseApi';
 import {
   ComplianceTypesResponse,
   DashboardData,
+  IncomeExpenseMonths,
+  IncomeExpenseResponse,
   PropertyTypesResponse,
 } from '@/types/client/Common/Dashboard/DashboardTypes';
 
@@ -25,6 +27,16 @@ export const DashboardApi = baseApi.injectEndpoints({
         method: 'GET',
       }),
     }),
+    getDashboardIncomeExpense: builder.query<
+      IncomeExpenseResponse,
+      { months: IncomeExpenseMonths }
+    >({
+      query: (params) => ({
+        url: '/dashboard/income-expense',
+        method: 'GET',
+        params,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -33,4 +45,5 @@ export const {
   useGetDashboardSummaryQuery,
   useGetDashboardPropertyTypesQuery,
   useGetDashboardComplianceTypesQuery,
+  useGetDashboardIncomeExpenseQuery,
 } = DashboardApi;

@@ -103,3 +103,21 @@ export interface DashboardData {
     in_progress: number;
   };
 }
+
+export type IncomeExpenseMonths = 3 | 6 | 12;
+
+export interface IncomeExpenseItem {
+  month: string;
+  label: string;
+  income: string;
+  expense: string;
+  net: string;
+}
+
+export interface IncomeExpenseResponse {
+  months: number;
+  total_income: string;
+  total_expense: string;
+  net: string;
+  data: IncomeExpenseItem[];
+}

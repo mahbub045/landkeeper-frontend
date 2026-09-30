@@ -1,10 +1,19 @@
 'use client';
 
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { incomeExpensesData } from '@/data/client/common/Dashboard/DashboardData';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useGetDashboardIncomeExpenseQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
+import { IncomeExpenseMonths } from '@/types/client/Common/Dashboard/DashboardTypes';
 import { BarChart2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import {
   Bar,
   BarChart,
@@ -14,8 +23,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import IncomeExpensesChartSkeleton, {
+  IncomeExpensesChartBars,
+} from './IncomeExpensesChartSkeleton';
 
-const formatYAxis = (value: number) => `£${(value / 1000).toFixed(0)}k`;
+const MONTH_OPTIONS: IncomeExpenseMonths[] = [3, 6, 12];
+
+const formatYAxis = (value: number) =>
+  Math.abs(value) >= 1000 ? `£${(value / 1000).toFixed(0)}k` : `£${value}`;
 
 function useResolvedTheme() {
   const { resolvedTheme } = useTheme();
@@ -30,6 +45,25 @@ function useResolvedTheme() {
 const IncomeExpensesChart: React.FC = () => {
   const resolvedTheme = useResolvedTheme();
   const isDark = resolvedTheme === 'dark';
+  const [months, setMonths] = useState<IncomeExpenseMonths>(6);
+
+  const {
+    data: incomeExpenses,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetDashboardIncomeExpenseQuery({ months });
+
+  if (isLoading) {
+    return <IncomeExpensesChartSkeleton />;
+  }
+
+  const chartData =
+    incomeExpenses?.data.map((item) => ({
+      month: item.label,
+      income: Number(item.income),
+      expenses: Number(item.expense),
+    })) ?? [];
 
   const tickColor = isDark ? '#6b7280' : '#9ca3af';
   const gridColor = isDark ? '#374151' : '#f0f0f0';
@@ -44,51 +78,68 @@ const IncomeExpensesChart: React.FC = () => {
             Income vs Expenses
           </CardTitle>
         </div>
-        <div className='flex cursor-pointer items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700/50'>
-          Last 6 Months
-          <span className='ml-1 text-gray-400 dark:text-gray-500'>▾</span>
-        </div>
+        <Select
+          value={String(months)}
+          onValueChange={(v) => setMonths(Number(v) as IncomeExpenseMonths)}
+        >
+          <SelectTrigger size='sm' className='w-36 h-8!'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent position='popper' align='end'>
+            {MONTH_OPTIONS.map((option) => (
+              <SelectItem key={option} value={String(option)}>
+                Last {option} Months
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent className='pt-2 pb-4'>
-        <ResponsiveContainer width='100%' height={280}>
-          <BarChart data={incomeExpensesData} barCategoryGap='30%' barGap={4}>
-            <CartesianGrid vertical={false} stroke={gridColor} />
-            <XAxis
-              dataKey='month'
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: tickColor, fontSize: 12 }}
-            />
-            <YAxis
-              tickFormatter={formatYAxis}
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: tickColor, fontSize: 12 }}
-              tickCount={6}
-            />
-            <Legend
-              iconType='square'
-              iconSize={12}
-              wrapperStyle={{
-                paddingTop: 16,
-                fontSize: 13,
-                color: legendColor,
-              }}
-            />
-            <Bar
-              dataKey='income'
-              name='Income'
-              fill='#22c55e'
-              radius={[3, 3, 0, 0]}
-            />
-            <Bar
-              dataKey='expenses'
-              name='Expenses'
-              fill='#ef4444'
-              radius={[3, 3, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        {isFetching ? (
+          <IncomeExpensesChartBars />
+        ) : isError || !incomeExpenses ? (
+          <CustomErrorMessage title='income vs expenses' />
+        ) : (
+          <ResponsiveContainer width='100%' height={280}>
+            <BarChart data={chartData} barCategoryGap='30%' barGap={4}>
+              <CartesianGrid vertical={false} stroke={gridColor} />
+              <XAxis
+                dataKey='month'
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: tickColor, fontSize: 12 }}
+              />
+              <YAxis
+                tickFormatter={formatYAxis}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: tickColor, fontSize: 12 }}
+                tickCount={6}
+              />
+              <Legend
+                iconType='square'
+                iconSize={12}
+                wrapperStyle={{
+                  paddingTop: 16,
+                  fontSize: 13,
+                  color: legendColor,
+                }}
+              />
+              <Bar
+                dataKey='income'
+                name='Income'
+                fill='#22c55e'
+                radius={[3, 3, 0, 0]}
+              />
+              <Bar
+                dataKey='expenses'
+                name='Expenses'
+                fill='#ef4444'
+                radius={[3, 3, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
