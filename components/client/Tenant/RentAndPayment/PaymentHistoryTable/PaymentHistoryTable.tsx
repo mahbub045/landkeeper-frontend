@@ -77,7 +77,7 @@ function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
 export function PaymentHistoryTable() {
   const [page, setPage] = useState(1);
 
-  const { data: paymentHistoryData, isLoading: isRentPaymentsLoading } =
+  const { data: paymentHistoryData, isFetching: isRentPaymentsLoading } =
     useGetPaymentHistoryQuery({ page });
 
   const payments = paymentHistoryData?.results ?? [];
