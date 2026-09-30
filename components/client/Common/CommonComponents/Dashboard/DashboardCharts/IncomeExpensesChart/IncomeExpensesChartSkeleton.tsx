@@ -12,30 +12,43 @@ const BAR_HEIGHTS = [
 
 export function IncomeExpensesChartBars() {
   return (
-    <div className='flex h-70 w-full flex-col'>
-      <div className='flex flex-1 items-end justify-around gap-4 border-b border-gray-100 px-4 dark:border-gray-700/50'>
-        {BAR_HEIGHTS.map(([income, expense], i) => (
-          <div key={i} className='flex h-full items-end gap-1'>
-            <div
-              className='bg-muted w-4 animate-pulse rounded-t-sm sm:w-6'
-              style={{ height: income }}
-            />
-            <div
-              className='bg-muted w-4 animate-pulse rounded-t-sm sm:w-6'
-              style={{ height: expense }}
-            />
+    <>
+      <div className='mb-4 grid grid-cols-3 gap-3'>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className='rounded-xl border border-gray-100 px-3 py-2 dark:border-gray-700/50'
+          >
+            <div className='bg-muted h-3 w-16 animate-pulse rounded' />
+            <div className='bg-muted mt-2 h-5 w-20 animate-pulse rounded' />
           </div>
         ))}
       </div>
-      <div className='mt-4 flex items-center justify-center gap-6'>
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className='flex items-center gap-1.5'>
-            <span className='bg-muted inline-block size-3 animate-pulse rounded-sm' />
-            <span className='bg-muted h-3 w-16 animate-pulse rounded' />
-          </div>
-        ))}
+      <div className='flex h-70 w-full flex-col'>
+        <div className='flex flex-1 items-end justify-around gap-4 border-b border-gray-100 px-4 dark:border-gray-700/50'>
+          {BAR_HEIGHTS.map(([income, expense], i) => (
+            <div key={i} className='flex h-full items-end gap-1'>
+              <div
+                className='bg-muted w-4 animate-pulse rounded-t-sm sm:w-6'
+                style={{ height: income }}
+              />
+              <div
+                className='bg-muted w-4 animate-pulse rounded-t-sm sm:w-6'
+                style={{ height: expense }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className='mt-4 flex items-center justify-center gap-6'>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className='flex items-center gap-1.5'>
+              <span className='bg-muted inline-block size-3 animate-pulse rounded-sm' />
+              <span className='bg-muted h-3 w-16 animate-pulse rounded' />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
