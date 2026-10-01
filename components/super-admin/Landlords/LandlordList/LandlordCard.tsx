@@ -3,21 +3,11 @@ import { CalendarDays, Crown, Mail, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { PLAN_STYLES } from '@/data/super-admin/Landlords/LandlordData';
 import { cn } from '@/lib/utils';
-import {
-  LandlordPlan,
-  LandlordType,
-} from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+import { LandlordType } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import Link from 'next/link';
-
-const PLAN_STYLES: Record<LandlordPlan, string> = {
-  BASIC: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
-  STANDARD:
-    'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
-  PREMIUM:
-    'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-};
 
 const LandlordCard: React.FC<{ landlord: LandlordType }> = ({ landlord }) => {
   const fullName =

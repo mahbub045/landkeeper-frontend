@@ -2,6 +2,7 @@ import { baseApi } from '@/store/api/baseApi';
 import {
   LandlordListParams,
   LandlordListResponse,
+  LandlordType,
 } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
 
 export const LandlordOverviewApi = baseApi.injectEndpoints({
@@ -14,7 +15,7 @@ export const LandlordOverviewApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Landlords'],
     }),
-    getlandlordDetails: builder.query({
+    getlandlordDetails: builder.query<LandlordType, { landlord_uid: string }>({
       query: ({ landlord_uid }) => ({
         url: `/admin/landloards/${landlord_uid}`,
         method: 'GET',
