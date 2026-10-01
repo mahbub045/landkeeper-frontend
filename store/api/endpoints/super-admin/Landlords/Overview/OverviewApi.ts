@@ -24,7 +24,7 @@ export const LandlordOverviewApi = baseApi.injectEndpoints({
     }),
     editLandlord: builder.mutation<
       LandlordType,
-      { landlord_uid: string; data: Partial<LandlordType> }
+      { landlord_uid: string; data: Partial<LandlordType> | FormData }
     >({
       query: ({ landlord_uid, data }) => ({
         url: `/admin/landloards/${landlord_uid}`,

@@ -83,6 +83,7 @@ export interface LandlordProps {
 
 export interface ProfileHeaderProps {
   landlord: LandlordType;
+  landlord_uid: string;
   fullName: string;
 }
 

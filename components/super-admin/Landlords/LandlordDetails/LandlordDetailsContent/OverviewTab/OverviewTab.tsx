@@ -31,7 +31,11 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_uid }) => {
 
   return (
     <div className='space-y-6'>
-      <ProfileHeader landlord={landlord} fullName={fullName} />
+      <ProfileHeader
+        landlord={landlord}
+        landlord_uid={landlord_uid}
+        fullName={fullName}
+      />
       <OverviewStats landlord={landlord} />
       <div className='grid gap-6 xl:grid-cols-2'>
         <PersonalInfo
