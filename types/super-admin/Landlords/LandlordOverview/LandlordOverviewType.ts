@@ -30,8 +30,24 @@ export interface LandlordListResponse {
   results: LandlordType[];
 }
 
+export type LandlordSubscriptionStatus =
+  'PENDING' | 'ACTIVE' | 'TRIALING' | 'PAST_DUE' | 'CANCELLED' | 'EXPIRED';
+
+export interface LandlordFilterValues {
+  is_active: 'all' | 'true' | 'false';
+  subscription_status: 'all' | LandlordSubscriptionStatus;
+  plan_type: 'all' | LandlordPlan;
+  created_at_from: string;
+  created_at_to: string;
+}
+
 export interface LandlordListParams {
   page: number;
   page_size?: number;
   search?: string;
+  is_active?: boolean;
+  organisation_users__organisation__subscription__status?: LandlordSubscriptionStatus;
+  organisation_users__organisation__subscription__plan__plan_type?: LandlordPlan;
+  created_at__gte?: string;
+  created_at__lte?: string;
 }
