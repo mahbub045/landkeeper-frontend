@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { LandlordType } from '@/types/super-admin/Landlords/Overview/OverviewType';
+import { LandlordProps } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { formatChoiceFieldValue, formatDateAndTime } from '@/utils/formatters';
 import {
   CalendarDays,
@@ -12,7 +12,7 @@ import {
 import { InfoRow, InfoSection } from '../PersonalInfo/PersonalInfo';
 import { SubscriptionBadge } from '../ProfileHeader/ProfileHeader';
 
-const AccountDetails: React.FC<{ landlord: LandlordType }> = ({ landlord }) => (
+const AccountDetails: React.FC<LandlordProps> = ({ landlord }) => (
   <InfoSection title='Account Details' icon={ShieldCheck}>
     <InfoRow
       icon={ShieldCheck}

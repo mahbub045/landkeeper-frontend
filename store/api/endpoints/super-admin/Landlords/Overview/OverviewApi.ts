@@ -22,8 +22,30 @@ export const LandlordOverviewApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Landlords'],
     }),
+    editLandlord: builder.mutation<
+      LandlordType,
+      { landlord_uid: string; data: Partial<LandlordType> }
+    >({
+      query: ({ landlord_uid, data }) => ({
+        url: `/admin/landloards/${landlord_uid}`,
+        method: 'PATCH',
+        body: data,
+      }),
+      invalidatesTags: ['Landlords'],
+    }),
+    deleteLandlord: builder.mutation<void, { landlord_uid: string }>({
+      query: ({ landlord_uid }) => ({
+        url: `/admin/landloards/${landlord_uid}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Landlords'],
+    }),
   }),
 });
 
-export const { useGetLandlordsQuery, useGetlandlordDetailsQuery } =
-  LandlordOverviewApi;
+export const {
+  useGetLandlordsQuery,
+  useGetlandlordDetailsQuery,
+  useEditLandlordMutation,
+  useDeleteLandlordMutation,
+} = LandlordOverviewApi;

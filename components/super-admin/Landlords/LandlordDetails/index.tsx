@@ -22,7 +22,6 @@ import {
   FileText,
   Landmark,
   LayoutDashboard,
-  LucideIcon,
   Receipt,
   ShieldCheck,
   Store,
@@ -31,19 +30,12 @@ import {
   Wallet,
   Wrench,
 } from 'lucide-react';
+import { LandlordDetailsTabGroup } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import OverviewTab from './LandlordDetailsContent/OverviewTab/OverviewTab';
 
-type TabItem = {
-  key: LandlordDetailsTab;
-  label: string;
-  icon: LucideIcon;
-  /** Icon tile colours */
-  color: string;
-};
-
-const TAB_GROUPS: { label: string; tabs: TabItem[] }[] = [
+const TAB_GROUPS: LandlordDetailsTabGroup[] = [
   {
     label: 'Portfolio',
     tabs: [

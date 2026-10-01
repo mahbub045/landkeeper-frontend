@@ -1,13 +1,15 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { useGetlandlordDetailsQuery } from '@/store/api/endpoints/super-admin/Landlords/Overview/OverviewApi';
+import { OverviewTabProps } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { formatChoiceFieldValue } from '@/utils/formatters';
 import AccountDetails from './AccountDetails/AccountDetails';
+import DeleteLandlord from './DeleteLandlord/DeleteLandlord';
 import OverviewSkeleton from './OverviewSkeleton/OverviewSkeleton';
 import OverviewStats from './OverviewStats/OverviewStats';
 import PersonalInfo from './PersonalInfo/PersonalInfo';
 import ProfileHeader from './ProfileHeader/ProfileHeader';
 
-const OverviewTab: React.FC<{ landlord_uid: string }> = ({ landlord_uid }) => {
+const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_uid }) => {
   const {
     data: landlord,
     isLoading,
@@ -32,9 +34,18 @@ const OverviewTab: React.FC<{ landlord_uid: string }> = ({ landlord_uid }) => {
       <ProfileHeader landlord={landlord} fullName={fullName} />
       <OverviewStats landlord={landlord} />
       <div className='grid gap-6 xl:grid-cols-2'>
-        <PersonalInfo landlord={landlord} fullName={fullName} />
+        <PersonalInfo
+          landlord={landlord}
+          landlord_uid={landlord_uid}
+          fullName={fullName}
+        />
         <AccountDetails landlord={landlord} />
       </div>
+      <DeleteLandlord
+        landlord={landlord}
+        landlord_uid={landlord_uid}
+        fullName={fullName}
+      />
     </div>
   );
 };

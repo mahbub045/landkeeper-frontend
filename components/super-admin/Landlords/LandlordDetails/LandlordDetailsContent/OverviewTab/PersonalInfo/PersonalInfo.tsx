@@ -1,38 +1,41 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LandlordType } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import {
-  Hash,
-  IdCard,
-  LucideIcon,
-  Mail,
-  MapPin,
-  Phone,
-  User,
-} from 'lucide-react';
+  InfoRowProps,
+  InfoSectionProps,
+  PersonalInfoProps,
+} from '@/types/super-admin/Landlords/Overview/OverviewType';
+import { Hash, IdCard, Mail, MapPin, Pencil, Phone, User } from 'lucide-react';
+import { useState } from 'react';
+import EditPersonalInfoDialog from './Dialogs/EditPersonalInfoDialog';
 
 const NOT_PROVIDED = 'Not provided';
 
 /** Card with a titled header. Also used by AccountDetails */
-export const InfoSection: React.FC<{
-  title: string;
-  icon: LucideIcon;
-  children: React.ReactNode;
-}> = ({ title, icon: Icon, children }) => (
+export const InfoSection: React.FC<InfoSectionProps> = ({
+  title,
+  icon: Icon,
+  action,
+  children,
+}) => (
   <div className='ring-foreground/10 rounded-xl ring-1'>
-    <div className='flex items-center gap-2 border-b px-5 py-3'>
+    <div className='flex min-h-12 items-center gap-2 border-b px-5 py-2'>
       <Icon className='text-primary size-4' />
       <h3 className='text-sm font-semibold'>{title}</h3>
+      {action && <div className='ml-auto'>{action}</div>}
     </div>
     <div className='divide-y px-5'>{children}</div>
   </div>
 );
 
 /** Label/value row. Also used by AccountDetails */
-export const InfoRow: React.FC<{
-  icon: LucideIcon;
-  label: string;
-  value: React.ReactNode;
-}> = ({ icon: Icon, label, value }) => {
+export const InfoRow: React.FC<InfoRowProps> = ({
+  icon: Icon,
+  label,
+  value,
+}) => {
   const isEmpty = value == null || value === '';
   return (
     <div className='flex items-start gap-3 py-3'>
@@ -52,24 +55,50 @@ export const InfoRow: React.FC<{
   );
 };
 
-interface PersonalInfoProps {
-  landlord: LandlordType;
-  fullName: string;
-}
+const PersonalInfo: React.FC<PersonalInfoProps> = ({
+  landlord,
+  landlord_uid,
+  fullName,
+}) => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-const PersonalInfo: React.FC<PersonalInfoProps> = ({ landlord, fullName }) => (
-  <InfoSection title='Personal Information' icon={User}>
-    <InfoRow icon={User} label='Full Name' value={fullName} />
-    <InfoRow icon={Mail} label='Email' value={landlord.email} />
-    <InfoRow icon={Phone} label='Phone' value={landlord.phone} />
-    <InfoRow
-      icon={MapPin}
-      label='Current Address'
-      value={landlord.current_address}
-    />
-    <InfoRow icon={IdCard} label='NI Number' value={landlord.ni_number} />
-    <InfoRow icon={Hash} label='UTR Number' value={landlord.utr_number} />
-  </InfoSection>
-);
+  return (
+    <>
+      <InfoSection
+        title='Personal Information'
+        icon={User}
+        action={
+          <Button
+            type='button'
+            size='xs'
+            variant='default'
+            onClick={() => setIsEditOpen(true)}
+          >
+            <Pencil />
+            Edit
+          </Button>
+        }
+      >
+        <InfoRow icon={User} label='Full Name' value={fullName} />
+        <InfoRow icon={Mail} label='Email' value={landlord.email} />
+        <InfoRow icon={Phone} label='Phone' value={landlord.phone} />
+        <InfoRow
+          icon={MapPin}
+          label='Current Address'
+          value={landlord.current_address}
+        />
+        <InfoRow icon={IdCard} label='NI Number' value={landlord.ni_number} />
+        <InfoRow icon={Hash} label='UTR Number' value={landlord.utr_number} />
+      </InfoSection>
+
+      <EditPersonalInfoDialog
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        landlord={landlord}
+        landlord_uid={landlord_uid}
+      />
+    </>
+  );
+};
 
 export default PersonalInfo;

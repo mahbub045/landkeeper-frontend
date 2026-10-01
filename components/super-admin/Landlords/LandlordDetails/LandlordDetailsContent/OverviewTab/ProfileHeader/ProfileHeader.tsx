@@ -3,14 +3,15 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { PLAN_STYLES } from '@/data/super-admin/Landlords/LandlordData';
 import { cn } from '@/lib/utils';
-import { LandlordType } from '@/types/super-admin/Landlords/Overview/OverviewType';
+import {
+  LandlordProps,
+  ProfileHeaderProps,
+} from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { formatChoiceFieldValue } from '@/utils/formatters';
 import { Crown, Mail } from 'lucide-react';
 
 /** Also used by AccountDetails */
-export const SubscriptionBadge: React.FC<{ landlord: LandlordType }> = ({
-  landlord,
-}) => {
+export const SubscriptionBadge: React.FC<LandlordProps> = ({ landlord }) => {
   if (landlord.subscription_status)
     return (
       <Badge
@@ -32,17 +33,13 @@ export const SubscriptionBadge: React.FC<{ landlord: LandlordType }> = ({
   return <Badge variant='dangerLight'>Unsubscribed</Badge>;
 };
 
-interface ProfileHeaderProps {
-  landlord: LandlordType;
-  fullName: string;
-}
-
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   landlord,
   fullName,
 }) => {
   const initials =
     `${landlord.first_name?.[0] ?? ''}${landlord.last_name?.[0] ?? ''}`.toUpperCase();
+  const hasPlan = landlord.has_subscription && Boolean(landlord.plan);
 
   return (
     <Card className='from-primary/10 via-card to-card relative gap-0 bg-linear-to-br p-5 sm:p-6'>
@@ -74,35 +71,41 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               {landlord.email}
             </p>
             <div className='mt-2 flex flex-wrap items-center gap-2'>
-              <Badge variant='outline'>
-                {formatChoiceFieldValue(landlord.role)}
-              </Badge>
               <Badge
                 variant={landlord.is_active ? 'successLight' : 'dangerLight'}
               >
-                {landlord.is_active ? 'Active' : 'Inactive'}
+                {landlord.is_active ? 'Account Active' : 'Account Inactive'}
               </Badge>
             </div>
           </div>
         </div>
 
-        <div className='flex flex-wrap items-center gap-2 sm:flex-col sm:items-end'>
-          {landlord.has_subscription && landlord.plan ? (
-            <span
-              className={cn(
-                'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold',
-                PLAN_STYLES[landlord.plan],
-              )}
-            >
-              <Crown className='size-3.5' />
-              {formatChoiceFieldValue(landlord.plan)} Plan
-            </span>
-          ) : (
-            <Badge variant='outline' className='text-muted-foreground'>
-              No plan active
-            </Badge>
-          )}
-          <SubscriptionBadge landlord={landlord} />
+        {/* Current plan panel */}
+        <div className='bg-card/70 ring-foreground/10 flex items-center gap-3 rounded-xl px-4 py-3 shadow-sm ring-1 backdrop-blur-sm sm:min-w-56'>
+          <div
+            className={cn(
+              'flex size-11 shrink-0 items-center justify-center rounded-lg',
+              hasPlan
+                ? PLAN_STYLES[landlord.plan!]
+                : 'bg-muted text-muted-foreground',
+            )}
+          >
+            <Crown className='size-5' />
+          </div>
+
+          <div className='min-w-0 flex-1'>
+            <p className='text-muted-foreground text-[11px] font-medium tracking-wider uppercase'>
+              Current Plan
+            </p>
+            <p className='truncate text-base leading-tight font-semibold'>
+              {hasPlan
+                ? `${formatChoiceFieldValue(landlord.plan)} Plan`
+                : 'No active plan'}
+            </p>
+            <div className='mt-1.5'>
+              <SubscriptionBadge landlord={landlord} />
+            </div>
+          </div>
         </div>
       </div>
     </Card>

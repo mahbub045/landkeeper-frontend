@@ -1,20 +1,10 @@
 import { cn } from '@/lib/utils';
-import { LandlordType } from '@/types/super-admin/Landlords/Overview/OverviewType';
-import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import {
-  BadgeCheck,
-  CalendarDays,
-  CreditCard,
-  Crown,
-  LucideIcon,
-} from 'lucide-react';
-
-interface StatTileProps {
-  icon: LucideIcon;
-  color: string;
-  label: string;
-  children: React.ReactNode;
-}
+  LandlordProps,
+  StatTileProps,
+} from '@/types/super-admin/Landlords/Overview/OverviewType';
+import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
+import { BadgeCheck, CalendarDays, CreditCard, Crown } from 'lucide-react';
 
 const StatTile: React.FC<StatTileProps> = ({
   icon: Icon,
@@ -38,7 +28,7 @@ const StatTile: React.FC<StatTileProps> = ({
   </div>
 );
 
-const OverviewStats: React.FC<{ landlord: LandlordType }> = ({ landlord }) => (
+const OverviewStats: React.FC<LandlordProps> = ({ landlord }) => (
   <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
     <StatTile
       icon={BadgeCheck}
