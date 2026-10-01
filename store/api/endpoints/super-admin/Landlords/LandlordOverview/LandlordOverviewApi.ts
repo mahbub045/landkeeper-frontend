@@ -14,7 +14,15 @@ export const LandlordOverviewApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Landlords'],
     }),
+    getlandlordDetails: builder.query({
+      query: ({ landlord_uid }) => ({
+        url: `/admin/landloards/${landlord_uid}`,
+        method: 'GET',
+      }),
+      providesTags: ['Landlords'],
+    }),
   }),
 });
 
-export const { useGetLandlordsQuery } = LandlordOverviewApi;
+export const { useGetLandlordsQuery, useGetlandlordDetailsQuery } =
+  LandlordOverviewApi;
