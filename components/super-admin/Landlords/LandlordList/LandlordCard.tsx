@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { PLAN_STYLES } from '@/data/super-admin/Landlords/LandlordData';
 import { cn } from '@/lib/utils';
-import { LandlordType } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+import { LandlordType } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import Link from 'next/link';
 

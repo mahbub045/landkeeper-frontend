@@ -1,4 +1,4 @@
-import { LandlordPlan } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+import { LandlordPlan } from '@/types/super-admin/Landlords/Overview/OverviewType';
 
 export const PLAN_STYLES: Record<LandlordPlan, string> = {
   BASIC: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',

@@ -1,7 +1,7 @@
 import {
   CalendarRange,
-  Crown,
   CreditCard,
+  Crown,
   ListFilter,
   RotateCcw,
   UserCheck,
@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { LandlordFilterValues } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+import { LandlordFilterValues } from '@/types/super-admin/Landlords/Overview/OverviewType';
 
 export const DEFAULT_LANDLORD_FILTERS: LandlordFilterValues = {
   is_active: 'all',

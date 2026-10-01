@@ -3,7 +3,7 @@ import {
   LandlordListParams,
   LandlordListResponse,
   LandlordType,
-} from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+} from '@/types/super-admin/Landlords/Overview/OverviewType';
 
 export const LandlordOverviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

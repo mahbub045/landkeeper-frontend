@@ -16,12 +16,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { useGetLandlordsQuery } from '@/store/api/endpoints/super-admin/Landlords/LandlordOverview/LandlordOverviewApi';
-import { LandlordFilterValues } from '@/types/super-admin/Landlords/LandlordOverview/LandlordOverviewType';
+import { cn } from '@/lib/utils';
+import { useGetLandlordsQuery } from '@/store/api/endpoints/super-admin/Landlords/Overview/OverviewApi';
+import { LandlordFilterValues } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
 import LandlordCard from './LandlordCard';
 import LandlordCardSkeleton from './LandlordCardSkeleton';
-import { cn } from '@/lib/utils';
 import LandlordFilters, {
   countActiveLandlordFilters,
   DEFAULT_LANDLORD_FILTERS,
