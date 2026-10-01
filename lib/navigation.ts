@@ -71,6 +71,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         icon: LayoutDashboard,
       },
       {
+        label: 'Landlords',
+        href: '/super-admin/landlords',
+        icon: UsersRound,
+      },
+      {
         label: 'Pricing Plans',
         href: '/super-admin/pricing-plans',
         icon: Package,

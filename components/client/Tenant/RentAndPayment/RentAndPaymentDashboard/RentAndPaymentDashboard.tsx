@@ -14,7 +14,8 @@ import { StatementsCard } from '../StatementsCard/StatementsCard';
 export const RentAndPaymentDashboard: React.FC = () => {
   const [isCardDialogOpen, setIsCardDialogOpen] = useState(false);
 
-  const { data: balanceSummary } = useGetRentBalanceSummaryQuery(undefined);
+  const { data: balanceSummary, isLoading: isBalanceSummaryLoading } =
+    useGetRentBalanceSummaryQuery(undefined);
 
   const paymentMethods: PaymentMethodOption[] = dummyPaymentMethods;
 
@@ -35,7 +36,10 @@ export const RentAndPaymentDashboard: React.FC = () => {
         </p>
       </div>
 
-      <BalanceSummaryCard summary={balanceSummary} />
+      <BalanceSummaryCard
+        summary={balanceSummary}
+        isLoading={isBalanceSummaryLoading}
+      />
 
       <div className='grid gap-6 md:grid-cols-2'>
         <QuickPaymentCard

@@ -25,6 +25,10 @@ export const TAG_TYPES = [
   'CommonPermissions',
   'StripeConnectStatus',
 
+  // Super Admin Tags
+  'Landlords',
+  'Subscriptions',
+
   // Common Tags
   'Property',
   'Mortgage',

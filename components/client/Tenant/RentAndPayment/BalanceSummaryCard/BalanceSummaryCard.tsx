@@ -1,5 +1,6 @@
 import { CalendarClock, CircleAlert, CircleCheck, Coins } from 'lucide-react';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { ApiRentBalanceSummary } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
@@ -30,7 +31,8 @@ interface SummaryItem {
 
 export const BalanceSummaryCard: React.FC<{
   summary?: ApiRentBalanceSummary;
-}> = ({ summary }) => {
+  isLoading?: boolean;
+}> = ({ summary, isLoading = false }) => {
   const hasRentAmount = summary?.current_rent_amount != null;
   const hasDueDate = summary?.next_due_date != null;
   const hasOutstandingBalance = summary?.outstanding_balance != null;
@@ -117,7 +119,11 @@ export const BalanceSummaryCard: React.FC<{
                 </p>
               </div>
 
-              {item.value !== null ? (
+              {isLoading ? (
+                <div className='mt-2 flex h-8 items-center'>
+                  <Loading className='text-muted-foreground size-5' />
+                </div>
+              ) : item.value !== null ? (
                 <p
                   className={cn(
                     'text-foreground mt-2 text-2xl font-bold',
@@ -132,7 +138,7 @@ export const BalanceSummaryCard: React.FC<{
                 </p>
               )}
 
-              {item.badge && (
+              {!isLoading && item.badge && (
                 <span
                   className={cn(
                     'mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',

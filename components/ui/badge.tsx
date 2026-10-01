@@ -24,18 +24,18 @@ const badgeVariants = cva(
         success:
           'bg-success text-success-foreground shadow-xs [a]:hover:bg-success/90',
         successLight:
-          'bg-success/30 text-success-foreground shadow-xs [a]:hover:bg-success/40',
+          'bg-success/20 text-success shadow-xs [a]:hover:bg-success/40',
         warning:
           'bg-warning text-warning-foreground shadow-xs [a]:hover:bg-warning/90',
         warningLight:
-          'bg-warning/30 text-warning-foreground shadow-xs [a]:hover:bg-warning/40',
+          'bg-warning/20 text-warning shadow-xs [a]:hover:bg-warning/40',
         info: 'bg-info text-info-foreground shadow-xs [a]:hover:bg-info/90',
         infoLight:
-          'bg-info/30 text-info-foreground shadow-xs [a]:hover:bg-info/40',
+          'bg-info/20 text-info shadow-xs [a]:hover:bg-info/40',
         danger:
           'bg-danger text-danger-foreground shadow-xs [a]:hover:bg-danger/90',
         dangerLight:
-          'bg-danger/30 text-danger-foreground shadow-xs [a]:hover:bg-danger/40',
+          'bg-danger/20 text-danger shadow-xs [a]:hover:bg-danger/40',
       },
       size: {
         default: 'h-5 gap-1 px-2 py-0.5 text-xs [&>svg]:size-3!',
