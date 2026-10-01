@@ -25,7 +25,11 @@ const LandlordCard: React.FC<{ landlord: LandlordType }> = ({ landlord }) => {
     `${landlord.first_name?.[0] ?? ''}${landlord.last_name?.[0] ?? ''}`.toUpperCase();
 
   return (
-    <Card className='border-border rounded-2xl py-0 shadow-md transition-shadow hover:shadow-lg'>
+    <Card
+      glow
+      glowClassName='h-full'
+      className='border-border h-full rounded-2xl py-0'
+    >
       <CardContent className='flex h-full flex-col gap-4 px-5 py-5'>
         <div className='flex items-start gap-3'>
           <Avatar className='size-12 shrink-0'>
