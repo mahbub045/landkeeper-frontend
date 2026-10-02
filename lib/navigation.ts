@@ -13,7 +13,6 @@ import {
   Landmark,
   LayoutDashboard,
   Package,
-  Podcast,
   ShieldUser,
   Ticket,
   UserKey,
@@ -79,11 +78,6 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         label: 'Pricing Plans',
         href: '/super-admin/pricing-plans',
         icon: Package,
-      },
-      {
-        label: 'Subscriptions',
-        href: '/super-admin/subscriptions',
-        icon: Podcast,
       },
       {
         label: 'Support Tickets',

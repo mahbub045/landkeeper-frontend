@@ -1,12 +1,13 @@
 import { baseApi } from '@/store/api/baseApi';
 import {
+  PricingPlansResponse,
   SelectPricingPlanRequest,
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 
 export const PricingPlansApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPricingPlans: builder.query({
+    getPricingPlans: builder.query<PricingPlansResponse, void>({
       query: () => ({
         url: '/subscription/plans',
         method: 'GET',

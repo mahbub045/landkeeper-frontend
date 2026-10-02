@@ -1,7 +1,9 @@
+import PricingPlanList from './PricingPlanList/PricingPlanList';
+
 const PricingPlansContainer: React.FC = () => {
   return (
     <div>
-      <h4 className='text-danger text-center text-3xl'>Under Development</h4>
+      <PricingPlanList />
     </div>
   );
 };
