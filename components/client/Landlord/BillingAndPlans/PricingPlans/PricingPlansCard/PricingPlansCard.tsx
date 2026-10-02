@@ -232,13 +232,16 @@ const PricingPlansCard: React.FC = () => {
                 isPopular && 'lg:-mt-3 lg:min-h-146 lg:p-7',
               )}
             >
-              {isPopular && (
-                <div className='bg-primary absolute inset-x-0 top-0 h-1' />
-              )}
+              <div className={cn('absolute inset-x-0 top-0 h-1', meta.bar)} />
 
               <div className='flex items-start justify-between gap-4'>
                 <div>
-                  <div className='bg-foreground text-background mb-4 flex size-10 items-center justify-center rounded-xl'>
+                  <div
+                    className={cn(
+                      'mb-4 flex size-10 items-center justify-center rounded-xl',
+                      meta.iconTile,
+                    )}
+                  >
                     <Icon className='size-5' aria-hidden='true' />
                   </div>
                   <p className='text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase'>
@@ -249,7 +252,7 @@ const PricingPlansCard: React.FC = () => {
                   </h3>
                 </div>
                 {isPopular && (
-                  <span className='bg-primary text-primary-foreground rounded-full px-3 py-1 text-xs font-semibold'>
+                  <span className='rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white'>
                     Recommended
                   </span>
                 )}

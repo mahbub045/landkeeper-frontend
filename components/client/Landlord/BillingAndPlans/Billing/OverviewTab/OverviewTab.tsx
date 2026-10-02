@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { planTierTheme } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useCancelPendingDowngradeMutation,
@@ -45,11 +46,9 @@ const statusBgStyles: Record<SubscriptionStatus, string> = {
   CANCELLED: 'bg-destructive/10 text-destructive',
   EXPIRED: 'bg-muted-foreground/10 text-muted-foreground',
 };
-const planTierAccent: Record<string, string> = {
-  BASIC: 'before:bg-slate-400',
-  STANDARD: 'before:bg-primary',
-  PREMIUM: 'before:bg-amber-500',
-};
+const getPlanTierTheme = (planType: string) =>
+  planTierTheme[planType as keyof typeof planTierTheme] as
+    (typeof planTierTheme)[keyof typeof planTierTheme] | undefined;
 
 function getElapsedPercent(startDate: string, effectiveDate: string) {
   const start = new Date(startDate).getTime();
@@ -186,6 +185,11 @@ export default function OverviewTab() {
     );
   }
 
+  const pendingTheme = subscription.pending_plan
+    ? (getPlanTierTheme(subscription.pending_plan.plan_type) ??
+      planTierTheme.STANDARD)
+    : null;
+
   return (
     <div className='space-y-5'>
       <div className='grid items-stretch gap-5 lg:grid-cols-3'>
@@ -193,7 +197,8 @@ export default function OverviewTab() {
         <div
           className={cn(
             "border-border/70 relative flex h-full flex-col overflow-hidden rounded-2xl border bg-white py-6 pr-6 pl-7 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] lg:col-span-2 dark:bg-white/4",
-            planTierAccent[subscription.plan.plan_type] ?? 'before:bg-border',
+            getPlanTierTheme(subscription.plan.plan_type)?.bar ??
+              'before:bg-border',
           )}
         >
           <div className='flex items-center justify-between gap-4'>
@@ -245,7 +250,13 @@ export default function OverviewTab() {
                 </span>
                 <span className='text-muted-foreground text-sm'> /month</span>
               </div>
-              <span className='bg-success/10 text-success inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
+                  getPlanTierTheme(subscription.plan.plan_type)?.soft ??
+                    'bg-success/10 text-success',
+                )}
+              >
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.plan.max_properties} max properties
               </span>
@@ -332,17 +343,22 @@ export default function OverviewTab() {
       </div>
 
       {/* Pending plan change */}
-      {subscription.pending_plan && (
+      {pendingTheme && subscription.pending_plan && (
         <div
           className={cn(
-            "border-primary/20 from-primary/5 relative overflow-hidden rounded-2xl border bg-linear-to-r via-white to-white p-6 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] dark:via-white/4 dark:to-white/4",
-            planTierAccent[subscription.pending_plan.plan_type] ??
-              'before:bg-primary',
+            "relative overflow-hidden rounded-2xl border bg-linear-to-r via-white to-white p-6 before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:content-[''] dark:via-white/4 dark:to-white/4",
+            pendingTheme.container,
+            pendingTheme.bar,
           )}
         >
           <div className='flex flex-wrap items-center justify-between gap-4'>
             <div className='flex items-center gap-3'>
-              <span className='bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full'>
+              <span
+                className={cn(
+                  'flex size-9 shrink-0 items-center justify-center rounded-full',
+                  pendingTheme.soft,
+                )}
+              >
                 <CalendarClock className='size-4.5' aria-hidden='true' />
               </span>
               <div>
@@ -350,7 +366,12 @@ export default function OverviewTab() {
                   <span className='text-sm font-semibold'>
                     Upcoming plan change
                   </span>
-                  <span className='bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[11px] font-medium'>
+                  <span
+                    className={cn(
+                      'rounded-full px-2 py-0.5 text-[11px] font-medium',
+                      pendingTheme.soft,
+                    )}
+                  >
                     Scheduled
                   </span>
                 </div>
@@ -388,7 +409,12 @@ export default function OverviewTab() {
                 <span className='text-muted-foreground text-sm'>/month</span>
               </div>
 
-              <span className='bg-success/10 text-success inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium'>
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
+                  pendingTheme.soft,
+                )}
+              >
                 <Building2 className='size-3.5' aria-hidden='true' />
                 {subscription.pending_plan.max_properties} max properties
               </span>
@@ -396,9 +422,17 @@ export default function OverviewTab() {
           </div>
 
           <div className='mt-5'>
-            <div className='bg-primary/10 relative h-2 w-full overflow-hidden rounded-full'>
+            <div
+              className={cn(
+                'relative h-2 w-full overflow-hidden rounded-full',
+                pendingTheme.track,
+              )}
+            >
               <div
-                className='bg-primary absolute inset-y-0 left-0 rounded-full transition-[width] duration-1000 ease-out'
+                className={cn(
+                  'absolute inset-y-0 left-0 rounded-full transition-[width] duration-1000 ease-out',
+                  pendingTheme.fill,
+                )}
                 style={{
                   width: `${getElapsedPercent(
                     subscription.start_date,
