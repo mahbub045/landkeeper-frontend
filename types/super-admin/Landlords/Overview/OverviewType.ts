@@ -72,7 +72,7 @@ export interface LandlordDetailsTabGroup {
 
 // ---- Overview tab ----
 
-export interface OverviewTabProps {
+export interface CommonLandlordAliasProps {
   landlord_alias: string;
 }
 

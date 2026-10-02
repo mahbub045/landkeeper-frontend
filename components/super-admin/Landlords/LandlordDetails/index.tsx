@@ -261,7 +261,9 @@ const SuperAdminLandlordDetailsContainer: React.FC = () => {
           {activeTab === 'overview' && (
             <OverviewTab landlord_alias={landlord_alias} />
           )}
-          {activeTab === 'properties' && <PropertiesTab />}
+          {activeTab === 'properties' && (
+            <PropertiesTab landlord_alias={landlord_alias} />
+          )}
           {activeTab === 'mortgages' && <div>Mortgages content</div>}
           {activeTab === 'tenants' && <div>Tenants content</div>}
           {activeTab === 'compliance' && <div>Compliance content</div>}

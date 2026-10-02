@@ -1,6 +1,6 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { useGetlandlordDetailsQuery } from '@/store/api/endpoints/super-admin/Landlords/Overview/OverviewApi';
-import { OverviewTabProps } from '@/types/super-admin/Landlords/Overview/OverviewType';
+import { CommonLandlordAliasProps } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { formatChoiceFieldValue } from '@/utils/formatters';
 import AccountDetails from './AccountDetails/AccountDetails';
 import DeleteLandlord from './DeleteLandlord/DeleteLandlord';
@@ -9,7 +9,9 @@ import OverviewStats from './OverviewStats/OverviewStats';
 import PersonalInfo from './PersonalInfo/PersonalInfo';
 import ProfileHeader from './ProfileHeader/ProfileHeader';
 
-const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_alias }) => {
+const OverviewTab: React.FC<CommonLandlordAliasProps> = ({
+  landlord_alias,
+}) => {
   const {
     data: landlord,
     isLoading,

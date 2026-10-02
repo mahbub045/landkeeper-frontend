@@ -11,6 +11,9 @@ export type AuthRootState = {
   auth: {
     accessToken: string | null;
   };
+  landlordAlias: {
+    landlordAlias: string | null;
+  };
 };
 
 export const TAG_TYPES = [
@@ -28,6 +31,7 @@ export const TAG_TYPES = [
   // Super Admin Tags
   'Landlords',
   'Subscriptions',
+  'OrganisationList',
 
   // Common Tags
   'Property',
@@ -82,6 +86,13 @@ const rawBaseQuery = fetchBaseQuery({
 
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
+    }
+
+    // Super admin viewing a landlord's data acts on that landlord
+    const landlordAlias = (getState() as AuthRootState).landlordAlias
+      .landlordAlias;
+    if (landlordAlias) {
+      headers.set('X-LANDLORD-ALIAS', landlordAlias);
     }
 
     return headers;

@@ -24,7 +24,7 @@ import {
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
-import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
+import { isSuperAdmin_Landlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -130,7 +130,9 @@ const Properties: React.FC = () => {
               <HoverInfoPopover text='You can search using Property Name and Address.' />
             </div>
 
-            {isLandlord_Admin_LettingAgent(session?.user?.role ?? null) &&
+            {isSuperAdmin_Landlord_Admin_LettingAgent(
+              session?.user?.role ?? null,
+            ) &&
               commonPermissions?.can_create_property && (
                 <Button onClick={() => setModalOpen(true)}>
                   <Plus />
