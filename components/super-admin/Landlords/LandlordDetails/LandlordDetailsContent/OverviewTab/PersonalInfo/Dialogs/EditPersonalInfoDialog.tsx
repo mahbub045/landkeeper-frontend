@@ -62,7 +62,7 @@ const EditPersonalInfoDialog: React.FC<EditPersonalInfoDialogProps> = ({
   open,
   onClose,
   landlord,
-  landlord_uid,
+  landlord_alias,
 }) => {
   const [formData, setFormData] = useState<PersonalInfoForm>(() =>
     getFormData(landlord),
@@ -82,7 +82,7 @@ const EditPersonalInfoDialog: React.FC<EditPersonalInfoDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await editLandlord({ landlord_uid, data: formData }).unwrap();
+      await editLandlord({ landlord_alias, data: formData }).unwrap();
       toast.success('Personal information updated successfully.');
       onClose();
     } catch {

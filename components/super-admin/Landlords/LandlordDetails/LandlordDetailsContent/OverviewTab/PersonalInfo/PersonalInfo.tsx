@@ -57,7 +57,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({
 
 const PersonalInfo: React.FC<PersonalInfoProps> = ({
   landlord,
-  landlord_uid,
+  landlord_alias,
   fullName,
 }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -95,7 +95,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
         open={isEditOpen}
         onClose={() => setIsEditOpen(false)}
         landlord={landlord}
-        landlord_uid={landlord_uid}
+        landlord_alias={landlord_alias}
       />
     </>
   );

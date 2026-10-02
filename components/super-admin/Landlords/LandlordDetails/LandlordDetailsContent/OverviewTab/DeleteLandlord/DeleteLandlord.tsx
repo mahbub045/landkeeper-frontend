@@ -25,7 +25,7 @@ const IMPACT_ITEMS = [
 
 const DeleteLandlord: React.FC<DeleteLandlordProps> = ({
   landlord,
-  landlord_uid,
+  landlord_alias,
   fullName,
 }) => {
   const router = useRouter();
@@ -34,7 +34,7 @@ const DeleteLandlord: React.FC<DeleteLandlordProps> = ({
 
   async function handleDelete() {
     try {
-      await deleteLandlord({ landlord_uid }).unwrap();
+      await deleteLandlord({ landlord_alias }).unwrap();
       toast.success('Landlord deleted successfully.');
       setOpen(false);
       router.push('/super-admin/landlords');

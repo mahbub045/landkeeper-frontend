@@ -9,12 +9,12 @@ import OverviewStats from './OverviewStats/OverviewStats';
 import PersonalInfo from './PersonalInfo/PersonalInfo';
 import ProfileHeader from './ProfileHeader/ProfileHeader';
 
-const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_uid }) => {
+const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_alias }) => {
   const {
     data: landlord,
     isLoading,
     isError,
-  } = useGetlandlordDetailsQuery({ landlord_uid });
+  } = useGetlandlordDetailsQuery({ landlord_alias });
 
   if (isLoading) return <OverviewSkeleton />;
   if (isError || !landlord)
@@ -33,21 +33,21 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ landlord_uid }) => {
     <div className='space-y-6'>
       <ProfileHeader
         landlord={landlord}
-        landlord_uid={landlord_uid}
+        landlord_alias={landlord_alias}
         fullName={fullName}
       />
       <OverviewStats landlord={landlord} />
       <div className='grid gap-6 xl:grid-cols-2'>
         <PersonalInfo
           landlord={landlord}
-          landlord_uid={landlord_uid}
+          landlord_alias={landlord_alias}
           fullName={fullName}
         />
         <AccountDetails landlord={landlord} />
       </div>
       <DeleteLandlord
         landlord={landlord}
-        landlord_uid={landlord_uid}
+        landlord_alias={landlord_alias}
         fullName={fullName}
       />
     </div>

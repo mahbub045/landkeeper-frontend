@@ -42,7 +42,7 @@ const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   landlord,
-  landlord_uid,
+  landlord_alias,
   fullName,
 }) => {
   const initials =
@@ -73,7 +73,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     try {
       const body = new FormData();
       body.append('profile_image', file);
-      await editLandlord({ landlord_uid, data: body }).unwrap();
+      await editLandlord({ landlord_alias, data: body }).unwrap();
       toast.success('Profile picture updated.');
     } catch {
       toast.error('Failed to upload image. Please try again.');

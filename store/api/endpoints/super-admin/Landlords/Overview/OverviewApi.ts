@@ -15,27 +15,29 @@ export const LandlordOverviewApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Landlords'],
     }),
-    getlandlordDetails: builder.query<LandlordType, { landlord_uid: string }>({
-      query: ({ landlord_uid }) => ({
-        url: `/admin/landloards/${landlord_uid}`,
-        method: 'GET',
-      }),
-      providesTags: ['Landlords'],
-    }),
+    getlandlordDetails: builder.query<LandlordType, { landlord_alias: string }>(
+      {
+        query: ({ landlord_alias }) => ({
+          url: `/admin/landloards/${landlord_alias}`,
+          method: 'GET',
+        }),
+        providesTags: ['Landlords'],
+      },
+    ),
     editLandlord: builder.mutation<
       LandlordType,
-      { landlord_uid: string; data: Partial<LandlordType> | FormData }
+      { landlord_alias: string; data: Partial<LandlordType> | FormData }
     >({
-      query: ({ landlord_uid, data }) => ({
-        url: `/admin/landloards/${landlord_uid}`,
+      query: ({ landlord_alias, data }) => ({
+        url: `/admin/landloards/${landlord_alias}`,
         method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['Landlords'],
     }),
-    deleteLandlord: builder.mutation<void, { landlord_uid: string }>({
-      query: ({ landlord_uid }) => ({
-        url: `/admin/landloards/${landlord_uid}`,
+    deleteLandlord: builder.mutation<void, { landlord_alias: string }>({
+      query: ({ landlord_alias }) => ({
+        url: `/admin/landloards/${landlord_alias}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Landlords'],

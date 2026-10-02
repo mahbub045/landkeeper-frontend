@@ -16,6 +16,7 @@ import {
   LandlordDetailsTab,
   setLandlordDetailsTab,
 } from '@/store/slices/landlordDetailsTabSlice';
+import { LandlordDetailsTabGroup } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import {
   Building2,
   ChartColumn,
@@ -30,10 +31,10 @@ import {
   Wallet,
   Wrench,
 } from 'lucide-react';
-import { LandlordDetailsTabGroup } from '@/types/super-admin/Landlords/Overview/OverviewType';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import OverviewTab from './LandlordDetailsContent/OverviewTab/OverviewTab';
+import PropertiesTab from './LandlordDetailsContent/PropertiesTab/PropertiesTab';
 
 const TAB_GROUPS: LandlordDetailsTabGroup[] = [
   {
@@ -144,7 +145,7 @@ const TAB_GROUPS: LandlordDetailsTabGroup[] = [
 const ALL_TABS = TAB_GROUPS.flatMap((group) => group.tabs);
 
 const SuperAdminLandlordDetailsContainer: React.FC = () => {
-  const { landlord_uid } = useParams<{ landlord_uid: string }>();
+  const { landlord_alias } = useParams<{ landlord_alias: string }>();
 
   // Collapse the app sidebar to icons on this page, restore it on leave
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
@@ -255,11 +256,12 @@ const SuperAdminLandlordDetailsContainer: React.FC = () => {
           </div>
           <h2 className='text-lg font-semibold'>{active.label}</h2>
         </div>
+
         <div className='p-6'>
           {activeTab === 'overview' && (
-            <OverviewTab landlord_uid={landlord_uid} />
+            <OverviewTab landlord_alias={landlord_alias} />
           )}
-          {activeTab === 'properties' && <div>Properties content</div>}
+          {activeTab === 'properties' && <PropertiesTab />}
           {activeTab === 'mortgages' && <div>Mortgages content</div>}
           {activeTab === 'tenants' && <div>Tenants content</div>}
           {activeTab === 'compliance' && <div>Compliance content</div>}

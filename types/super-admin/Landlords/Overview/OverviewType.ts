@@ -73,7 +73,7 @@ export interface LandlordDetailsTabGroup {
 // ---- Overview tab ----
 
 export interface OverviewTabProps {
-  landlord_uid: string;
+  landlord_alias: string;
 }
 
 /** Props for components that only need the landlord */
@@ -83,7 +83,7 @@ export interface LandlordProps {
 
 export interface ProfileHeaderProps {
   landlord: LandlordType;
-  landlord_uid: string;
+  landlord_alias: string;
   fullName: string;
 }
 
@@ -110,7 +110,7 @@ export interface InfoRowProps {
 
 export interface PersonalInfoProps {
   landlord: LandlordType;
-  landlord_uid: string;
+  landlord_alias: string;
   fullName: string;
 }
 
@@ -129,7 +129,7 @@ export interface EditPersonalInfoDialogProps {
   open: boolean;
   onClose: () => void;
   landlord: LandlordType;
-  landlord_uid: string;
+  landlord_alias: string;
 }
 
 export interface FormFieldProps {
@@ -142,6 +142,6 @@ export interface FormFieldProps {
 
 export interface DeleteLandlordProps {
   landlord: LandlordType;
-  landlord_uid: string;
+  landlord_alias: string;
   fullName: string;
 }
