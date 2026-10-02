@@ -1,10 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  pricingPlanBadgeStyles,
-  pricingPlanMeta,
-} from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
+import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useGetPricingPlansQuery,
@@ -15,7 +12,13 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import { ArrowRight, Building2, Check, LoaderCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  Check,
+  ListChecks,
+  LoaderCircle,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -268,21 +271,32 @@ const PricingPlansCard: React.FC = () => {
                 </span>
               </div>
 
-              <div className='mt-3'>
-                <span
-                  className={cn(
-                    'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',
-                    pricingPlanBadgeStyles[
-                      plan.plan_type as keyof typeof pricingPlanBadgeStyles
-                    ] ?? pricingPlanBadgeStyles.BASIC,
-                  )}
-                >
-                  <Building2 className='size-3.5' aria-hidden='true' />
-                  {plan.max_properties} properties
-                </span>
+              <div className='border-border/70 mt-5 grid grid-cols-2 divide-x divide-inherit rounded-xl border'>
+                {[
+                  {
+                    label: 'Properties',
+                    value: plan.max_properties,
+                    icon: Building2,
+                  },
+                  {
+                    label: 'Features',
+                    value: plan.features.length,
+                    icon: ListChecks,
+                  },
+                ].map((stat) => (
+                  <div key={stat.label} className='px-3 py-2.5 text-center'>
+                    <div className='text-muted-foreground flex items-center justify-center gap-1 text-[11px] font-medium tracking-wide uppercase'>
+                      <stat.icon className='size-3' aria-hidden='true' />
+                      {stat.label}
+                    </div>
+                    <p className='text-foreground mt-1 text-base font-semibold'>
+                      {stat.value}
+                    </p>
+                  </div>
+                ))}
               </div>
 
-              <div className='border-border/70 mt-3 flex-1 border-t pt-5'>
+              <div className='mt-5 flex-1'>
                 <p className='text-sm font-semibold'>Included in this plan</p>
                 <ul
                   className={cn(
