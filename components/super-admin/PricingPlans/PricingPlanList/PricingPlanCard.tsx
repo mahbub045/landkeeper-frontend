@@ -38,6 +38,8 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({ plan }) => {
     : plan.features.slice(0, PRICING_PLAN_VISIBLE_FEATURES);
   const hiddenCount = plan.features.length - PRICING_PLAN_VISIBLE_FEATURES;
 
+  const isRecommended = planType === 'STANDARD';
+
   const stats = [
     { label: 'Properties', value: plan.max_properties, icon: Building2 },
     { label: 'Features', value: plan.features.length, icon: ListChecks },
@@ -46,7 +48,7 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({ plan }) => {
   return (
     <Card
       glow
-      glowClassName='h-full'
+      glowClassName={cn('h-full', isRecommended && 'xl:-mt-4')}
       className='border-border relative h-full overflow-hidden rounded-2xl py-0'
     >
       <div className={cn('absolute inset-x-0 top-0 h-1', style.bar)} />
@@ -76,6 +78,11 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({ plan }) => {
               </span>
             </div>
           </div>
+          {isRecommended && (
+            <span className='shrink-0 rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white'>
+              Recommended
+            </span>
+          )}
         </div>
 
         <div className='flex items-end gap-1.5'>
