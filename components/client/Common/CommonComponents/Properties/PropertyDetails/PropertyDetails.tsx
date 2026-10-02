@@ -8,6 +8,7 @@ import {
   STATUS_STYLES,
 } from '@/data/client/common/properties/PropertiesData';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
+import { useAppSelector } from '@/store/hooks';
 import { getPropertiesUrl } from '@/utils/redirectPath';
 import { ArrowLeft, ImageOff, MapPin, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -24,6 +25,9 @@ import PropertyPermissionList from './PropertyPermissionList/PropertyPermissionL
 
 const PropertyDetails: React.FC = () => {
   const { data: session } = useSession();
+  const landlordAlias = useAppSelector(
+    (state) => state.landlordAlias.landlordAlias,
+  );
   const params = useParams();
   const alias = params.propertyalias as string;
   const {
@@ -138,7 +142,7 @@ const PropertyDetails: React.FC = () => {
       <DeletePropertyDialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        onSuccess={() => router.push(getPropertiesUrl(session))}
+        onSuccess={() => router.push(getPropertiesUrl(session, landlordAlias))}
         propertyAlias={property.alias}
         propertyName={property.property_name}
       />

@@ -15,13 +15,24 @@ export function getDashboardPath(role: UserRole | undefined): string {
 }
 
 // All user Property List
-export const getPropertiesUrl = (session: Session | null) => {
+// `landlordAlias` is required for SUPER_ADMIN (viewing a landlord's properties)
+export const getPropertiesUrl = (
+  session: Session | null,
+  landlordAlias?: string | null,
+) => {
   if (!session) {
     return '/auth/login';
   }
 
   const role = session?.user?.role;
   if (!role) return '/auth/login';
+
+  //   Super Admin → the landlord's details page (Properties tab)
+  if (role === 'SUPER_ADMIN') {
+    return landlordAlias
+      ? `/super-admin/landlords/${landlordAlias}`
+      : '/super-admin/landlords';
+  }
 
   //   Landlord Property List
   if (role === 'LANDLORD') {
@@ -48,9 +59,11 @@ export const getPropertiesUrl = (session: Session | null) => {
 };
 
 // All users Property Details Page
+// `landlordAlias` is required for SUPER_ADMIN (viewing a landlord's property)
 export const getPropertyDetailsUrl = (
   session: Session | null,
   propertyalias: string,
+  landlordAlias?: string | null,
 ) => {
   if (!session) {
     return '/auth/login';
@@ -58,6 +71,12 @@ export const getPropertyDetailsUrl = (
 
   const role = session?.user?.role;
   if (!role) return '/auth/login';
+
+  if (role === 'SUPER_ADMIN') {
+    return landlordAlias
+      ? `/super-admin/landlords/${landlordAlias}/properties/${propertyalias}`
+      : '/super-admin/landlords';
+  }
 
   if (role === 'LANDLORD') {
     return `/client/landlord/properties/${propertyalias}`;

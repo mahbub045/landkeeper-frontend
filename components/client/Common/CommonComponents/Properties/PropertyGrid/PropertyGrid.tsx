@@ -13,7 +13,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
     return (
       <div className='grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3'>
         {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className='h-72 rounded-2xl bg-white dark:bg-[#262626] shadow-sm' />
+          <Skeleton
+            key={i}
+            className='h-72 rounded-2xl bg-white shadow-sm dark:bg-[#262626]'
+          />
         ))}
       </div>
     );

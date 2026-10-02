@@ -55,9 +55,7 @@ const PropertySummary: React.FC = () => {
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4'>
       <StatCard
         iconBg='bg-blue-100 dark:bg-blue-900/30'
-        icon={
-          <Building2 className='size-4 text-blue-600 dark:text-blue-400' />
-        }
+        icon={<Building2 className='size-4 text-blue-600 dark:text-blue-400' />}
         value={properties?.total ?? 0}
         label='Total Properties'
       />

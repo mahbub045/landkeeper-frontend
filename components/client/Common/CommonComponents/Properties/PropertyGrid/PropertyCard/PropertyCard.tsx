@@ -7,6 +7,7 @@ import {
   PROPERTY_STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/common/properties/PropertiesData';
+import { useAppSelector } from '@/store/hooks';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { getPropertyDetailsUrl } from '@/utils/redirectPath';
@@ -26,12 +27,15 @@ const TYPE_LABELS: Record<string, string> = {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const { data: session } = useSession();
+  const landlordAlias = useAppSelector(
+    (state) => state.landlordAlias.landlordAlias,
+  );
 
   const image = property.documents?.[0]?.image ?? '';
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <Link href={getPropertyDetailsUrl(session, property.alias)}>
+    <Link href={getPropertyDetailsUrl(session, property.alias, landlordAlias)}>
       <Card
         glow
         className='border-border bg-card overflow-hidden rounded-2xl border pt-0 pb-3 shadow-none'

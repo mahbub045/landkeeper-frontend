@@ -116,7 +116,8 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
           Object.keys(normalized).some((field) => FIELD_TAB_MAP[field] === tab),
         );
         if (targetTab) setActiveTab(targetTab);
-        if (nonFieldMessages.length > 0) setBannerError(nonFieldMessages.join(' '));
+        if (nonFieldMessages.length > 0)
+          setBannerError(nonFieldMessages.join(' '));
         toast.error('Please fix the highlighted fields and try again.');
         return;
       }
