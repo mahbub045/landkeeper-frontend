@@ -3,26 +3,24 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { useAppSelector } from '@/store/hooks';
 import {
-  ApiCertificate,
-  CertStatus,
-} from '@/types/client/Common/Compliance/ComplianceTypes';
+  CERT_STATUS_CONFIG,
+  getCertStatus,
+} from '@/data/client/Common/Compliance/ComplianceData';
+import { useAppSelector } from '@/store/hooks';
+import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { formatDate } from '@/utils/formatters';
-import { getComplianceUrl } from '@/utils/redirectPath';
-import { Pencil, ShieldUser, Trash } from 'lucide-react';
+import {
+  getComplianceDetailsUrl,
+  getComplianceUrl,
+} from '@/utils/redirectPath';
+import { Eye, Pencil, ShieldUser, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import DeleteCertificateDialog from '../../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../../Dialogs/UpdateCertificateDialog';
 import ViewCertificateSharesDialog from '../Dialogs/ViewCertificateSharesDialog';
-
-const statusConfig: Record<CertStatus, { color: string; dot: string }> = {
-  Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
-  Expired: { color: 'bg-danger/10 text-danger', dot: 'bg-danger' },
-  'Expiring Soon': { color: 'bg-warning/10 text-warning', dot: 'bg-warning' },
-};
 
 interface CertificateRowProps {
   cert: ApiCertificate;
@@ -36,16 +34,6 @@ const humanizeCertType = (type: string) =>
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
 
-const getCertStatus = (expiryDate: string): CertStatus => {
-  const daysUntilExpiry = Math.ceil(
-    (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
-  );
-
-  if (daysUntilExpiry < 0) return 'Expired';
-  if (daysUntilExpiry <= 30) return 'Expiring Soon';
-  return 'Valid';
-};
-
 const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const router = useRouter();
   const { data: session } = useSession();
@@ -55,7 +43,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const status = getCertStatus(cert.expiry_date);
-  const { color, dot } = statusConfig[status];
+  const { color, dot } = CERT_STATUS_CONFIG[status];
   const [isOpenViewShares, setIsOpenViewShares] = useState(false);
   const [selectedCertificate, setSelectedCertificate] =
     useState<ApiCertificate | null>(null);
@@ -140,6 +128,19 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
         </TableCell>
         <TableCell>
           <div className='flex items-center justify-center gap-2'>
+            <Button
+              variant='outline'
+              size='icon'
+              title='View Certificate Details'
+              className='rounded-lg'
+              onClick={() =>
+                router.push(
+                  getComplianceDetailsUrl(session, cert.alias, landlordAlias),
+                )
+              }
+            >
+              <Eye />
+            </Button>
             <Button
               variant='secondary'
               size='icon'

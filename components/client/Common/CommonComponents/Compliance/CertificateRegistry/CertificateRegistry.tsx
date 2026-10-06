@@ -116,6 +116,7 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
                       <Skeleton className='h-8 w-8 rounded-lg' />
                       <Skeleton className='h-8 w-8 rounded-lg' />
                       <Skeleton className='h-8 w-8 rounded-lg' />
+                      <Skeleton className='h-8 w-8 rounded-lg' />
                     </div>
                   </TableCell>
                 </TableRow>
