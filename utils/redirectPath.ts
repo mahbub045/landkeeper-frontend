@@ -322,6 +322,20 @@ export const getNotificationURL = (
       }
       return '#';
 
+    case 'COMPLIANCE_CERTIFICATE':
+      if (role === 'LANDLORD') {
+        return `/client/landlord/compliance`;
+      }
+
+      if (role === 'ADMIN') {
+        return `/client/admin/compliance`;
+      }
+
+      if (role === 'LETTING_AGENT') {
+        return `/client/letting-agent/compliance`;
+      }
+      return '#';
+
     default:
       return '#';
   }
