@@ -3,7 +3,7 @@
 set -e
 
 echo "Pulling latest code..."
-git pull origin production
+git pull origin main
 
 echo "Building and starting frontend..."
 docker compose up -d --build
