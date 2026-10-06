@@ -1,0 +1,60 @@
+import { baseApi } from '@/store/api/baseApi';
+
+export const MortgageApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getMortgages: builder.query({
+      query: (params) => ({
+        url: '/mortgage',
+        method: 'GET',
+        params,
+      }),
+      providesTags: ['Mortgage'],
+    }),
+    getMortgageDetails: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Mortgage'],
+    }),
+    addMortgages: builder.mutation({
+      query: (payload) => ({
+        url: '/mortgage',
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['Mortgage'],
+    }),
+    updateMortgage: builder.mutation({
+      query: ({ mortgage_alias, payload }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'PATCH',
+        body: payload,
+      }),
+      invalidatesTags: ['Mortgage'],
+    }),
+    deleteMortgage: builder.mutation({
+      query: ({ mortgage_alias }) => ({
+        url: `/mortgage/${mortgage_alias}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Mortgage'],
+    }),
+    getMortgagePermissions: builder.query({
+      query: ({ mortgage_alias }) => ({
+        url: `/permissions/mortgage/${mortgage_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Permissions'],
+    }),
+  }),
+});
+
+export const {
+  useGetMortgagesQuery,
+  useGetMortgageDetailsQuery,
+  useAddMortgagesMutation,
+  useUpdateMortgageMutation,
+  useDeleteMortgageMutation,
+  useGetMortgagePermissionsQuery,
+} = MortgageApi;
