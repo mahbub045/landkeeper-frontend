@@ -2,7 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PropertyInfoProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
-import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  formatDate,
+  removeUnderscoresAndCapitalize,
+} from '@/utils/formatters';
 import {
   Bath,
   Bed,
@@ -41,7 +44,7 @@ const PropertyInfo: React.FC<PropertyInfoProps> = ({ property }) => {
           value={
             <span className='flex items-center gap-1.5'>
               <Building2 className='text-primary size-3.5' />
-              {formatChoiceFieldValue(property.property_type)}
+              {removeUnderscoresAndCapitalize(property.property_type)}
             </span>
           }
         />

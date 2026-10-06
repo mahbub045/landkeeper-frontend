@@ -9,21 +9,13 @@ import {
 } from '@/data/client/Common/Properties/PropertiesData';
 import { useAppSelector } from '@/store/hooks';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import formatChoiceFieldValue, { getCurrencySign, removeUnderscoresAndCapitalize } from '@/utils/formatters';
 import { getPropertyDetailsUrl } from '@/utils/redirectPath';
 import { Bath, Bed, Home, MapPin } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-
-const TYPE_LABELS: Record<string, string> = {
-  RESIDENTIAL: 'Residential',
-  HMO: 'HMO',
-  COMMERCIAL: 'Commercial',
-  MIXED_USE: 'Mixed Use',
-  HOLIDAY_LET: 'Holiday Let',
-};
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   const { data: session } = useSession();
@@ -131,7 +123,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             {property.property_type && (
               <span className='flex items-center gap-1'>
                 <Home className='text-primary size-3.5' />
-                {TYPE_LABELS[property.property_type] ?? property.property_type}
+                {removeUnderscoresAndCapitalize(property.property_type)}
               </span>
             )}
           </div>

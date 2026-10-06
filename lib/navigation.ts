@@ -69,11 +69,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/super-admin/dashboard',
         icon: LayoutDashboard,
       },
-      {
-        label: 'Landlords',
-        href: '/super-admin/landlords',
-        icon: UsersRound,
-      },
+      // {
+      //   label: 'Landlords',
+      //   href: '/super-admin/landlords',
+      //   icon: UsersRound,
+      // },
       {
         label: 'Pricing Plans',
         href: '/super-admin/pricing-plans',
@@ -163,11 +163,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       //   href: '/client/landlord/integrations',
       //   icon: Link2,
       // },
-      // {
-      //   label: 'Marketplace',
-      //   href: '/client/landlord/marketplace',
-      //   icon: Handshake,
-      // },
+      {
+        label: 'Marketplace',
+        href: '/client/landlord/marketplace',
+        icon: Handshake,
+      },
       {
         label: 'Tools',
         icon: Hammer,
@@ -268,11 +268,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       //   href: '/client/admin/integrations',
       //   icon: Link2,
       // },
-      // {
-      //   label: 'Marketplace',
-      //   href: '/client/admin/marketplace',
-      //   icon: Handshake,
-      // },
+      {
+        label: 'Marketplace',
+        href: '/client/admin/marketplace',
+        icon: Handshake,
+      },
       {
         label: 'Tools',
         icon: Hammer,

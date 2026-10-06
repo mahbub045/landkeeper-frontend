@@ -10,6 +10,13 @@ export const formatChoiceFieldValue = (
 };
 export default formatChoiceFieldValue;
 
+export function removeUnderscoresAndCapitalize(value: string): string {
+  return value
+    .split('_')
+    .map((word) => word.toUpperCase() )
+    .join(' ');
+}
+
 export function formatUserRole(userType?: string | null): string {
   if (!userType) {
     return '';
