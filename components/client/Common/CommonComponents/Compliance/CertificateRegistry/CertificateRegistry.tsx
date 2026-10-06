@@ -115,8 +115,6 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
                     <div className='flex items-center justify-center gap-2'>
                       <Skeleton className='h-8 w-8 rounded-lg' />
                       <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-8 w-8 rounded-lg' />
                     </div>
                   </TableCell>
                 </TableRow>

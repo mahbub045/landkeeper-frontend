@@ -73,4 +73,15 @@ export interface DeleteCertificateDialogProps {
   onClose: () => void;
   onSuccess?: () => void;
   certificateAlias: string;
+  certificateName?: string;
+  certificateNumber?: string;
+}
+
+export interface ComplianceExpiryTimelineProps {
+  issueDate: string;
+  expiryDate: string;
+}
+
+export interface ComplianceDangerZoneProps {
+  onDeleteClick: () => void;
 }

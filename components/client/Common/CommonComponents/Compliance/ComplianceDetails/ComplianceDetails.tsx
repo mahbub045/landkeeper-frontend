@@ -15,19 +15,14 @@ import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useGetComplianceDetailsQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useAppSelector } from '@/store/hooks';
 import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
-import formatChoiceFieldValue, {
-  formatDate,
-  formatDateAndTime,
-} from '@/utils/formatters';
+import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import { getComplianceUrl, getPropertyDetailsUrl } from '@/utils/redirectPath';
 import {
   ArrowLeft,
   Building2,
-  Calendar,
   CalendarCheck,
   CalendarX,
   Check,
-  Clock,
   Copy,
   ExternalLink,
   FileText,
@@ -35,7 +30,6 @@ import {
   Hash,
   Pencil,
   ShieldUser,
-  Trash,
   UserCheck,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -44,6 +38,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import ViewCertificateSharesDialog from '../CertificateRegistry/Dialogs/ViewCertificateSharesDialog';
 import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
+import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
+import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
 import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
@@ -73,13 +69,23 @@ const ComplianceDetails: React.FC = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [sharesOpen, setSharesOpen] = useState(false);
+  // Stops the refetch of the deleted certificate (and its error screen)
+  // while we navigate back to the list
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const { data, isLoading, isError } = useGetComplianceDetailsQuery(
     compliancealias,
-    { skip: !compliancealias },
+    { skip: !compliancealias || isDeleted },
   );
 
   const certificate: ApiCertificate | undefined = data;
+
+  const handleDeleteSuccess = () => {
+    setIsDeleted(true);
+    router.replace(getComplianceUrl(session, landlordAlias));
+  };
+
+  if (isDeleted) return null;
 
   if (isLoading) {
     return (
@@ -106,14 +112,14 @@ const ComplianceDetails: React.FC = () => {
           </div>
         </div>
 
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-          <div className='space-y-6 lg:col-span-2'>
+        <div className='space-y-6'>
+          <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
             <div className='rounded-xl border p-5 sm:p-6'>
-              <Skeleton className='mb-4 h-4 w-40' />
-              <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton className='mb-5 h-4 w-40' />
+              <div className='grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2'>
+                {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className='flex items-start gap-3'>
-                    <Skeleton className='size-4 shrink-0 rounded' />
+                    <Skeleton className='size-8 shrink-0 rounded-lg' />
                     <div className='min-w-0 flex-1'>
                       <Skeleton className='mb-1 h-3 w-20' />
                       <Skeleton className='h-4 w-32' />
@@ -123,24 +129,25 @@ const ComplianceDetails: React.FC = () => {
               </div>
             </div>
             <div className='rounded-xl border p-5 sm:p-6'>
-              <Skeleton className='mb-4 h-4 w-24' />
-              <Skeleton className='h-80 w-full rounded-lg' />
+              <div className='mb-6 flex items-center justify-between'>
+                <Skeleton className='h-4 w-32' />
+                <Skeleton className='h-5 w-20 rounded-full' />
+              </div>
+              <Skeleton className='mt-8 mb-3 h-2 w-full rounded-full' />
+              <div className='mb-5 flex justify-between'>
+                <Skeleton className='h-8 w-24' />
+                <Skeleton className='h-8 w-24' />
+              </div>
+              <div className='grid grid-cols-3 gap-3 border-t pt-4'>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className='h-8 w-24' />
+                ))}
+              </div>
             </div>
           </div>
-
-          <div className='space-y-6'>
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className='rounded-xl border p-5'>
-                <Skeleton className='mb-4 h-4 w-24' />
-                <div className='flex items-start gap-3'>
-                  <Skeleton className='size-9 shrink-0 rounded-full' />
-                  <div className='min-w-0 flex-1'>
-                    <Skeleton className='mb-1 h-3 w-16' />
-                    <Skeleton className='h-4 w-32' />
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className='rounded-xl border p-5 sm:p-6'>
+            <Skeleton className='mb-4 h-4 w-24' />
+            <Skeleton className='h-80 w-full rounded-lg' />
           </div>
         </div>
       </div>
@@ -186,6 +193,22 @@ const ComplianceDetails: React.FC = () => {
       value: formatDate(certificate.expiry_date),
     },
     { icon: UserCheck, label: 'Issued By', value: certificate.issued_by },
+    {
+      icon: Building2,
+      label: 'Property',
+      value: certificate.property?.alias ? (
+        <Link
+          href={getPropertyDetailsUrl(
+            session,
+            certificate.property.alias,
+            landlordAlias,
+          )}
+          className='text-primary hover:underline'
+        >
+          {certificate.property.property_name}
+        </Link>
+      ) : null,
+    },
   ];
 
   return (
@@ -211,10 +234,6 @@ const ComplianceDetails: React.FC = () => {
           <Button variant='default' onClick={() => setEditOpen(true)}>
             <Pencil />
             Edit
-          </Button>
-          <Button variant='destructive' onClick={() => setDeleteOpen(true)}>
-            <Trash />
-            Delete
           </Button>
         </div>
       </div>
@@ -272,22 +291,23 @@ const ComplianceDetails: React.FC = () => {
         </div>
       </div>
 
-      <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
-        {/* Main column */}
-        <div className='space-y-6 lg:col-span-2'>
+      <div className='space-y-6'>
+        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
           <section className='rounded-xl border p-5 sm:p-6'>
-            <h2 className='mb-4 text-sm font-semibold'>
+            <h2 className='mb-5 text-sm font-semibold'>
               Certificate Information
             </h2>
-            <dl className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <dl className='grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2'>
               {infoItems.map(({ icon: Icon, label, value }) => (
                 <div key={label} className='flex items-start gap-3'>
-                  <Icon className='text-primary mt-0.5 size-4 shrink-0' />
+                  <span className='bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg'>
+                    <Icon className='size-4' />
+                  </span>
                   <div className='min-w-0'>
                     <dt className='text-muted-foreground text-xs'>{label}</dt>
                     <dd className='text-sm font-medium wrap-break-word'>
                       {value || (
-                        <span className='text-muted-foreground text-xs font-normal'>
+                        <span className='text-muted-foreground font-normal'>
                           Not Available
                         </span>
                       )}
@@ -298,110 +318,63 @@ const ComplianceDetails: React.FC = () => {
             </dl>
           </section>
 
-          <section className='rounded-xl border p-5 sm:p-6'>
-            <div className='mb-4 flex items-center justify-between gap-2'>
-              <h2 className='text-sm font-semibold'>Document</h2>
-              {certificate.certificate_file && (
-                <Button variant='outline' size='sm' asChild>
-                  <a
-                    href={certificate.certificate_file}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                  >
-                    <ExternalLink className='size-4' />
-                    Open
-                  </a>
-                </Button>
-              )}
-            </div>
-            {!certificate.certificate_file ? (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
-                <FileX className='text-muted-foreground size-6' />
-                <p className='text-muted-foreground text-sm'>
-                  No document was uploaded
-                </p>
-              </div>
-            ) : IMAGE_EXTENSIONS.includes(fileExtension) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={certificate.certificate_file}
-                alt={`Certificate document for ${certificate.certificate_number}`}
-                className='max-h-150 w-full rounded-lg border object-contain'
-              />
-            ) : fileExtension === 'pdf' ? (
-              <iframe
-                src={certificate.certificate_file}
-                title='Certificate document'
-                className='h-150 w-full rounded-lg border'
-              />
-            ) : (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
-                <FileText className='text-muted-foreground size-6' />
-                <p className='text-muted-foreground text-sm'>
-                  Preview isn&apos;t available for this file type. Use Open to
-                  view it.
-                </p>
-              </div>
+          <ComplianceExpiryTimeline
+            issueDate={certificate.issue_date}
+            expiryDate={certificate.expiry_date}
+          />
+        </div>
+
+        <section className='rounded-xl border p-5 sm:p-6'>
+          <div className='mb-4 flex items-center justify-between gap-2'>
+            <h2 className='text-sm font-semibold'>Document</h2>
+            {certificate.certificate_file && (
+              <Button variant='outline' size='sm' asChild>
+                <a
+                  href={certificate.certificate_file}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <ExternalLink className='size-4' />
+                  Open
+                </a>
+              </Button>
             )}
-          </section>
-        </div>
-
-        {/* Sidebar */}
-        <div className='space-y-6'>
-          <section className='rounded-xl border p-5'>
-            <h2 className='mb-4 text-sm font-semibold'>Property</h2>
-            <div className='flex items-start gap-3'>
-              <span className='bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-full'>
-                <Building2 className='size-4' />
-              </span>
-              <div className='min-w-0'>
-                <p className='text-muted-foreground text-xs'>Property name</p>
-                {certificate.property?.alias ? (
-                  <Link
-                    href={getPropertyDetailsUrl(
-                      session,
-                      certificate.property.alias,
-                      landlordAlias,
-                    )}
-                    className='text-primary text-sm font-medium hover:underline'
-                  >
-                    {certificate.property.property_name}
-                  </Link>
-                ) : (
-                  <span className='text-muted-foreground text-xs'>
-                    Not Available
-                  </span>
-                )}
-              </div>
+          </div>
+          {!certificate.certificate_file ? (
+            <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
+              <FileX className='text-muted-foreground size-6' />
+              <p className='text-muted-foreground text-sm'>
+                No document was uploaded
+              </p>
             </div>
-          </section>
+          ) : IMAGE_EXTENSIONS.includes(fileExtension) ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={certificate.certificate_file}
+              alt={`Certificate document for ${certificate.certificate_number}`}
+              className='max-h-150 w-full rounded-lg border object-contain'
+            />
+          ) : fileExtension === 'pdf' ? (
+            <iframe
+              src={certificate.certificate_file}
+              title='Certificate document'
+              className='h-150 w-full rounded-lg border'
+            />
+          ) : (
+            <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
+              <FileText className='text-muted-foreground size-6' />
+              <p className='text-muted-foreground text-sm'>
+                Preview isn&apos;t available for this file type. Use Open to
+                view it.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
 
-          <section className='rounded-xl border p-5'>
-            <h2 className='mb-4 text-sm font-semibold'>Timeline</h2>
-            <dl className='space-y-4'>
-              <div className='flex items-start gap-3'>
-                <Calendar className='mt-0.5 size-4 shrink-0' />
-                <div className='min-w-0'>
-                  <dt className='text-muted-foreground text-xs'>Added</dt>
-                  <dd className='text-sm font-medium'>
-                    {formatDateAndTime(certificate.created_at)}
-                  </dd>
-                </div>
-              </div>
-              <div className='flex items-start gap-3'>
-                <Clock className='mt-0.5 size-4 shrink-0' />
-                <div className='min-w-0'>
-                  <dt className='text-muted-foreground text-xs'>
-                    Last updated
-                  </dt>
-                  <dd className='text-sm font-medium'>
-                    {formatDateAndTime(certificate.updated_at)}
-                  </dd>
-                </div>
-              </div>
-            </dl>
-          </section>
-        </div>
+      {/* Danger Zone */}
+      <div className='mt-6'>
+        <ComplianceDangerZone onDeleteClick={() => setDeleteOpen(true)} />
       </div>
 
       {/* Dialogs */}
@@ -424,8 +397,14 @@ const ComplianceDetails: React.FC = () => {
       <DeleteCertificateDialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        onSuccess={() => router.push(getComplianceUrl(session, landlordAlias))}
+        onSuccess={handleDeleteSuccess}
         certificateAlias={certificate.alias}
+        certificateName={
+          certificate.certificate_type
+            ? getCertificateLabel(certificate.certificate_type)
+            : 'Certificate'
+        }
+        certificateNumber={certificate.certificate_number}
       />
     </div>
   );

@@ -10,17 +10,12 @@ import {
 import { useAppSelector } from '@/store/hooks';
 import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { formatDate } from '@/utils/formatters';
-import {
-  getComplianceDetailsUrl,
-  getComplianceUrl,
-} from '@/utils/redirectPath';
-import { Eye, Pencil, ShieldUser, Trash } from 'lucide-react';
+import { getComplianceDetailsUrl } from '@/utils/redirectPath';
+import { Eye, Pencil } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import DeleteCertificateDialog from '../../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../../Dialogs/UpdateCertificateDialog';
-import ViewCertificateSharesDialog from '../Dialogs/ViewCertificateSharesDialog';
 
 interface CertificateRowProps {
   cert: ApiCertificate;
@@ -41,17 +36,8 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
     (state) => state.landlordAlias.landlordAlias,
   );
   const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const status = getCertStatus(cert.expiry_date);
   const { color, dot } = CERT_STATUS_CONFIG[status];
-  const [isOpenViewShares, setIsOpenViewShares] = useState(false);
-  const [selectedCertificate, setSelectedCertificate] =
-    useState<ApiCertificate | null>(null);
-
-  const handleViewShares = (certificate: ApiCertificate) => {
-    setSelectedCertificate(certificate);
-    setIsOpenViewShares(true);
-  };
 
   return (
     <>
@@ -142,15 +128,6 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
               <Eye />
             </Button>
             <Button
-              variant='secondary'
-              size='icon'
-              title='View Certificate Shares'
-              className='rounded-lg'
-              onClick={() => handleViewShares(cert)}
-            >
-              <ShieldUser />
-            </Button>
-            <Button
               variant='default'
               size='icon'
               title='Edit Certificate'
@@ -159,42 +136,17 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
             >
               <Pencil />
             </Button>
-            <Button
-              variant='danger'
-              size='icon'
-              title='Delete Certificate'
-              className='rounded-lg'
-              onClick={() => setDeleteOpen(true)}
-            >
-              <Trash />
-            </Button>
           </div>
         </TableCell>
       </TableRow>
 
       {/* Dialogs  */}
-
-      <ViewCertificateSharesDialog
-        open={isOpenViewShares}
-        onClose={() => setIsOpenViewShares(false)}
-        selectedCertificate={selectedCertificate}
-        propertyAlias={cert.property?.alias || ''}
-        complianceAlias={cert?.alias || ''}
-      />
-
       <UpdateCertificateDialog
         key={cert.alias}
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onSuccess={() => setEditOpen(false)}
         certificate={cert}
-      />
-
-      <DeleteCertificateDialog
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        onSuccess={() => router.push(getComplianceUrl(session, landlordAlias))}
-        certificateAlias={cert.alias}
       />
     </>
   );
