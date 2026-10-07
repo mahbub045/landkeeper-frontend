@@ -9,7 +9,12 @@ export interface ApiCertificate {
   expiry_date: string;
   issue_date: string;
   issued_by: string;
-  property: { id: number; alias: string; property_name: string };
+  property: {
+    id: number;
+    alias: string;
+    property_name: string;
+    address: string;
+  };
   updated_at: string;
 }
 
@@ -39,6 +44,15 @@ export interface ComplianceScoreProps {
 export interface CertificateRegistryProps {
   certificates: ApiCertificate[];
   isLoading?: boolean;
+  startIndex?: number;
+  search: string;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAddClick: () => void;
+}
+
+export interface CertificateRowProps {
+  cert: ApiCertificate;
+  index: number;
 }
 
 export interface UpcomingExpirationsProps {
@@ -73,4 +87,15 @@ export interface DeleteCertificateDialogProps {
   onClose: () => void;
   onSuccess?: () => void;
   certificateAlias: string;
+  certificateName?: string;
+  certificateNumber?: string;
+}
+
+export interface ComplianceExpiryTimelineProps {
+  issueDate: string;
+  expiryDate: string;
+}
+
+export interface ComplianceDangerZoneProps {
+  onDeleteClick: () => void;
 }

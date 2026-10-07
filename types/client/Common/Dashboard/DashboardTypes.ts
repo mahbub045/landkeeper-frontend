@@ -10,13 +10,22 @@ export interface ActivityItem {
   time: string;
 }
 
-export interface AlertItem {
-  id: number;
+export interface AlertReminderItem {
+  title: string;
+  property: string;
+  detail: string;
+  days: number;
+}
+
+export type AlertsRemindersResponse = AlertReminderItem[];
+
+export type AlertSeverity = 'expired' | 'urgent' | 'upcoming';
+
+export interface AlertSeverityStyle {
   icon: React.ElementType;
   iconBg: string;
   iconColor: string;
-  title: string;
-  subtitle: string;
+  titleColor: string;
 }
 
 export type BadgeVariant = 'up' | 'down' | 'alert';

@@ -219,6 +219,41 @@ export const getComplianceUrl = (
   return '/auth/login';
 };
 
+// All users Compliance Details Page
+// `landlordAlias` is required for SUPER_ADMIN (viewing a landlord's certificate)
+export const getComplianceDetailsUrl = (
+  session: Session | null,
+  complianceAlias: string,
+  landlordAlias?: string | null,
+) => {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  const role = session?.user?.role;
+  if (!role) return '/auth/login';
+
+  if (role === 'SUPER_ADMIN') {
+    return landlordAlias
+      ? `/super-admin/landlords/${landlordAlias}/compliance/${complianceAlias}`
+      : '/super-admin/landlords';
+  }
+
+  if (role === 'LANDLORD') {
+    return `/client/landlord/compliance/${complianceAlias}`;
+  }
+
+  if (role === 'ADMIN') {
+    return `/client/admin/compliance/${complianceAlias}`;
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return `/client/letting-agent/compliance/${complianceAlias}`;
+  }
+
+  return '/auth/login';
+};
+
 // All users Property Details Page
 export const getSupportTicketDetailsUrl = (
   session: Session | null,
@@ -319,6 +354,20 @@ export const getNotificationURL = (
 
       if (role === 'TENANT') {
         return `/client/tenant/maintenance-requests/${data.alias}`;
+      }
+      return '#';
+
+    case 'COMPLIANCE_CERTIFICATE':
+      if (role === 'LANDLORD') {
+        return `/client/landlord/compliance/${data.alias}`;
+      }
+
+      if (role === 'ADMIN') {
+        return `/client/admin/compliance/${data.alias}`;
+      }
+
+      if (role === 'LETTING_AGENT') {
+        return `/client/letting-agent/compliance/${data.alias}`;
       }
       return '#';
 

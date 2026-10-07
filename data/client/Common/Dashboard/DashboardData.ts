@@ -1,8 +1,9 @@
 import {
-  AlertItem,
+  AlertSeverity,
+  AlertSeverityStyle,
   BadgeVariant,
 } from '@/types/client/Common/Dashboard/DashboardTypes';
-import { AlertCircle, Clock, FileText, RefreshCw } from 'lucide-react';
+import { AlertCircle, CalendarClock, Clock } from 'lucide-react';
 
 export const badgeStyles: Record<BadgeVariant, string> = {
   up: 'bg-success/15 text-success border-transparent',
@@ -38,37 +39,32 @@ export const COMPLIANCE_TYPE_COLORS: Record<string, string> = {
   PROPERTY_FLOOR_PLANS: '#22c55e',
 };
 
-export const alerts: AlertItem[] = [
+export const ALERT_URGENT_THRESHOLD_DAYS = 15;
+
+export const ALERT_SEVERITY_STYLES: Record<AlertSeverity, AlertSeverityStyle> =
   {
-    id: 1,
-    icon: AlertCircle,
-    iconBg: 'bg-red-100 dark:bg-red-900/30',
-    iconColor: 'text-red-500',
-    title: 'Gas Safety Certificate Expired',
-    subtitle: '14 Oak Street · Expired 3 days ago',
-  },
-  {
-    id: 2,
-    icon: Clock,
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
-    iconColor: 'text-amber-500',
-    title: 'EPC Renewal Due',
-    subtitle: '42 Maple Avenue · Expires in 14 days',
-  },
-  {
-    id: 3,
-    icon: RefreshCw,
-    iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-    iconColor: 'text-blue-400',
-    title: 'Mortgage Renewal',
-    subtitle: '8 Pine Road · Fixed term ends in 45 days',
-  },
-  {
-    id: 4,
-    icon: FileText,
-    iconBg: 'bg-amber-100 dark:bg-amber-900/30',
-    iconColor: 'text-amber-500',
-    title: 'Tenancy Renewal',
-    subtitle: "23 Elm Drive · Sarah Johnson's lease ends in 30 days",
-  },
-];
+    expired: {
+      icon: AlertCircle,
+      iconBg: 'bg-red-100 dark:bg-red-900/30',
+      iconColor: 'text-red-500',
+      titleColor: 'text-red-600 dark:text-red-400',
+    },
+    urgent: {
+      icon: Clock,
+      iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+      iconColor: 'text-amber-500',
+      titleColor: 'text-amber-600 dark:text-amber-400',
+    },
+    upcoming: {
+      icon: CalendarClock,
+      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+      iconColor: 'text-blue-400',
+      titleColor: 'text-blue-600 dark:text-blue-400',
+    },
+  };
+
+export const getAlertSeverity = (days: number): AlertSeverity => {
+  if (days < 0) return 'expired';
+  if (days <= ALERT_URGENT_THRESHOLD_DAYS) return 'urgent';
+  return 'upcoming';
+};

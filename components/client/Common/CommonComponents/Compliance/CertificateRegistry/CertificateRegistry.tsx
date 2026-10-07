@@ -22,25 +22,18 @@ import CertificateRow from './CertificateRow/CertificateRow';
 
 const TABLE_COLUMNS = [
   { header: '#' },
-  { header: 'Property' },
   { header: 'Type' },
+  { header: 'Property' },
   { header: 'Certificate No' },
   { header: 'Issue & Expiry Date' },
   { header: 'Documents', individualClass: 'text-center' },
   { header: 'Status', individualClass: 'text-center' },
-  { header: 'Actions', individualClass: 'text-center' },
 ];
 
-interface CertificateRegistryComponentProps extends CertificateRegistryProps {
-  isLoading?: boolean;
-  search: string;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddClick: () => void;
-}
-
-const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
+const CertificateRegistry: React.FC<CertificateRegistryProps> = ({
   certificates,
   isLoading,
+  startIndex = 0,
   search,
   onSearchChange,
   onAddClick,
@@ -115,7 +108,6 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
                     <div className='flex items-center justify-center gap-2'>
                       <Skeleton className='h-8 w-8 rounded-lg' />
                       <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-8 w-8 rounded-lg' />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -135,7 +127,11 @@ const CertificateRegistry: React.FC<CertificateRegistryComponentProps> = ({
             ) : (
               certificates.map((cert: ApiCertificate, index: number) => {
                 return (
-                  <CertificateRow key={cert.alias} cert={cert} index={index} />
+                  <CertificateRow
+                    key={cert.alias}
+                    cert={cert}
+                    index={startIndex + index}
+                  />
                 );
               })
             )}

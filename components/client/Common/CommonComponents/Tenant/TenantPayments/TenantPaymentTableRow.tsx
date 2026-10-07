@@ -7,10 +7,12 @@ import { STATUS_CONFIG } from '@/data/client/Common/Tenant/TenantPaymentsData';
 import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
 import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantPaymentsType';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
 import {
   formatCurrency,
   formatDate,
   formatDateAndTime,
+  truncateText,
 } from '@/utils/formatters';
 import {
   Building2,
@@ -20,13 +22,6 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { useState } from 'react';
-
-const PROPERTY_PREVIEW_LENGTH = 25;
-
-function truncateText(text: string, maxLength: number) {
-  if (text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
 
 function PaymentStatusBadge({ status }: { status: string }) {
   const config = STATUS_CONFIG[status.toUpperCase()] ?? STATUS_CONFIG.PENDING;
@@ -70,16 +65,13 @@ const TenantPaymentTableRow: React.FC<{
           <div className='flex flex-col leading-tight'>
             <span className='text-foreground text-sm font-medium'>
               {payment.property_name
-                ? truncateText(payment.property_name, PROPERTY_PREVIEW_LENGTH)
+                ? truncateText(payment.property_name, TEXT_PREVIEW_LENGTH)
                 : 'Not Available'}
             </span>
             {payment.property_address &&
               payment.property_address !== payment.property_name && (
                 <span className='text-muted-foreground text-xs'>
-                  {truncateText(
-                    payment.property_address,
-                    PROPERTY_PREVIEW_LENGTH,
-                  )}
+                  {truncateText(payment.property_address, TEXT_PREVIEW_LENGTH)}
                 </span>
               )}
           </div>

@@ -150,3 +150,9 @@ export function sanitizeCouncilTaxBand(value: string): string {
     .slice(0, 1)
     .toUpperCase();
 }
+
+// Truncate text to maxLength characters, appending an ellipsis when cut
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}...`;
+}

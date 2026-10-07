@@ -10,6 +10,13 @@ export const ComplianceApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Compliance'],
     }),
+    getComplianceDetails: builder.query({
+      query: (compliance_alias) => ({
+        url: `/compliance/${compliance_alias}`,
+        method: 'GET',
+      }),
+      providesTags: ['Compliance'],
+    }),
     addCompliances: builder.mutation({
       query: (payload) => ({
         url: '/compliance',
@@ -38,6 +45,7 @@ export const ComplianceApi = baseApi.injectEndpoints({
 
 export const {
   useGetCompliancesQuery,
+  useGetComplianceDetailsQuery,
   useAddCompliancesMutation,
   useUpdateComplianceMutation,
   useDeleteComplianceMutation,

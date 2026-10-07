@@ -1,4 +1,7 @@
-import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
+import {
+  CertificateForm,
+  CertStatus,
+} from '@/types/client/Common/Compliance/ComplianceTypes';
 
 // Mirrors the backend `CertificateType` choices
 export const CERTIFICATE_OPTIONS = [
@@ -54,4 +57,26 @@ export const EMPTY_FORM: CertificateForm = {
   expiryDate: '',
   certificateNumber: '',
   issuedBy: '',
+};
+
+export const CERT_STATUS_CONFIG: Record<
+  CertStatus,
+  { color: string; dot: string }
+> = {
+  Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
+  Expired: { color: 'bg-danger/10 text-danger', dot: 'bg-danger' },
+  'Expiring Soon': { color: 'bg-warning/10 text-warning', dot: 'bg-warning' },
+};
+
+export const getDaysUntilExpiry = (expiryDate: string): number =>
+  Math.ceil(
+    (new Date(expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
+
+export const getCertStatus = (expiryDate: string): CertStatus => {
+  const daysUntilExpiry = getDaysUntilExpiry(expiryDate);
+
+  if (daysUntilExpiry < 0) return 'Expired';
+  if (daysUntilExpiry <= 30) return 'Expiring Soon';
+  return 'Valid';
 };
