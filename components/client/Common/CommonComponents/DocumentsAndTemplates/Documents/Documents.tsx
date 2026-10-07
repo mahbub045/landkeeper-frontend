@@ -24,7 +24,7 @@ import {
   FilterTab,
   PropertyDocument,
 } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import AddDocumentDialog from './Dialogs/AddDocumentDialog';
 import DocumentFilter from './DocumentFilter/DocumentFilter';
 import DocumentList from './DocumentList/DocumentList';

@@ -44,7 +44,7 @@ import {
   PaymentStatus,
   RentPaymentType,
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
-import { PAGE_LIMIT, TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, TEXT_PREVIEW_LENGTH } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,

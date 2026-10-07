@@ -12,7 +12,7 @@ import {
   useGetMarketplaceProvidersQuery,
 } from '@/store/api/endpoints/super-admin/Marketplace/MarketplaceApi';
 import { MarketplaceBooleanFilter } from '@/types/super-admin/Marketplace/MarketplaceTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { Handshake, Info, Search, SearchX } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import CategoryCards from './CategoryCards/CategoryCards';

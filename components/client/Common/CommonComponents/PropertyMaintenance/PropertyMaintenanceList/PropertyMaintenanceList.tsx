@@ -52,7 +52,7 @@ import {
 } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { useAppSelector } from '@/store/hooks';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
 import { Check, Copy, Edit, Filter, Plus, Search, User, X } from 'lucide-react';

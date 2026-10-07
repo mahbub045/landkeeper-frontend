@@ -26,7 +26,7 @@ import {
   PropertiesPermissionType,
   PropertyForPermissionType,
 } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import { Check, RefreshCcw, Search, Users, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';

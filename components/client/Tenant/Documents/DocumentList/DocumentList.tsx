@@ -16,7 +16,7 @@ import { CERTIFICATE_STYLES } from '@/data/client/Common/Compliance/ComplianceDa
 import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { useGetTenantDocumentsQuery } from '@/store/api/endpoints/client/Tenant/Documents/DocumentsApi';
 import { CertificateDocument } from '@/types/client/Tenant/Documents/DocumentsType';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import { Building2, Calendar, Download, Hash, UserCheck } from 'lucide-react';
 import { useState } from 'react';

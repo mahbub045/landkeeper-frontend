@@ -14,7 +14,7 @@ import {
   ManageExistingTabProps,
   PropertiesPermissionType,
 } from '@/types/client/Common/Tools/Permission/PropertiesPermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import GrantedPropertieCard from './GrantedPropertieCard/GrantedPropertieCard';
 
 const getPageNumbers = (

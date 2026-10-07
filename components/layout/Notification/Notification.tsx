@@ -14,7 +14,7 @@ import {
   useUnreadNotificationCountQuery,
 } from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';

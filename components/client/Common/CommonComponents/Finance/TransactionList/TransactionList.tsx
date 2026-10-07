@@ -20,7 +20,7 @@ import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErr
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { useGetFinanceQuery } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import AddTransactionDialog from '../Dialogs/AddTransactionDialog';
 import TransactionTable from './TransactionTable';
 

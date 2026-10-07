@@ -25,7 +25,7 @@ import {
   PropertyPermission,
   PropertyPermissionListProps,
 } from '@/types/client/Common/Properties/PropertyPermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,

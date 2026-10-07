@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { GetRoleBadge } from '@/data/client/Common/Tools/teamAccess/TeamAccessData';
 import { InvitedUsersProps } from '@/types/client/Common/Tools/TeamAccess/InvitedUsersTypes';
 import { InviteMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import { formatChoiceFieldValue, formatDate } from '@/utils/formatters';
 import {
   Mail,

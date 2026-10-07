@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
-import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, {
   formatDate,
   truncateText,

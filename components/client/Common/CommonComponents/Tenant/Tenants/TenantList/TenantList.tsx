@@ -46,7 +46,7 @@ import {
   useUpdateTenantMutation,
 } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
 import { TenantTypes } from '@/types/client/Common/Tenant/TenantsTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, {
   formatDate,
   formatDateAndTime,

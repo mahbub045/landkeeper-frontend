@@ -24,7 +24,7 @@ import { GetRoleBadge } from '@/data/client/Common/Tools/teamAccess/TeamAccessDa
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import { AcceptedUsersProps } from '@/types/client/Common/Tools/TeamAccess/AcceptedUserTypes';
 import { TeamMember } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import {
   formatChoiceFieldValue,
   formatDate,
