@@ -52,7 +52,13 @@ const getShareFullName = (share: CirtificateShare) =>
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
-> = ({ open, onClose, selectedCertificate, propertyAlias, complianceAlias }) => {
+> = ({
+  open,
+  onClose,
+  selectedCertificate,
+  propertyAlias,
+  complianceAlias,
+}) => {
   const [page, setPage] = useState(1);
   const [isOpenAddNewShareDialogOpen, setIsOpenAddNewShareDialogOpen] =
     useState(false);

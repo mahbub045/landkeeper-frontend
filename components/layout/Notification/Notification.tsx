@@ -149,8 +149,7 @@ const Notification: React.FC = () => {
       }
 
       const ws = wsRef.current as
-        | (WebSocket & { requestClose?: () => void })
-        | null;
+        (WebSocket & { requestClose?: () => void }) | null;
       if (ws) {
         if (ws.readyState === WebSocket.CONNECTING) {
           // Don't close yet — defer via requestClose so we avoid the

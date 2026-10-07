@@ -19,8 +19,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { FinanceTransaction } from '@/types/client/Common/Finance/FinanceTypes';
-import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
+import formatChoiceFieldValue, {
+  formatDate,
+  truncateText,
+} from '@/utils/formatters';
 import DeleteTransactionDialog from '../Dialogs/DeleteTransactionDialog';
 import UpdateTransactionDialog from '../Dialogs/UpdateTransactionDialog';
 
@@ -41,6 +50,20 @@ function getFileIcon(filename: string) {
     return <ImageIcon className='h-4 w-4 shrink-0' />;
   }
   return <FileText className='h-4 w-4 shrink-0' />;
+}
+
+function renderTextPreview(text: string) {
+  if (text.length <= TEXT_PREVIEW_LENGTH) return text;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className='cursor-default'>
+          {truncateText(text, TEXT_PREVIEW_LENGTH)}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent className='max-w-xs'>{text}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 interface TransactionTableProps {
@@ -108,7 +131,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 <TableCell className='text-xs'>{formatDate(tx.date)}</TableCell>
 
                 <TableCell className='text-foreground text-xs'>
-                  {tx.property.property_name}
+                  {renderTextPreview(tx.property.property_name)}
                 </TableCell>
 
                 <TableCell>
@@ -130,8 +153,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   </Badge>
                 </TableCell>
 
-                <TableCell className='text-muted-foreground max-w-50 truncate text-xs'>
-                  {tx.description || '—'}
+                <TableCell className='text-muted-foreground text-xs'>
+                  {tx.description ? renderTextPreview(tx.description) : '—'}
                 </TableCell>
 
                 <TableCell
