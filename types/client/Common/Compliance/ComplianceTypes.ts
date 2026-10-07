@@ -39,6 +39,15 @@ export interface ComplianceScoreProps {
 export interface CertificateRegistryProps {
   certificates: ApiCertificate[];
   isLoading?: boolean;
+  startIndex?: number;
+  search: string;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAddClick: () => void;
+}
+
+export interface CertificateRowProps {
+  cert: ApiCertificate;
+  index: number;
 }
 
 export interface UpcomingExpirationsProps {

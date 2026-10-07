@@ -92,6 +92,7 @@ const Compliance: React.FC = () => {
           <CertificateRegistry
             certificates={apiCertificates}
             isLoading={isLoading}
+            startIndex={(page - 1) * PAGE_LIMIT}
             search={search}
             onSearchChange={handleSearchChange}
             onAddClick={() => setModalOpen(true)}
