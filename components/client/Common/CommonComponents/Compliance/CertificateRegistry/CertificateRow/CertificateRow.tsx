@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/tooltip';
 import {
   CERT_STATUS_CONFIG,
+  CERTIFICATE_OPTIONS,
   getCertStatus,
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { useAppSelector } from '@/store/hooks';
@@ -22,6 +23,10 @@ import formatChoiceFieldValue, {
 import { getComplianceDetailsUrl } from '@/utils/redirectPath';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+
+export const getCertificateLabel = (type: string) =>
+  CERTIFICATE_OPTIONS.find((option) => option.value === type)?.label ??
+  formatChoiceFieldValue(type);
 
 const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const { data: session } = useSession();
@@ -42,7 +47,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
           >
             <span className='text-primary'>✳</span>
             {cert.certificate_type ? (
-              formatChoiceFieldValue(cert.certificate_type)
+              getCertificateLabel(cert.certificate_type)
             ) : (
               <span className='text-muted-foreground text-xs'>
                 Not Available

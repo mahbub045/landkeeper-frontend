@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CERT_STATUS_CONFIG,
-  CERTIFICATE_OPTIONS,
   CERTIFICATE_STYLES,
   getCertStatus,
   getDaysUntilExpiry,
@@ -36,20 +35,17 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { getCertificateLabel } from '../CertificateRegistry/CertificateRow/CertificateRow';
 import ViewCertificateSharesDialog from '../CertificateRegistry/Dialogs/ViewCertificateSharesDialog';
 import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
+import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
-import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
 const getFileExtension = (url: string) =>
   url.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
-
-const getCertificateLabel = (type: string) =>
-  CERTIFICATE_OPTIONS.find((option) => option.value === type)?.label ??
-  formatChoiceFieldValue(type);
 
 const getExpiryText = (daysUntilExpiry: number) => {
   if (daysUntilExpiry < 0)

@@ -93,16 +93,21 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
 
       {/* Bar */}
       <div className='relative pt-8'>
-        <div className='bg-muted relative h-2 w-full overflow-hidden rounded-full'>
-          {/* Expiring soon window — only meaningful when the validity
-              period is longer than the window itself */}
+        <div className='bg-warning/25 relative h-2 w-full overflow-hidden rounded-full'>
+          {/* Valid window — the track's warning tint shows through for the
+              last EXPIRING_SOON_DAYS, or the whole bar when the validity
+              period is shorter than that window */}
           {showWarningWindow && (
             <div
-              className='bg-warning/20 absolute inset-y-0 right-0'
-              style={{ width: `${warningPercent}%` }}
-              title={`Expiring soon window (last ${EXPIRING_SOON_DAYS} days)`}
+              className='bg-success/25 absolute inset-y-0 left-0'
+              style={{ width: `${100 - warningPercent}%` }}
             />
           )}
+          <div
+            className='absolute inset-y-0 right-0'
+            style={{ width: showWarningWindow ? `${warningPercent}%` : '100%' }}
+            title={`Expiring soon window (last ${EXPIRING_SOON_DAYS} days)`}
+          />
           {/* Elapsed */}
           <div
             className={`absolute inset-y-0 left-0 rounded-full transition-all ${dot}`}
