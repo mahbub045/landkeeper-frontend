@@ -4,11 +4,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   CERT_STATUS_CONFIG,
   getCertStatus,
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { useAppSelector } from '@/store/hooks';
 import { CertificateRowProps } from '@/types/client/Common/Compliance/ComplianceTypes';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
 import { formatDate } from '@/utils/formatters';
 import { getComplianceDetailsUrl } from '@/utils/redirectPath';
 import { useSession } from 'next-auth/react';
@@ -20,6 +26,11 @@ const humanizeCertType = (type: string) =>
     .split('_')
     .map((word) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength)}...`;
+}
 
 const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const { data: session } = useSession();
@@ -49,7 +60,22 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
           </Link>
         </TableCell>
         <TableCell className='text-sm'>
-          {cert.property?.property_name || (
+          {cert.property?.address ? (
+            cert.property.address.length > TEXT_PREVIEW_LENGTH ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className='cursor-default'>
+                    {truncateText(cert.property.address, TEXT_PREVIEW_LENGTH)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  {cert.property.address}
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              cert.property.address
+            )
+          ) : (
             <span className='text-muted-foreground text-xs'>Not Available</span>
           )}
         </TableCell>

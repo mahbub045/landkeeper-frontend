@@ -9,7 +9,12 @@ export interface ApiCertificate {
   expiry_date: string;
   issue_date: string;
   issued_by: string;
-  property: { id: number; alias: string; property_name: string };
+  property: {
+    id: number;
+    alias: string;
+    property_name: string;
+    address: string;
+  };
   updated_at: string;
 }
 

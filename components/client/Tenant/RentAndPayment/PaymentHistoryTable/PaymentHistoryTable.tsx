@@ -44,15 +44,13 @@ import {
   PaymentStatus,
   RentPaymentType,
 } from '@/types/client/Tenant/RentAndPayments/RentAndPaymentsType';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,
 } from '@/utils/formatters';
 import { CircleOff, Download, Receipt } from 'lucide-react';
 import { useState } from 'react';
-
-const NOTE_PREVIEW_LENGTH = 25;
 
 function truncateText(text: string, maxLength: number) {
   if (text.length <= maxLength) return text;
@@ -248,9 +246,9 @@ export function PaymentHistoryTable() {
                         {payment.note ? (
                           <div className='flex items-center justify-center gap-1.5'>
                             <span className='text-sm'>
-                              {truncateText(payment.note, NOTE_PREVIEW_LENGTH)}
+                              {truncateText(payment.note, TEXT_PREVIEW_LENGTH)}
                             </span>
-                            {payment.note.length > NOTE_PREVIEW_LENGTH && (
+                            {payment.note.length > TEXT_PREVIEW_LENGTH && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button
