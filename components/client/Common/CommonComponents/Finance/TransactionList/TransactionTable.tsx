@@ -153,7 +153,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   </Badge>
                 </TableCell>
 
-                <TableCell className='text-muted-foreground text-xs'>
+                <TableCell className='text-xs'>
                   {tx.description ? renderTextPreview(tx.description) : '—'}
                 </TableCell>
 
