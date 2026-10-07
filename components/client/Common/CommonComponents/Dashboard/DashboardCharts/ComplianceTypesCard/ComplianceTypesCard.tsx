@@ -7,9 +7,56 @@ import {
   FALLBACK_COLOR,
 } from '@/data/client/Common/Dashboard/DashboardData';
 import { useGetDashboardComplianceTypesQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
+import {
+  ComplianceTypeItem,
+  Pie3DSlice,
+} from '@/types/client/Common/Dashboard/DashboardTypes';
 import { Activity, PieChartIcon } from 'lucide-react';
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import ComplianceTypesCardSkeleton from './ComplianceTypesCardSkeleton';
+
+// 3D pie geometry (SVG units)
+const VIEW_WIDTH = 320;
+const VIEW_HEIGHT = 230;
+const CX = 160;
+const CY = 100;
+const RX = 150;
+const RY = 88;
+const DEPTH = 28;
+const MIN_LABEL_PERCENT = 4;
+
+const pointAt = (angle: number, dy = 0) =>
+  `${CX + RX * Math.cos(angle)} ${CY + dy + RY * Math.sin(angle)}`;
+
+const buildSlices = (items: ComplianceTypeItem[]): Pie3DSlice[] => {
+  const total = items.reduce((sum, item) => sum + item.percentage, 0) || 1;
+  let angle = -Math.PI / 2;
+  return items.map((item) => {
+    const startAngle = angle;
+    angle += (item.percentage / total) * Math.PI * 2;
+    return {
+      ...item,
+      color: COMPLIANCE_TYPE_COLORS[item.type] ?? FALLBACK_COLOR,
+      startAngle,
+      endAngle: angle,
+    };
+  });
+};
+
+const topPath = ({ startAngle, endAngle }: Pie3DSlice) => {
+  const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+  return `M ${CX} ${CY} L ${pointAt(startAngle)} A ${RX} ${RY} 0 ${largeArc} 1 ${pointAt(endAngle)} Z`;
+};
+
+// Side wall is only visible on the front half of the ellipse (angles 0..PI)
+const sidePath = ({ startAngle, endAngle }: Pie3DSlice) => {
+  const start = Math.max(startAngle, 0);
+  const end = Math.min(endAngle, Math.PI);
+  if (end <= start) return null;
+  return `M ${pointAt(start)} A ${RX} ${RY} 0 0 1 ${pointAt(end)} L ${pointAt(end, DEPTH)} A ${RX} ${RY} 0 0 0 ${pointAt(start, DEPTH)} Z`;
+};
+
+const formatPercent = (value: number) =>
+  `${Number(value.toFixed(1)).toString()}%`;
 
 const shadeColor = (hex: string, percent: number) => {
   const num = parseInt(hex.replace('#', ''), 16);
@@ -44,6 +91,7 @@ const ComplianceTypesCard: React.FC = () => {
   }
 
   const { data } = complianceTypesData;
+  const slices = buildSlices(data);
 
   return (
     <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
@@ -63,78 +111,85 @@ const ComplianceTypesCard: React.FC = () => {
           </p>
         </CardContent>
       ) : (
-        <CardContent className='flex flex-col items-center pb-6'>
-          <ResponsiveContainer width='100%' height={240}>
-            <PieChart>
-              <defs>
-                {data.map((entry) => {
-                  const base =
-                    COMPLIANCE_TYPE_COLORS[entry.type] ?? FALLBACK_COLOR;
-                  return (
-                    <linearGradient
-                      key={`grad-${entry.type}`}
-                      id={`grad-${entry.type}`}
-                      x1='0%'
-                      y1='0%'
-                      x2='100%'
-                      y2='100%'
-                    >
-                      <stop offset='0%' stopColor={shadeColor(base, 25)} />
-                      <stop offset='55%' stopColor={base} />
-                      <stop offset='100%' stopColor={shadeColor(base, -25)} />
-                    </linearGradient>
-                  );
-                })}
-                <filter
-                  id='pie3dShadow'
-                  x='-20%'
-                  y='-20%'
-                  width='140%'
-                  height='150%'
+        <CardContent className='flex flex-col items-center gap-6 pb-6 md:flex-row md:justify-center'>
+          <svg
+            viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
+            className='w-full max-w-85 shrink-0'
+            role='img'
+            aria-label='Compliance types 3D pie chart'
+          >
+            {/* Side walls (depth) */}
+            {slices.map((slice) => {
+              const d = sidePath(slice);
+              return d ? (
+                <path
+                  key={`side-${slice.type}`}
+                  d={d}
+                  fill={shadeColor(slice.color, -25)}
+                  stroke={shadeColor(slice.color, -25)}
+                  strokeWidth={0.5}
+                />
+              ) : null;
+            })}
+            {/* Top faces */}
+            {slices.map((slice) =>
+              slices.length === 1 ? (
+                <ellipse
+                  key={`top-${slice.type}`}
+                  cx={CX}
+                  cy={CY}
+                  rx={RX}
+                  ry={RY}
+                  fill={slice.color}
                 >
-                  <feDropShadow
-                    dx='0'
-                    dy='14'
-                    stdDeviation='7'
-                    floodColor='#000000'
-                    floodOpacity='0.35'
-                  />
-                </filter>
-              </defs>
-              <Pie
-                data={data}
-                cx='50%'
-                cy='50%'
-                innerRadius={0}
-                outerRadius={110}
-                paddingAngle={2}
-                dataKey='percentage'
-                nameKey='label'
-                startAngle={90}
-                endAngle={-270}
-                stroke='#fff'
-                strokeWidth={1}
-                filter='url(#pie3dShadow)'
-              >
-                {data.map((entry) => (
-                  <Cell key={entry.type} fill={`url(#grad-${entry.type})`} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
+                  <title>{`${slice.label}: ${slice.count}`}</title>
+                </ellipse>
+              ) : (
+                <path
+                  key={`top-${slice.type}`}
+                  d={topPath(slice)}
+                  fill={slice.color}
+                  stroke='#fff'
+                  strokeWidth={1}
+                  strokeLinejoin='round'
+                >
+                  <title>{`${slice.label}: ${slice.count}`}</title>
+                </path>
+              ),
+            )}
+            {/* Percentage labels */}
+            {slices.map((slice) => {
+              if (slice.percentage < MIN_LABEL_PERCENT) return null;
+              const mid =
+                slices.length === 1
+                  ? Math.PI / 2
+                  : (slice.startAngle + slice.endAngle) / 2;
+              const radius = slices.length === 1 ? 0 : 0.62;
+              return (
+                <text
+                  key={`label-${slice.type}`}
+                  x={CX + RX * radius * Math.cos(mid)}
+                  y={CY + RY * radius * Math.sin(mid)}
+                  textAnchor='middle'
+                  dominantBaseline='central'
+                  className='pointer-events-none fill-white text-[12px] font-semibold'
+                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
+                >
+                  {formatPercent(slice.percentage)}
+                </text>
+              );
+            })}
+          </svg>
           {/* Legend */}
-          <div className='mt-2 flex flex-wrap items-center justify-center gap-x-6 gap-y-2'>
-            {data.map((entry) => (
-              <div key={entry.type} className='flex items-center gap-1.5'>
+          <div className='flex flex-col gap-2'>
+            {slices.map((slice) => (
+              <div key={slice.type} className='flex items-center gap-2'>
                 <span
-                  className='inline-block size-3 rounded-sm'
-                  style={{
-                    backgroundColor:
-                      COMPLIANCE_TYPE_COLORS[entry.type] ?? FALLBACK_COLOR,
-                  }}
+                  className='inline-block size-3 shrink-0 rounded-full'
+                  style={{ backgroundColor: slice.color }}
                 />
                 <span className='text-xs text-gray-600 dark:text-gray-400'>
-                  {entry.label} ({entry.count})
+                  {slice.label} ({slice.count})
                 </span>
               </div>
             ))}

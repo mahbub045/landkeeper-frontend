@@ -61,6 +61,12 @@ export interface ComplianceTypeItem {
   percentage: number;
 }
 
+export interface Pie3DSlice extends ComplianceTypeItem {
+  color: string;
+  startAngle: number;
+  endAngle: number;
+}
+
 export interface ComplianceTypesResponse {
   total: number;
   data: ComplianceTypeItem[];
