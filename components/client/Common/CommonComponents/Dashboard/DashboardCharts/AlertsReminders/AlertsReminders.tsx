@@ -26,7 +26,7 @@ const AlertsReminders: React.FC = () => {
   }
 
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='flex h-full flex-col rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
       <CardHeader className='pb-3'>
         <div className='flex items-center gap-2'>
           <Bell className='size-4 text-amber-500' />
@@ -36,7 +36,7 @@ const AlertsReminders: React.FC = () => {
         </div>
       </CardHeader>
       {alertsData.length === 0 ? (
-        <CardContent className='flex flex-col items-center justify-center gap-2 py-6 text-center'>
+        <CardContent className='flex flex-1 flex-col items-center justify-center gap-2 py-6 text-center'>
           <BellOff className='size-8 text-gray-300 dark:text-gray-600' />
           <p className='text-sm text-gray-500 dark:text-gray-400'>
             No alerts or reminders

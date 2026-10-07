@@ -12,8 +12,8 @@ export default function AlertsRemindersSkeleton() {
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className='space-y-0 px-4 pb-4'>
-        {Array.from({ length: 4 }).map((_, i) => (
+      <CardContent className='max-h-[370px] space-y-0 overflow-y-auto px-4 pb-4'>
+        {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
             className={`flex items-start gap-3 py-3 ${
