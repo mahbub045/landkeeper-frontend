@@ -48,14 +48,10 @@ import { PAGE_LIMIT, TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
 import formatChoiceFieldValue, {
   formatCurrency,
   formatDateAndTime,
+  truncateText,
 } from '@/utils/formatters';
 import { CircleOff, Download, Receipt } from 'lucide-react';
 import { useState } from 'react';
-
-function truncateText(text: string, maxLength: number) {
-  if (text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
 
 function PaymentHistorySkeletonRows() {
   return Array.from({ length: PAGE_LIMIT }, (_, i) => (

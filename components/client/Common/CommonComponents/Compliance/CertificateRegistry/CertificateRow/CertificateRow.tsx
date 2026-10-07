@@ -15,22 +15,13 @@ import {
 import { useAppSelector } from '@/store/hooks';
 import { CertificateRowProps } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
-import { formatDate } from '@/utils/formatters';
+import formatChoiceFieldValue, {
+  formatDate,
+  truncateText,
+} from '@/utils/formatters';
 import { getComplianceDetailsUrl } from '@/utils/redirectPath';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-
-const humanizeCertType = (type: string) =>
-  type
-    .toLowerCase()
-    .split('_')
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(' ');
-
-function truncateText(text: string, maxLength: number) {
-  if (text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
 
 const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
   const { data: session } = useSession();
@@ -51,7 +42,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
           >
             <span className='text-primary'>✳</span>
             {cert.certificate_type ? (
-              humanizeCertType(cert.certificate_type)
+              formatChoiceFieldValue(cert.certificate_type)
             ) : (
               <span className='text-muted-foreground text-xs'>
                 Not Available

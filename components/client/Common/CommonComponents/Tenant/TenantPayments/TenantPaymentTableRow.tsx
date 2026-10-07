@@ -12,6 +12,7 @@ import {
   formatCurrency,
   formatDate,
   formatDateAndTime,
+  truncateText,
 } from '@/utils/formatters';
 import {
   Building2,
@@ -21,11 +22,6 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { useState } from 'react';
-
-function truncateText(text: string, maxLength: number) {
-  if (text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength)}...`;
-}
 
 function PaymentStatusBadge({ status }: { status: string }) {
   const config = STATUS_CONFIG[status.toUpperCase()] ?? STATUS_CONFIG.PENDING;
