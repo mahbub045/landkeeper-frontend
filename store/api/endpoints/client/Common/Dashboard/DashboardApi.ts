@@ -1,5 +1,6 @@
 import { baseApi } from '@/store/api/baseApi';
 import {
+  AlertsRemindersResponse,
   ComplianceTypesResponse,
   DashboardData,
   IncomeExpenseMonths,
@@ -37,6 +38,12 @@ export const DashboardApi = baseApi.injectEndpoints({
         params,
       }),
     }),
+    getAlertsAndReminders: builder.query<AlertsRemindersResponse, void>({
+      query: () => ({
+        url: '/dashboard/alerts',
+        method: 'GET',
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -46,4 +53,5 @@ export const {
   useGetDashboardPropertyTypesQuery,
   useGetDashboardComplianceTypesQuery,
   useGetDashboardIncomeExpenseQuery,
+  useGetAlertsAndRemindersQuery,
 } = DashboardApi;
