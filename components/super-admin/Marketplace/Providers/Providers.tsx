@@ -37,7 +37,7 @@ import {
   MarketplaceBooleanFilter,
   MarketplaceProvider,
 } from '@/types/super-admin/Marketplace/MarketplaceTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { formatDate } from '@/utils/formatters';
 import {
   BadgeCheck,

@@ -25,7 +25,7 @@ import {
   MortgagePermission,
   MortgagePermissionListProps,
 } from '@/types/client/Common/Mortgage/MortgagePermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import {
   Ban,

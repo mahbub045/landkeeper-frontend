@@ -33,7 +33,7 @@ import { STATUS_CONFIG } from '@/data/client/Common/Tenant/TenantPaymentsData';
 import { cn } from '@/lib/utils';
 import { useGetTenantPaymentsQuery } from '@/store/api/endpoints/client/Common/Tenant/TenantPaymentsApi';
 import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantPaymentsType';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { Receipt, ReceiptPoundSterling, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import TenantPaymentTableRow from './TenantPaymentTableRow';

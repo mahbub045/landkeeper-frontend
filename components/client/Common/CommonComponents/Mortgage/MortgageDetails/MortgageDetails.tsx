@@ -235,8 +235,17 @@ const MortgageDetails: React.FC = () => {
           <CardContent className='space-y-3'>
             {[
               ['Lender', mortgageData?.lender_name],
-              ['Rate type', rateTypeLabel(mortgageData?.interest_rate_type)],
-              ['Interest rate', `${mortgageData?.interest_rate}%`],
+              [
+                'Rate type',
+                mortgageData?.interest_rate_type &&
+                  rateTypeLabel(mortgageData.interest_rate_type),
+              ],
+              [
+                'Interest rate',
+                mortgageData?.interest_rate != null
+                  ? `${mortgageData.interest_rate}%`
+                  : undefined,
+              ],
               [
                 'Rate expiry',
                 formatDate(mortgageData?.interest_rate_expiry_date),
@@ -249,7 +258,12 @@ const MortgageDetails: React.FC = () => {
                 'Monthly payment',
                 formatCurrency(mortgageData?.monthly_payment),
               ],
-              ['Remaining term', `${mortgageData?.remaining_mortgage} yrs`],
+              [
+                'Remaining term',
+                mortgageData?.remaining_mortgage != null
+                  ? `${mortgageData.remaining_mortgage} yrs`
+                  : undefined,
+              ],
             ].map(([label, value]) => (
               <div key={label} className='flex items-baseline gap-2'>
                 <span className='text-muted-foreground text-sm whitespace-nowrap'>
@@ -257,7 +271,7 @@ const MortgageDetails: React.FC = () => {
                 </span>
                 <span className='border-border flex-1 border-b border-dashed' />
                 <span className='text-foreground font-mono text-sm font-medium whitespace-nowrap'>
-                  {value}
+                  {value || 'Not provided'}
                 </span>
               </div>
             ))}

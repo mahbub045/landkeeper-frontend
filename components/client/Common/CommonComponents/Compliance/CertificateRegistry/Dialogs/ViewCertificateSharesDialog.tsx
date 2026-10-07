@@ -33,7 +33,7 @@ import {
   CirtificateShare,
   ViewCertificateSharesDialogProps,
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue from '@/utils/formatters';
 import { Plus, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
@@ -52,7 +52,13 @@ const getShareFullName = (share: CirtificateShare) =>
 
 const ViewCertificateSharesDialog: React.FC<
   ViewCertificateSharesDialogProps
-> = ({ open, onClose, selectedCertificate, propertyAlias, complianceAlias }) => {
+> = ({
+  open,
+  onClose,
+  selectedCertificate,
+  propertyAlias,
+  complianceAlias,
+}) => {
   const [page, setPage] = useState(1);
   const [isOpenAddNewShareDialogOpen, setIsOpenAddNewShareDialogOpen] =
     useState(false);

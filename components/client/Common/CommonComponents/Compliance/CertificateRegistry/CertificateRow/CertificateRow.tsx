@@ -15,7 +15,7 @@ import {
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { useAppSelector } from '@/store/hooks';
 import { CertificateRowProps } from '@/types/client/Common/Compliance/ComplianceTypes';
-import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, {
   formatDate,
   truncateText,

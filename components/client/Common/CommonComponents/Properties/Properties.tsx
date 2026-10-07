@@ -23,7 +23,7 @@ import {
   FilterTab,
   Property,
 } from '@/types/client/Common/Properties/PropertyTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { isSuperAdmin_Landlord_Admin_LettingAgent } from '@/utils/rolePermissions';
 import { Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';

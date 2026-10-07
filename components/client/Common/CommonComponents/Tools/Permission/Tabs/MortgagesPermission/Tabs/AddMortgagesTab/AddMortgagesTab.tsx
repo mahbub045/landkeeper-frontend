@@ -17,7 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { AddMortgagesTabProps } from '@/types/client/Common/Tools/Permission/MortgagesPermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import { Check, X } from 'lucide-react';
 import AddableMortgageCard from './AddableMortgageCard/AddableMortgageCard';
 

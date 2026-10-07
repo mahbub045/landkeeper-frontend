@@ -14,7 +14,7 @@ import {
   ManageExistingMortgageTabProps,
   MortgagesPermissionType,
 } from '@/types/client/Common/Tools/Permission/MortgagesPermissionTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import GrantedMortgageCard from './GrantedMortgageCard/GrantedMortgageCard';
 
 const getPageNumbers = (

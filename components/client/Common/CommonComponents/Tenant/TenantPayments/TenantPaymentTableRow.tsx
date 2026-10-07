@@ -7,7 +7,7 @@ import { STATUS_CONFIG } from '@/data/client/Common/Tenant/TenantPaymentsData';
 import CardBrandLogo from '@/data/common/CardBrandLogo';
 import { cn } from '@/lib/utils';
 import { TenantPaymentType } from '@/types/client/Common/Tenant/TenantPaymentsType';
-import { TEXT_PREVIEW_LENGTH } from '@/utils/CommonConstants';
+import { TEXT_PREVIEW_LENGTH } from '@/utils/commonConstants.ts';
 import {
   formatCurrency,
   formatDate,

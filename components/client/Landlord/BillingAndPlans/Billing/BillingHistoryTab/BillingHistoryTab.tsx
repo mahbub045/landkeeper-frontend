@@ -20,7 +20,7 @@ import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { cn } from '@/lib/utils';
 import { useBillingHistoryQuery } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/Billing/BillingApi';
 import { BillingHistoryResponse } from '@/types/client/Landlord/BillingAndPlans/BillingType';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, {
   formatDateAndTime,
   getCurrencySign,

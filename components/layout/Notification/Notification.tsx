@@ -14,7 +14,7 @@ import {
   useUnreadNotificationCountQuery,
 } from '@/store/api/endpoints/common/Notification/NotificationApi';
 import { NotificationItem } from '@/types/common/Notification/NotificationTypes';
-import { PAGE_LIMIT } from '@/utils/CommonConstants';
+import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import { formatDateAndTime } from '@/utils/formatters';
 import { getNotificationURL } from '@/utils/redirectPath';
 import { Bell, ChevronLeft, ChevronRight, RefreshCcw } from 'lucide-react';
@@ -149,8 +149,7 @@ const Notification: React.FC = () => {
       }
 
       const ws = wsRef.current as
-        | (WebSocket & { requestClose?: () => void })
-        | null;
+        (WebSocket & { requestClose?: () => void }) | null;
       if (ws) {
         if (ws.readyState === WebSocket.CONNECTING) {
           // Don't close yet — defer via requestClose so we avoid the

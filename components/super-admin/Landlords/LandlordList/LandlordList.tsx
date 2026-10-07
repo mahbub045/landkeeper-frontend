@@ -19,7 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useGetLandlordsQuery } from '@/store/api/endpoints/super-admin/Landlords/Overview/OverviewApi';
 import { LandlordFilterValues } from '@/types/super-admin/Landlords/Overview/OverviewType';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import LandlordCard from './LandlordCard';
 import LandlordCardSkeleton from './LandlordCardSkeleton';
 import LandlordFilters, {

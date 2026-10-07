@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/pagination';
 import { useGetCompliancesQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/CommonConstants';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { useEffect, useMemo, useState } from 'react';
 import CertificateRegistry from './CertificateRegistry/CertificateRegistry';
 import ComplianceSummary from './ComplianceSummary/ComplianceSummary';
