@@ -19,9 +19,10 @@ const VIEW_WIDTH = 320;
 const VIEW_HEIGHT = 230;
 const CX = 160;
 const CY = 100;
-const RX = 150;
-const RY = 88;
+const RX = 144;
+const RY = 84;
 const DEPTH = 28;
+const EXPLODE = 8;
 const MIN_LABEL_PERCENT = 4;
 
 const pointAt = (angle: number, dy = 0) =>
@@ -55,7 +56,14 @@ const sidePath = ({ startAngle, endAngle }: Pie3DSlice) => {
   return `M ${pointAt(start)} A ${RX} ${RY} 0 0 1 ${pointAt(end)} L ${pointAt(end, DEPTH)} A ${RX} ${RY} 0 0 0 ${pointAt(start, DEPTH)} Z`;
 };
 
-const formatPercent = (value: number) =>
+// Radial cut face from the centre to the rim at the given angle
+const radialPath = (angle: number) =>
+  `M ${CX} ${CY} L ${pointAt(angle)} L ${pointAt(angle, DEPTH)} L ${CX} ${CY + DEPTH} Z`;
+
+const midAngle = ({ startAngle, endAngle }: Pie3DSlice) =>
+  (startAngle + endAngle) / 2;
+
+const formatPercent =(value: number) =>
   `${Number(value.toFixed(1)).toString()}%`;
 
 const shadeColor = (hex: string, percent: number) => {
@@ -118,67 +126,74 @@ const ComplianceTypesCard: React.FC = () => {
             role='img'
             aria-label='Compliance types 3D pie chart'
           >
-            {/* Side walls (depth) */}
-            {slices.map((slice) => {
-              const d = sidePath(slice);
-              return d ? (
-                <path
-                  key={`side-${slice.type}`}
-                  d={d}
-                  fill={shadeColor(slice.color, -25)}
-                  stroke={shadeColor(slice.color, -25)}
-                  strokeWidth={0.5}
-                />
-              ) : null;
-            })}
-            {/* Top faces */}
-            {slices.map((slice) =>
-              slices.length === 1 ? (
-                <ellipse
-                  key={`top-${slice.type}`}
-                  cx={CX}
-                  cy={CY}
-                  rx={RX}
-                  ry={RY}
-                  fill={slice.color}
-                >
-                  <title>{`${slice.label}: ${slice.count}`}</title>
-                </ellipse>
-              ) : (
-                <path
-                  key={`top-${slice.type}`}
-                  d={topPath(slice)}
-                  fill={slice.color}
-                  stroke='#fff'
-                  strokeWidth={1}
-                  strokeLinejoin='round'
-                >
-                  <title>{`${slice.label}: ${slice.count}`}</title>
-                </path>
-              ),
-            )}
-            {/* Percentage labels */}
-            {slices.map((slice) => {
-              if (slice.percentage < MIN_LABEL_PERCENT) return null;
-              const mid =
-                slices.length === 1
-                  ? Math.PI / 2
-                  : (slice.startAngle + slice.endAngle) / 2;
-              const radius = slices.length === 1 ? 0 : 0.62;
-              return (
-                <text
-                  key={`label-${slice.type}`}
-                  x={CX + RX * radius * Math.cos(mid)}
-                  y={CY + RY * radius * Math.sin(mid)}
-                  textAnchor='middle'
-                  dominantBaseline='central'
-                  className='pointer-events-none fill-white text-[12px] font-semibold'
-                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
-                >
-                  {formatPercent(slice.percentage)}
-                </text>
-              );
-            })}
+            {[...slices]
+              // Paint back slices first so front slices overlap them
+              .sort((a, b) => Math.sin(midAngle(a)) - Math.sin(midAngle(b)))
+              .map((slice) => {
+                const isSingle = slices.length === 1;
+                const mid = midAngle(slice);
+                // Scale X like Y so near-vertical seams aren't wider than the rest
+                const offsetX = isSingle
+                  ? 0
+                  : EXPLODE * (RY / RX) * Math.cos(mid);
+                const offsetY = isSingle
+                  ? 0
+                  : EXPLODE * (RY / RX) * Math.sin(mid);
+                const side = sidePath(slice);
+                const sideColor = shadeColor(slice.color, -25);
+                const labelRadius = isSingle ? 0 : 0.62;
+                const labelAngle = isSingle ? Math.PI / 2 : mid;
+                return (
+                  <g
+                    key={slice.type}
+                    transform={`translate(${offsetX} ${offsetY})`}
+                  >
+                    <g className='cursor-pointer transition-transform duration-200 hover:-translate-y-1'>
+                      <title>{`${slice.label}: ${slice.count}`}</title>
+                      {/* Cut faces */}
+                      {!isSingle && (
+                        <>
+                          <path
+                            d={radialPath(slice.startAngle)}
+                            fill={sideColor}
+                          />
+                          <path
+                            d={radialPath(slice.endAngle)}
+                            fill={sideColor}
+                          />
+                        </>
+                      )}
+                      {/* Outer wall (depth) */}
+                      {side && <path d={side} fill={sideColor} />}
+                      {/* Top face */}
+                      {isSingle ? (
+                        <ellipse
+                          cx={CX}
+                          cy={CY}
+                          rx={RX}
+                          ry={RY}
+                          fill={slice.color}
+                        />
+                      ) : (
+                        <path d={topPath(slice)} fill={slice.color} />
+                      )}
+                      {/* Percentage label */}
+                      {slice.percentage >= MIN_LABEL_PERCENT && (
+                        <text
+                          x={CX + RX * labelRadius * Math.cos(labelAngle)}
+                          y={CY + RY * labelRadius * Math.sin(labelAngle)}
+                          textAnchor='middle'
+                          dominantBaseline='central'
+                          className='pointer-events-none fill-white text-[12px] font-semibold'
+                          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.35)' }}
+                        >
+                          {formatPercent(slice.percentage)}
+                        </text>
+                      )}
+                    </g>
+                  </g>
+                );
+              })}
           </svg>
           {/* Legend */}
           <div className='flex flex-col gap-2'>
