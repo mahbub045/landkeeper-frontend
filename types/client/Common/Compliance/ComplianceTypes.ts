@@ -99,3 +99,9 @@ export interface ComplianceExpiryTimelineProps {
 export interface ComplianceDangerZoneProps {
   onDeleteClick: () => void;
 }
+
+export interface ComplianceRenewNoticeProps {
+  status: Exclude<CertStatus, 'Valid'>;
+  expiryText: string;
+  onRenewClick: () => void;
+}

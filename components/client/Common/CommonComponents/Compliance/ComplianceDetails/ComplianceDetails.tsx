@@ -39,6 +39,7 @@ import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
+import ComplianceRenewNotice from './ComplianceRenewNotice/ComplianceRenewNotice';
 import ComplianceShareList from './ComplianceShareList/ComplianceShareList';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
@@ -227,6 +228,14 @@ const ComplianceDetails: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {status !== 'Valid' && (
+        <ComplianceRenewNotice
+          status={status}
+          expiryText={getExpiryText(daysUntilExpiry)}
+          onRenewClick={() => setEditOpen(true)}
+        />
+      )}
 
       {/* Header */}
       <div className='mb-6 rounded-xl border p-5 sm:p-6'>
