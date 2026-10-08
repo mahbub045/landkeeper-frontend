@@ -1,4 +1,14 @@
+import { AlertSeverity } from '@/types/client/Common/Dashboard/DashboardTypes';
+
 export type CertStatus = 'Valid' | 'Expired' | 'Expiring Soon';
+
+export type CertStatusToneKey = 'Valid' | AlertSeverity;
+
+export interface CertStatusTone {
+  color: string;
+  dot: string;
+  text: string;
+}
 
 export interface ApiCertificate {
   alias: string;
@@ -103,5 +113,6 @@ export interface ComplianceDangerZoneProps {
 export interface ComplianceRenewNoticeProps {
   status: Exclude<CertStatus, 'Valid'>;
   expiryText: string;
+  daysUntilExpiry: number;
   onRenewClick: () => void;
 }
