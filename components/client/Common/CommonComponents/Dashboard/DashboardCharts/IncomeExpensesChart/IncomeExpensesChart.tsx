@@ -254,7 +254,7 @@ const IncomeExpensesChart: React.FC = () => {
           <CustomErrorMessage title='income vs expenses' />
         ) : (
           <>
-            <div className='mb-4 grid grid-cols-3 gap-3'>
+            <div className='mb-4 grid grid-cols-1 gap-3 md:grid-cols-3'>
               {summary.map((item) => {
                 const Icon = item.icon;
 
