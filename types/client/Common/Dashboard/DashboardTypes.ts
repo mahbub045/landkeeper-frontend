@@ -144,6 +144,27 @@ export interface IncomeExpenseItem {
   net: string;
 }
 
+export interface CylinderTheme {
+  gradientId: string;
+  top: string;
+}
+
+export interface CylinderBarProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  theme: CylinderTheme;
+}
+
+export interface CylinderPinLabelProps {
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  value?: number | string;
+  color: string;
+}
+
 export interface IncomeExpenseResponse {
   months: number;
   total_income: string;
