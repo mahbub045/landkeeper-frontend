@@ -17,10 +17,13 @@ export function IncomeExpensesChartBars() {
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className='rounded-xl border border-gray-100 px-3 py-2 dark:border-gray-700/50'
+            className='border-border flex items-center gap-2.5 rounded-xl border px-3 py-2 shadow-sm'
           >
-            <div className='bg-muted h-3 w-16 animate-pulse rounded' />
-            <div className='bg-muted mt-2 h-5 w-20 animate-pulse rounded' />
+            <div className='bg-muted size-8 shrink-0 animate-pulse rounded-lg' />
+            <div className='space-y-1.5'>
+              <div className='bg-muted h-3 w-16 animate-pulse rounded' />
+              <div className='bg-muted h-4 w-20 animate-pulse rounded' />
+            </div>
           </div>
         ))}
       </div>
@@ -54,7 +57,7 @@ export function IncomeExpensesChartBars() {
 
 export default function IncomeExpensesChartSkeleton() {
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border rounded-2xl shadow-md'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
           <BarChart2 className='text-primary size-4' />

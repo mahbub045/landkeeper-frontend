@@ -144,6 +144,11 @@ export interface IncomeExpenseItem {
   net: string;
 }
 
+export interface IncomeExpenseSummaryItem
+  extends Omit<StatCard, 'badge'> {
+  valueColor: string;
+}
+
 export interface CylinderTheme {
   gradientId: string;
   top: string;
