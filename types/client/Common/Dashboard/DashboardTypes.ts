@@ -11,6 +11,7 @@ export interface ActivityItem {
 }
 
 export interface AlertReminderItem {
+  alias?: string;
   title: string;
   property: string;
   detail: string;

@@ -7,10 +7,14 @@ import {
   getAlertSeverity,
 } from '@/data/client/Common/Dashboard/DashboardData';
 import { useGetAlertsAndRemindersQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
-import { Bell, BellOff } from 'lucide-react';
+import { getComplianceDetailsUrl } from '@/utils/redirectPath';
+import { Bell, BellOff, ChevronRight } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import AlertsRemindersSkeleton from './AlertsRemindersSkeleton';
 
 const AlertsReminders: React.FC = () => {
+  const { data: session } = useSession();
   const {
     data: alertsData,
     isLoading,
@@ -51,11 +55,8 @@ const AlertsReminders: React.FC = () => {
               iconColor,
               titleColor,
             } = ALERT_SEVERITY_STYLES[getAlertSeverity(alert.days)];
-            return (
-              <div
-                key={`${alert.title}-${alert.property}-${idx}`}
-                className='border-border flex items-center gap-3 rounded-xl border p-3 shadow-sm'
-              >
+            const content = (
+              <>
                 <div
                   className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
                 >
@@ -73,6 +74,24 @@ const AlertsReminders: React.FC = () => {
                     </span>
                   </p>
                 </div>
+              </>
+            );
+            const key = `${alert.title}-${alert.property}-${idx}`;
+            const rowClass =
+              'border-border flex items-center gap-3 rounded-xl border p-3 shadow-sm';
+
+            return alert.alias ? (
+              <Link
+                key={key}
+                href={getComplianceDetailsUrl(session, alert.alias)}
+                className={`${rowClass} group hover:bg-muted/50 transition-colors`}
+              >
+                {content}
+                <ChevronRight className='text-muted-foreground size-4 shrink-0 transition-transform group-hover:translate-x-0.5' />
+              </Link>
+            ) : (
+              <div key={key} className={rowClass}>
+                {content}
               </div>
             );
           })}
