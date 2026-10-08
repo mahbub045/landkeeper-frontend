@@ -15,9 +15,10 @@ import {
   CylinderPinLabelProps,
   CylinderTheme,
   IncomeExpenseMonths,
+  IncomeExpenseSummaryItem,
 } from '@/types/client/Common/Dashboard/DashboardTypes';
 import { formatCurrency } from '@/utils/formatters';
-import { BarChart2 } from 'lucide-react';
+import { BarChart2, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useId, useState, useSyncExternalStore } from 'react';
 import {
@@ -188,24 +189,31 @@ const IncomeExpensesChart: React.FC = () => {
 
   const net = Number(incomeExpenses?.net);
 
-  const summary = [
+  const summary: IncomeExpenseSummaryItem[] = [
     {
-      label: 'Total Income',
+      title: 'Total Income',
       value: formatCurrency(Number(incomeExpenses?.total_income)),
-      valueColor: 'text-green-600 dark:text-green-400',
+      icon: TrendingUp,
+      iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
+      iconColor: 'text-emerald-500',
+      valueColor: 'text-foreground',
     },
     {
-      label: 'Total Expenses',
+      title: 'Total Expenses',
       value: formatCurrency(Number(incomeExpenses?.total_expense)),
-      valueColor: 'text-red-600 dark:text-red-400',
+      icon: TrendingDown,
+      iconBg: 'bg-red-100 dark:bg-red-900/30',
+      iconColor: 'text-red-500',
+      valueColor: 'text-foreground',
     },
     {
-      label: 'Net',
+      title: 'Net',
       value: formatCurrency(net),
+      icon: Wallet,
+      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+      iconColor: 'text-blue-500',
       valueColor:
-        net < 0
-          ? 'text-red-600 dark:text-red-400'
-          : 'text-gray-800 dark:text-gray-100',
+        net < 0 ? 'text-red-600 dark:text-red-400' : 'text-foreground',
     },
   ];
 
@@ -215,7 +223,7 @@ const IncomeExpensesChart: React.FC = () => {
   const showPinLabels = chartData.length <= MAX_PIN_LABEL_MONTHS;
 
   return (
-    <Card className='rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border rounded-2xl shadow-md'>
       <CardHeader className='flex flex-row items-center justify-between pb-2'>
         <div className='flex items-center gap-2'>
           <BarChart2 className='text-primary size-4' />
@@ -246,20 +254,33 @@ const IncomeExpensesChart: React.FC = () => {
           <CustomErrorMessage title='income vs expenses' />
         ) : (
           <>
-            <div className='mb-4 grid grid-cols-3 gap-3'>
-              {summary.map((item) => (
-                <div
-                  key={item.label}
-                  className='rounded-xl border border-gray-100 px-3 py-2 shadow dark:border-gray-700/50'
-                >
-                  <p className='text-muted-foreground text-xs'>{item.label}</p>
-                  <p
-                    className={`text-sm font-semibold sm:text-base ${item.valueColor}`}
+            <div className='mb-4 grid grid-cols-1 gap-3 md:grid-cols-3'>
+              {summary.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <div
+                    key={item.title}
+                    className='border-border flex items-center gap-2.5 rounded-xl border px-3 py-2 shadow-sm'
                   >
-                    {item.value}
-                  </p>
-                </div>
-              ))}
+                    <div
+                      className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${item.iconBg}`}
+                    >
+                      <Icon className={`size-4 ${item.iconColor}`} />
+                    </div>
+                    <div className='min-w-0'>
+                      <p className='text-muted-foreground truncate text-xs'>
+                        {item.title}
+                      </p>
+                      <p
+                        className={`truncate text-sm font-bold sm:text-base ${item.valueColor}`}
+                      >
+                        {item.value}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <ResponsiveContainer width='100%' height={320}>
               <BarChart

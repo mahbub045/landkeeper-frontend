@@ -7,10 +7,14 @@ import {
   getAlertSeverity,
 } from '@/data/client/Common/Dashboard/DashboardData';
 import { useGetAlertsAndRemindersQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
-import { Bell, BellOff } from 'lucide-react';
+import { getComplianceDetailsUrl } from '@/utils/redirectPath';
+import { Bell, BellOff, ChevronRight } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import AlertsRemindersSkeleton from './AlertsRemindersSkeleton';
 
 const AlertsReminders: React.FC = () => {
+  const { data: session } = useSession();
   const {
     data: alertsData,
     isLoading,
@@ -26,7 +30,7 @@ const AlertsReminders: React.FC = () => {
   }
 
   return (
-    <Card className='flex h-full flex-col rounded-2xl border border-gray-100 shadow-sm dark:border-gray-700/50'>
+    <Card className='border-border flex h-full flex-col rounded-2xl shadow-md'>
       <CardHeader className='pb-3'>
         <div className='flex items-center gap-2'>
           <Bell className='size-4 text-amber-500' />
@@ -43,7 +47,7 @@ const AlertsReminders: React.FC = () => {
           </p>
         </CardContent>
       ) : (
-        <CardContent className='max-h-[370px] space-y-0 overflow-y-auto px-4 pb-4'>
+        <CardContent className='max-h-105 space-y-2 overflow-y-auto px-4 pb-4'>
           {alertsData.map((alert, idx) => {
             const {
               icon: Icon,
@@ -51,28 +55,43 @@ const AlertsReminders: React.FC = () => {
               iconColor,
               titleColor,
             } = ALERT_SEVERITY_STYLES[getAlertSeverity(alert.days)];
-            return (
-              <div
-                key={`${alert.title}-${alert.property}-${idx}`}
-                className={`flex items-start gap-3 py-3 ${
-                  idx < alertsData.length - 1
-                    ? 'border-b border-gray-100 dark:border-gray-700/50'
-                    : ''
-                }`}
-              >
-                <div className={`shrink-0 rounded-full p-2 ${iconBg}`}>
+            const content = (
+              <>
+                <div
+                  className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
+                >
                   <Icon className={`size-4 ${iconColor}`} />
                 </div>
-                <div className='min-w-0'>
-                  <p className={`text-sm font-semibold ${titleColor}`}>
+                <div className='min-w-0 flex-1'>
+                  <p className='text-foreground text-sm font-semibold'>
                     {alert.title}
                   </p>
-                  <p className='mt-0.5 text-xs text-gray-500 dark:text-gray-400'>
-                    <span className='break-words'>{alert.property}</span>
+                  <p className='text-muted-foreground mt-0.5 text-xs'>
+                    <span className='wrap-break-word'>{alert.property}</span>
                     {' · '}
-                    {alert.detail}
+                    <span className={`font-medium ${titleColor}`}>
+                      {alert.detail}
+                    </span>
                   </p>
                 </div>
+              </>
+            );
+            const key = `${alert.title}-${alert.property}-${idx}`;
+            const rowClass =
+              'border-border flex items-center gap-3 rounded-xl border p-3 shadow-sm';
+
+            return alert.alias ? (
+              <Link
+                key={key}
+                href={getComplianceDetailsUrl(session, alert.alias)}
+                className={`${rowClass} group hover:bg-muted/50 transition-colors`}
+              >
+                {content}
+                <ChevronRight className='text-muted-foreground size-4 shrink-0 transition-transform group-hover:translate-x-0.5' />
+              </Link>
+            ) : (
+              <div key={key} className={rowClass}>
+                {content}
               </div>
             );
           })}

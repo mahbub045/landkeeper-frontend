@@ -11,6 +11,7 @@ export interface ActivityItem {
 }
 
 export interface AlertReminderItem {
+  alias?: string;
   title: string;
   property: string;
   detail: string;
@@ -142,6 +143,11 @@ export interface IncomeExpenseItem {
   income: string;
   expense: string;
   net: string;
+}
+
+export interface IncomeExpenseSummaryItem
+  extends Omit<StatCard, 'badge'> {
+  valueColor: string;
 }
 
 export interface CylinderTheme {
