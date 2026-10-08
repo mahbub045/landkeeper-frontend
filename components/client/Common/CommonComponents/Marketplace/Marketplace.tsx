@@ -4,20 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  STATUS_FILTER_OPTIONS,
-  VERIFIED_FILTER_OPTIONS,
-} from '@/data/super-admin/Marketplace/MarketplaceData';
-import {
   useGetMarketplaceCategoriesQuery,
   useGetMarketplaceProvidersQuery,
 } from '@/store/api/endpoints/super-admin/Marketplace/MarketplaceApi';
-import { MarketplaceBooleanFilter } from '@/types/super-admin/Marketplace/MarketplaceTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { Handshake, Info, Search, SearchX, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import CategoryCards from './CategoryCards/CategoryCards';
 import HowItWorksDialog from './Dialogs/HowItWorksDialog';
-import MarketplaceFilterSelect from './MarketplaceFilterSelect/MarketplaceFilterSelect';
 import MarketplacePagination from './MarketplacePagination/MarketplacePagination';
 import ServiceCard from './ServiceCard/ServiceCard';
 
@@ -25,8 +19,6 @@ const Marketplace: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [category, setCategory] = useState<string>('ALL');
-  const [verified, setVerified] = useState<MarketplaceBooleanFilter>('ALL');
-  const [status, setStatus] = useState<MarketplaceBooleanFilter>('ALL');
   const [page, setPage] = useState(1);
   const [howItWorksOpen, setHowItWorksOpen] = useState(false);
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -39,11 +31,7 @@ const Marketplace: React.FC = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const isFiltering =
-    search.trim() !== '' ||
-    category !== 'ALL' ||
-    verified !== 'ALL' ||
-    status !== 'ALL';
+  const isFiltering = search.trim() !== '' || category !== 'ALL';
 
   const {
     data: categories,
@@ -59,8 +47,6 @@ const Marketplace: React.FC = () => {
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
     ...(category !== 'ALL' && { categories__slug: category }),
-    ...(verified !== 'ALL' && { is_verified: verified === 'true' }),
-    ...(status !== 'ALL' && { is_active: status === 'true' }),
   });
 
   const services = providers?.results ?? [];
@@ -76,15 +62,6 @@ const Marketplace: React.FC = () => {
     setPage(1);
   }
 
-  function handleFilterChange(
-    setter: (value: MarketplaceBooleanFilter) => void,
-  ) {
-    return (value: MarketplaceBooleanFilter) => {
-      setter(value);
-      setPage(1);
-    };
-  }
-
   function handlePageChange(value: number) {
     setPage(value);
     servicesRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -93,8 +70,6 @@ const Marketplace: React.FC = () => {
   function clearFilters() {
     setSearch('');
     setCategory('ALL');
-    setVerified('ALL');
-    setStatus('ALL');
     setPage(1);
   }
 
@@ -138,40 +113,33 @@ const Marketplace: React.FC = () => {
       </div>
 
       {/* Search & filters */}
-      <div className='flex flex-col gap-3 lg:flex-row'>
-        <div className='relative min-w-0 flex-1'>
+      <div className='flex items-center justify-between gap-4'>
+        <div>
+          <h2 className='text-foreground text-lg font-bold tracking-tight'>
+            Search & Filters
+          </h2>
+          <p className='text-muted-foreground text-sm'>
+            Find services by name, category or location.
+          </p>
+        </div>
+        <div className='relative w-full sm:w-96'>
           <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
           <Input
             type='text'
-            placeholder='Search for a service (e.g. boiler repair, compliance, insurance...)'
+            placeholder='Search for a service...'
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className='bg-card h-10! w-full pl-9!'
+            className='bg-card h-10! w-full pr-9! pl-9!'
           />
-        </div>
-
-        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex'>
-          <MarketplaceFilterSelect
-            label='Verified'
-            value={verified}
-            options={VERIFIED_FILTER_OPTIONS}
-            onChange={handleFilterChange(setVerified)}
-          />
-          <MarketplaceFilterSelect
-            label='Status'
-            value={status}
-            options={STATUS_FILTER_OPTIONS}
-            onChange={handleFilterChange(setStatus)}
-          />
-          {isFiltering && (
-            <Button
-              variant='danger'
-              onClick={clearFilters}
-              className='h-10 sm:col-span-2 lg:col-span-1'
+          {search && (
+            <button
+              type='button'
+              onClick={() => handleSearchChange('')}
+              className='text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer'
+              aria-label='Clear search'
             >
-              <X />
-              Clear filters
-            </Button>
+              <X className='size-4' />
+            </button>
           )}
         </div>
       </div>
