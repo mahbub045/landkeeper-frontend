@@ -1,5 +1,6 @@
 'use client';
 
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -129,18 +130,22 @@ const Marketplace: React.FC = () => {
             placeholder='Search for a service...'
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className='bg-card h-10! w-full pr-9! pl-9!'
+            className='bg-card h-10! w-full pr-14! pl-9!'
           />
           {search && (
             <button
               type='button'
               onClick={() => handleSearchChange('')}
-              className='text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer'
+              className='text-muted-foreground hover:text-foreground absolute top-1/2 right-8 -translate-y-1/2 cursor-pointer'
               aria-label='Clear search'
             >
               <X className='size-4' />
             </button>
           )}
+          <HoverInfoPopover
+            text='You can search using Service Name, Category and Location.'
+            triggerClassName='text-muted-foreground hover:text-primary absolute top-1/2 right-3 flex size-4 -translate-y-1/2 items-center justify-center rounded-full'
+          />
         </div>
       </div>
 
