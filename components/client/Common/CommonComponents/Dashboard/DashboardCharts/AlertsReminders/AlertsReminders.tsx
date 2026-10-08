@@ -1,6 +1,7 @@
 'use client';
 
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ALERT_SEVERITY_STYLES,
@@ -8,7 +9,7 @@ import {
 } from '@/data/client/Common/Dashboard/DashboardData';
 import { useGetAlertsAndRemindersQuery } from '@/store/api/endpoints/client/Common/Dashboard/DashboardApi';
 import { getComplianceDetailsUrl } from '@/utils/redirectPath';
-import { Bell, BellOff, ChevronRight } from 'lucide-react';
+import { Bell, BellOff, ChevronRight, RefreshCw } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AlertsRemindersSkeleton from './AlertsRemindersSkeleton';
@@ -54,6 +55,7 @@ const AlertsReminders: React.FC = () => {
               iconBg,
               iconColor,
               titleColor,
+              badgeVariant,
             } = ALERT_SEVERITY_STYLES[getAlertSeverity(alert.days)];
             const content = (
               <>
@@ -74,6 +76,10 @@ const AlertsReminders: React.FC = () => {
                     </span>
                   </p>
                 </div>
+                <Badge variant={badgeVariant} className='gap-1'>
+                  <RefreshCw />
+                  Renew
+                </Badge>
               </>
             );
             const key = `${alert.title}-${alert.property}-${idx}`;
