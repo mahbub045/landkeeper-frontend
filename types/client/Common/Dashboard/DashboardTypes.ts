@@ -1,3 +1,6 @@
+import { badgeVariants } from '@/components/ui/badge';
+import { type VariantProps } from 'class-variance-authority';
+
 export interface ActivityItem {
   id: number;
   icon: React.ElementType;
@@ -27,6 +30,7 @@ export interface AlertSeverityStyle {
   iconBg: string;
   iconColor: string;
   titleColor: string;
+  badgeVariant: VariantProps<typeof badgeVariants>['variant'];
 }
 
 export type BadgeVariant = 'up' | 'down' | 'alert';
