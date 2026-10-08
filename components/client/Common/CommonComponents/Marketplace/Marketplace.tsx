@@ -13,7 +13,7 @@ import {
 } from '@/store/api/endpoints/super-admin/Marketplace/MarketplaceApi';
 import { MarketplaceBooleanFilter } from '@/types/super-admin/Marketplace/MarketplaceTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
-import { Handshake, Info, Search, SearchX } from 'lucide-react';
+import { Handshake, Info, Search, SearchX, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import CategoryCards from './CategoryCards/CategoryCards';
 import HowItWorksDialog from './Dialogs/HowItWorksDialog';
@@ -163,6 +163,16 @@ const Marketplace: React.FC = () => {
             options={STATUS_FILTER_OPTIONS}
             onChange={handleFilterChange(setStatus)}
           />
+          {isFiltering && (
+            <Button
+              variant='danger'
+              onClick={clearFilters}
+              className='h-10 sm:col-span-2 lg:col-span-1'
+            >
+              <X />
+              Clear filters
+            </Button>
+          )}
         </div>
       </div>
 

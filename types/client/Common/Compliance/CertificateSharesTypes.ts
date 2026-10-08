@@ -16,6 +16,11 @@ export interface AddNewShareDialogProps {
   complianceAlias: string;
 }
 
+export interface ComplianceShareListProps {
+  certificateAlias: string;
+  propertyAlias: string;
+}
+
 export interface CirtificateShare {
   alias: string;
   avatar: string | null;

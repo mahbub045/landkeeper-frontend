@@ -41,6 +41,7 @@ import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { formatDate } from '@/utils/formatters';
 import {
   BadgeCheck,
+  CircleAlert,
   FilterX,
   Mail,
   Pencil,
@@ -405,10 +406,15 @@ const Providers: React.FC = () => {
                         {/* Highlights */}
                         <TableCell className='hidden sm:table-cell'>
                           <div className='flex flex-wrap gap-1'>
-                            {provider.is_verified && (
+                            {provider.is_verified ? (
                               <Badge variant='infoLight' className='gap-1'>
                                 <BadgeCheck className='size-3' />
                                 Verified
+                              </Badge>
+                            ) : (
+                              <Badge variant='destructive' className='gap-1'>
+                                <CircleAlert className='size-3' />
+                                Not Verified
                               </Badge>
                             )}
                             {provider.is_featured && (

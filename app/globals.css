@@ -41,6 +41,8 @@
   --color-danger-foreground: var(--danger-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -76,6 +78,8 @@
   --warning-foreground: oklch(0.985 0 0);
   --danger: #ef4444;
   --danger-foreground: oklch(0.985 0 0);
+  --info: #0ea5e9;
+  --info-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -117,6 +121,8 @@
   --warning-foreground: oklch(0.985 0 0);
   --danger: #ef4444;
   --danger-foreground: oklch(0.985 0 0);
+  --info: #0ea5e9;
+  --info-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);

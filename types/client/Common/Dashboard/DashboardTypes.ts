@@ -49,6 +49,21 @@ export interface PropertyTypeItem {
   percentage: number;
 }
 
+export interface PropertyPieSlice extends PropertyTypeItem {
+  color: string;
+  startAngle: number;
+  endAngle: number;
+  outerRadius: number;
+}
+
+export interface PropertyPieCallout {
+  slice: PropertyPieSlice;
+  side: 'left' | 'right';
+  anchorX: number;
+  anchorY: number;
+  labelY: number;
+}
+
 export interface PropertyTypesResponse {
   total: number;
   data: PropertyTypeItem[];
@@ -59,6 +74,12 @@ export interface ComplianceTypeItem {
   label: string;
   count: number;
   percentage: number;
+}
+
+export interface Pie3DSlice extends ComplianceTypeItem {
+  color: string;
+  startAngle: number;
+  endAngle: number;
 }
 
 export interface ComplianceTypesResponse {
@@ -121,6 +142,27 @@ export interface IncomeExpenseItem {
   income: string;
   expense: string;
   net: string;
+}
+
+export interface CylinderTheme {
+  gradientId: string;
+  top: string;
+}
+
+export interface CylinderBarProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  theme: CylinderTheme;
+}
+
+export interface CylinderPinLabelProps {
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  value?: number | string;
+  color: string;
 }
 
 export interface IncomeExpenseResponse {

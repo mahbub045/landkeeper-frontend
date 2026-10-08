@@ -39,7 +39,6 @@ import {
   Search,
   SearchX,
   Trash2,
-  Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import CategoryFormDialog from './Dialogs/CategoryFormDialog';
@@ -122,12 +121,6 @@ const Categories: React.FC = () => {
       icon: CircleOff,
       className: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
     },
-    {
-      label: 'Total Providers',
-      value: allCategories.reduce((sum, c) => sum + c.provider_count, 0),
-      icon: Users,
-      className: 'bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400',
-    },
   ];
 
   const isFiltering = search.trim() !== '' || status !== 'ALL';
@@ -155,7 +148,7 @@ const Categories: React.FC = () => {
       ) : (
         <>
           {/* Summary */}
-          <div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>
+          <div className='grid grid-cols-2 gap-3 lg:grid-cols-3'>
             {stats.map((stat) => (
               <Card
                 key={stat.label}
