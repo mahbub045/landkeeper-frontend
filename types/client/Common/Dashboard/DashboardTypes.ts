@@ -49,6 +49,21 @@ export interface PropertyTypeItem {
   percentage: number;
 }
 
+export interface PropertyPieSlice extends PropertyTypeItem {
+  color: string;
+  startAngle: number;
+  endAngle: number;
+  outerRadius: number;
+}
+
+export interface PropertyPieCallout {
+  slice: PropertyPieSlice;
+  side: 'left' | 'right';
+  anchorX: number;
+  anchorY: number;
+  labelY: number;
+}
+
 export interface PropertyTypesResponse {
   total: number;
   data: PropertyTypeItem[];
