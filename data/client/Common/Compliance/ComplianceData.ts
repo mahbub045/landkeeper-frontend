@@ -3,8 +3,10 @@ import {
   CertStatus,
   CertStatusTone,
   CertStatusToneKey,
+  ComplianceRenewNoticeProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { getAlertSeverity } from '@/data/client/Common/Dashboard/DashboardData';
+import { AlertSeverity } from '@/types/client/Common/Dashboard/DashboardTypes';
 
 // Mirrors the backend `CertificateType` choices
 export const CERTIFICATE_OPTIONS = [
@@ -107,3 +109,20 @@ export const getCertStatusTone = (expiryDate: string): CertStatusTone =>
       ? 'Valid'
       : getAlertSeverity(getDaysUntilExpiry(expiryDate))
   ];
+
+export const RENEW_NOTICE_TITLES: Record<
+  ComplianceRenewNoticeProps['status'],
+  string
+> = {
+  Expired: 'This certificate has expired',
+  'Expiring Soon': 'This certificate is due for renewal',
+};
+
+// Light tint of each severity colour for the renew notice background
+export const RENEW_NOTICE_BACKGROUNDS: Record<AlertSeverity, string> = {
+  expired: 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/30',
+  urgent:
+    'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30',
+  upcoming:
+    'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30',
+};

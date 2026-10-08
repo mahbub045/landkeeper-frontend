@@ -1,15 +1,14 @@
 'use client';
 
 import {
+  RENEW_NOTICE_BACKGROUNDS,
+  RENEW_NOTICE_TITLES,
+} from '@/data/client/Common/Compliance/ComplianceData';
+import {
   ALERT_SEVERITY_STYLES,
   getAlertSeverity,
 } from '@/data/client/Common/Dashboard/DashboardData';
 import { ComplianceRenewNoticeProps } from '@/types/client/Common/Compliance/ComplianceTypes';
-
-const NOTICE_TITLES = {
-  Expired: 'This certificate has expired',
-  'Expiring Soon': 'This certificate is due for renewal',
-};
 
 const ComplianceRenewNotice: React.FC<ComplianceRenewNoticeProps> = ({
   status,
@@ -17,15 +16,18 @@ const ComplianceRenewNotice: React.FC<ComplianceRenewNoticeProps> = ({
   daysUntilExpiry,
 }) => {
   // Same severity styles as the dashboard's Alerts & Reminders rows
+  const severity = getAlertSeverity(daysUntilExpiry);
   const {
     icon: Icon,
     iconBg,
     iconColor,
     titleColor,
-  } = ALERT_SEVERITY_STYLES[getAlertSeverity(daysUntilExpiry)];
+  } = ALERT_SEVERITY_STYLES[severity];
 
   return (
-    <div className='border-border mb-6 flex items-start gap-3 rounded-xl border p-3 shadow-sm'>
+    <div
+      className={`mb-6 flex items-start gap-3 rounded-xl border p-3 shadow-sm ${RENEW_NOTICE_BACKGROUNDS[severity]}`}
+    >
       <span
         className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
       >
@@ -33,7 +35,7 @@ const ComplianceRenewNotice: React.FC<ComplianceRenewNoticeProps> = ({
       </span>
       <div>
         <p className='text-foreground text-sm font-semibold'>
-          {NOTICE_TITLES[status]} &middot;{' '}
+          {RENEW_NOTICE_TITLES[status]} &middot;{' '}
           <span className={titleColor}>{expiryText}</span>
         </p>
         <p className='text-muted-foreground mt-0.5 text-xs'>
