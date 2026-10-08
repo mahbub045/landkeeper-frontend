@@ -28,7 +28,6 @@ import {
   FileX,
   Hash,
   Pencil,
-  ShieldUser,
   UserCheck,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -36,11 +35,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { getCertificateLabel } from '../CertificateRegistry/CertificateRow/CertificateRow';
-import ViewCertificateSharesDialog from '../CertificateRegistry/Dialogs/ViewCertificateSharesDialog';
 import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
+import ComplianceShareList from './ComplianceShareList/ComplianceShareList';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
@@ -64,7 +63,6 @@ const ComplianceDetails: React.FC = () => {
   const { copy, isCopied } = useCopyToClipboard();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [sharesOpen, setSharesOpen] = useState(false);
   // Stops the refetch of the deleted certificate (and its error screen)
   // while we navigate back to the list
   const [isDeleted, setIsDeleted] = useState(false);
@@ -223,10 +221,6 @@ const ComplianceDetails: React.FC = () => {
             <ArrowLeft className='size-4' />
             Back
           </Button>
-          <Button variant='secondary' onClick={() => setSharesOpen(true)}>
-            <ShieldUser />
-            Shares
-          </Button>
           <Button variant='default' onClick={() => setEditOpen(true)}>
             <Pencil />
             Edit
@@ -368,19 +362,20 @@ const ComplianceDetails: React.FC = () => {
         </section>
       </div>
 
+      {/* Shares */}
+      <div className='mt-6'>
+        <ComplianceShareList
+          certificateAlias={certificate.alias}
+          propertyAlias={certificate.property?.alias || ''}
+        />
+      </div>
+
       {/* Danger Zone */}
       <div className='mt-6'>
         <ComplianceDangerZone onDeleteClick={() => setDeleteOpen(true)} />
       </div>
 
       {/* Dialogs */}
-      <ViewCertificateSharesDialog
-        open={sharesOpen}
-        onClose={() => setSharesOpen(false)}
-        selectedCertificate={certificate}
-        propertyAlias={certificate.property?.alias || ''}
-        complianceAlias={certificate.alias}
-      />
 
       <UpdateCertificateDialog
         key={certificate.updated_at}

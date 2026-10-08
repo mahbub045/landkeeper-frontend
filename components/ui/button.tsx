@@ -24,6 +24,7 @@ const buttonVariants = cva(
         success: `${shimmerSolid} bg-success/95 text-success-foreground shadow-xs hover:bg-success cursor-pointer`,
         warning: `${shimmerSolid} bg-warning/95 text-warning-foreground shadow-xs hover:bg-warning cursor-pointer`,
         danger: `${shimmerSolid} bg-danger/95 text-danger-foreground shadow-xs hover:bg-danger cursor-pointer`,
+        info: `${shimmerSolid} bg-info/95 text-info-foreground shadow-xs hover:bg-info cursor-pointer`,
       },
       size: {
         default:
