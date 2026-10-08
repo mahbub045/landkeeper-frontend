@@ -217,7 +217,10 @@ const PropertyTypesChart: React.FC = () => {
                 >
                   <stop offset='0%' stopColor={shadeColor(slice.color, 18)} />
                   <stop offset='55%' stopColor={slice.color} />
-                  <stop offset='100%' stopColor={shadeColor(slice.color, -18)} />
+                  <stop
+                    offset='100%'
+                    stopColor={shadeColor(slice.color, -18)}
+                  />
                 </linearGradient>
               ))}
             </defs>
@@ -238,7 +241,12 @@ const PropertyTypesChart: React.FC = () => {
                     stroke={slice.color}
                     strokeWidth={1.25}
                   />
-                  <circle cx={anchorX} cy={anchorY} r={2.5} fill={slice.color} />
+                  <circle
+                    cx={anchorX}
+                    cy={anchorY}
+                    r={2.5}
+                    fill={slice.color}
+                  />
                   <rect
                     x={pillX}
                     y={labelY - PILL_HEIGHT / 2}
@@ -333,29 +341,11 @@ const PropertyTypesChart: React.FC = () => {
             />
             <Building2
               x={CX - 11}
-              y={CY - 30}
+              y={CY - 11}
               width={22}
               height={22}
               className='text-gray-500'
             />
-            <text
-              x={CX}
-              y={CY + 6}
-              textAnchor='middle'
-              dominantBaseline='central'
-              className='fill-gray-700 text-[16px] font-bold'
-            >
-              {total}
-            </text>
-            <text
-              x={CX}
-              y={CY + 22}
-              textAnchor='middle'
-              dominantBaseline='central'
-              className='fill-gray-500 text-[8px] font-semibold tracking-wider uppercase'
-            >
-              Properties
-            </text>
           </svg>
         </CardContent>
       )}
