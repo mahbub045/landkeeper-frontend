@@ -500,8 +500,25 @@ const PropertyMaintenanceList: React.FC = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className='max-w-50 truncate text-sm'>
-                        {request?.property}
+                      <TableCell className='text-sm'>
+                        {request?.property &&
+                        request.property.length > TEXT_PREVIEW_LENGTH ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className='cursor-default'>
+                                {truncateText(
+                                  request.property,
+                                  TEXT_PREVIEW_LENGTH,
+                                )}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className='max-w-xs wrap-break-word'>
+                              {request.property}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          request?.property
+                        )}
                       </TableCell>
                     </>
                   )}
