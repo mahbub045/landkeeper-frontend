@@ -193,20 +193,6 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className='space-y-4'>
       <div className='space-y-2'>
-        <Label htmlFor='issue'>
-          Issue<span className='text-danger'>*</span>
-        </Label>
-        <Input
-          id='issue'
-          type='text'
-          placeholder='e.g. Leaking bathroom sink'
-          value={formState.issue}
-          onChange={(e) => handleFieldChange('issue', e.target.value)}
-          required
-        />
-      </div>
-
-      <div className='space-y-2'>
         <Label htmlFor='category'>
           Category<span className='text-danger'>*</span>
         </Label>
@@ -226,8 +212,20 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
             ))}
           </SelectContent>
         </Select>
+      </div>{' '}
+      <div className='space-y-2'>
+        <Label htmlFor='issue'>
+          Issue<span className='text-danger'>*</span>
+        </Label>
+        <Input
+          id='issue'
+          type='text'
+          placeholder='e.g. Leaking bathroom sink'
+          value={formState.issue}
+          onChange={(e) => handleFieldChange('issue', e.target.value)}
+          required
+        />
       </div>
-
       <div className='bg-danger/20 text-danger flex items-center gap-2 rounded-md p-2'>
         <Checkbox
           id='is_emergency'
@@ -244,7 +242,6 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
           This is an emergency
         </Label>
       </div>
-
       <div className='space-y-2'>
         <Label htmlFor='notes'>Notes</Label>
         <Textarea
@@ -255,7 +252,6 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
           rows={3}
         />
       </div>
-
       {existingDocuments.length > 0 && (
         <div className='space-y-2'>
           <Label>Existing attachments</Label>
@@ -288,7 +284,6 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
           </ul>
         </div>
       )}
-
       <div className='space-y-2'>
         <Label htmlFor='documents'>Add attachments</Label>
         <label
@@ -329,7 +324,6 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
           </ul>
         )}
       </div>
-
       <DialogFooter>
         <Button
           type='button'

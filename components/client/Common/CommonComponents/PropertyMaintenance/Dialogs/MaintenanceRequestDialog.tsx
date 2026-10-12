@@ -122,27 +122,15 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className='sm:max-w-lg'>
         <DialogHeader>
-          <DialogTitle>Make Maintenance Request</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className='text-primary -mb-3 text-xl font-semibold'>
+            Make Maintenance Request
+          </DialogTitle>
+          <DialogDescription className='text-muted-foreground text-sm'>
             Describe the issue and we&apos;ll route it to your property manager.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='issue'>
-              Issue<span className='text-danger'>*</span>
-            </Label>
-            <Input
-              id='issue'
-              type='text'
-              placeholder='e.g. Leaking bathroom sink'
-              value={formState.issue}
-              onChange={(e) => handleFieldChange('issue', e.target.value)}
-              required
-            />
-          </div>
-
           <div className='space-y-2'>
             <Label htmlFor='category'>
               Category<span className='text-danger'>*</span>
@@ -163,8 +151,20 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>{' '}
+          <div className='space-y-2'>
+            <Label htmlFor='issue'>
+              Issue<span className='text-danger'>*</span>
+            </Label>
+            <Input
+              id='issue'
+              type='text'
+              placeholder='e.g. Leaking bathroom sink'
+              value={formState.issue}
+              onChange={(e) => handleFieldChange('issue', e.target.value)}
+              required
+            />
           </div>
-
           <div className='bg-danger/20 text-danger flex items-center gap-2 rounded-md p-2'>
             <Checkbox
               id='is_emergency'
@@ -181,7 +181,6 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
               This is an emergency
             </Label>
           </div>
-
           <div className='space-y-2'>
             <Label htmlFor='notes'>Notes</Label>
             <Textarea
@@ -192,7 +191,6 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
               rows={3}
             />
           </div>
-
           <div className='space-y-2'>
             <Label htmlFor='documents'>Attachments</Label>
             <label
@@ -233,7 +231,6 @@ const MaintenanceRequestDialog: React.FC<MaintenanceRequestDialogProps> = ({
               </ul>
             )}
           </div>
-
           <DialogFooter>
             <Button
               type='button'

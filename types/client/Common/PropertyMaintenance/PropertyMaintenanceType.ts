@@ -3,7 +3,25 @@ export type MaintenanceStatus =
   | 'ASSIGNED'
   | 'IN_PROGRESS'
   | 'COMPLETED';
-export type MaintenanceCategory = 'PLUMBING' | 'CARPENTRY_SECURITY' | 'OTHER';
+export type MaintenanceCategory =
+  | 'PLUMBING_WATER'
+  | 'HEATING_HOT_WATER'
+  | 'ELECTRICAL'
+  | 'GAS'
+  | 'ROOF_GUTTERING'
+  | 'DAMP_MOULD_CONDENSATION'
+  | 'DOORS_WINDOWS_LOCKS'
+  | 'BATHROOM'
+  | 'KITCHEN'
+  | 'APPLIANCES'
+  | 'HEATING_VENTILATION'
+  | 'STRUCTURAL_BUILDING'
+  | 'PEST_CONTROL'
+  | 'SECURITY_SAFETY'
+  | 'EXTERNAL_AREAS'
+  | 'COMMUNAL_AREAS'
+  | 'CLEANING_GENERAL'
+  | 'OTHER_GENERAL_MAINTENANCE';
 
 export interface MaintenanceDocument {
   id: number;
