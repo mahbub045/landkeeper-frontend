@@ -22,7 +22,9 @@ const DeleteShareDialog: React.FC<DeleteShareDialogProps> = ({
     try {
       await deleteShare({
         certificateAlias: certificateAlias,
-        payload: { tenant: tenantAliases },
+        params: {
+          tenant: tenantAliases,
+        },
       }).unwrap();
       toast.success(
         isMultiple
