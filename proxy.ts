@@ -6,7 +6,8 @@ import {
   isLandlordSubscribed,
   isNewLandlord,
 } from './lib/subscription';
-import { getDashboardPath } from './utils/redirectPath';
+import { getDashboardPath, REFERRAL_DASHBOARD_PATH } from './utils/redirectPath';
+import { isReferralOnly } from './utils/rolePermissions';
 
 const SHARED_CLIENT_PATHS = [
   '/client/profile-settings',
@@ -54,6 +55,17 @@ export default withAuth(
     }
 
     const userRole = token.role as UserRole | undefined;
+
+    // Referral-only users (no role) get just the referral area + shared paths
+    if (isReferralOnly(userRole, token.is_referral)) {
+      const allowed =
+        path.startsWith('/client/referral/') ||
+        SHARED_CLIENT_PATHS.some((p) => path.startsWith(p));
+
+      if (allowed) return NextResponse.next();
+
+      return NextResponse.redirect(new URL(REFERRAL_DASHBOARD_PATH, req.url));
+    }
     const isOnAllowedLandlordPath =
       LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
         path.startsWith(p),

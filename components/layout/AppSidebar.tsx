@@ -40,7 +40,10 @@ import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSett
 import { UserRole } from '@/types/next-auth';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
 import { getStartNewJourneyUrl } from '@/utils/redirectPath';
-import { isLandlord_Admin_LettingAgent } from '@/utils/rolePermissions';
+import {
+  isLandlord_Admin_LettingAgent,
+  isReferralOnly,
+} from '@/utils/rolePermissions';
 import {
   ChevronRight,
   LogOut,
@@ -415,7 +418,11 @@ const AppSidebar: React.FC = () => {
 
   // navItems now depends on profileData.plan, so it's built after the
   // profile query instead of immediately after session resolves.
-  const navItems = buildItems({ role: userRole, plan: profileData?.plan });
+  const navItems = buildItems({
+    role: userRole,
+    plan: profileData?.plan,
+    isReferral: user?.is_referral,
+  });
 
   // Landlords without an active/trialing subscription get a locked sidebar —
   // only the paths in LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION stay usable.
@@ -483,7 +490,8 @@ const AppSidebar: React.FC = () => {
         </div>
 
         {session?.user?.role !== 'SUPER_ADMIN' &&
-          session?.user?.role !== 'TENANT' && (
+          session?.user?.role !== 'TENANT' &&
+          !isReferralOnly(userRole, user?.is_referral) && (
             <div className='group-data-[collapsible=icon]:hidden'>
               {sidebarLocked ? (
                 <Link href='/client/landlord/billing-and-plans/billing'>
@@ -580,9 +588,13 @@ const AppSidebar: React.FC = () => {
                   {profileData?.first_name} {profileData?.middle_name}{' '}
                   {profileData?.last_name}
                 </p>
-                <Badge className='truncate text-xs'>
-                  {formatChoiceFieldValue(userRole)}
-                </Badge>
+                {isReferralOnly(userRole, user?.is_referral) ? (
+                  <Badge className='truncate text-xs'>Referral</Badge>
+                ) : (
+                  <Badge className='truncate text-xs'>
+                    {formatChoiceFieldValue(userRole)}
+                  </Badge>
+                )}
               </div>
               <Settings size={16} />
             </button>

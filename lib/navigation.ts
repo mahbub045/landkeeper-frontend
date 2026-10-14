@@ -1,4 +1,5 @@
 import type { UserRole } from '@/types/next-auth';
+import { isReferralOnly } from '@/utils/rolePermissions';
 import {
   Banknote,
   BarChart3,
@@ -34,6 +35,8 @@ interface BuildItemsOptions {
   // Current subscription plan, e.g. profileData?.plan. Used to hide
   // plan-gated nav items (MTD, Property Maintenance) for Basic-plan users.
   plan?: string;
+  // is_referral from the session — only used when the user has no role.
+  isReferral?: boolean;
 }
 
 // Adjust these to match the actual plan enum values returned by your API
@@ -399,7 +402,20 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
   return [];
 }
 
-export const buildItems = ({ role, plan }: BuildItemsOptions): NavItem[] => {
+export const buildItems = ({
+  role,
+  plan,
+  isReferral,
+}: BuildItemsOptions): NavItem[] => {
+  if (isReferralOnly(role, isReferral))
+    return [
+      {
+        label: 'Dashboard',
+        href: '/client/referral/dashboard',
+        icon: LayoutDashboard,
+      },
+    ];
+
   const items = buildItemsForRole(role);
   return filterByPlan(items, plan);
 };

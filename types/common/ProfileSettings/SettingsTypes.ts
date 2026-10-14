@@ -11,6 +11,7 @@ export interface ProfileInfo {
   is_password_available?: boolean;
   has_subscription?: boolean;
   subscription_status?: string;
+  is_referral?: boolean;
 }
 
 export interface NotificationSetting {

@@ -36,3 +36,10 @@ export const isLandlord_Admin_LettingAgent = (
 
 export const isLandlord_Admin = (value: string | null): value is UserRole =>
   value !== null && ['LANDLORD', 'ADMIN'].includes(value);
+
+// A user with no role who signed up through referral registration.
+// Users with a role can also have is_referral: true — they keep their role.
+export const isReferralOnly = (
+  role: string | null | undefined,
+  isReferral: boolean | null | undefined,
+): boolean => !role && isReferral === true;

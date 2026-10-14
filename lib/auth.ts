@@ -66,6 +66,7 @@ export const authOptions: NextAuthOptions = {
           id: profile.id,
           email: profile.email,
           role: profile.role,
+          is_referral: profile.is_referral === true,
           accessToken: access,
           refreshToken: refresh,
         };
@@ -121,6 +122,7 @@ export const authOptions: NextAuthOptions = {
               token.id = profile.id;
               token.email = profile.email;
               token.role = profile.role;
+              token.is_referral = profile.is_referral === true;
               token.accessToken = access;
               token.refreshToken = refresh;
             }
@@ -139,6 +141,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
+        token.is_referral = user.is_referral;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
@@ -150,6 +153,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id;
       session.user.email = token.email || '';
       session.user.role = token.role;
+      session.user.is_referral = token.is_referral === true;
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       return session;

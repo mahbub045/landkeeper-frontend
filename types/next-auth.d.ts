@@ -16,6 +16,7 @@ declare module 'next-auth' {
   interface User {
     id: string;
     role: UserRole;
+    is_referral: boolean;
     accessToken: string;
     refreshToken: string;
   }
@@ -25,6 +26,7 @@ declare module 'next-auth' {
       id: string;
       email: string;
       role: string;
+      is_referral: boolean;
       accessToken: string;
       refreshToken: string;
     };
@@ -35,6 +37,7 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: string;
+    is_referral?: boolean;
     accessToken: string;
     refreshToken: string;
   }

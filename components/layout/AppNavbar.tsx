@@ -12,7 +12,7 @@ import Notification from './Notification/Notification';
 
 const AppNavbar: React.FC = () => {
   const { data: session } = useSession();
-  const { data: profileData, isLoading } = useGetProfileInfoQuery(undefined);
+  const { data: profileData } = useGetProfileInfoQuery(undefined);
   return (
     <header className='bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b px-4 backdrop-blur'>
       <SidebarTrigger className='-ml-1 shrink-0' />
@@ -32,15 +32,25 @@ const AppNavbar: React.FC = () => {
         <div className='flex items-center gap-1 sm:gap-2'>
           <ThemeToggle />
           <Notification />
-
-          <Button
-            variant='default'
-            size='sm'
-            className='border border-gray-200 px-2.5 sm:px-4 dark:border-gray-700'
-          >
-            <Plus />
-            <span className='hidden sm:inline'>Join Our Referral Program</span>
-          </Button>
+          {session?.user?.role === 'SUPER_ADMIN' || !session?.user?.role ? (
+            <Button variant='default' size='sm'>
+              <Plus />
+              <span className='hidden sm:inline'>Join as a Landlord</span>
+            </Button>
+          ) : (
+            !session?.user?.is_referral && (
+              <Button
+                variant='default'
+                size='sm'
+                className='border border-gray-200 px-2.5 sm:px-4 dark:border-gray-700'
+              >
+                <Plus />
+                <span className='hidden sm:inline'>
+                  Join Our Referral Program
+                </span>
+              </Button>
+            )
+          )}
         </div>
       </div>
     </header>
