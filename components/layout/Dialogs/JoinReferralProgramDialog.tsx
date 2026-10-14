@@ -74,7 +74,7 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
     const referralProgramUrl = getReferralProgramUrl(
       session?.user?.role as UserRole | undefined,
     );
-    if (referralProgramUrl) router.push(referralProgramUrl);
+    if (referralProgramUrl) router.push(`${referralProgramUrl}/dashboard`);
   };
 
   return (

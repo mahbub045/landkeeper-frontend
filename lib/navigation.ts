@@ -197,9 +197,15 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       },
       {
         label: 'Referral Program',
-        href: '/client/landlord/referral-program',
         icon: Gift,
         referralOnly: true,
+        children: [
+          {
+            label: 'Referral Dashboard',
+            href: '/client/landlord/referral-program/dashboard',
+            icon: LayoutDashboard,
+          },
+        ],
       },
     ];
   }
@@ -293,9 +299,15 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       },
       {
         label: 'Referral Program',
-        href: '/client/admin/referral-program',
         icon: Gift,
         referralOnly: true,
+        children: [
+          {
+            label: 'Referral Dashboard',
+            href: '/client/admin/referral-program/dashboard',
+            icon: LayoutDashboard,
+          },
+        ],
       },
     ];
   }
@@ -339,9 +351,15 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       },
       {
         label: 'Referral Program',
-        href: '/client/letting-agent/referral-program',
         icon: Gift,
         referralOnly: true,
+        children: [
+          {
+            label: 'Referral Dashboard',
+            href: '/client/letting-agent/referral-program/dashboard',
+            icon: LayoutDashboard,
+          },
+        ],
       },
     ];
   }
@@ -380,9 +398,15 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       },
       {
         label: 'Referral Program',
-        href: '/client/mortgage-adviser/referral-program',
         icon: Gift,
         referralOnly: true,
+        children: [
+          {
+            label: 'Referral Dashboard',
+            href: '/client/mortgage-adviser/referral-program/dashboard',
+            icon: LayoutDashboard,
+          },
+        ],
       },
     ];
   }
@@ -426,9 +450,15 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       // },
       {
         label: 'Referral Program',
-        href: '/client/tenant/referral-program',
         icon: Gift,
         referralOnly: true,
+        children: [
+          {
+            label: 'Referral Dashboard',
+            href: '/client/tenant/referral-program/dashboard',
+            icon: LayoutDashboard,
+          },
+        ],
       },
     ];
   }
