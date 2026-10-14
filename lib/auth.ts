@@ -90,6 +90,40 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      // ✅ Called after joining the referral program to sync is_referral
+      // into the session without a full re-login.
+      if (trigger === 'update' && session?.is_referral !== undefined) {
+        token.is_referral = session.is_referral === true;
+        return token;
+      }
+
+      // ✅ Plain update() with no payload (e.g. after joining the referral
+      // program) — re-fetch the profile so role/is_referral match the backend.
+      if (trigger === 'update' && !session) {
+        try {
+          const profileRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              cache: 'no-store',
+            },
+          );
+
+          if (profileRes.ok) {
+            const profile = await profileRes.json();
+            token.role = profile.role;
+            token.is_referral = profile.is_referral === true;
+          }
+        } catch (error) {
+          console.error('Failed to refresh profile on session update:', error);
+        }
+
+        return token;
+      }
+
       // ✅ Google sign-in flow
       if (account?.provider === 'google' && account.access_token) {
         try {

@@ -6,7 +6,11 @@ import {
   isLandlordSubscribed,
   isNewLandlord,
 } from './lib/subscription';
-import { getDashboardPath, REFERRAL_DASHBOARD_PATH } from './utils/redirectPath';
+import {
+  getDashboardPath,
+  getReferralProgramUrl,
+  REFERRAL_DASHBOARD_PATH,
+} from './utils/redirectPath';
 import { isReferralOnly } from './utils/rolePermissions';
 
 const SHARED_CLIENT_PATHS = [
@@ -66,7 +70,20 @@ export default withAuth(
 
       return NextResponse.redirect(new URL(REFERRAL_DASHBOARD_PATH, req.url));
     }
+
+    // Referral Program pages are only for users with is_referral: true
+    const referralProgramUrl = getReferralProgramUrl(userRole);
+    const isOnReferralProgram =
+      !!referralProgramUrl && path.startsWith(referralProgramUrl);
+
+    if (isOnReferralProgram && !token.is_referral) {
+      return NextResponse.redirect(
+        new URL(getDashboardPath(userRole), req.url),
+      );
+    }
+
     const isOnAllowedLandlordPath =
+      isOnReferralProgram ||
       LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
         path.startsWith(p),
       );

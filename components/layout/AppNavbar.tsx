@@ -1,18 +1,21 @@
 'use client';
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
-
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/theme-toggle';
+import JoinReferralProgramDialog from './Dialogs/JoinReferralProgramDialog';
 import Notification from './Notification/Notification';
 
 const AppNavbar: React.FC = () => {
   const { data: session } = useSession();
   const { data: profileData } = useGetProfileInfoQuery(undefined);
+  const [isOpenJoinReferralDialog, setIsOpenJoinReferralDialog] =
+    useState(false);
   return (
     <header className='bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b px-4 backdrop-blur'>
       <SidebarTrigger className='-ml-1 shrink-0' />
@@ -43,6 +46,7 @@ const AppNavbar: React.FC = () => {
                 variant='default'
                 size='sm'
                 className='border border-gray-200 px-2.5 sm:px-4 dark:border-gray-700'
+                onClick={() => setIsOpenJoinReferralDialog(true)}
               >
                 <Plus />
                 <span className='hidden sm:inline'>
@@ -53,6 +57,10 @@ const AppNavbar: React.FC = () => {
           )}
         </div>
       </div>
+      <JoinReferralProgramDialog
+        isOpen={isOpenJoinReferralDialog}
+        onClose={() => setIsOpenJoinReferralDialog(false)}
+      />
     </header>
   );
 };

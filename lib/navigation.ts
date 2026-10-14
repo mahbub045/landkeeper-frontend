@@ -7,6 +7,7 @@ import {
   ChartNoAxesCombined,
   FileText,
   Files,
+  Gift,
   Hammer,
   Handshake,
   House,
@@ -28,6 +29,8 @@ export type NavItem = {
   badge?: number;
   children?: NavItem[];
   visibleToPlans?: string[];
+  // Only shown when the user has is_referral: true
+  referralOnly?: boolean;
 };
 
 interface BuildItemsOptions {
@@ -35,7 +38,8 @@ interface BuildItemsOptions {
   // Current subscription plan, e.g. profileData?.plan. Used to hide
   // plan-gated nav items (MTD, Property Maintenance) for Basic-plan users.
   plan?: string;
-  // is_referral from the session — only used when the user has no role.
+  // is_referral from the session. No role → referral-only menu;
+  // with a role → shows items marked referralOnly.
   isReferral?: boolean;
 }
 
@@ -191,6 +195,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/landlord/support-tickets',
         icon: Ticket,
       },
+      {
+        label: 'Referral Program',
+        href: '/client/landlord/referral-program',
+        icon: Gift,
+        referralOnly: true,
+      },
     ];
   }
 
@@ -281,6 +291,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/admin/support-tickets',
         icon: Ticket,
       },
+      {
+        label: 'Referral Program',
+        href: '/client/admin/referral-program',
+        icon: Gift,
+        referralOnly: true,
+      },
     ];
   }
   if (role === 'LETTING_AGENT') {
@@ -321,6 +337,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/letting-agent/support-tickets',
         icon: Ticket,
       },
+      {
+        label: 'Referral Program',
+        href: '/client/letting-agent/referral-program',
+        icon: Gift,
+        referralOnly: true,
+      },
     ];
   }
   if (role === 'MORTGAGE_ADVISER') {
@@ -355,6 +377,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         label: 'Support Tickets',
         href: '/client/mortgage-adviser/support-tickets',
         icon: Ticket,
+      },
+      {
+        label: 'Referral Program',
+        href: '/client/mortgage-adviser/referral-program',
+        icon: Gift,
+        referralOnly: true,
       },
     ];
   }
@@ -396,6 +424,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       //   href: '/client/tenant/utilities',
       //   icon: Zap,
       // },
+      {
+        label: 'Referral Program',
+        href: '/client/tenant/referral-program',
+        icon: Gift,
+        referralOnly: true,
+      },
     ];
   }
 
@@ -416,6 +450,8 @@ export const buildItems = ({
       },
     ];
 
-  const items = buildItemsForRole(role);
+  const items = buildItemsForRole(role).filter(
+    (item) => !item.referralOnly || isReferral,
+  );
   return filterByPlan(items, plan);
 };

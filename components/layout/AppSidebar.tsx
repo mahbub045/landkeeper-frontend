@@ -68,6 +68,7 @@ const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
   '/client/landlord/billing-and-plans/billing',
   '/client/landlord/billing-and-plans/pricing-plans',
   '/client/profile-settings',
+  '/client/landlord/referral-program',
 ];
 
 function isSubscribed(user?: {
