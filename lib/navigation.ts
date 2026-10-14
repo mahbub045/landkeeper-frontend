@@ -4,7 +4,6 @@ import {
   BarChart3,
   Calculator,
   ChartNoAxesCombined,
-  FileSpreadsheet,
   FileText,
   Files,
   Hammer,
@@ -141,12 +140,7 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/landlord/finance',
         icon: ChartNoAxesCombined,
       },
-      {
-        label: 'Making Tax Digital (MTD)',
-        href: '/client/landlord/making-tax-digital',
-        icon: FileSpreadsheet,
-        visibleToPlans: STANDARD_PREMIUM_PLANS,
-      },
+
       {
         label: 'Property Maintenance',
         href: '/client/landlord/property-maintenance',
@@ -246,12 +240,7 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/admin/finance',
         icon: ChartNoAxesCombined,
       },
-      {
-        label: 'Making Tax Digital (MTD)',
-        href: '/client/admin/making-tax-digital',
-        icon: FileSpreadsheet,
-        visibleToPlans: STANDARD_PREMIUM_PLANS,
-      },
+
       {
         label: 'Property Maintenance',
         href: '/client/admin/property-maintenance',
@@ -379,11 +368,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/tenant/rent-and-payments',
         icon: Banknote,
       },
-      {
-        label: 'Expenses & Bills',
-        href: '/client/tenant/expenses-and-bills',
-        icon: FileSpreadsheet,
-      },
+      // {
+      //   label: 'Expenses & Bills',
+      //   href: '/client/tenant/expenses-and-bills',
+      //   icon: FileSpreadsheet,
+      // },
       {
         label: 'Maintenance Requests',
         href: '/client/tenant/maintenance-requests',
