@@ -11,3 +11,6 @@ export type SignupFieldErrors = Partial<
     string[]
   >
 >;
+export type SignupFormProps = {
+  isReferral?: boolean;
+};
