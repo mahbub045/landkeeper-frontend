@@ -7,10 +7,14 @@ import {
 
 export const PricingPlansApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPricingPlans: builder.query<PricingPlansResponse, void>({
-      query: () => ({
+    getPricingPlans: builder.query<
+      PricingPlansResponse,
+      { params: Record<string, unknown> }
+    >({
+      query: (params) => ({
         url: '/subscription/plans',
         method: 'GET',
+        params,
       }),
       providesTags: ['PricingPlans'],
     }),

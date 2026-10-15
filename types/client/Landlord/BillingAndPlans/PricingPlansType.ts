@@ -13,6 +13,7 @@ export type PricingPlan = {
   referral_discount_percent: string;
   features: PricingPlanFeature[];
   current_plan: boolean;
+  discounted_price?: string;
 };
 
 export type PricingPlansResponse = {

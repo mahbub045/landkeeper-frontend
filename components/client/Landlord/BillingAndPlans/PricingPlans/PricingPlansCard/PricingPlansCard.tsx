@@ -1,12 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
+import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import {
   PricingPlan,
   SelectPricingPlanResponse,
@@ -18,6 +20,9 @@ import {
   Check,
   ListChecks,
   LoaderCircle,
+  Plus,
+  Tag,
+  X,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -41,11 +46,35 @@ const PricingPlansCard: React.FC = () => {
   );
   const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(null);
 
+  // Coupon state: `couponInput` is what the user is typing,
+  // `appliedCoupon` is what is actually sent to the API as a query param.
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+
+  const { data: profileData } = useGetProfileInfoQuery(undefined);
+
+  // Only show the coupon field when the user has no subscription yet.
+  const showCouponField = profileData?.subscription_status === null;
+
   const {
     data: pricingPlans,
     isLoading,
+    isFetching,
     isError,
-  } = useGetPricingPlansQuery(undefined);
+  } = useGetPricingPlansQuery({
+    params: appliedCoupon ? { coupon_code: appliedCoupon } : {},
+  });
+
+  const applyCoupon = () => {
+    const code = couponInput.trim();
+    if (!code) return;
+    setAppliedCoupon(code);
+  };
+
+  const clearCoupon = () => {
+    setCouponInput('');
+    setAppliedCoupon('');
+  };
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -76,6 +105,7 @@ const PricingPlansCard: React.FC = () => {
       const response = await selectPricingPlan({
         payload: {
           plan_id: plan.alias,
+          ...(appliedCoupon ? { coupon_code: appliedCoupon } : {}),
         },
       }).unwrap();
 
@@ -196,6 +226,9 @@ const PricingPlansCard: React.FC = () => {
     handleSelectPlan(plan);
   };
 
+  // `isLoading` is only true on the very first load, so changing the coupon
+  // keeps the existing cards on screen (RTK Query keeps old `data` while
+  // `isFetching` is true) instead of flashing the skeleton.
   if (isLoading) {
     return <PricingPlansCardSkeleton />;
   }
@@ -209,12 +242,80 @@ const PricingPlansCard: React.FC = () => {
         <p className='text-muted-foreground mt-1 text-sm'>
           Please refresh and try again.
         </p>
+        {appliedCoupon && (
+          <Button variant='link' onClick={clearCoupon} className='mt-2'>
+            Remove coupon and retry
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
     <>
+      {showCouponField && (
+        <div className='mx-auto mb-6 flex w-full max-w-md flex-col gap-2'>
+          <label htmlFor='coupon-code' className='text-sm font-medium'>
+            Have a coupon code?
+          </label>
+          <form
+            className='flex gap-2'
+            onSubmit={(e) => {
+              e.preventDefault();
+              applyCoupon();
+            }}
+          >
+            <div className='relative flex-1'>
+              <Tag
+                className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2'
+                aria-hidden='true'
+              />
+              <Input
+                type='text'
+                id='coupon-code'
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value)}
+                placeholder='e.g. MDM-000000'
+                className='pl-9!'
+                disabled={isFetching}
+              />
+              {appliedCoupon && (
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  onClick={clearCoupon}
+                  aria-label='Remove coupon'
+                  className='absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1'
+                >
+                  <X className='size-4' />
+                </Button>
+              )}
+            </div>
+            <Button
+              size='lg'
+              type='submit'
+              variant='default'
+              disabled={isFetching || !couponInput.trim()}
+              className='h-10'
+            >
+              {isFetching ? (
+                <LoaderCircle className='animate-spin' />
+              ) : (
+                <Plus />
+              )}
+              Apply Coupon
+            </Button>
+          </form>
+          {appliedCoupon && !isFetching && (
+            <p className='text-xs text-green-600'>
+              Coupon <span className='font-semibold'>{appliedCoupon}</span>{' '}
+              applied.
+            </p>
+          )}
+        </div>
+      )}
+
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {
           const meta =
@@ -262,10 +363,18 @@ const PricingPlansCard: React.FC = () => {
               </div>
 
               <div className='mt-7 flex items-end gap-2'>
-                <span className='text-5xl font-semibold tracking-[-0.04em]'>
+                <span className='text-3xl font-semibold tracking-[-0.04em]'>
                   {getCurrencySign()}
-                  {Number(plan.monthly_price).toFixed(2)}
+                  {Number(plan.discounted_price ?? plan.monthly_price).toFixed(
+                    2,
+                  )}
                 </span>
+                {plan.discounted_price && (
+                  <span className='text-muted-foreground mb-2 text-lg line-through'>
+                    {getCurrencySign()}
+                    {Number(plan.monthly_price).toFixed(2)}
+                  </span>
+                )}
                 <span className='text-muted-foreground mb-2 text-sm'>
                   / month
                 </span>
