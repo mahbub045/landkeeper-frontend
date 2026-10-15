@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Check, ListChecks } from 'lucide-react';
+import { Building2, Check } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -39,11 +39,6 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({ plan }) => {
   const hiddenCount = plan.features.length - PRICING_PLAN_VISIBLE_FEATURES;
 
   const isRecommended = planType === 'STANDARD';
-
-  const stats = [
-    { label: 'Properties', value: plan.max_properties, icon: Building2 },
-    { label: 'Features', value: plan.features.length, icon: ListChecks },
-  ];
 
   return (
     <Card
@@ -93,18 +88,26 @@ const PricingPlanCard: React.FC<PricingPlanCardProps> = ({ plan }) => {
           <span className='text-muted-foreground mb-1 text-sm'>/ month</span>
         </div>
 
-        <div className='border-border grid grid-cols-2 divide-x rounded-xl border'>
-          {stats.map((stat) => (
-            <div key={stat.label} className='px-3 py-2.5 text-center'>
-              <div className='text-muted-foreground flex items-center justify-center gap-1 text-[11px] font-medium tracking-wide uppercase'>
-                <stat.icon className='size-3' aria-hidden='true' />
-                {stat.label}
-              </div>
-              <p className='text-foreground mt-1 text-base font-semibold'>
-                {stat.value}
-              </p>
+        <div className='border-border bg-background/60 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 backdrop-blur-sm'>
+          <div className='flex items-center gap-3'>
+            <div
+              className={cn(
+                'flex size-9 items-center justify-center rounded-lg',
+                style.iconTile,
+              )}
+            >
+              <Building2 className='size-4' aria-hidden='true' />
             </div>
-          ))}
+            <span className='text-muted-foreground text-sm font-medium'>
+              Properties
+            </span>
+          </div>
+          <p className='text-foreground text-lg font-semibold tabular-nums'>
+            <span className='text-muted-foreground mr-1.5 text-xs font-medium'>
+              Up to
+            </span>
+            {plan.max_properties}
+          </p>
         </div>
 
         <div className='flex-1'>
