@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
+  useCheckCouponValidityMutation,
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
@@ -49,11 +50,15 @@ const PricingPlansCard: React.FC = () => {
   // `appliedCoupon` is what is actually sent to the API as a query param.
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [couponError, setCouponError] = useState('');
 
   // const { data: profileData } = useGetProfileInfoQuery(undefined);
 
   // // Only show the coupon field when the user has no subscription yet.
   // const showCouponField = profileData?.subscription_status === null;
+
+  const [checkCouponValidity, { isLoading: isCheckingCoupon }] =
+    useCheckCouponValidityMutation();
 
   const {
     data: pricingPlans,
@@ -64,15 +69,40 @@ const PricingPlansCard: React.FC = () => {
     appliedCoupon ? { coupon_code: appliedCoupon } : undefined,
   );
 
-  const applyCoupon = () => {
+  // Validate the coupon first. Only a valid coupon is stored in
+  // `appliedCoupon`, which is what triggers the plans refetch with
+  // ?coupon_code=... — so an invalid code never reaches the plans request.
+  const applyCoupon = async () => {
     const code = couponInput.trim();
     if (!code) return;
-    setAppliedCoupon(code);
+
+    setCouponError('');
+
+    try {
+      const result = (await checkCouponValidity({
+        coupon_code: code,
+      }).unwrap()) as { valid?: boolean; is_valid?: boolean } | undefined;
+
+      // A 2xx response means valid. If your backend returns an explicit
+      // flag instead, treat `false` as invalid.
+      if (result?.valid === false || result?.is_valid === false) {
+        setCouponError('This coupon code is invalid or has expired.');
+        return;
+      }
+
+      setAppliedCoupon(code);
+    } catch (error: unknown) {
+      setAppliedCoupon('');
+      setCouponError(
+        getErrorMessage(error, 'This coupon code is invalid or has expired.'),
+      );
+    }
   };
 
   const clearCoupon = () => {
     setCouponInput('');
     setAppliedCoupon('');
+    setCouponError('');
   };
 
   // True once the coupon in the input is the one currently applied.
@@ -280,37 +310,46 @@ const PricingPlansCard: React.FC = () => {
             <Input
               id='coupon-code'
               value={couponInput}
-              onChange={(e) => setCouponInput(e.target.value)}
+              onChange={(e) => {
+                setCouponInput(e.target.value);
+                if (couponError) setCouponError('');
+              }}
               placeholder='e.g. MDM-123456'
               autoComplete='off'
-              disabled={isFetching}
+              disabled={isFetching || isCheckingCoupon}
+              aria-invalid={Boolean(couponError)}
               className={cn(
                 'border-primary focus-visible:outline-primary h-11 rounded-xl pr-11 pl-10! font-medium tracking-wide shadow-xs transition-colors focus-visible:ring-0',
                 isCouponApplied &&
                   'border-green-500/60 bg-green-500/5 focus-visible:ring-green-500/30',
+                couponError &&
+                  'border-destructive focus-visible:outline-destructive',
               )}
             />
-            {(couponInput || appliedCoupon) && !isFetching && (
-              <button
-                type='button'
-                onClick={clearCoupon}
-                aria-label='Remove coupon'
-                className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
-              >
-                <X className='size-4' aria-hidden='true' />
-              </button>
-            )}
+            {(couponInput || appliedCoupon) &&
+              !isFetching &&
+              !isCheckingCoupon && (
+                <button
+                  type='button'
+                  onClick={clearCoupon}
+                  aria-label='Remove coupon'
+                  className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                >
+                  <X className='size-4' aria-hidden='true' />
+                </button>
+              )}
           </div>
           <Button
             type='submit'
             className='h-11 rounded-xl px-5'
             disabled={
               isFetching ||
+              isCheckingCoupon ||
               !couponInput.trim() ||
               couponInput.trim() === appliedCoupon
             }
           >
-            {isFetching ? (
+            {isFetching || isCheckingCoupon ? (
               <Loading className='text-white!' />
             ) : isCouponApplied ? (
               <Check />
@@ -318,6 +357,12 @@ const PricingPlansCard: React.FC = () => {
             {isCouponApplied ? 'Applied' : 'Apply Coupon'}
           </Button>
         </form>
+        {couponError && (
+          <p className='text-destructive flex items-center gap-1.5 text-xs'>
+            <X className='size-3.5' aria-hidden='true' />
+            {couponError}
+          </p>
+        )}
         {isCouponApplied && (
           <p className='flex items-center gap-1.5 text-xs text-green-600'>
             <Check className='size-3.5' aria-hidden='true' />

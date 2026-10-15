@@ -1,7 +1,6 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import Loading from '../CustomLoader/Loading';
-import NotificationSettings from './Notificationsettings/Notificationsettings';
 import ProfileSettings from './ProfileSettings/ProfileSettings';
 import StripeAccountSetup from './StripeAccountSetup/StripeAccountSetup';
 
@@ -33,7 +32,6 @@ const ProfileSettingsContainer: React.FC = () => {
         <>
           <div>
             <ProfileSettings />
-            <NotificationSettings />
             {session?.user?.role === 'LANDLORD' && <StripeAccountSetup />}
           </div>
         </>
