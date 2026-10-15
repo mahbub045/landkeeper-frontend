@@ -6,6 +6,7 @@ import { SessionSync } from '@/components/SessionSync';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const geistSans = Geist({
@@ -34,6 +35,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <Script
+        src='https://cdn.affonso.io/js/pixel.min.js'
+        data-affonso={process.env.NEXT_PUBLIC_AFFONSO_PROGRAM_ID}
+        data-cookie-duration={
+          process.env.NEXT_PUBLIC_AFFONSO_COOKIE_DURATION
+        }
+        strategy='beforeInteractive'
+      />
       <body suppressHydrationWarning className='flex min-h-full flex-col'>
         <ThemeProvider
           attribute='class'
