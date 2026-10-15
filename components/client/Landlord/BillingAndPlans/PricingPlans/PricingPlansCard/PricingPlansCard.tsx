@@ -19,7 +19,6 @@ import {
   ArrowRight,
   Building2,
   Check,
-  ListChecks,
   LoaderCircle,
   Tag,
   X,
@@ -126,9 +125,7 @@ const PricingPlansCard: React.FC = () => {
 
   // True once the coupon in the input is the one currently applied.
   const isCouponApplied =
-    Boolean(activeCoupon) &&
-    !isFetching &&
-    inputValue.trim() === activeCoupon;
+    Boolean(activeCoupon) && !isFetching && inputValue.trim() === activeCoupon;
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -348,15 +345,15 @@ const PricingPlansCard: React.FC = () => {
             {(inputValue || activeCoupon) &&
               !isFetching &&
               !isCheckingCoupon && (
-              <button
-                type='button'
-                onClick={clearCoupon}
-                aria-label='Remove coupon'
-                className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
-              >
-                <X className='size-4' aria-hidden='true' />
-              </button>
-            )}
+                <button
+                  type='button'
+                  onClick={clearCoupon}
+                  aria-label='Remove coupon'
+                  className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                >
+                  <X className='size-4' aria-hidden='true' />
+                </button>
+              )}
           </div>
           <Button
             type='submit'
@@ -474,29 +471,26 @@ const PricingPlansCard: React.FC = () => {
                 </p>
               )}
 
-              <div className='border-border/70 mt-5 grid grid-cols-2 divide-x divide-inherit rounded-xl border'>
-                {[
-                  {
-                    label: 'Properties',
-                    value: plan.max_properties,
-                    icon: Building2,
-                  },
-                  {
-                    label: 'Features',
-                    value: plan.features.length,
-                    icon: ListChecks,
-                  },
-                ].map((stat) => (
-                  <div key={stat.label} className='px-3 py-2.5 text-center'>
-                    <div className='text-muted-foreground flex items-center justify-center gap-1 text-[11px] font-medium tracking-wide uppercase'>
-                      <stat.icon className='size-3' aria-hidden='true' />
-                      {stat.label}
-                    </div>
-                    <p className='text-foreground mt-1 text-base font-semibold'>
-                      {stat.value}
-                    </p>
+              <div className='border-border/70 bg-background/60 mt-5 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 backdrop-blur-sm'>
+                <div className='flex items-center gap-3'>
+                  <div
+                    className={cn(
+                      'flex size-9 items-center justify-center rounded-lg',
+                      meta.iconTile,
+                    )}
+                  >
+                    <Building2 className='size-4' aria-hidden='true' />
                   </div>
-                ))}
+                  <span className='text-muted-foreground text-sm font-medium'>
+                    Properties
+                  </span>
+                </div>
+                <p className='text-foreground text-lg font-semibold tabular-nums'>
+                  <span className='text-muted-foreground mr-1.5 text-xs font-medium'>
+                    Up to
+                  </span>
+                  {plan.max_properties}
+                </p>
               </div>
 
               <div className='mt-5 flex-1'>
