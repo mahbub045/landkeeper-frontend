@@ -12,8 +12,6 @@ import {
 } from '@/components/ui/dialog';
 import { useJoinReferralProgramMutation } from '@/store/api/endpoints/common/ReferralProgram/JoinReferralProgramApi';
 import { JoinReferralProgramDialogProps } from '@/types/common/ReferralProgram/JoinReferralProgramTypes';
-import { UserRole } from '@/types/next-auth';
-import { getReferralProgramUrl } from '@/utils/redirectPath';
 import { BadgePercent, Gift, Wallet } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -71,10 +69,7 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
     toast.success('Welcome to the referral program!');
     onClose();
 
-    const referralProgramUrl = getReferralProgramUrl(
-      session?.user?.role as UserRole | undefined,
-    );
-    if (referralProgramUrl) router.push(`${referralProgramUrl}/dashboard`);
+    window.location.href = 'https://landkeeper.affonso.io/auth';
   };
 
   return (
