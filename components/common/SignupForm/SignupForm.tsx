@@ -143,6 +143,7 @@ export default function SignupForm({ isReferral = false }: SignupFormProps) {
 
     try {
       await sighUp(payload).unwrap();
+      window.Affonso?.signup(email);
       toast.success('Account created! Please verify your email.');
       // ✅ Pass email as query param so verify page knows where to send the code
       router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
