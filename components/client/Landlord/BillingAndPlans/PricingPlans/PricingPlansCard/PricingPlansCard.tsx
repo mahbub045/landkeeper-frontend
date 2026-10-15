@@ -126,7 +126,9 @@ const PricingPlansCard: React.FC = () => {
 
   // True once the coupon in the input is the one currently applied.
   const isCouponApplied =
-    Boolean(activeCoupon) && !isFetching && inputValue.trim() === activeCoupon;
+    Boolean(activeCoupon) &&
+    !isFetching &&
+    inputValue.trim() === activeCoupon;
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -346,15 +348,15 @@ const PricingPlansCard: React.FC = () => {
             {(inputValue || activeCoupon) &&
               !isFetching &&
               !isCheckingCoupon && (
-                <button
-                  type='button'
-                  onClick={clearCoupon}
-                  aria-label='Remove coupon'
-                  className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
-                >
-                  <X className='size-4' aria-hidden='true' />
-                </button>
-              )}
+              <button
+                type='button'
+                onClick={clearCoupon}
+                aria-label='Remove coupon'
+                className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+              >
+                <X className='size-4' aria-hidden='true' />
+              </button>
+            )}
           </div>
           <Button
             type='submit'
@@ -452,6 +454,25 @@ const PricingPlansCard: React.FC = () => {
                   / month
                 </span>
               </div>
+
+              {plan.discounted_price && (
+                <p className='mt-2 flex items-center gap-1.5 text-xs font-medium text-green-600'>
+                  <Tag className='size-3.5' aria-hidden='true' />
+                  {plan.discount_value && (
+                    <>
+                      {plan.discount_type === 'fixed'
+                        ? `${getCurrencySign()}${Number(plan.discount_value).toFixed(2)}`
+                        : `${Number(plan.discount_value)}%`}{' '}
+                      off ·{' '}
+                    </>
+                  )}
+                  You save {getCurrencySign()}
+                  {(
+                    Number(plan.monthly_price) - Number(plan.discounted_price)
+                  ).toFixed(2)}{' '}
+                  / month
+                </p>
+              )}
 
               <div className='border-border/70 mt-5 grid grid-cols-2 divide-x divide-inherit rounded-xl border'>
                 {[
