@@ -14,6 +14,7 @@ export type PricingPlan = {
   features: PricingPlanFeature[];
   current_plan: boolean;
   discounted_price?: string;
+  coupon_code?: string;
 };
 
 export type PricingPlansResponse = {

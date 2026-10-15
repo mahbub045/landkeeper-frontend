@@ -48,9 +48,14 @@ const PricingPlansCard: React.FC = () => {
 
   // Coupon state: `couponInput` is what the user is typing,
   // `appliedCoupon` is what is actually sent to the API as a query param.
-  const [couponInput, setCouponInput] = useState('');
+  // `null` means the user hasn't touched the field yet, so it shows the
+  // coupon from the API (if any) instead of an empty string.
+  const [couponInput, setCouponInput] = useState<string | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
+  // Set when the user removes a coupon the API returned on its own, so we
+  // don't keep re-filling the field from the plans response.
+  const [couponDismissed, setCouponDismissed] = useState(false);
 
   // const { data: profileData } = useGetProfileInfoQuery(undefined);
 
@@ -69,11 +74,23 @@ const PricingPlansCard: React.FC = () => {
     appliedCoupon ? { coupon_code: appliedCoupon } : undefined,
   );
 
+  // If the plans response already carries a coupon_code (e.g. a referral
+  // coupon attached to the user), treat it as applied and show it in the field.
+  const planCoupon: string =
+    pricingPlans?.results?.find((p: PricingPlan) => p.coupon_code)
+      ?.coupon_code ?? '';
+
+  // The coupon currently in effect: one the user applied, or one from the API.
+  const activeCoupon = appliedCoupon || (couponDismissed ? '' : planCoupon);
+
+  // What the input displays: the user's text, or the API coupon until they type.
+  const inputValue = couponInput ?? activeCoupon;
+
   // Validate the coupon first. Only a valid coupon is stored in
   // `appliedCoupon`, which is what triggers the plans refetch with
   // ?coupon_code=... — so an invalid code never reaches the plans request.
   const applyCoupon = async () => {
-    const code = couponInput.trim();
+    const code = inputValue.trim();
     if (!code) return;
 
     setCouponError('');
@@ -90,6 +107,7 @@ const PricingPlansCard: React.FC = () => {
         return;
       }
 
+      setCouponDismissed(false);
       setAppliedCoupon(code);
     } catch (error: unknown) {
       setAppliedCoupon('');
@@ -103,13 +121,12 @@ const PricingPlansCard: React.FC = () => {
     setCouponInput('');
     setAppliedCoupon('');
     setCouponError('');
+    setCouponDismissed(true);
   };
 
   // True once the coupon in the input is the one currently applied.
   const isCouponApplied =
-    Boolean(appliedCoupon) &&
-    !isFetching &&
-    couponInput.trim() === appliedCoupon;
+    Boolean(activeCoupon) && !isFetching && inputValue.trim() === activeCoupon;
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -140,7 +157,7 @@ const PricingPlansCard: React.FC = () => {
       const response = await selectPricingPlan({
         payload: {
           plan_id: plan.alias,
-          ...(appliedCoupon ? { coupon_code: appliedCoupon } : {}),
+          ...(activeCoupon ? { coupon_code: activeCoupon } : {}),
         },
       }).unwrap();
 
@@ -309,7 +326,7 @@ const PricingPlansCard: React.FC = () => {
             />
             <Input
               id='coupon-code'
-              value={couponInput}
+              value={inputValue}
               onChange={(e) => {
                 setCouponInput(e.target.value);
                 if (couponError) setCouponError('');
@@ -326,7 +343,7 @@ const PricingPlansCard: React.FC = () => {
                   'border-destructive focus-visible:outline-destructive',
               )}
             />
-            {(couponInput || appliedCoupon) &&
+            {(inputValue || activeCoupon) &&
               !isFetching &&
               !isCheckingCoupon && (
                 <button
@@ -345,8 +362,8 @@ const PricingPlansCard: React.FC = () => {
             disabled={
               isFetching ||
               isCheckingCoupon ||
-              !couponInput.trim() ||
-              couponInput.trim() === appliedCoupon
+              !inputValue.trim() ||
+              inputValue.trim() === activeCoupon
             }
           >
             {isFetching || isCheckingCoupon ? (
@@ -366,7 +383,7 @@ const PricingPlansCard: React.FC = () => {
         {isCouponApplied && (
           <p className='flex items-center gap-1.5 text-xs text-green-600'>
             <Check className='size-3.5' aria-hidden='true' />
-            Coupon <span className='font-semibold'>{appliedCoupon}</span>{' '}
+            Coupon <span className='font-semibold'>{activeCoupon}</span>{' '}
             applied. Discounted prices are shown below.
           </p>
         )}
