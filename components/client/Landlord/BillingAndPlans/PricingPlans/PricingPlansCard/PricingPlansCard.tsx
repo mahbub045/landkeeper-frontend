@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
@@ -8,7 +9,6 @@ import {
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
-import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import {
   PricingPlan,
   SelectPricingPlanResponse,
@@ -20,7 +20,6 @@ import {
   Check,
   ListChecks,
   LoaderCircle,
-  Plus,
   Tag,
   X,
 } from 'lucide-react';
@@ -51,19 +50,19 @@ const PricingPlansCard: React.FC = () => {
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState('');
 
-  const { data: profileData } = useGetProfileInfoQuery(undefined);
+  // const { data: profileData } = useGetProfileInfoQuery(undefined);
 
-  // Only show the coupon field when the user has no subscription yet.
-  const showCouponField = profileData?.subscription_status === null;
+  // // Only show the coupon field when the user has no subscription yet.
+  // const showCouponField = profileData?.subscription_status === null;
 
   const {
     data: pricingPlans,
     isLoading,
     isFetching,
     isError,
-  } = useGetPricingPlansQuery({
-    params: appliedCoupon ? { coupon_code: appliedCoupon } : {},
-  });
+  } = useGetPricingPlansQuery(
+    appliedCoupon ? { coupon_code: appliedCoupon } : undefined,
+  );
 
   const applyCoupon = () => {
     const code = couponInput.trim();
@@ -75,6 +74,12 @@ const PricingPlansCard: React.FC = () => {
     setCouponInput('');
     setAppliedCoupon('');
   };
+
+  // True once the coupon in the input is the one currently applied.
+  const isCouponApplied =
+    Boolean(appliedCoupon) &&
+    !isFetching &&
+    couponInput.trim() === appliedCoupon;
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -253,68 +258,74 @@ const PricingPlansCard: React.FC = () => {
 
   return (
     <>
-      {showCouponField && (
-        <div className='mx-auto mb-6 flex w-full max-w-md flex-col gap-2'>
-          <label htmlFor='coupon-code' className='text-sm font-medium'>
-            Have a coupon code?
-          </label>
-          <form
-            className='flex gap-2'
-            onSubmit={(e) => {
-              e.preventDefault();
-              applyCoupon();
-            }}
+      <div className='mx-auto mb-8 flex w-full max-w-md flex-col gap-2'>
+        <label htmlFor='coupon-code' className='text-sm font-medium'>
+          Have a coupon code?
+        </label>
+        <form
+          className='flex items-center gap-2'
+          onSubmit={(e) => {
+            e.preventDefault();
+            applyCoupon();
+          }}
+        >
+          <div className='relative flex-1'>
+            <Tag
+              className={cn(
+                'absolute top-1/2 left-3.5 size-4 -translate-y-1/2 transition-colors',
+                isCouponApplied ? 'text-green-600' : 'text-muted-foreground',
+              )}
+              aria-hidden='true'
+            />
+            <Input
+              id='coupon-code'
+              value={couponInput}
+              onChange={(e) => setCouponInput(e.target.value)}
+              placeholder='e.g. MDM-123456'
+              autoComplete='off'
+              disabled={isFetching}
+              className={cn(
+                'border-primary focus-visible:outline-primary h-11 rounded-xl pr-11 pl-10! font-medium tracking-wide shadow-xs transition-colors focus-visible:ring-0',
+                isCouponApplied &&
+                  'border-green-500/60 bg-green-500/5 focus-visible:ring-green-500/30',
+              )}
+            />
+            {(couponInput || appliedCoupon) && !isFetching && (
+              <button
+                type='button'
+                onClick={clearCoupon}
+                aria-label='Remove coupon'
+                className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+              >
+                <X className='size-4' aria-hidden='true' />
+              </button>
+            )}
+          </div>
+          <Button
+            type='submit'
+            className='h-11 rounded-xl px-5'
+            disabled={
+              isFetching ||
+              !couponInput.trim() ||
+              couponInput.trim() === appliedCoupon
+            }
           >
-            <div className='relative flex-1'>
-              <Tag
-                className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2'
-                aria-hidden='true'
-              />
-              <Input
-                type='text'
-                id='coupon-code'
-                value={couponInput}
-                onChange={(e) => setCouponInput(e.target.value)}
-                placeholder='e.g. MDM-000000'
-                className='pl-9!'
-                disabled={isFetching}
-              />
-              {appliedCoupon && (
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  onClick={clearCoupon}
-                  aria-label='Remove coupon'
-                  className='absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1'
-                >
-                  <X className='size-4' />
-                </Button>
-              )}
-            </div>
-            <Button
-              size='lg'
-              type='submit'
-              variant='default'
-              disabled={isFetching || !couponInput.trim()}
-              className='h-10'
-            >
-              {isFetching ? (
-                <LoaderCircle className='animate-spin' />
-              ) : (
-                <Plus />
-              )}
-              Apply Coupon
-            </Button>
-          </form>
-          {appliedCoupon && !isFetching && (
-            <p className='text-xs text-green-600'>
-              Coupon <span className='font-semibold'>{appliedCoupon}</span>{' '}
-              applied.
-            </p>
-          )}
-        </div>
-      )}
+            {isFetching ? (
+              <Loading className='text-white!' />
+            ) : isCouponApplied ? (
+              <Check />
+            ) : null}
+            {isCouponApplied ? 'Applied' : 'Apply Coupon'}
+          </Button>
+        </form>
+        {isCouponApplied && (
+          <p className='flex items-center gap-1.5 text-xs text-green-600'>
+            <Check className='size-3.5' aria-hidden='true' />
+            Coupon <span className='font-semibold'>{appliedCoupon}</span>{' '}
+            applied. Discounted prices are shown below.
+          </p>
+        )}
+      </div>
 
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {
@@ -363,7 +374,7 @@ const PricingPlansCard: React.FC = () => {
               </div>
 
               <div className='mt-7 flex items-end gap-2'>
-                <span className='text-3xl font-semibold tracking-[-0.04em]'>
+                <span className='text-4xl font-semibold tracking-[-0.04em]'>
                   {getCurrencySign()}
                   {Number(plan.discounted_price ?? plan.monthly_price).toFixed(
                     2,
