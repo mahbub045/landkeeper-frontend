@@ -69,7 +69,7 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
     toast.success('Welcome to the referral program!');
     onClose();
 
-    window.location.href = 'https://landkeeper.affonso.io/auth';
+    window.location.href = `${process.env.NEXT_PUBLIC_REFERRAL_DASHBOARD_URL}`;
   };
 
   return (
