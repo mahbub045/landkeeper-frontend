@@ -16,10 +16,7 @@ import {
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
-import {
-  SignupFieldErrors,
-  SignupFormProps,
-} from '@/types/common/auth/SignUpTypes';
+import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -85,7 +82,7 @@ const PASSWORD_REQUIREMENTS: {
   },
 ];
 
-export default function SignupForm({ isReferral = false }: SignupFormProps) {
+export default function SignupPage() {
   const router = useRouter();
 
   const [title, setTitle] = useState('');
@@ -138,12 +135,10 @@ export default function SignupForm({ isReferral = false }: SignupFormProps) {
       email,
       phone,
       password,
-      ...(isReferral && { is_referral: true }),
     };
 
     try {
       await sighUp(payload).unwrap();
-      window.Affonso?.signup(email);
       toast.success('Account created! Please verify your email.');
       // ✅ Pass email as query param so verify page knows where to send the code
       router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
@@ -194,14 +189,10 @@ export default function SignupForm({ isReferral = false }: SignupFormProps) {
           {/* Header */}
           <div className='mb-6'>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>
-              {isReferral
-                ? 'Create your referral account'
-                : 'Create your landlord account'}
+              Create your account
             </h2>
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
-              {isReferral
-                ? 'Join as a referral partner and start earning'
-                : 'Fill in your details to start managing your properties'}
+              Fill in your details to get started
             </p>
           </div>
 
