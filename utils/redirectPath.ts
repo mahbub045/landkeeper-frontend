@@ -420,17 +420,3 @@ export const getPropertyMaintenanceDetailsUrl = (
 
   return '/auth/login';
 };
-
-// Referral Program page for users who have a role and is_referral: true
-export const getReferralProgramUrl = (
-  role: UserRole | undefined,
-): string | null => {
-  const paths: Partial<Record<UserRole, string>> = {
-    LANDLORD: '/client/landlord/referral-program',
-    ADMIN: '/client/admin/referral-program',
-    LETTING_AGENT: '/client/letting-agent/referral-program',
-    MORTGAGE_ADVISER: '/client/mortgage-adviser/referral-program',
-    TENANT: '/client/tenant/referral-program',
-  };
-  return (role && paths[role]) || null;
-};

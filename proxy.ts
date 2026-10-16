@@ -6,12 +6,7 @@ import {
   isLandlordSubscribed,
   isNewLandlord,
 } from './lib/subscription';
-import {
-  getDashboardPath,
-  getReferralProgramUrl,
-  REFERRAL_DASHBOARD_PATH,
-} from './utils/redirectPath';
-import { isReferralOnly } from './utils/rolePermissions';
+import { getDashboardPath } from './utils/redirectPath';
 
 const SHARED_CLIENT_PATHS = [
   '/client/profile-settings',
@@ -60,30 +55,7 @@ export default withAuth(
 
     const userRole = token.role as UserRole | undefined;
 
-    // Referral-only users (no role) get just the referral area + shared paths
-    if (isReferralOnly(userRole, token.is_referral)) {
-      const allowed =
-        path.startsWith('/client/referral/') ||
-        SHARED_CLIENT_PATHS.some((p) => path.startsWith(p));
-
-      if (allowed) return NextResponse.next();
-
-      return NextResponse.redirect(new URL(REFERRAL_DASHBOARD_PATH, req.url));
-    }
-
-    // Referral Program pages are only for users with is_referral: true
-    const referralProgramUrl = getReferralProgramUrl(userRole);
-    const isOnReferralProgram =
-      !!referralProgramUrl && path.startsWith(referralProgramUrl);
-
-    if (isOnReferralProgram && !token.is_referral) {
-      return NextResponse.redirect(
-        new URL(getDashboardPath(userRole), req.url),
-      );
-    }
-
     const isOnAllowedLandlordPath =
-      isOnReferralProgram ||
       LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
         path.startsWith(p),
       );

@@ -51,8 +51,8 @@ const AppNavbar: React.FC = () => {
               >
                 <Loading className='text-white!' />
               </Button>
-            ) : session?.user?.role === 'SUPER_ADMIN' ? null : !session?.user
-                ?.is_referral ? (
+            ) : session?.user?.role ===
+              'SUPER_ADMIN' ? null : !profileData?.is_referral ? (
               <Button
                 variant='default'
                 size='sm'
