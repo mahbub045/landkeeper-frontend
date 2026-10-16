@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useJoinReferralProgramMutation } from '@/store/api/endpoints/common/SystemUserJoinReferralProgram/SystemUserJoinReferralProgramApi';
+import { useSystemUserJoinReferralProgramMutation } from '@/store/api/endpoints/common/SystemUserJoinReferralProgram/SystemUserJoinReferralProgramApi';
 import { JoinReferralProgramDialogProps } from '@/types/common/ReferralProgram/JoinReferralProgramTypes';
 import { BadgePercent, Gift, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -48,11 +48,12 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
   onClose,
 }) => {
   const router = useRouter();
-  const [joinReferralProgram, { isLoading }] = useJoinReferralProgramMutation();
+  const [systemUserJoinReferralProgram, { isLoading }] =
+    useSystemUserJoinReferralProgramMutation();
 
   const handleJoin = async () => {
     try {
-      await joinReferralProgram(undefined).unwrap();
+      await systemUserJoinReferralProgram(undefined).unwrap();
     } catch (error) {
       toast.error(getErrorMessage(error));
       return;
