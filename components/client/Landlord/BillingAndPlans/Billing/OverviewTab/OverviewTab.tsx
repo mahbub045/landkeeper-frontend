@@ -22,6 +22,7 @@ import {
   CalendarDays,
   CreditCard,
   Sparkles,
+  Tag,
   X,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -245,11 +246,39 @@ export default function OverviewTab() {
 
             <div className='flex flex-col items-end gap-2'>
               <div className='text-right'>
+                {subscription.plan.discounted_price && (
+                  <span className='text-muted-foreground mr-2 text-lg line-through'>
+                    ${Number(subscription.plan.monthly_price).toFixed(2)}
+                  </span>
+                )}
                 <span className='text-3xl font-semibold tracking-[-0.02em]'>
-                  ${Number(subscription.plan.monthly_price).toFixed(2)}
+                  $
+                  {Number(
+                    subscription.plan.discounted_price ??
+                      subscription.plan.monthly_price,
+                  ).toFixed(2)}
                 </span>
                 <span className='text-muted-foreground text-sm'> /month</span>
               </div>
+              {subscription.plan.discounted_price && (
+                <p className='flex items-center gap-1.5 text-xs font-medium text-green-600'>
+                  <Tag className='size-3.5' aria-hidden='true' />
+                  {subscription.plan.discount_value && (
+                    <>
+                      {subscription.plan.discount_type === 'fixed'
+                        ? `$${Number(subscription.plan.discount_value).toFixed(2)}`
+                        : `${Number(subscription.plan.discount_value)}%`}{' '}
+                      off ·{' '}
+                    </>
+                  )}
+                  You save $
+                  {(
+                    Number(subscription.plan.monthly_price) -
+                    Number(subscription.plan.discounted_price)
+                  ).toFixed(2)}{' '}
+                  / month
+                </p>
+              )}
               <span
                 className={cn(
                   'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium',

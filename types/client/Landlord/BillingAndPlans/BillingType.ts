@@ -14,6 +14,9 @@ export interface SubscriptionPlan {
   description: string;
   features: SubscriptionFeature[];
   is_active: boolean;
+  discounted_price: string | null;
+  discount_value: string | null;
+  discount_type: 'percentage' | 'fixed' | null;
 }
 
 export type SubscriptionStatus =
