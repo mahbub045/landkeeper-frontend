@@ -13,7 +13,6 @@ import {
 import { useJoinReferralProgramMutation } from '@/store/api/endpoints/common/SystemUserJoinReferralProgram/SystemUserJoinReferralProgramApi';
 import { JoinReferralProgramDialogProps } from '@/types/common/ReferralProgram/JoinReferralProgramTypes';
 import { BadgePercent, Gift, Wallet } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -49,7 +48,6 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
   onClose,
 }) => {
   const router = useRouter();
-  const { data: session, update } = useSession();
   const [joinReferralProgram, { isLoading }] = useJoinReferralProgramMutation();
 
   const handleJoin = async () => {
@@ -58,12 +56,6 @@ const JoinReferralProgramDialog: React.FC<JoinReferralProgramDialogProps> = ({
     } catch (error) {
       toast.error(getErrorMessage(error));
       return;
-    }
-
-    try {
-      await update();
-    } catch (error) {
-      console.error('Failed to sync session after joining referral:', error);
     }
 
     toast.success('Welcome to the referral program!');
