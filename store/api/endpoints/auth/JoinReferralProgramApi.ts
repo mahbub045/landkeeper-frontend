@@ -3,9 +3,10 @@ import { authApi } from '../../authApi';
 export const JoinReferralProgramApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
     joinReferral: builder.mutation({
-      query: () => ({
+      query: (payload) => ({
         url: '/auth/join-referral-program',
         method: 'POST',
+        body: payload,
       }),
       invalidatesTags: ['JoinReferralProgram'], 
     }),
