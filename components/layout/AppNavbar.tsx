@@ -2,7 +2,7 @@
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
-import { Plus } from 'lucide-react';
+import { ExternalLink, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import Loading from '../common/CustomLoader/Loading';
@@ -51,17 +51,11 @@ const AppNavbar: React.FC = () => {
               >
                 <Loading className='text-white!' />
               </Button>
-            ) : session?.user?.role === 'SUPER_ADMIN' ? null : !session?.user
-                ?.role ? (
-              <Button variant='default' size='sm'>
-                <Plus />
-                <span className='hidden sm:inline'>Join as a Landlord</span>
-              </Button>
-            ) : !session?.user?.is_referral ? (
+            ) : session?.user?.role ===
+              'SUPER_ADMIN' ? null : !profileData?.is_referral ? (
               <Button
                 variant='default'
                 size='sm'
-                className='border border-gray-200 px-2.5 sm:px-4 dark:border-gray-700'
                 onClick={() => setIsOpenJoinReferralDialog(true)}
               >
                 <Plus />
@@ -69,7 +63,18 @@ const AppNavbar: React.FC = () => {
                   Join Our Referral Program
                 </span>
               </Button>
-            ) : null}
+            ) : (
+              <Button variant='default' size='sm' asChild>
+                <a
+                  href={process.env.NEXT_PUBLIC_REFERRAL_DASHBOARD_URL}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <ExternalLink />
+                  <span className='hidden sm:inline'>Referral Dashboard</span>
+                </a>
+              </Button>
+            )}
           </div>
         </div>
 

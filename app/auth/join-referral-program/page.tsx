@@ -102,7 +102,7 @@ export default function JoinReferralPage() {
     try {
       await joinReferral(payload).unwrap();
       toast.success("You're in! Redirecting to your partner dashboard...");
-      router.push(`https://landkeeper.affonso.io/auth`);
+      router.push(`${process.env.NEXT_PUBLIC_REFERRAL_DASHBOARD_URL}`);
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'data' in error) {
         const data = (error as { data: unknown }).data;
@@ -357,7 +357,8 @@ export default function JoinReferralPage() {
           <p className='mt-5 text-center text-sm text-gray-500 dark:text-gray-400'>
             Already a referral partner?{' '}
             <Link
-              href='https://landkeeper.affonso.io/auth'
+              target='_blank'
+              href={`${process.env.NEXT_PUBLIC_REFERRAL_DASHBOARD_URL}`}
               className='text-primary font-medium hover:underline'
             >
               Sign in to your dashboard

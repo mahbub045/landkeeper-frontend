@@ -1,5 +1,4 @@
 import type { UserRole } from '@/types/next-auth';
-import { isReferralOnly } from '@/utils/rolePermissions';
 import {
   Banknote,
   BarChart3,
@@ -7,7 +6,6 @@ import {
   ChartNoAxesCombined,
   FileText,
   Files,
-  Gift,
   Hammer,
   Handshake,
   House,
@@ -29,8 +27,6 @@ export type NavItem = {
   badge?: number;
   children?: NavItem[];
   visibleToPlans?: string[];
-  // Only shown when the user has is_referral: true
-  referralOnly?: boolean;
 };
 
 interface BuildItemsOptions {
@@ -38,9 +34,6 @@ interface BuildItemsOptions {
   // Current subscription plan, e.g. profileData?.plan. Used to hide
   // plan-gated nav items (MTD, Property Maintenance) for Basic-plan users.
   plan?: string;
-  // is_referral from the session. No role → referral-only menu;
-  // with a role → shows items marked referralOnly.
-  isReferral?: boolean;
 }
 
 // Adjust these to match the actual plan enum values returned by your API
@@ -200,18 +193,6 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/landlord/support-tickets',
         icon: Ticket,
       },
-      {
-        label: 'Referral Program',
-        icon: Gift,
-        referralOnly: true,
-        children: [
-          {
-            label: 'Referral Dashboard',
-            href: '/client/landlord/referral-program/dashboard',
-            icon: LayoutDashboard,
-          },
-        ],
-      },
     ];
   }
 
@@ -306,18 +287,6 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/admin/support-tickets',
         icon: Ticket,
       },
-      {
-        label: 'Referral Program',
-        icon: Gift,
-        referralOnly: true,
-        children: [
-          {
-            label: 'Referral Dashboard',
-            href: '/client/admin/referral-program/dashboard',
-            icon: LayoutDashboard,
-          },
-        ],
-      },
     ];
   }
   if (role === 'LETTING_AGENT') {
@@ -358,18 +327,6 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/letting-agent/support-tickets',
         icon: Ticket,
       },
-      {
-        label: 'Referral Program',
-        icon: Gift,
-        referralOnly: true,
-        children: [
-          {
-            label: 'Referral Dashboard',
-            href: '/client/letting-agent/referral-program/dashboard',
-            icon: LayoutDashboard,
-          },
-        ],
-      },
     ];
   }
   if (role === 'MORTGAGE_ADVISER') {
@@ -404,18 +361,6 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         label: 'Support Tickets',
         href: '/client/mortgage-adviser/support-tickets',
         icon: Ticket,
-      },
-      {
-        label: 'Referral Program',
-        icon: Gift,
-        referralOnly: true,
-        children: [
-          {
-            label: 'Referral Dashboard',
-            href: '/client/mortgage-adviser/referral-program/dashboard',
-            icon: LayoutDashboard,
-          },
-        ],
       },
     ];
   }
@@ -457,40 +402,11 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
       //   href: '/client/tenant/utilities',
       //   icon: Zap,
       // },
-      {
-        label: 'Referral Program',
-        icon: Gift,
-        referralOnly: true,
-        children: [
-          {
-            label: 'Referral Dashboard',
-            href: '/client/tenant/referral-program/dashboard',
-            icon: LayoutDashboard,
-          },
-        ],
-      },
     ];
   }
 
   return [];
 }
 
-export const buildItems = ({
-  role,
-  plan,
-  isReferral,
-}: BuildItemsOptions): NavItem[] => {
-  if (isReferralOnly(role, isReferral))
-    return [
-      {
-        label: 'Dashboard',
-        href: '/client/referral/dashboard',
-        icon: LayoutDashboard,
-      },
-    ];
-
-  const items = buildItemsForRole(role).filter(
-    (item) => !item.referralOnly || isReferral,
-  );
-  return filterByPlan(items, plan);
-};
+export const buildItems = ({ role, plan }: BuildItemsOptions): NavItem[] =>
+  filterByPlan(buildItemsForRole(role), plan);

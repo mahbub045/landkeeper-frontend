@@ -66,7 +66,6 @@ export const authOptions: NextAuthOptions = {
           id: profile.id,
           email: profile.email,
           role: profile.role,
-          is_referral: profile.is_referral === true,
           accessToken: access,
           refreshToken: refresh,
         };
@@ -90,15 +89,8 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      // ✅ Called after joining the referral program to sync is_referral
-      // into the session without a full re-login.
-      if (trigger === 'update' && session?.is_referral !== undefined) {
-        token.is_referral = session.is_referral === true;
-        return token;
-      }
-
       // ✅ Plain update() with no payload (e.g. after joining the referral
-      // program) — re-fetch the profile so role/is_referral match the backend.
+      // program) — re-fetch the profile so role match the backend.
       if (trigger === 'update' && !session) {
         try {
           const profileRes = await fetch(
@@ -115,7 +107,6 @@ export const authOptions: NextAuthOptions = {
           if (profileRes.ok) {
             const profile = await profileRes.json();
             token.role = profile.role;
-            token.is_referral = profile.is_referral === true;
           }
         } catch (error) {
           console.error('Failed to refresh profile on session update:', error);
@@ -156,7 +147,6 @@ export const authOptions: NextAuthOptions = {
               token.id = profile.id;
               token.email = profile.email;
               token.role = profile.role;
-              token.is_referral = profile.is_referral === true;
               token.accessToken = access;
               token.refreshToken = refresh;
             }
@@ -175,7 +165,6 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role;
-        token.is_referral = user.is_referral;
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
@@ -187,7 +176,6 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id;
       session.user.email = token.email || '';
       session.user.role = token.role;
-      session.user.is_referral = token.is_referral === true;
       session.user.accessToken = token.accessToken;
       session.user.refreshToken = token.refreshToken;
       return session;
