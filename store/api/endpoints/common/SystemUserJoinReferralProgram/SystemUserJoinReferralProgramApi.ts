@@ -1,6 +1,6 @@
 import { baseApi } from '@/store/api/baseApi';
 
-export const JoinReferralProgramApi = baseApi.injectEndpoints({
+export const SystemUserJoinReferralProgramApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     joinReferralProgram: builder.mutation({
       query: () => ({
@@ -12,4 +12,5 @@ export const JoinReferralProgramApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useJoinReferralProgramMutation } = JoinReferralProgramApi;
+export const { useJoinReferralProgramMutation } =
+  SystemUserJoinReferralProgramApi;

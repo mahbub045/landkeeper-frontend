@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useJoinReferralProgramMutation } from '@/store/api/endpoints/common/ReferralProgram/JoinReferralProgramApi';
+import { useJoinReferralProgramMutation } from '@/store/api/endpoints/common/SystemUserJoinReferralProgram/SystemUserJoinReferralProgramApi';
 import { JoinReferralProgramDialogProps } from '@/types/common/ReferralProgram/JoinReferralProgramTypes';
 import { BadgePercent, Gift, Wallet } from 'lucide-react';
 import { useSession } from 'next-auth/react';
