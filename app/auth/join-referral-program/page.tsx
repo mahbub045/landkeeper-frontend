@@ -18,7 +18,6 @@ import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
 import { useJoinReferralMutation } from '@/store/api/endpoints/auth/JoinReferralProgramApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -69,8 +68,6 @@ function extractErrorMessage(data: unknown): string {
 }
 
 export default function JoinReferralPage() {
-  const router = useRouter();
-
   const [title, setTitle] = useState('');
   const [firstName, setFirstName] = useState('');
   const [middleName, setMiddleName] = useState('');
@@ -89,6 +86,7 @@ export default function JoinReferralPage() {
     e.preventDefault();
     setFieldErrors({});
     setNonFieldError(null);
+    const newTab = window.open('', '_blank');
 
     const payload = {
       title,
@@ -102,7 +100,7 @@ export default function JoinReferralPage() {
     try {
       await joinReferral(payload).unwrap();
       toast.success("You're in! Redirecting to your partner dashboard...");
-      router.push(`https://landkeeper.affonso.io/auth`);
+      if (newTab) newTab.location.href = 'https://landkeeper.affonso.io/auth';
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'data' in error) {
         const data = (error as { data: unknown }).data;
@@ -357,6 +355,7 @@ export default function JoinReferralPage() {
           <p className='mt-5 text-center text-sm text-gray-500 dark:text-gray-400'>
             Already a referral partner?{' '}
             <Link
+              target='_blank'
               href='https://landkeeper.affonso.io/auth'
               className='text-primary font-medium hover:underline'
             >
