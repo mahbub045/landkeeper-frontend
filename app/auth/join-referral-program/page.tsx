@@ -15,9 +15,8 @@ import {
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
-import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
+import { useJoinReferralMutation } from '@/store/api/endpoints/auth/JoinReferralProgramApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
-import { Check, Eye, EyeOff, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -68,21 +67,8 @@ function extractErrorMessage(data: unknown): string {
   }
   return String(data);
 }
-const PASSWORD_REQUIREMENTS: {
-  label: string;
-  test: (pw: string) => boolean;
-}[] = [
-  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
-  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
-  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
-  { label: 'One number', test: (pw) => /[0-9]/.test(pw) },
-  {
-    label: 'One special character (!@#$%^&*)',
-    test: (pw) => /[!@#$%^&*]/.test(pw),
-  },
-];
 
-export default function SignupPage() {
+export default function JoinReferralPage() {
   const router = useRouter();
 
   const [title, setTitle] = useState('');
@@ -91,42 +77,19 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-
-  const passwordChecks = PASSWORD_REQUIREMENTS.map((req) => ({
-    ...req,
-    passed: req.test(password),
-  }));
-  const isPasswordValid = passwordChecks.every((c) => c.passed);
-  const showPasswordRequirements = passwordFocused || password.length > 0;
 
   // Per-field errors from API
   const [fieldErrors, setFieldErrors] = useState<SignupFieldErrors>({});
   // Non-field / general errors (show at top of form)
   const [nonFieldError, setNonFieldError] = useState<string | null>(null);
 
-  const [sighUp, { isLoading }] = useSignupMutation();
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [joinReferral, { isLoading }] = useJoinReferralMutation();
 
-  // Replace your handleSubmit in SignupPage with this:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
+    setNonFieldError(null);
 
-    if (!isPasswordValid) {
-      setFieldErrors({ password: ['Password does not meet the requirements'] });
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setFieldErrors({ password: ['Passwords do not match'] });
-      return;
-    }
     const payload = {
       title,
       first_name: firstName,
@@ -134,14 +97,12 @@ export default function SignupPage() {
       last_name: lastName,
       email,
       phone,
-      password,
     };
 
     try {
-      await sighUp(payload).unwrap();
-      toast.success('Account created! Please verify your email.');
-      // ✅ Pass email as query param so verify page knows where to send the code
-      router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+      await joinReferral(payload).unwrap();
+      toast.success("You're in! Redirecting to your partner dashboard...");
+      router.push(`https://landkeeper.affonso.io/auth`);
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'data' in error) {
         const data = (error as { data: unknown }).data;
@@ -157,12 +118,13 @@ export default function SignupPage() {
         setNonFieldError(message);
         toast.error(message);
       } else {
-        const fallback = 'Failed to create account';
+        const fallback = 'Failed to join the referral program';
         setNonFieldError(fallback);
         toast.error(fallback);
       }
     }
   };
+
   // Clears a specific field error when user starts typing
   const clearError = (key: keyof SignupFieldErrors) => {
     if (fieldErrors[key]) {
@@ -189,10 +151,10 @@ export default function SignupPage() {
           {/* Header */}
           <div className='mb-6'>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>
-              Create your account
+              Join our referral program
             </h2>
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
-              Fill in your details to get started
+              Tell us a little about yourself to start earning rewards
             </p>
           </div>
 
@@ -381,121 +343,24 @@ export default function SignupPage() {
               )}
             </div>
 
-            {/* Password + Confirm Password */}
-            <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-              <div className='space-y-1.5'>
-                <Label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Password <span className='text-red-500'>*</span>
-                </Label>
-                <div className='relative'>
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      clearError('password');
-                    }}
-                    onFocus={() => setPasswordFocused(true)}
-                    onBlur={() => setPasswordFocused(false)}
-                    placeholder='Min. 8 characters'
-                    required
-                    className={
-                      fieldError(fieldErrors, 'password') ||
-                      (password.length > 0 && !isPasswordValid)
-                        ? 'border-red-500 focus-visible:ring-red-500'
-                        : ''
-                    }
-                  />
-                  <button
-                    type='button'
-                    onClick={() => setShowPassword(!showPassword)}
-                    className='absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
-                  >
-                    {showPassword ? (
-                      <EyeOff className='h-4 w-4' />
-                    ) : (
-                      <Eye className='h-4 w-4' />
-                    )}
-                  </button>
-                </div>
-                {fieldError(fieldErrors, 'password') && (
-                  <p className='text-xs text-red-500'>
-                    {fieldError(fieldErrors, 'password')}
-                  </p>
-                )}
-              </div>
-
-              <div className='space-y-1.5'>
-                <Label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Confirm Password <span className='text-red-500'>*</span>
-                </Label>
-                <div className='relative'>
-                  <Input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder='Re-enter password'
-                    required
-                  />
-                  <button
-                    type='button'
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className='absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className='h-4 w-4' />
-                    ) : (
-                      <Eye className='h-4 w-4' />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-            {showPasswordRequirements && (
-              <div className='rounded-md bg-blue-50 p-3 dark:bg-blue-950/30'>
-                <p className='mb-2 text-xs font-semibold text-gray-700 dark:text-gray-300'>
-                  Password requirements:
-                </p>
-                <ul className='space-y-1'>
-                  {passwordChecks.map((check) => (
-                    <li
-                      key={check.label}
-                      className={`flex items-center gap-2 text-xs ${
-                        check.passed
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      {check.passed ? (
-                        <Check className='h-3.5 w-3.5 text-green-600 dark:text-green-400' />
-                      ) : (
-                        <X className='h-3.5 w-3.5 text-red-500' />
-                      )}
-                      {check.label}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             {/* Submit */}
             <Button
               type='submit'
-              disabled={isLoading || isGoogleLoading}
+              disabled={isLoading}
               className='bg-primary hover:bg-primary/80 mt-2 h-11 w-full font-medium text-white'
             >
               {isLoading && <Loading className='text-white!' />}
-              Create Account
+              Join Referral Program
             </Button>
           </form>
 
           <p className='mt-5 text-center text-sm text-gray-500 dark:text-gray-400'>
-            Already have an account?{' '}
+            Already a referral partner?{' '}
             <Link
-              href='/auth/signin'
+              href='https://landkeeper.affonso.io/auth'
               className='text-primary font-medium hover:underline'
             >
-              Sign in
+              Sign in to your dashboard
             </Link>
           </p>
 
