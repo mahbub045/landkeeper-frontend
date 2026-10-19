@@ -32,13 +32,14 @@ import {
   TransactionForm,
 } from '@/types/client/Common/Finance/FinanceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
-
+import {
+  getCurrencySign,
+  getTodayInputDate,
+  snakeToCamel,
+} from '@/utils/formatters';
 import { Paperclip, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
-
-// ── Dialog ────────────────────────────────────────────────────────────────
 
 const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
   open,
@@ -321,6 +322,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                 <Input
                   type='date'
                   value={form.date}
+                  max={getTodayInputDate()}
                   onChange={(e) => set('date', e.target.value)}
                   aria-invalid={!!fieldErrors.date}
                   className={
