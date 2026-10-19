@@ -29,8 +29,11 @@ import {
   UpdateTransactionDialogProps,
 } from '@/types/client/Common/Finance/FinanceTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
-import { getCurrencySign, snakeToCamel } from '@/utils/formatters';
-
+import {
+  getCurrencySign,
+  getTodayInputDate,
+  snakeToCamel,
+} from '@/utils/formatters';
 import { Paperclip, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -426,6 +429,7 @@ const UpdateTransactionDialog: React.FC<UpdateTransactionDialogProps> = ({
                 <Input
                   type='date'
                   value={form.date}
+                  max={getTodayInputDate()}
                   onChange={(e) => set('date', e.target.value)}
                   aria-invalid={!!fieldErrors.date}
                   className={

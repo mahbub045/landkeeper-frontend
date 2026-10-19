@@ -219,12 +219,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         children: [
           {
             label: 'Tenants',
-            href: '/client/landlord/tenant/tenants',
+            href: '/client/admin/tenant/tenants',
             icon: UsersRound,
           },
           {
             label: 'Tenant Payments',
-            href: '/client/landlord/tenant/tenant-payments',
+            href: '/client/admin/tenant/tenant-payments',
             icon: Banknote,
           },
         ],
