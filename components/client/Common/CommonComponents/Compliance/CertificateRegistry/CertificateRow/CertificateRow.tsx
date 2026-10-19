@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
-  CERT_STATUS_CONFIG,
+  getCertStatusTone,
   CERTIFICATE_OPTIONS,
   getCertStatus,
 } from '@/data/client/Common/Compliance/ComplianceData';
@@ -34,7 +34,7 @@ const CertificateRow: React.FC<CertificateRowProps> = ({ cert, index }) => {
     (state) => state.landlordAlias.landlordAlias,
   );
   const status = getCertStatus(cert.expiry_date);
-  const { color, dot } = CERT_STATUS_CONFIG[status];
+  const { color, dot } = getCertStatusTone(cert.expiry_date);
 
   return (
     <>

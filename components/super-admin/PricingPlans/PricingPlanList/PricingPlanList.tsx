@@ -29,12 +29,6 @@ const PricingPlanList: React.FC = () => {
             included features.
           </p>
         </div>
-
-        {!isLoading && !isError && plans.length > 0 && (
-          <span className='border-border text-muted-foreground rounded-full border px-3 py-1 text-xs font-medium'>
-            {plans.length} plan{plans.length === 1 ? '' : 's'}
-          </span>
-        )}
       </div>
 
       {isError ? (

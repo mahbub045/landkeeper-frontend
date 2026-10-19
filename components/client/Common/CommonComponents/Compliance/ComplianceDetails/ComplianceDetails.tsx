@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  CERT_STATUS_CONFIG,
+  getCertStatusTone,
   CERTIFICATE_STYLES,
   getCertStatus,
   getDaysUntilExpiry,
@@ -158,7 +158,7 @@ const ComplianceDetails: React.FC = () => {
   }
 
   const status = getCertStatus(certificate.expiry_date);
-  const { color, dot } = CERT_STATUS_CONFIG[status];
+  const { color, dot } = getCertStatusTone(certificate.expiry_date);
   const daysUntilExpiry = getDaysUntilExpiry(certificate.expiry_date);
   const fileExtension = certificate.certificate_file
     ? getFileExtension(certificate.certificate_file)
@@ -233,6 +233,7 @@ const ComplianceDetails: React.FC = () => {
         <ComplianceRenewNotice
           status={status}
           expiryText={getExpiryText(daysUntilExpiry)}
+          daysUntilExpiry={daysUntilExpiry}
           onRenewClick={() => setEditOpen(true)}
         />
       )}

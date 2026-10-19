@@ -27,10 +27,10 @@ export const CertificateSharesApi = baseApi.injectEndpoints({
       invalidatesTags: ['CertificateShares'],
     }),
     deleteShare: builder.mutation({
-      query: ({ certificateAlias, payload }) => ({
+      query: ({ certificateAlias, params }) => ({
         url: `/compliance-certificates/${certificateAlias}/share`,
         method: 'DELETE',
-        body: payload,
+        params,
       }),
       invalidatesTags: ['CertificateShares'],
     }),

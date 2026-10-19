@@ -1,7 +1,12 @@
 import {
   CertificateForm,
   CertStatus,
+  CertStatusTone,
+  CertStatusToneKey,
+  ComplianceRenewNoticeProps,
 } from '@/types/client/Common/Compliance/ComplianceTypes';
+import { getAlertSeverity } from '@/data/client/Common/Dashboard/DashboardData';
+import { AlertSeverity } from '@/types/client/Common/Dashboard/DashboardTypes';
 
 // Mirrors the backend `CertificateType` choices
 export const CERTIFICATE_OPTIONS = [
@@ -59,13 +64,29 @@ export const EMPTY_FORM: CertificateForm = {
   issuedBy: '',
 };
 
-export const CERT_STATUS_CONFIG: Record<
-  CertStatus,
-  { color: string; dot: string }
-> = {
-  Valid: { color: 'bg-success/10 text-success', dot: 'bg-success' },
-  Expired: { color: 'bg-danger/10 text-danger', dot: 'bg-danger' },
-  'Expiring Soon': { color: 'bg-warning/10 text-warning', dot: 'bg-warning' },
+// Mirrors the dashboard's Alerts & Reminders severity colours; Valid stays green
+export const CERT_STATUS_TONES: Record<CertStatusToneKey, CertStatusTone> = {
+  Valid: {
+    color: 'bg-success/10 text-success',
+    dot: 'bg-success',
+    text: 'text-success',
+  },
+  expired: {
+    color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+    dot: 'bg-red-500',
+    text: 'text-red-600 dark:text-red-400',
+  },
+  urgent: {
+    color:
+      'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+    dot: 'bg-amber-500',
+    text: 'text-amber-600 dark:text-amber-400',
+  },
+  upcoming: {
+    color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    dot: 'bg-blue-500',
+    text: 'text-blue-600 dark:text-blue-400',
+  },
 };
 
 export const getDaysUntilExpiry = (expiryDate: string): number =>
@@ -79,4 +100,29 @@ export const getCertStatus = (expiryDate: string): CertStatus => {
   if (daysUntilExpiry < 0) return 'Expired';
   if (daysUntilExpiry <= 30) return 'Expiring Soon';
   return 'Valid';
+};
+
+// Colour follows days remaining (like the dashboard alerts), not just the status label
+export const getCertStatusTone = (expiryDate: string): CertStatusTone =>
+  CERT_STATUS_TONES[
+    getCertStatus(expiryDate) === 'Valid'
+      ? 'Valid'
+      : getAlertSeverity(getDaysUntilExpiry(expiryDate))
+  ];
+
+export const RENEW_NOTICE_TITLES: Record<
+  ComplianceRenewNoticeProps['status'],
+  string
+> = {
+  Expired: 'This certificate has expired',
+  'Expiring Soon': 'This certificate is due for renewal',
+};
+
+// Light tint of each severity colour for the renew notice background
+export const RENEW_NOTICE_BACKGROUNDS: Record<AlertSeverity, string> = {
+  expired: 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/30',
+  urgent:
+    'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30',
+  upcoming:
+    'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30',
 };

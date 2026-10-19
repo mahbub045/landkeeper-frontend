@@ -34,7 +34,10 @@ export default function PricingPlanPaymentDialog({
         </DialogTitle>
         {selectedPlan && (
           <CardPaymentForm
-            amount={Number(selectedPlan.monthly_price).toFixed(2)}
+            // Show the discounted price when a coupon is applied.
+            amount={Number(
+              selectedPlan.discounted_price ?? selectedPlan.monthly_price,
+            ).toFixed(2)}
             onSuccess={onPaymentMethod}
             onConfirmed={onConfirmed}
             onCancel={onCancel}

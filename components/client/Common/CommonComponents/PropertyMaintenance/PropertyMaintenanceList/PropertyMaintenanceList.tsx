@@ -45,6 +45,11 @@ import {
   STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
@@ -52,8 +57,15 @@ import {
 } from '@/store/api/endpoints/client/Common/PropertyMaintenance/PropertyMaintenanceApi';
 import { useAppSelector } from '@/store/hooks';
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
-import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
-import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
+import {
+  PAGE_LIMIT,
+  SEARCH_DEBOUNCE_MS,
+  TEXT_PREVIEW_LENGTH,
+} from '@/utils/commonConstants.ts';
+import formatChoiceFieldValue, {
+  formatDateAndTime,
+  truncateText,
+} from '@/utils/formatters';
 import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
 import { Check, Copy, Edit, Filter, Plus, Search, User, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -213,10 +225,10 @@ const PropertyMaintenanceList: React.FC = () => {
     { header: 'Request ID' },
     ...(session?.user?.role !== 'TENANT' ? [{ header: 'Tenant' }] : []),
     ...(session?.user?.role !== 'TENANT' ? [{ header: 'Property' }] : []),
+    { header: 'Category', individualClass: 'text-center' },
     { header: 'Issue', individualClass: 'text-center' },
     { header: 'Status', individualClass: 'text-center' },
     { header: 'Priority', individualClass: 'text-center' },
-    { header: 'Category', individualClass: 'text-center' },
     { header: 'Created At', individualClass: 'text-center' },
     { header: 'Updated At', individualClass: 'text-center' },
     ...(session?.user?.role === 'TENANT'
@@ -488,14 +500,52 @@ const PropertyMaintenanceList: React.FC = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className='max-w-50 truncate text-sm'>
-                        {request?.property}
+                      <TableCell className='text-sm'>
+                        {request?.property &&
+                        request.property.length > TEXT_PREVIEW_LENGTH ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className='cursor-default'>
+                                {truncateText(
+                                  request.property,
+                                  TEXT_PREVIEW_LENGTH,
+                                )}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent className='max-w-xs wrap-break-word'>
+                              {request.property}
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          request?.property
+                        )}
                       </TableCell>
                     </>
                   )}
-                  <TableCell className='max-w-50 truncate text-sm'>
+                  <TableCell className='text-center'>
+                    <Badge
+                      size='lg'
+                      className={`${CATEGORY_STYLES[request?.category]} `}
+                    >
+                      {formatChoiceFieldValue(request?.category)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className='text-sm'>
                     {request?.issue ? (
-                      request?.issue
+                      request.issue.length > TEXT_PREVIEW_LENGTH ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className='cursor-default'>
+                              {truncateText(request.issue, TEXT_PREVIEW_LENGTH)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-xs wrap-break-word'>
+                            {request.issue}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        request.issue
+                      )
                     ) : (
                       <span className='text-muted-foreground text-xs'>
                         No issue provided
@@ -554,14 +604,7 @@ const PropertyMaintenanceList: React.FC = () => {
                       {request?.is_emergency ? 'Emergency' : 'Normal'}
                     </Badge>
                   </TableCell>
-                  <TableCell className='text-center'>
-                    <Badge
-                      size='lg'
-                      className={`${CATEGORY_STYLES[request?.category]} `}
-                    >
-                      {formatChoiceFieldValue(request?.category)}
-                    </Badge>
-                  </TableCell>
+
                   <TableCell className='text-center text-sm'>
                     {formatDateAndTime(request?.created_at)}
                   </TableCell>

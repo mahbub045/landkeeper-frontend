@@ -1,6 +1,8 @@
 import { UserRole } from '@/types/next-auth';
 import { Session } from 'next-auth';
 
+export const REFERRAL_DASHBOARD_PATH = '/client/referral/dashboard';
+
 export function getDashboardPath(role: UserRole | undefined): string {
   const paths: Record<UserRole, string> = {
     SUPER_ADMIN: '/super-admin/dashboard',

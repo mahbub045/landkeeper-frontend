@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  CERT_STATUS_CONFIG,
   getCertStatus,
+  getCertStatusTone,
   getDaysUntilExpiry,
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { ComplianceExpiryTimelineProps } from '@/types/client/Common/Compliance/ComplianceTypes';
@@ -50,9 +50,9 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
   }
 
   const status = getCertStatus(expiryDate);
-  const { color, dot } = CERT_STATUS_CONFIG[status];
   const totalDays = Math.max(1, Math.round((expiryTime - issueTime) / DAY_MS));
   const daysUntilExpiry = getDaysUntilExpiry(expiryDate);
+  const tone = getCertStatusTone(expiryDate);
   const daysElapsed = Math.max(0, totalDays - daysUntilExpiry);
   const elapsedPercent = clampPercent((daysElapsed / totalDays) * 100);
   const warningPercent = clampPercent((EXPIRING_SOON_DAYS / totalDays) * 100);
@@ -69,13 +69,12 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
       ? {
           label: 'Overdue by',
           value: pluralizeDays(Math.abs(daysUntilExpiry)),
-          className: 'text-danger',
+          className: tone.text,
         }
       : {
           label: 'Remaining',
           value: pluralizeDays(daysUntilExpiry),
-          className:
-            status === 'Expiring Soon' ? 'text-warning' : 'text-success',
+          className: tone.text,
         },
   ];
 
@@ -84,17 +83,17 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
       <div className='mb-6 flex items-center justify-between gap-2'>
         <h2 className='text-sm font-semibold'>Validity Timeline</h2>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${color}`}
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${tone.color}`}
         >
-          <span className={`size-1.5 rounded-full ${dot}`} />
+          <span className={`size-1.5 rounded-full ${tone.dot}`} />
           {status}
         </span>
       </div>
 
       {/* Bar */}
       <div className='relative pt-8'>
-        <div className='bg-warning/25 relative h-2 w-full overflow-hidden rounded-full'>
-          {/* Valid window — the track's warning tint shows through for the
+        <div className='relative h-2 w-full overflow-hidden rounded-full bg-blue-100 dark:bg-blue-900/30'>
+          {/* Valid window — the track's expiring-soon tint shows through for the
               last EXPIRING_SOON_DAYS, or the whole bar when the validity
               period is shorter than that window */}
           {showWarningWindow && (
@@ -110,7 +109,7 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
           />
           {/* Elapsed */}
           <div
-            className={`absolute inset-y-0 left-0 rounded-full transition-all ${dot}`}
+            className={`absolute inset-y-0 left-0 rounded-full transition-all ${tone.dot}`}
             style={{ width: `${elapsedPercent}%` }}
           />
         </div>
@@ -126,7 +125,7 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
           <span className='bg-foreground w-px flex-1' />
           {/* Sits centred on the 8px bar: 12px dot, 2px below its bottom */}
           <span
-            className={`border-background -mb-0.5 size-3 shrink-0 rounded-full border-2 shadow-sm ${dot} ${getDotOffset(elapsedPercent)}`}
+            className={`border-background -mb-0.5 size-3 shrink-0 rounded-full border-2 shadow-sm ${tone.dot} ${getDotOffset(elapsedPercent)}`}
           />
         </div>
       </div>
@@ -147,7 +146,7 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
             </p>
             <p className='text-sm font-medium'>{formatDate(expiryDate)}</p>
           </div>
-          <CalendarX className='text-danger mt-0.5 size-4 shrink-0' />
+          <CalendarX className='mt-0.5 size-4 shrink-0 text-red-500' />
         </div>
       </div>
 

@@ -1,9 +1,12 @@
 'use client';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
+  useCheckCouponValidityMutation,
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
@@ -16,8 +19,9 @@ import {
   ArrowRight,
   Building2,
   Check,
-  ListChecks,
   LoaderCircle,
+  Tag,
+  X,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
@@ -41,11 +45,87 @@ const PricingPlansCard: React.FC = () => {
   );
   const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(null);
 
+  // Coupon state: `couponInput` is what the user is typing,
+  // `appliedCoupon` is what is actually sent to the API as a query param.
+  // `null` means the user hasn't touched the field yet, so it shows the
+  // coupon from the API (if any) instead of an empty string.
+  const [couponInput, setCouponInput] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [couponError, setCouponError] = useState('');
+  // Set when the user removes a coupon the API returned on its own, so we
+  // don't keep re-filling the field from the plans response.
+  const [couponDismissed, setCouponDismissed] = useState(false);
+
+  // const { data: profileData } = useGetProfileInfoQuery(undefined);
+
+  // // Only show the coupon field when the user has no subscription yet.
+  // const showCouponField = profileData?.subscription_status === null;
+
+  const [checkCouponValidity, { isLoading: isCheckingCoupon }] =
+    useCheckCouponValidityMutation();
+
   const {
     data: pricingPlans,
     isLoading,
+    isFetching,
     isError,
-  } = useGetPricingPlansQuery(undefined);
+  } = useGetPricingPlansQuery(
+    appliedCoupon ? { coupon_code: appliedCoupon } : undefined,
+  );
+
+  // If the plans response already carries a coupon_code (e.g. a referral
+  // coupon attached to the user), treat it as applied and show it in the field.
+  const planCoupon: string =
+    pricingPlans?.results?.find((p: PricingPlan) => p.coupon_code)
+      ?.coupon_code ?? '';
+
+  // The coupon currently in effect: one the user applied, or one from the API.
+  const activeCoupon = appliedCoupon || (couponDismissed ? '' : planCoupon);
+
+  // What the input displays: the user's text, or the API coupon until they type.
+  const inputValue = couponInput ?? activeCoupon;
+
+  // Validate the coupon first. Only a valid coupon is stored in
+  // `appliedCoupon`, which is what triggers the plans refetch with
+  // ?coupon_code=... — so an invalid code never reaches the plans request.
+  const applyCoupon = async () => {
+    const code = inputValue.trim();
+    if (!code) return;
+
+    setCouponError('');
+
+    try {
+      const result = (await checkCouponValidity({
+        coupon_code: code,
+      }).unwrap()) as { valid?: boolean; is_valid?: boolean } | undefined;
+
+      // A 2xx response means valid. If your backend returns an explicit
+      // flag instead, treat `false` as invalid.
+      if (result?.valid === false || result?.is_valid === false) {
+        setCouponError('This coupon code is invalid or has expired.');
+        return;
+      }
+
+      setCouponDismissed(false);
+      setAppliedCoupon(code);
+    } catch (error: unknown) {
+      setAppliedCoupon('');
+      setCouponError(
+        getErrorMessage(error, 'This coupon code is invalid or has expired.'),
+      );
+    }
+  };
+
+  const clearCoupon = () => {
+    setCouponInput('');
+    setAppliedCoupon('');
+    setCouponError('');
+    setCouponDismissed(true);
+  };
+
+  // True once the coupon in the input is the one currently applied.
+  const isCouponApplied =
+    Boolean(activeCoupon) && !isFetching && inputValue.trim() === activeCoupon;
 
   const getErrorMessage = (error: unknown, fallback: string): string => {
     const errorData =
@@ -76,6 +156,7 @@ const PricingPlansCard: React.FC = () => {
       const response = await selectPricingPlan({
         payload: {
           plan_id: plan.alias,
+          ...(activeCoupon ? { coupon_code: activeCoupon } : {}),
         },
       }).unwrap();
 
@@ -196,6 +277,9 @@ const PricingPlansCard: React.FC = () => {
     handleSelectPlan(plan);
   };
 
+  // `isLoading` is only true on the very first load, so changing the coupon
+  // keeps the existing cards on screen (RTK Query keeps old `data` while
+  // `isFetching` is true) instead of flashing the skeleton.
   if (isLoading) {
     return <PricingPlansCardSkeleton />;
   }
@@ -209,12 +293,101 @@ const PricingPlansCard: React.FC = () => {
         <p className='text-muted-foreground mt-1 text-sm'>
           Please refresh and try again.
         </p>
+        {appliedCoupon && (
+          <Button variant='link' onClick={clearCoupon} className='mt-2'>
+            Remove coupon and retry
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
     <>
+      <div className='mx-auto mb-8 flex w-full max-w-md flex-col gap-2'>
+        <label htmlFor='coupon-code' className='text-sm font-medium'>
+          Have a coupon code?
+        </label>
+        <form
+          className='flex items-center gap-2'
+          onSubmit={(e) => {
+            e.preventDefault();
+            applyCoupon();
+          }}
+        >
+          <div className='relative flex-1'>
+            <Tag
+              className={cn(
+                'absolute top-1/2 left-3.5 size-4 -translate-y-1/2 transition-colors',
+                isCouponApplied ? 'text-green-600' : 'text-muted-foreground',
+              )}
+              aria-hidden='true'
+            />
+            <Input
+              id='coupon-code'
+              value={inputValue}
+              onChange={(e) => {
+                setCouponInput(e.target.value);
+                if (couponError) setCouponError('');
+              }}
+              placeholder='e.g. MDM-123456'
+              autoComplete='off'
+              disabled={isFetching || isCheckingCoupon}
+              aria-invalid={Boolean(couponError)}
+              className={cn(
+                'border-primary focus-visible:outline-primary h-11 rounded-xl pr-11 pl-10! font-medium tracking-wide shadow-xs transition-colors focus-visible:ring-0',
+                isCouponApplied &&
+                  'border-green-500/60 bg-green-500/5 focus-visible:ring-green-500/30',
+                couponError &&
+                  'border-destructive focus-visible:outline-destructive',
+              )}
+            />
+            {(inputValue || activeCoupon) &&
+              !isFetching &&
+              !isCheckingCoupon && (
+                <button
+                  type='button'
+                  onClick={clearCoupon}
+                  aria-label='Remove coupon'
+                  className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                >
+                  <X className='size-4' aria-hidden='true' />
+                </button>
+              )}
+          </div>
+          <Button
+            type='submit'
+            className='h-11 rounded-xl px-5'
+            disabled={
+              isFetching ||
+              isCheckingCoupon ||
+              !inputValue.trim() ||
+              inputValue.trim() === activeCoupon
+            }
+          >
+            {isFetching || isCheckingCoupon ? (
+              <Loading className='text-white!' />
+            ) : isCouponApplied ? (
+              <Check />
+            ) : null}
+            {isCouponApplied ? 'Applied' : 'Apply Coupon'}
+          </Button>
+        </form>
+        {couponError && (
+          <p className='text-destructive flex items-center gap-1.5 text-xs'>
+            <X className='size-3.5' aria-hidden='true' />
+            {couponError}
+          </p>
+        )}
+        {isCouponApplied && (
+          <p className='flex items-center gap-1.5 text-xs text-green-600'>
+            <Check className='size-3.5' aria-hidden='true' />
+            Coupon <span className='font-semibold'>{activeCoupon}</span>{' '}
+            applied. Discounted prices are shown below.
+          </p>
+        )}
+      </div>
+
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {
           const meta =
@@ -262,38 +435,62 @@ const PricingPlansCard: React.FC = () => {
               </div>
 
               <div className='mt-7 flex items-end gap-2'>
-                <span className='text-5xl font-semibold tracking-[-0.04em]'>
+                <span className='text-4xl font-semibold tracking-[-0.04em]'>
                   {getCurrencySign()}
-                  {Number(plan.monthly_price).toFixed(2)}
+                  {Number(plan.discounted_price ?? plan.monthly_price).toFixed(
+                    2,
+                  )}
                 </span>
+                {plan.discounted_price && (
+                  <span className='text-muted-foreground mb-2 text-lg line-through'>
+                    {getCurrencySign()}
+                    {Number(plan.monthly_price).toFixed(2)}
+                  </span>
+                )}
                 <span className='text-muted-foreground mb-2 text-sm'>
                   / month
                 </span>
               </div>
 
-              <div className='border-border/70 mt-5 grid grid-cols-2 divide-x divide-inherit rounded-xl border'>
-                {[
-                  {
-                    label: 'Properties',
-                    value: plan.max_properties,
-                    icon: Building2,
-                  },
-                  {
-                    label: 'Features',
-                    value: plan.features.length,
-                    icon: ListChecks,
-                  },
-                ].map((stat) => (
-                  <div key={stat.label} className='px-3 py-2.5 text-center'>
-                    <div className='text-muted-foreground flex items-center justify-center gap-1 text-[11px] font-medium tracking-wide uppercase'>
-                      <stat.icon className='size-3' aria-hidden='true' />
-                      {stat.label}
-                    </div>
-                    <p className='text-foreground mt-1 text-base font-semibold'>
-                      {stat.value}
-                    </p>
+              {plan.discounted_price && (
+                <p className='mt-2 flex items-center gap-1.5 text-xs font-medium text-green-600'>
+                  <Tag className='size-3.5' aria-hidden='true' />
+                  {plan.discount_value && (
+                    <>
+                      {plan.discount_type === 'fixed'
+                        ? `${getCurrencySign()}${Number(plan.discount_value).toFixed(2)}`
+                        : `${Number(plan.discount_value)}%`}{' '}
+                      off ·{' '}
+                    </>
+                  )}
+                  You save {getCurrencySign()}
+                  {(
+                    Number(plan.monthly_price) - Number(plan.discounted_price)
+                  ).toFixed(2)}{' '}
+                  / month
+                </p>
+              )}
+
+              <div className='border-border/70 bg-background/60 mt-5 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 backdrop-blur-sm'>
+                <div className='flex items-center gap-3'>
+                  <div
+                    className={cn(
+                      'flex size-9 items-center justify-center rounded-lg',
+                      meta.iconTile,
+                    )}
+                  >
+                    <Building2 className='size-4' aria-hidden='true' />
                   </div>
-                ))}
+                  <span className='text-muted-foreground text-sm font-medium'>
+                    Properties
+                  </span>
+                </div>
+                <p className='text-foreground text-lg font-semibold tabular-nums'>
+                  <span className='text-muted-foreground mr-1.5 text-xs font-medium'>
+                    Up to
+                  </span>
+                  {plan.max_properties}
+                </p>
               </div>
 
               <div className='mt-5 flex-1'>

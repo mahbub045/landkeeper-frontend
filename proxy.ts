@@ -54,6 +54,7 @@ export default withAuth(
     }
 
     const userRole = token.role as UserRole | undefined;
+
     const isOnAllowedLandlordPath =
       LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION.some((p) =>
         path.startsWith(p),

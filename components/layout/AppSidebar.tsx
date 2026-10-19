@@ -65,6 +65,7 @@ const LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION = [
   '/client/landlord/billing-and-plans/billing',
   '/client/landlord/billing-and-plans/pricing-plans',
   '/client/profile-settings',
+  '/client/landlord/referral-program',
 ];
 
 function isSubscribed(user?: {
@@ -415,7 +416,10 @@ const AppSidebar: React.FC = () => {
 
   // navItems now depends on profileData.plan, so it's built after the
   // profile query instead of immediately after session resolves.
-  const navItems = buildItems({ role: userRole, plan: profileData?.plan });
+  const navItems = buildItems({
+    role: userRole,
+    plan: profileData?.plan,
+  });
 
   // Landlords without an active/trialing subscription get a locked sidebar —
   // only the paths in LANDLORD_ALLOWED_PATHS_WITHOUT_SUBSCRIPTION stay usable.

@@ -38,6 +38,11 @@ const AlertsReminders: React.FC = () => {
           <CardTitle className='text-base font-semibold text-gray-800 dark:text-gray-100'>
             Alerts &amp; Reminders
           </CardTitle>
+          {alertsData.length > 0 && (
+            <Badge variant='outline' className='ml-auto tabular-nums'>
+              Total: {alertsData.length}
+            </Badge>
+          )}
         </div>
       </CardHeader>
       {alertsData.length === 0 ? (
