@@ -28,6 +28,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -55,7 +56,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import Loading from '../common/CustomLoader/Loading';
 import { handleSignOut } from '../SignOut';
 import { Badge } from '../ui/badge';
 
@@ -406,6 +406,90 @@ function NavMenu({
   );
 }
 
+// Fixed widths (instead of random ones) so server and client render the same
+// markup and hydration stays clean.
+const SKELETON_ITEM_WIDTHS = [
+  '70%',
+  '55%',
+  '80%',
+  '60%',
+  '75%',
+  '50%',
+  '65%',
+  '85%',
+  '58%',
+  '72%',
+];
+
+function AppSidebarSkeleton({
+  showPlan,
+  showAction,
+}: {
+  showPlan: boolean;
+  showAction: boolean;
+}) {
+  return (
+    <Sidebar
+      collapsible='icon'
+      aria-busy='true'
+      aria-label='Loading navigation'
+    >
+      <SidebarHeader className='gap-2 px-4 py-3 group-data-[collapsible=icon]:px-2'>
+        <Skeleton className='h-12 w-40 rounded-xl group-data-[collapsible=icon]:hidden' />
+        <Skeleton className='hidden size-6 self-center rounded-md group-data-[collapsible=icon]:block' />
+        {showPlan && (
+          <Skeleton className='h-5 w-24 rounded-full group-data-[collapsible=icon]:hidden' />
+        )}
+      </SidebarHeader>
+
+      <SidebarSeparator className='mx-0 h-px!' />
+
+      {showAction && (
+        <div className='flex justify-center px-3'>
+          <Skeleton className='mt-3 h-10 w-full rounded-xl group-data-[collapsible=icon]:size-9' />
+        </div>
+      )}
+
+      <SidebarContent className='gap-1 px-2 py-2'>
+        <SidebarGroup className='p-0'>
+          <SidebarGroupLabel className='px-3'>
+            <Skeleton className='h-3 w-12' />
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {SKELETON_ITEM_WIDTHS.map((width, index) => (
+                <SidebarMenuItem key={index}>
+                  <div className='flex h-9 items-center gap-2 rounded-lg px-2 group-data-[collapsible=icon]:justify-center'>
+                    <Skeleton className='size-4 shrink-0 rounded-md' />
+                    <Skeleton
+                      className='h-4 group-data-[collapsible=icon]:hidden'
+                      style={{ width }}
+                    />
+                  </div>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className='p-4 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2'>
+        <SidebarSeparator className='mx-0 h-px!' />
+        <div className='flex w-full items-center gap-3 p-1 group-data-[collapsible=icon]:justify-center'>
+          <Skeleton className='size-10 shrink-0 rounded-full' />
+          <div className='flex min-w-0 flex-1 flex-col gap-1.5 group-data-[collapsible=icon]:hidden'>
+            <Skeleton className='h-4 w-3/4' />
+            <Skeleton className='h-4 w-16 rounded-full' />
+          </div>
+          <Skeleton className='size-4 rounded-md group-data-[collapsible=icon]:hidden' />
+        </div>
+      </SidebarFooter>
+
+      <SidebarRail />
+    </Sidebar>
+  );
+}
+
 const AppSidebar: React.FC = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -430,11 +514,10 @@ const AppSidebar: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Sidebar collapsible='icon'>
-        <div className='flex h-full items-center justify-center'>
-          <Loading />
-        </div>
-      </Sidebar>
+      <AppSidebarSkeleton
+        showPlan={userRole !== 'SUPER_ADMIN' && userRole !== 'TENANT'}
+        showAction={isLandlord_Admin_LettingAgent(userRole ?? null)}
+      />
     );
   }
 
