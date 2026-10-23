@@ -140,12 +140,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/landlord/finance',
         icon: ChartNoAxesCombined,
       },
-      // {
-      //   label: 'Makeing Tax Digital (MTD)',
-      //   href: '/client/landlord/making-tax-digital',
-      //   icon: FileText,
-      //   visibleToPlans: STANDARD_PREMIUM_PLANS,
-      // },
+      {
+        label: 'Making Tax Digital (MTD)',
+        href: '/client/landlord/making-tax-digital',
+        icon: FileText,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
+      },
       {
         label: 'Property Maintenance',
         href: '/client/landlord/property-maintenance',
@@ -244,12 +244,12 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         href: '/client/admin/finance',
         icon: ChartNoAxesCombined,
       },
-      // {
-      //   label: 'Making Tax Digital (MTD)',
-      //   href: '/client/admin/making-tax-digital',
-      //   icon: FileText,
-      //   visibleToPlans: STANDARD_PREMIUM_PLANS,
-      // },
+      {
+        label: 'Making Tax Digital (MTD)',
+        href: '/client/admin/making-tax-digital',
+        icon: FileText,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
+      },
       {
         label: 'Property Maintenance',
         href: '/client/admin/property-maintenance',
