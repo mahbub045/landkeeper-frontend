@@ -24,7 +24,7 @@ import {
   getPropertyName,
   MTD_FINANCE_COSTS,
   MTD_PROPERTIES,
-} from '../mtdData';
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   InfoNote,

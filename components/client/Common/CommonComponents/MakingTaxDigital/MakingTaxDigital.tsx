@@ -16,14 +16,14 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   getPortfolioTotals,
   MTD_LAST_UPDATED,
   MTD_TRANSACTIONS,
   MTD_TRENDS,
   sum,
-} from './mtdData';
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   MtdStat,
   MtdStatCards,
@@ -225,7 +225,7 @@ const MakingTaxDigital: React.FC = () => {
         onValueChange={(value) => setTab(value as MtdTabValue)}
         className='gap-6'
       >
-        <div className='border-border overflow-x-auto overflow-y-hidden border-b pb-1.25 scrollbar-none [&::-webkit-scrollbar]:hidden'>
+        <div className='border-border scrollbar-none overflow-x-auto overflow-y-hidden border-b pb-1.25 [&::-webkit-scrollbar]:hidden'>
           <TabsList variant='line' className='h-10! gap-2'>
             {TABS.map((t) => (
               <TabsTrigger

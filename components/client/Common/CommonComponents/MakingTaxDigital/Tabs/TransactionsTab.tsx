@@ -31,7 +31,10 @@ import {
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/utils/formatters';
-import { getPropertyName, MTD_TRANSACTIONS } from '../mtdData';
+import {
+  getPropertyName,
+  MTD_TRANSACTIONS,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   IconBadge,

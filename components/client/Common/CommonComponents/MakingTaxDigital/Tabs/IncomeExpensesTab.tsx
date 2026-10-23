@@ -28,7 +28,7 @@ import {
   getPropertyTotals,
   MTD_EXPENSES,
   MTD_INCOME,
-} from '../mtdData';
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   RowActions,

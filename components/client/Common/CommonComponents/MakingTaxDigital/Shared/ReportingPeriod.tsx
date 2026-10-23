@@ -13,7 +13,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { MtdSubmissionStatus } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { MTD_QUARTERS, MTD_TAX_YEARS } from '../mtdData';
+import {
+  MTD_QUARTERS,
+  MTD_TAX_YEARS,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { IconBadge } from './MtdShared';
 
 const STATUS_LABEL: Record<MtdSubmissionStatus, string> = {

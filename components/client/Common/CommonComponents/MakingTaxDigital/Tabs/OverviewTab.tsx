@@ -13,7 +13,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { getPortfolioTotals, getPropertyTotals, MTD_TRENDS } from '../mtdData';
+import {
+  getPortfolioTotals,
+  getPropertyTotals,
+  MTD_TRENDS,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   QuickAction,
   QuickActions,

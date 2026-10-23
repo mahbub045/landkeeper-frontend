@@ -27,7 +27,7 @@ import {
   getPortfolioTotals,
   getPropertyTotals,
   MTD_PROPERTIES,
-} from '../mtdData';
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   IconBadge,

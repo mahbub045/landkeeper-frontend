@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { getPortfolioTotals } from '../mtdData';
+import { getPortfolioTotals } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   IconBadge,
