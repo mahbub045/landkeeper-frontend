@@ -251,3 +251,27 @@ textarea {
 .text_decoration_hover:focus-visible::after {
   transform: scaleX(1);
 }
+
+/* top page-transition loader: orange bar with moving diagonal stripes */
+#nprogress .bar {
+  border-radius: 0 9999px 9999px 0;
+  background-color: var(--primary) !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--primary) 0 10px,
+    #e6e6e6 10px 20px
+  ) !important;
+  background-size: 28.28px 28.28px;
+  animation: nprogress-stripes 0.6s linear infinite;
+  box-shadow: 0 0 6px color-mix(in oklch, var(--primary) 60%, transparent);
+}
+
+#nprogress .peg {
+  display: none !important;
+}
+
+@keyframes nprogress-stripes {
+  to {
+    background-position: 28.28px 0;
+  }
+}

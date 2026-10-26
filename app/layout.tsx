@@ -44,7 +44,12 @@ export default function RootLayout({
           data-cookie-duration={process.env.NEXT_PUBLIC_AFFONSO_COOKIE_DURATION}
           strategy='beforeInteractive'
         />
-        <NextTopLoader color='var(--primary)' height={5} showSpinner={false} />
+        <NextTopLoader
+          color='var(--primary)'
+          height={4}
+          showSpinner={false}
+          shadow={false}
+        />
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
