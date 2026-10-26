@@ -1,6 +1,6 @@
 'use client';
 
-import Loading from '@/components/common/CustomLoader/Loading';
+import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +17,7 @@ import { useState } from 'react';
 import DeletePropertyDialog from '../Dialogs/DeletePropertyDialog';
 import UpdatePropertyDialog from '../Dialogs/UpdatePropertyDialog';
 import PropertyDangerZone from './PropertyDangerZone/PropertyDangerZone';
+import PropertyDetailsSkeleton from './PropertyDetailsSkeleton';
 import PropertyFinancials from './PropertyFinancials/PropertyFinancials';
 import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
@@ -40,18 +41,12 @@ const PropertyDetails: React.FC = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  if (isLoading) {
-    return (
-      <div className='flex h-64 items-center justify-center'>
-        <Loading />
-      </div>
-    );
-  }
+  if (isLoading) return <PropertyDetailsSkeleton />;
 
   if (isError || !property) {
     return (
-      <div className='flex h-64 items-center justify-center'>
-        <Loading />
+      <div className='mx-auto w-full max-w-6xl py-16'>
+        <CustomErrorMessage title='property' />
       </div>
     );
   }

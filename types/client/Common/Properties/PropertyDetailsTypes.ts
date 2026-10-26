@@ -43,3 +43,7 @@ export interface PropertyInfoProps {
 export interface PropertyNotesProps {
   notes: string;
 }
+
+export interface InfoCardSkeletonProps {
+  rows: number;
+}
