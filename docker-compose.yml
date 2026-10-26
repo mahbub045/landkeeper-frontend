@@ -1,15 +1,31 @@
+x-frontend: &frontend
+  build:
+    context: .
+    dockerfile: dockerfile
+
+  image: landkeeper-frontend:latest
+
+  restart: unless-stopped
+
+  env_file:
+    - .env.production
+
+  healthcheck:
+    test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/auth/signin"]
+    interval: 5s
+    timeout: 3s
+    retries: 10
+    start_period: 10s
+
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    container_name: frontend
-
-    restart: unless-stopped
-
+  frontend_a:
+    <<: *frontend
+    container_name: frontend_a
     ports:
       - "3000:3000"
 
-    env_file:
-      - .env.production
+  frontend_b:
+    <<: *frontend
+    container_name: frontend_b
+    ports:
+      - "3001:3000"

@@ -288,7 +288,7 @@ const TenantList: React.FC = () => {
                         <TableCell className='text-sm font-bold'>
                           {tenant.rent_amount ? (
                             <>
-                              {getCurrencySign()}{' '}
+                              {getCurrencySign()}
                               <span>{tenant.rent_amount}</span>
                             </>
                           ) : (
