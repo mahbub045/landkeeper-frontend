@@ -46,7 +46,7 @@ export default function RootLayout({
         />
         <NextTopLoader
           color='var(--primary)'
-          height={4}
+          height={5}
           showSpinner={false}
           shadow={false}
         />
