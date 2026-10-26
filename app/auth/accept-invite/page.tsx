@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useAcceptTeamMemberInviteMutation } from '@/store/api/endpoints/auth/TeamMemberAcceptInviteApi';
 import { AcceptInviteApiError } from '@/types/client/Common/Tools/TeamAccess/TeamAccessTypes';
 import { AcceptInviteFormData } from '@/types/common/auth/AcceptInviteTypes';

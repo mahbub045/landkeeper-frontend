@@ -21,9 +21,9 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  PriorityOptions,
-  TicketTypeOptions,
-} from '@/data/common/SupportTickets/SupportTicketsData';
+  SUPPORT_TICKET_PRIORITY_OPTIONS,
+  SUPPORT_TICKET_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
 
 import { cn } from '@/lib/utils';
 import { useUpdateSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
@@ -283,7 +283,7 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
                     <SelectValue placeholder='Select ticket type' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TicketTypeOptions.map((option) => (
+                    {SUPPORT_TICKET_TYPE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -310,7 +310,7 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
                     <SelectValue placeholder='Select priority' />
                   </SelectTrigger>
                   <SelectContent>
-                    {PriorityOptions.map((option) => (
+                    {SUPPORT_TICKET_PRIORITY_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>

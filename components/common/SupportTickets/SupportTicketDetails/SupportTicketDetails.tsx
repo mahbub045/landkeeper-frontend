@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SUPPORT_TICKET_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import {
   PRIORITY_STYLES,
   STATUS_DESCRIPTIONS,
@@ -12,7 +13,6 @@ import {
   STATUS_ICONS,
   STATUS_LABELS,
   STATUS_STYLES,
-  StatusOptions,
   TICKET_TYPE_STYLES,
 } from '@/data/common/SupportTickets/SupportTicketsData';
 import {
@@ -224,7 +224,7 @@ const SupportTicketDetails: React.FC = () => {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent align='center'>
-                      {StatusOptions.map((opt) => {
+                      {SUPPORT_TICKET_STATUS_OPTIONS.map((opt) => {
                         const Icon = STATUS_ICONS[opt.value];
                         return (
                           <SelectItem
@@ -271,7 +271,7 @@ const SupportTicketDetails: React.FC = () => {
                   align='center'
                   content={
                     <>
-                      {StatusOptions.map((opt) => {
+                      {SUPPORT_TICKET_STATUS_OPTIONS.map((opt) => {
                         const Icon = STATUS_ICONS[opt.value];
                         return (
                           <div

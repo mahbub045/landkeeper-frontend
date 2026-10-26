@@ -8,9 +8,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { CERTIFICATE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import {
   getCertStatusTone,
-  CERTIFICATE_OPTIONS,
   getCertStatus,
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { useAppSelector } from '@/store/hooks';

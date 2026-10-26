@@ -8,39 +8,6 @@ import {
 import { getAlertSeverity } from '@/data/client/Common/Dashboard/DashboardData';
 import { AlertSeverity } from '@/types/client/Common/Dashboard/DashboardTypes';
 
-// Mirrors the backend `CertificateType` choices
-export const CERTIFICATE_OPTIONS = [
-  { value: 'GAS_SAFETY_CERTIFICATE', label: 'Gas Safety Certificate' },
-  {
-    value: 'EPC_CERTIFICATE',
-    label: 'Energy Performance Certificate (EPC)',
-  },
-  {
-    value: 'EICR_CERTIFICATE',
-    label: 'Electrical Installation Condition Report (EICR)',
-  },
-  {
-    value: 'DEPOSIT_PROTECTION_CERTIFICATE',
-    label: 'Deposit Protection Certificate',
-  },
-  { value: 'RIGHT_TO_RENT_CHECK', label: 'Right to Rent Checks' },
-  { value: 'HMO_LICENCE', label: 'HMO Licence' },
-  {
-    value: 'PROPERTY_INSURANCE_CERTIFICATE',
-    label: 'Property Insurance Certificate',
-  },
-  {
-    value: 'FIRE_SAFETY_CERTIFICATE',
-    label: 'Fire Safety Certificate / Fire Risk Assessment',
-  },
-  { value: 'SELECTIVE_LICENCE', label: 'Selective Licence' },
-  {
-    value: 'PAT_TESTING_CERTIFICATE',
-    label: 'Portable Appliance Testing (PAT) Certificate',
-  },
-  { value: 'PROPERTY_FLOOR_PLANS', label: 'Property Floor Plans' },
-];
-
 export const CERTIFICATE_STYLES: Record<string, string> = {
   GAS_SAFETY_CERTIFICATE: 'bg-blue-100 text-blue-800',
   EPC_CERTIFICATE: 'bg-green-100 text-green-800',

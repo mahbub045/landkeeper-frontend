@@ -17,8 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ROLE_OPTIONS } from '@/data/common/RoleOptions';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import {
+  ROLE_OPTIONS,
+  TITLE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
 import { useEditAcceptedUserMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import {
   EditAcceptedUserDialogProps,

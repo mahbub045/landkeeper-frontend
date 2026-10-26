@@ -3,10 +3,8 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  PROPERTY_STATUS_OPTIONS,
-  STATUS_STYLES,
-} from '@/data/client/Common/Properties/PropertiesData';
+import { PROPERTY_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { STATUS_STYLES } from '@/data/client/Common/Properties/PropertiesData';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { useAppSelector } from '@/store/hooks';
 import { getPropertiesUrl } from '@/utils/redirectPath';

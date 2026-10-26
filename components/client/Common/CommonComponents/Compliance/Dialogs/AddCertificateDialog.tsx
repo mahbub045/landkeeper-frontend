@@ -18,10 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  CERTIFICATE_OPTIONS,
-  EMPTY_FORM,
-} from '@/data/client/Common/Compliance/ComplianceData';
+import { CERTIFICATE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { EMPTY_FORM } from '@/data/client/Common/Compliance/ComplianceData';
 import { cn } from '@/lib/utils';
 import { useAddCompliancesMutation } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';

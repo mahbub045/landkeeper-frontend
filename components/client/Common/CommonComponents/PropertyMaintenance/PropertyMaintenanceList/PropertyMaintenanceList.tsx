@@ -38,11 +38,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  MAINTENANCE_CATEGORY_OPTIONS,
+  MAINTENANCE_STATUS_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
+import {
   canEditMaintenanceStatus,
-  CATEGORY_OPTIONS,
   CATEGORY_STYLES,
   STATUS_DOT,
-  STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
 import {
@@ -309,7 +311,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Status
                   </p>
                   <div className='space-y-2'>
-                    {STATUS_OPTIONS.map((status) => (
+                    {MAINTENANCE_STATUS_OPTIONS.map((status) => (
                       <div
                         key={status.value}
                         className='flex items-center gap-2'
@@ -337,7 +339,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Category
                   </p>
                   <div className='space-y-2'>
-                    {CATEGORY_OPTIONS.map((category) => (
+                    {MAINTENANCE_CATEGORY_OPTIONS.map((category) => (
                       <div
                         key={category.value}
                         className='flex items-center gap-2'
@@ -592,7 +594,7 @@ const PropertyMaintenanceList: React.FC = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent align='center'>
-                          {STATUS_OPTIONS.map((status) => (
+                          {MAINTENANCE_STATUS_OPTIONS.map((status) => (
                             <SelectItem
                               key={status?.value}
                               value={status?.value}

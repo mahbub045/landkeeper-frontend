@@ -13,10 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  CERTIFICATE_OPTIONS,
-  EMPTY_FORM as EMPTY_COMPLIANCE_DIALOG_FORM,
-} from '@/data/client/Common/Compliance/ComplianceData';
+import { CERTIFICATE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { EMPTY_FORM as EMPTY_COMPLIANCE_DIALOG_FORM } from '@/data/client/Common/Compliance/ComplianceData';
 import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { ComplianceStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { CloudUpload, X } from 'lucide-react';

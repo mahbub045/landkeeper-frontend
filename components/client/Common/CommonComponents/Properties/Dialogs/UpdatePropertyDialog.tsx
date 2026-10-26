@@ -26,12 +26,14 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  FIELD_TAB_MAP,
-  OVERRIDE_KEY_MAP,
   PROPERTY_OWNER_OPTIONS,
   PROPERTY_STATUS_OPTIONS,
   PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
+import {
+  FIELD_TAB_MAP,
+  OVERRIDE_KEY_MAP,
   TAB_LABELS,
   TAB_PRIORITY,
   TABS,

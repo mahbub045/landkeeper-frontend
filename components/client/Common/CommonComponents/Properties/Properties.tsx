@@ -13,10 +13,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-  FILTER_TABS,
-  PROPERTY_TYPE_OPTIONS,
-} from '@/data/client/Common/Properties/PropertiesData';
+import { PROPERTY_TYPE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { FILTER_TABS } from '@/data/client/Common/Properties/PropertiesData';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { useGetCommonPermissionsQuery } from '@/store/api/endpoints/common/Permissions/CommonPermissionsApi';
 import {

@@ -5,6 +5,7 @@ import {
   SupportTicketType,
 } from '@/types/common/SupportTickets/SupportTicketTypes';
 import { Check, CheckCheck, CircleAlert, Loader, X } from 'lucide-react';
+import { SUPPORT_TICKET_PRIORITY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 
 export const TABLE_COLUMNS = [
   'Ticket ID',
@@ -100,32 +101,11 @@ export const EMPTY_FORM: SupportTicketForm = {
   subject: '',
   description: '',
 };
-export const TicketTypeOptions = [
-  { value: 'FEEDBACK', label: 'Feedback' },
-  { value: 'BUG_REPORT', label: 'Bug Report' },
-  { value: 'FEATURE_REQUEST', label: 'Feature Request' },
-] as const;
-
-export const PriorityOptions = [
-  { value: 'URGENT', label: 'Urgent' },
-  { value: 'MEDIUM', label: 'Medium' },
-  { value: 'NORMAL', label: 'Normal' },
-  { value: 'WHEN_POSSIBLE', label: 'When Possible' },
-] as const;
-
 export const PRIORITY_LABELS: Record<SupportTicketPriority, string> =
-  PriorityOptions.reduce(
+  SUPPORT_TICKET_PRIORITY_OPTIONS.reduce(
     (acc, opt) => ({ ...acc, [opt.value]: opt.label }),
     {} as Record<SupportTicketPriority, string>,
   );
-
-export const StatusOptions = [
-  { value: 'OPEN', label: 'Open' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-  { value: 'RESOLVED', label: 'Resolved' },
-  { value: 'CLOSED', label: 'Closed' },
-] as const;
 
 export const STATUS_DESCRIPTIONS: Record<string, string> = {
   OPEN: 'Ticket has been submitted and is awaiting action.',

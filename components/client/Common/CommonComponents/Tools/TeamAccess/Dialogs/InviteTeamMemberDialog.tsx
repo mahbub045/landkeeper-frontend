@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EMPTY_FORM } from '@/data/client/Common/Tools/teamAccess/TeamAccessData';
-import { ROLE_OPTIONS } from '@/data/common/RoleOptions';
+import { ROLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useInviteTeamMemberMutation } from '@/store/api/endpoints/client/Common/Tools/TeamAccess/TeamAccessApi';
 import {
   ApiError,

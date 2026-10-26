@@ -12,11 +12,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { MAINTENANCE_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import {
   canEditMaintenanceStatus,
   CATEGORY_META,
   STATUS_DOT,
-  STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
@@ -362,7 +362,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent align='start'>
-                    {STATUS_OPTIONS.map((status) => (
+                    {MAINTENANCE_STATUS_OPTIONS.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
                         <span className='flex items-center gap-1.5'>
                           <span
