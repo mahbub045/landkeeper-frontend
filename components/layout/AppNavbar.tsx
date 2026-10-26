@@ -42,7 +42,7 @@ const AppNavbar: React.FC = () => {
             <ThemeToggle />
             <Notification />
 
-            {isSessionLoading ? (
+            {/* {isSessionLoading ? (
               <Button
                 variant='default'
                 size='sm'
@@ -74,7 +74,7 @@ const AppNavbar: React.FC = () => {
                   <span className='hidden sm:inline'>Referral Dashboard</span>
                 </a>
               </Button>
-            )}
+            )} */}
           </div>
         </div>
 
