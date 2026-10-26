@@ -20,14 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import {
+  MtdPeriodData,
+  MtdTabValue,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { formatDate } from '@/utils/formatters';
 import {
   getPortfolioTotals,
   getPropertyName,
   getPropertyTotals,
-  MTD_EXPENSES,
-  MTD_INCOME,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
@@ -38,6 +39,7 @@ import {
 } from '../Shared/MtdShared';
 
 interface IncomeExpensesTabProps {
+  data: MtdPeriodData;
   onNavigate: (tab: MtdTabValue) => void;
   onPending: (label: string) => void;
 }
@@ -57,11 +59,12 @@ function TotalRow({ label, value }: { label: string; value: number }) {
 }
 
 const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
+  data,
   onNavigate,
   onPending,
 }) => {
-  const totals = getPortfolioTotals();
-  const breakdown = getPropertyTotals();
+  const totals = getPortfolioTotals(data);
+  const breakdown = getPropertyTotals(data);
 
   return (
     <div className='space-y-4'>
@@ -88,7 +91,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {MTD_INCOME.map((entry) => (
+                {data.income.map((entry) => (
                   <TableRow key={entry.alias}>
                     <TableCell className='text-foreground font-medium'>
                       {getPropertyName(entry.property_alias)}
@@ -137,7 +140,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {MTD_EXPENSES.map((entry) => (
+                {data.expenses.map((entry) => (
                   <TableRow key={entry.alias}>
                     <TableCell className='text-foreground font-medium'>
                       {getPropertyName(entry.property_alias)}

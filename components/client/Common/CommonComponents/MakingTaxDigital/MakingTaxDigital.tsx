@@ -12,18 +12,19 @@ import {
   PoundSterling,
   Wallet,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  getMtdPeriodData,
   getPortfolioTotals,
-  MTD_LAST_UPDATED,
-  MTD_TRANSACTIONS,
-  MTD_TRENDS,
   sum,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
-import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import {
+  MtdPeriodData,
+  MtdTabValue,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   MtdStat,
   MtdStatCards,
@@ -47,8 +48,8 @@ const TABS: { value: MtdTabValue; label: string }[] = [
   { value: 'summary', label: 'Summary' },
 ];
 
-function getStats(tab: MtdTabValue): MtdStat[] {
-  const totals = getPortfolioTotals();
+function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
+  const totals = getPortfolioTotals(data);
   const propertiesStat: MtdStat = {
     icon: Home,
     label: 'Properties included',
@@ -63,51 +64,51 @@ function getStats(tab: MtdTabValue): MtdStat[] {
         icon: Wallet,
         label: 'Total finance costs',
         value: toAmount(totals.financeCosts),
-        trend: MTD_TRENDS.financeCosts,
+        trend: data.trends.financeCosts,
       },
       {
         icon: FileText,
         label: 'Total mortgage interest',
         value: toAmount(totals.mortgageInterest),
-        trend: 10,
+        trend: data.trends.mortgageInterest,
       },
       {
         icon: Landmark,
         label: 'Total other finance costs',
         value: toAmount(totals.otherFinanceCosts),
-        trend: 8,
+        trend: data.trends.otherFinanceCosts,
       },
       propertiesStat,
     ];
   }
 
   if (tab === 'transactions') {
-    const income = MTD_TRANSACTIONS.filter((t) => t.type === 'INCOME');
-    const expenses = MTD_TRANSACTIONS.filter((t) => t.type === 'EXPENSE');
+    const income = data.transactions.filter((t) => t.type === 'INCOME');
+    const expenses = data.transactions.filter((t) => t.type === 'EXPENSE');
     return [
       {
         icon: ArrowLeftRight,
         label: 'Total transactions',
-        value: String(MTD_TRANSACTIONS.length),
-        trend: MTD_TRENDS.transactions,
+        value: String(data.transactions.length),
+        trend: data.trends.transactions,
       },
       {
         icon: FileText,
         label: 'Total income transactions',
         value: String(income.length),
-        trend: 9,
+        trend: data.trends.incomeTransactions,
       },
       {
         icon: CreditCard,
         label: 'Total expense transactions',
         value: String(expenses.length),
-        trend: 2,
+        trend: data.trends.expenseTransactions,
       },
       {
         icon: PoundSterling,
         label: 'Total value',
-        value: toAmount(sum(MTD_TRANSACTIONS.map((t) => t.amount))),
-        trend: 7,
+        value: toAmount(sum(data.transactions.map((t) => t.amount))),
+        trend: data.trends.transactionValue,
       },
     ];
   }
@@ -117,19 +118,19 @@ function getStats(tab: MtdTabValue): MtdStat[] {
       icon: Wallet,
       label: 'Total rental income',
       value: toAmount(totals.income),
-      trend: MTD_TRENDS.income,
+      trend: data.trends.income,
     },
     {
       icon: FileText,
       label: 'Total allowable expenses',
       value: toAmount(totals.expenses),
-      trend: MTD_TRENDS.expenses,
+      trend: data.trends.expenses,
     },
     {
       icon: BarChart3,
       label: 'Property profit / (loss)',
       value: toAmount(totals.profit),
-      trend: MTD_TRENDS.profit,
+      trend: data.trends.profit,
     },
     propertiesStat,
   ];
@@ -139,6 +140,10 @@ const MakingTaxDigital: React.FC = () => {
   const [tab, setTab] = useState<MtdTabValue>('overview');
   const [quarter, setQuarter] = useState('Q1');
   const [taxYear, setTaxYear] = useState('2026/27');
+  const data = useMemo(
+    () => getMtdPeriodData(quarter, taxYear),
+    [quarter, taxYear],
+  );
 
   // Actions that need the MTD API; replace with real handlers once it exists
   const onPending = (label: string) =>
@@ -225,6 +230,17 @@ const MakingTaxDigital: React.FC = () => {
         onValueChange={(value) => setTab(value as MtdTabValue)}
         className='gap-6'
       >
+        <ReportingPeriod
+          quarter={quarter}
+          taxYear={taxYear}
+          onQuarterChange={setQuarter}
+          onTaxYearChange={setTaxYear}
+          status='DRAFT'
+          lastUpdated={data.lastUpdated}
+        />
+
+        <MtdStatCards stats={getStats(tab, data)} />
+
         <div className='border-border scrollbar-none overflow-x-auto overflow-y-hidden border-b pb-1.25 [&::-webkit-scrollbar]:hidden'>
           <TabsList variant='line' className='h-10! gap-2'>
             {TABS.map((t) => (
@@ -239,40 +255,43 @@ const MakingTaxDigital: React.FC = () => {
           </TabsList>
         </div>
 
-        <ReportingPeriod
-          quarter={quarter}
-          taxYear={taxYear}
-          onQuarterChange={setQuarter}
-          onTaxYearChange={setTaxYear}
-          status='DRAFT'
-          lastUpdated={MTD_LAST_UPDATED}
-        />
-
-        <MtdStatCards stats={getStats(tab)} />
-
         <TabsContent value='overview'>
-          <OverviewTab quickActions={transactionActions} onNavigate={setTab} />
+          <OverviewTab
+            data={data}
+            quickActions={transactionActions}
+            onNavigate={setTab}
+          />
         </TabsContent>
         <TabsContent value='income-expenses'>
-          <IncomeExpensesTab onNavigate={setTab} onPending={onPending} />
+          <IncomeExpensesTab
+            data={data}
+            onNavigate={setTab}
+            onPending={onPending}
+          />
         </TabsContent>
         <TabsContent value='properties'>
-          <PropertiesTab onPending={onPending} />
+          <PropertiesTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='finance-costs'>
           <FinanceCostsTab
+            data={data}
             quickActions={financeCostActions}
             onPending={onPending}
           />
         </TabsContent>
         <TabsContent value='transactions'>
           <TransactionsTab
+            data={data}
             quickActions={transactionActions}
             onPending={onPending}
           />
         </TabsContent>
         <TabsContent value='summary'>
-          <SummaryTab quickActions={summaryActions} onPending={onPending} />
+          <SummaryTab
+            data={data}
+            quickActions={summaryActions}
+            onPending={onPending}
+          />
         </TabsContent>
       </Tabs>
     </div>

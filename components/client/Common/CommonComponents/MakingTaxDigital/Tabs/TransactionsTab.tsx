@@ -30,11 +30,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { MtdPeriodData } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { formatDate } from '@/utils/formatters';
-import {
-  getPropertyName,
-  MTD_TRANSACTIONS,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { getPropertyName } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   IconBadge,
@@ -51,18 +49,20 @@ const PAGE_SIZE = 8;
 type TypeFilter = 'all' | 'INCOME' | 'EXPENSE';
 
 interface TransactionsTabProps {
+  data: MtdPeriodData;
   quickActions: QuickAction[];
   onPending: (label: string) => void;
 }
 
 const TransactionsTab: React.FC<TransactionsTabProps> = ({
+  data,
   quickActions,
   onPending,
 }) => {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [page, setPage] = useState(1);
 
-  const filtered = MTD_TRANSACTIONS.filter(
+  const filtered = data.transactions.filter(
     (tx) => typeFilter === 'all' || tx.type === typeFilter,
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));

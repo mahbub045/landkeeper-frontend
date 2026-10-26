@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { MtdPeriodData } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { getPortfolioTotals } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
@@ -26,12 +27,17 @@ import {
 } from '../Shared/MtdShared';
 
 interface SummaryTabProps {
+  data: MtdPeriodData;
   quickActions: QuickAction[];
   onPending: (label: string) => void;
 }
 
-const SummaryTab: React.FC<SummaryTabProps> = ({ quickActions, onPending }) => {
-  const totals = getPortfolioTotals();
+const SummaryTab: React.FC<SummaryTabProps> = ({
+  data,
+  quickActions,
+  onPending,
+}) => {
+  const totals = getPortfolioTotals(data);
   // Other property income (parking, utilities recharged, etc.) is not yet
   // tracked separately from rent
   const otherIncome = 0;

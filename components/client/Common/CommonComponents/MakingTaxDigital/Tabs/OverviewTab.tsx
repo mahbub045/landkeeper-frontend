@@ -12,11 +12,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MtdTabValue } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import {
+  MtdPeriodData,
+  MtdTabValue,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   getPortfolioTotals,
   getPropertyTotals,
-  MTD_TRENDS,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   QuickAction,
@@ -28,32 +30,34 @@ import {
 } from '../Shared/MtdShared';
 
 interface OverviewTabProps {
+  data: MtdPeriodData;
   quickActions: QuickAction[];
   onNavigate: (tab: MtdTabValue) => void;
 }
 
 const OverviewTab: React.FC<OverviewTabProps> = ({
+  data,
   quickActions,
   onNavigate,
 }) => {
-  const totals = getPortfolioTotals();
-  const rows = getPropertyTotals();
+  const totals = getPortfolioTotals(data);
+  const rows = getPropertyTotals(data);
 
   const miniStats = [
     {
       label: 'Total rental income',
       value: toAmount(totals.income),
-      trend: MTD_TRENDS.income,
+      trend: data.trends.income,
     },
     {
       label: 'Total allowable expenses',
       value: toAmount(totals.expenses),
-      trend: MTD_TRENDS.expenses,
+      trend: data.trends.expenses,
     },
     {
       label: 'Property profit / (loss)',
       value: toAmount(totals.profit),
-      trend: MTD_TRENDS.profit,
+      trend: data.trends.profit,
     },
     {
       label: 'Properties included',

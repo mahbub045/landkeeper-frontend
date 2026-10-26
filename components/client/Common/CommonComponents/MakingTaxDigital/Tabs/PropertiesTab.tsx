@@ -22,7 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MtdPropertyBusiness } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import {
+  MtdPeriodData,
+  MtdPropertyBusiness,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   getPortfolioTotals,
   getPropertyTotals,
@@ -45,15 +48,16 @@ const BUSINESS_OPTIONS: { value: MtdPropertyBusiness; label: string }[] = [
 ];
 
 interface PropertiesTabProps {
+  data: MtdPeriodData;
   onPending: (label: string) => void;
 }
 
-const PropertiesTab: React.FC<PropertiesTabProps> = ({ onPending }) => {
+const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, onPending }) => {
   const [propertyFilter, setPropertyFilter] = useState('all');
   const [business, setBusiness] = useState<MtdPropertyBusiness>('UK');
 
-  const totals = getPortfolioTotals();
-  const rows = getPropertyTotals().filter(
+  const totals = getPortfolioTotals(data);
+  const rows = getPropertyTotals(data).filter(
     (row) => propertyFilter === 'all' || row.property.alias === propertyFilter,
   );
 

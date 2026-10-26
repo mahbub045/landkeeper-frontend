@@ -4,10 +4,13 @@ import {
   MtdExpenseEntry,
   MtdFinanceCost,
   MtdIncomeEntry,
+  MtdPeriodData,
+  MtdPortfolioTotals,
   MtdProperty,
   MtdPropertyTotals,
   MtdQuarter,
   MtdTransaction,
+  MtdTrends,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 
 export const MTD_QUARTERS: MtdQuarter[] = [
@@ -46,7 +49,7 @@ export const MTD_PROPERTIES: MtdProperty[] = [
   },
 ];
 
-export const MTD_INCOME: MtdIncomeEntry[] = [
+const BASE_INCOME: MtdIncomeEntry[] = [
   {
     alias: 'inc-1',
     property_alias: 'riverside-view',
@@ -70,7 +73,7 @@ export const MTD_INCOME: MtdIncomeEntry[] = [
   },
 ];
 
-export const MTD_EXPENSES: MtdExpenseEntry[] = [
+const BASE_EXPENSES: MtdExpenseEntry[] = [
   {
     alias: 'exp-1',
     property_alias: 'riverside-view',
@@ -115,7 +118,7 @@ export const MTD_EXPENSES: MtdExpenseEntry[] = [
   },
 ];
 
-export const MTD_FINANCE_COSTS: MtdFinanceCost[] = [
+const BASE_FINANCE_COSTS: MtdFinanceCost[] = [
   {
     alias: 'fc-1',
     property_alias: 'riverside-view',
@@ -142,62 +145,150 @@ export const MTD_FINANCE_COSTS: MtdFinanceCost[] = [
   },
 ];
 
-export const MTD_TRANSACTIONS: MtdTransaction[] = [
-  ...MTD_INCOME.map((entry, index) => ({
-    alias: entry.alias,
-    date: entry.date,
-    property_alias: entry.property_alias,
-    type: 'INCOME' as const,
-    category: entry.income_type,
-    description: 'Rent payment – April',
-    amount: entry.amount,
-    reference: `R-${String(123 + index).padStart(5, '0')}`,
-  })),
-  ...MTD_EXPENSES.map((entry, index) => ({
-    alias: entry.alias,
-    date: entry.date,
-    property_alias: entry.property_alias,
-    type: 'EXPENSE' as const,
-    category: entry.category,
-    description: entry.category,
-    amount: entry.amount,
-    reference: `E-${String(45 + index).padStart(5, '0')}`,
-  })),
-].sort((a, b) => a.date.localeCompare(b.date));
-
-export const MTD_LAST_UPDATED = '2026-04-14T10:24:00';
+// The base entries above are Quarter 1 2026/27. Other periods are derived
+// from them so the page responds to the reporting period selector.
+const BASE_LAST_UPDATED = '2026-04-14T10:24:00';
 
 // Percentage change against the previous quarter, keyed by metric
-export const MTD_TRENDS = {
+const BASE_TRENDS: MtdTrends = {
   income: 12,
   expenses: 8,
   profit: 16,
   financeCosts: 12,
+  mortgageInterest: 10,
+  otherFinanceCosts: 8,
   transactions: 5,
+  incomeTransactions: 9,
+  expenseTransactions: 2,
+  transactionValue: 7,
 };
 
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 export const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
+
+// Moves an ISO date (or date-time) forward by whole months, keeping the day
+function shiftMonths(iso: string, months: number): string {
+  const [datePart, timePart] = iso.split('T');
+  const [year, month, day] = datePart.split('-').map(Number);
+  const total = year * 12 + (month - 1) + months;
+  const shifted = `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  return timePart ? `${shifted}T${timePart}` : shifted;
+}
+
+const monthName = (iso: string) => MONTHS[Number(iso.slice(5, 7)) - 1];
+
+export function getMtdPeriodData(
+  quarter: string,
+  taxYear: string,
+): MtdPeriodData {
+  const quarterIndex = Math.max(
+    0,
+    MTD_QUARTERS.findIndex((q) => q.value === quarter),
+  );
+  const yearsBack = Math.max(0, MTD_TAX_YEARS.indexOf(taxYear));
+  const monthOffset = quarterIndex * 3 - yearsBack * 12;
+
+  // Deterministic per-period variation; every multiplier is 1 for the base
+  // period. The seed nudges entries differently so rows don't all scale alike.
+  const factor = 1 + quarterIndex * 0.05 - yearsBack * 0.08;
+  const vary = (amount: number, seed: number) => {
+    const nudge = ((seed % 3) - 1) * quarterIndex * 0.02;
+    return Math.round((amount * (factor + nudge)) / 10) * 10;
+  };
+  const shift = (iso: string) => shiftMonths(iso, monthOffset);
+  const statementMonth = shift('2026-04-01');
+  const evidence = `Mortgage statement ${monthName(statementMonth).slice(0, 3)} ${statementMonth.slice(0, 4)}`;
+
+  const income = BASE_INCOME.map((entry, index) => ({
+    ...entry,
+    amount: vary(entry.amount, index),
+    date: shift(entry.date),
+  }));
+  const expenses = BASE_EXPENSES.map((entry, index) => ({
+    ...entry,
+    amount: vary(entry.amount, index + 1),
+    date: shift(entry.date),
+  }));
+  const financeCosts = BASE_FINANCE_COSTS.map((entry, index) => ({
+    ...entry,
+    mortgage_interest: vary(entry.mortgage_interest, index),
+    other_finance_costs: vary(entry.other_finance_costs, index + 2),
+    evidence,
+  }));
+
+  const transactions: MtdTransaction[] = [
+    ...income.map((entry, index) => ({
+      alias: entry.alias,
+      date: entry.date,
+      property_alias: entry.property_alias,
+      type: 'INCOME' as const,
+      category: entry.income_type,
+      description: `Rent payment – ${monthName(entry.date)}`,
+      amount: entry.amount,
+      reference: `R-${String(123 + index).padStart(5, '0')}`,
+    })),
+    ...expenses.map((entry, index) => ({
+      alias: entry.alias,
+      date: entry.date,
+      property_alias: entry.property_alias,
+      type: 'EXPENSE' as const,
+      category: entry.category,
+      description: entry.category,
+      amount: entry.amount,
+      reference: `E-${String(45 + index).padStart(5, '0')}`,
+    })),
+  ].sort((a, b) => a.date.localeCompare(b.date));
+
+  const trendShift = quarterIndex * 2 - yearsBack * 3;
+  const trends = { ...BASE_TRENDS };
+  for (const key of Object.keys(trends) as (keyof MtdTrends)[]) {
+    trends[key] = Math.max(1, trends[key] + trendShift);
+  }
+
+  return {
+    income,
+    expenses,
+    financeCosts,
+    transactions,
+    trends,
+    lastUpdated: shift(BASE_LAST_UPDATED),
+  };
+}
 
 export function getPropertyName(alias: string): string {
   return MTD_PROPERTIES.find((p) => p.alias === alias)?.name ?? '—';
 }
 
-export function getPropertyTotals(): MtdPropertyTotals[] {
+export function getPropertyTotals(data: MtdPeriodData): MtdPropertyTotals[] {
   return MTD_PROPERTIES.map((property) => {
     const income = sum(
-      MTD_INCOME.filter((e) => e.property_alias === property.alias).map(
-        (e) => e.amount,
-      ),
+      data.income
+        .filter((e) => e.property_alias === property.alias)
+        .map((e) => e.amount),
     );
     const expenses = sum(
-      MTD_EXPENSES.filter((e) => e.property_alias === property.alias).map(
-        (e) => e.amount,
-      ),
+      data.expenses
+        .filter((e) => e.property_alias === property.alias)
+        .map((e) => e.amount),
     );
     const financeCosts = sum(
-      MTD_FINANCE_COSTS.filter((e) => e.property_alias === property.alias).map(
-        (e) => e.mortgage_interest + e.other_finance_costs,
-      ),
+      data.financeCosts
+        .filter((e) => e.property_alias === property.alias)
+        .map((e) => e.mortgage_interest + e.other_finance_costs),
     );
     // Residential finance costs get a separate tax treatment, so they are
     // not deducted from profit here
@@ -211,14 +302,14 @@ export function getPropertyTotals(): MtdPropertyTotals[] {
   });
 }
 
-export function getPortfolioTotals() {
-  const income = sum(MTD_INCOME.map((e) => e.amount));
-  const expenses = sum(MTD_EXPENSES.map((e) => e.amount));
+export function getPortfolioTotals(data: MtdPeriodData): MtdPortfolioTotals {
+  const income = sum(data.income.map((e) => e.amount));
+  const expenses = sum(data.expenses.map((e) => e.amount));
   const mortgageInterest = sum(
-    MTD_FINANCE_COSTS.map((e) => e.mortgage_interest),
+    data.financeCosts.map((e) => e.mortgage_interest),
   );
   const otherFinanceCosts = sum(
-    MTD_FINANCE_COSTS.map((e) => e.other_finance_costs),
+    data.financeCosts.map((e) => e.other_finance_costs),
   );
   return {
     income,

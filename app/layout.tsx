@@ -35,15 +35,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
+      <body suppressHydrationWarning className='flex min-h-full flex-col'>
+        {/* beforeInteractive scripts are still injected into <head> by Next */}
         <Script
           src='https://cdn.affonso.io/js/pixel.min.js'
           data-affonso={process.env.NEXT_PUBLIC_AFFONSO_PROGRAM_ID}
           data-cookie-duration={process.env.NEXT_PUBLIC_AFFONSO_COOKIE_DURATION}
           strategy='beforeInteractive'
         />
-      </head>
-      <body suppressHydrationWarning className='flex min-h-full flex-col'>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

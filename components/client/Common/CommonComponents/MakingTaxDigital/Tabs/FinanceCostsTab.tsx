@@ -19,10 +19,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { MtdPeriodData } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   getPortfolioTotals,
   getPropertyName,
-  MTD_FINANCE_COSTS,
   MTD_PROPERTIES,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
@@ -38,17 +38,19 @@ import {
 } from '../Shared/MtdShared';
 
 interface FinanceCostsTabProps {
+  data: MtdPeriodData;
   quickActions: QuickAction[];
   onPending: (label: string) => void;
 }
 
 const FinanceCostsTab: React.FC<FinanceCostsTabProps> = ({
+  data,
   quickActions,
   onPending,
 }) => {
   const [propertyFilter, setPropertyFilter] = useState('all');
-  const totals = getPortfolioTotals();
-  const costs = MTD_FINANCE_COSTS.filter(
+  const totals = getPortfolioTotals(data);
+  const costs = data.financeCosts.filter(
     (c) => propertyFilter === 'all' || c.property_alias === propertyFilter,
   );
 
@@ -163,7 +165,7 @@ const FinanceCostsTab: React.FC<FinanceCostsTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {MTD_FINANCE_COSTS.map((cost) => (
+                {data.financeCosts.map((cost) => (
                   <TableRow key={cost.alias}>
                     <TableCell>
                       {getPropertyName(cost.property_alias)}
