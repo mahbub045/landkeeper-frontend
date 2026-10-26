@@ -251,3 +251,70 @@ textarea {
 .text_decoration_hover:focus-visible::after {
   transform: scaleX(1);
 }
+
+/* top page-transition loader: glossy gradient bar with soft moving stripes and a glowing tip */
+#nprogress .bar {
+  border-radius: 0 9999px 9999px 0;
+  background-color: var(--primary) !important;
+  background-image:
+    linear-gradient(to bottom, rgb(255 255 255 / 0.35), transparent 60%),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 8px,
+      rgb(255 255 255 / 0.28) 8px 16px
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in oklch, var(--primary) 35%, transparent),
+      var(--primary) 40%,
+      color-mix(in oklch, var(--primary) 75%, white)
+    ) !important;
+  background-size:
+    100% 100%,
+    22.63px 22.63px,
+    100% 100%;
+  animation: nprogress-stripes 0.5s linear infinite;
+  box-shadow:
+    0 0 8px color-mix(in oklch, var(--primary) 55%, transparent),
+    0 1px 3px color-mix(in oklch, var(--primary) 35%, transparent);
+}
+
+/* bright comet head at the leading edge */
+#nprogress .bar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  transform: translateY(-50%);
+  background: radial-gradient(
+    circle,
+    white 0 25%,
+    color-mix(in oklch, var(--primary) 80%, white) 45%,
+    transparent 70%
+  );
+  box-shadow: 0 0 12px 3px color-mix(in oklch, var(--primary) 60%, transparent);
+  animation: nprogress-pulse 1.2s ease-in-out infinite;
+}
+
+#nprogress .peg {
+  display: none !important;
+}
+
+@keyframes nprogress-stripes {
+  to {
+    background-position:
+      0 0,
+      22.63px 0,
+      0 0;
+  }
+}
+
+@keyframes nprogress-pulse {
+  50% {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(0.8);
+  }
+}

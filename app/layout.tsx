@@ -7,6 +7,7 @@ import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import Script from 'next/script';
+import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
 const geistSans = Geist({
@@ -42,6 +43,12 @@ export default function RootLayout({
           data-affonso={process.env.NEXT_PUBLIC_AFFONSO_PROGRAM_ID}
           data-cookie-duration={process.env.NEXT_PUBLIC_AFFONSO_COOKIE_DURATION}
           strategy='beforeInteractive'
+        />
+        <NextTopLoader
+          color='var(--primary)'
+          height={5}
+          showSpinner={false}
+          shadow={false}
         />
         <ThemeProvider
           attribute='class'
