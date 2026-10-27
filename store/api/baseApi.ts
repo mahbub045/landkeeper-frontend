@@ -27,6 +27,7 @@ export const TAG_TYPES = [
   'Permissions',
   'CommonPermissions',
   'StripeConnectStatus',
+  'DashboardSummary',
 
   // Super Admin Tags
   'Landlords',

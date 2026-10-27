@@ -16,7 +16,7 @@ export const FinanceApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Finance'],
+      invalidatesTags: ['Finance', 'DashboardSummary'],
     }),
     updateFinance: builder.mutation({
       query: ({ finance_alias, payload }) => ({
@@ -24,14 +24,14 @@ export const FinanceApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Finance'],
+      invalidatesTags: ['Finance', 'DashboardSummary'],
     }),
     deleteFinance: builder.mutation({
       query: ({ finance_alias }) => ({
         url: `/finance/${finance_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Finance'],
+      invalidatesTags: ['Finance', 'DashboardSummary'],
     }),
   }),
 });

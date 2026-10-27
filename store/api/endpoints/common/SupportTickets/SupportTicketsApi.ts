@@ -17,7 +17,7 @@ export const SupportTicketsApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['SupportTickets'],
+      invalidatesTags: ['SupportTickets', 'DashboardSummary'],
     }),
     getSupportTicketDetails: builder.query<
       ApiSupportTicketType,
@@ -35,14 +35,14 @@ export const SupportTicketsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['SupportTickets'],
+      invalidatesTags: ['SupportTickets', 'DashboardSummary'],
     }),
     deleteSupportTickets: builder.mutation({
       query: ({ ticket_alias }) => ({
         url: `/support-tickets/${ticket_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['SupportTickets'],
+      invalidatesTags: ['SupportTickets', 'DashboardSummary'],
     }),
   }),
 });

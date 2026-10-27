@@ -23,7 +23,7 @@ export const PropertyMaintenanceApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['PropertyMaintenance'],
+      invalidatesTags: ['PropertyMaintenance', 'DashboardSummary'],
     }),
     editPropertyMaintenance: builder.mutation({
       query: ({ alias, payload }) => ({
@@ -31,14 +31,14 @@ export const PropertyMaintenanceApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['PropertyMaintenance'],
+      invalidatesTags: ['PropertyMaintenance', 'DashboardSummary'],
     }),
     deletePropertyMaintenance: builder.mutation({
       query: (alias) => ({
         url: `/tenant/maintenance-requests/${alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['PropertyMaintenance'],
+      invalidatesTags: ['PropertyMaintenance', 'DashboardSummary'],
     }),
   }),
 });

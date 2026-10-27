@@ -16,7 +16,7 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Tenants'],
+      invalidatesTags: ['Tenants', 'DashboardSummary'],
     }),
     sendInvitation: builder.mutation({
       query: ({ tenant_alias }) => ({
@@ -31,7 +31,7 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Tenants'],
+      invalidatesTags: ['Tenants', 'DashboardSummary'],
     }),
     updateTenant: builder.mutation({
       query: ({ tenant_alias, payload }) => ({
@@ -39,14 +39,14 @@ export const TenantApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Tenants'],
+      invalidatesTags: ['Tenants', 'DashboardSummary'],
     }),
     deleteTenant: builder.mutation({
       query: ({ tenant_alias }) => ({
         url: `/tenants/${tenant_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Tenants'],
+      invalidatesTags: ['Tenants', 'DashboardSummary'],
     }),
   }),
 });

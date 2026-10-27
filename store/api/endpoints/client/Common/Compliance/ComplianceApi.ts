@@ -23,7 +23,7 @@ export const ComplianceApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Compliance'],
+      invalidatesTags: ['Compliance', 'DashboardSummary'],
     }),
     updateCompliance: builder.mutation({
       query: ({ compliance_alias, payload }) => ({
@@ -31,14 +31,14 @@ export const ComplianceApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Compliance'],
+      invalidatesTags: ['Compliance', 'DashboardSummary'],
     }),
     deleteCompliance: builder.mutation({
       query: ({ compliance_alias }) => ({
         url: `/compliance/${compliance_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Compliance'],
+      invalidatesTags: ['Compliance', 'DashboardSummary'],
     }),
   }),
 });
