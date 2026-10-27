@@ -47,21 +47,11 @@ export interface MtdPropertyTotals {
   profit: number;
 }
 
-export interface MtdTrends {
-  income: number;
-  expenses: number;
-  profit: number;
-  financeCosts: number;
-  mortgageInterest: number;
-  otherFinanceCosts: number;
-}
-
 // Everything recorded for one quarter of one tax year
 export interface MtdPeriodData {
   income: MtdIncomeEntry[];
   expenses: MtdExpenseEntry[];
   financeCosts: MtdFinanceCost[];
-  trends: MtdTrends;
 }
 
 export interface MtdPortfolioTotals {

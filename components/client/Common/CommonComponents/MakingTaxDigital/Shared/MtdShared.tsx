@@ -32,8 +32,6 @@ export interface MtdStat {
   icon: LucideIcon;
   label: string;
   value: string;
-  trend?: number;
-  caption?: string;
   tone?: 'positive' | 'neutral';
 }
 
@@ -58,20 +56,6 @@ export function MtdStatCards({ stats }: { stats: MtdStat[] }) {
               >
                 {stat.value}
               </p>
-              {stat.trend != null ? (
-                <p className='text-muted-foreground mt-1 text-xs'>
-                  <span className='font-semibold text-emerald-600 dark:text-emerald-400'>
-                    ▲ {stat.trend}%
-                  </span>{' '}
-                  vs previous quarter
-                </p>
-              ) : (
-                stat.caption && (
-                  <p className='text-muted-foreground mt-1 text-xs'>
-                    {stat.caption}
-                  </p>
-                )
-              )}
             </div>
           </CardContent>
         </Card>
@@ -159,15 +143,6 @@ export function RowActions({
       >
         <Trash2 />
       </Button>
-    </div>
-  );
-}
-
-export function InfoNote({ children }: { children: React.ReactNode }) {
-  return (
-    <div className='text-muted-foreground flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-xs dark:border-blue-900/40 dark:bg-blue-950/20'>
-      <Info className='mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400' />
-      <p>{children}</p>
     </div>
   );
 }

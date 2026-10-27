@@ -9,7 +9,6 @@ import {
   MtdProperty,
   MtdPropertyTotals,
   MtdQuarter,
-  MtdTrends,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 
 export const MTD_QUARTERS: MtdQuarter[] = [
@@ -144,16 +143,6 @@ const BASE_FINANCE_COSTS: MtdFinanceCost[] = [
   },
 ];
 
-// Percentage change against the previous quarter, keyed by metric
-const BASE_TRENDS: MtdTrends = {
-  income: 12,
-  expenses: 8,
-  profit: 16,
-  financeCosts: 12,
-  mortgageInterest: 10,
-  otherFinanceCosts: 8,
-};
-
 const MONTHS = [
   'January',
   'February',
@@ -171,13 +160,11 @@ const MONTHS = [
 
 const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
 
-// Moves an ISO date (or date-time) forward by whole months, keeping the day
+// Moves an ISO date forward by whole months, keeping the day
 function shiftMonths(iso: string, months: number): string {
-  const [datePart, timePart] = iso.split('T');
-  const [year, month, day] = datePart.split('-').map(Number);
+  const [year, month, day] = iso.split('-').map(Number);
   const total = year * 12 + (month - 1) + months;
-  const shifted = `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  return timePart ? `${shifted}T${timePart}` : shifted;
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 const monthName = (iso: string) => MONTHS[Number(iso.slice(5, 7)) - 1];
@@ -221,17 +208,10 @@ export function getMtdPeriodData(
     evidence,
   }));
 
-  const trendShift = quarterIndex * 2 - yearsBack * 3;
-  const trends = { ...BASE_TRENDS };
-  for (const key of Object.keys(trends) as (keyof MtdTrends)[]) {
-    trends[key] = Math.max(1, trends[key] + trendShift);
-  }
-
   return {
     income,
     expenses,
     financeCosts,
-    trends,
   };
 }
 

@@ -33,7 +33,6 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
     icon: Home,
     label: 'Properties included',
     value: String(totals.propertyCount),
-    caption: 'All properties selected',
     tone: 'neutral',
   };
 
@@ -43,19 +42,16 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
         icon: Wallet,
         label: 'Total finance costs',
         value: toAmount(totals.financeCosts),
-        trend: data.trends.financeCosts,
       },
       {
         icon: FileText,
         label: 'Total mortgage interest',
         value: toAmount(totals.mortgageInterest),
-        trend: data.trends.mortgageInterest,
       },
       {
         icon: Landmark,
         label: 'Total other finance costs',
         value: toAmount(totals.otherFinanceCosts),
-        trend: data.trends.otherFinanceCosts,
       },
       propertiesStat,
     ];
@@ -66,19 +62,16 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
       icon: Wallet,
       label: 'Total rental income',
       value: toAmount(totals.income),
-      trend: data.trends.income,
     },
     {
       icon: FileText,
       label: 'Total allowable expenses',
       value: toAmount(totals.expenses),
-      trend: data.trends.expenses,
     },
     {
       icon: BarChart3,
       label: 'Property profit / (loss)',
       value: toAmount(totals.profit),
-      trend: data.trends.profit,
     },
     propertiesStat,
   ];

@@ -29,7 +29,6 @@ import { getTodayInputDate } from '@/utils/formatters';
 import {
   HelpfulInfo,
   IconBadge,
-  InfoNote,
   SectionCard,
   TableFrame,
   toAmount,
@@ -163,11 +162,6 @@ const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
               </TableBody>
             </Table>
           </TableFrame>
-          <InfoNote>
-            Landkeeper will calculate these totals automatically from your
-            property-level entries. Keep UK and overseas property business
-            figures distinguishable where required.
-          </InfoNote>
         </SectionCard>
 
         <div>
@@ -232,6 +226,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
                 Landlord / authorised person
               </FieldLabel>
               <Input
+                type='text'
                 id='mtd-declaration-signatory'
                 value={declaration.signatory}
                 onChange={(e) => setField('signatory', e.target.value)}
