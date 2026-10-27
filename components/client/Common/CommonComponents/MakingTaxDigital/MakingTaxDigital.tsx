@@ -34,15 +34,13 @@ import {
 import ReportingPeriod from './Shared/ReportingPeriod';
 import FinanceCostsTab from './Tabs/FinanceCostsTab';
 import IncomeExpensesTab from './Tabs/IncomeExpensesTab';
-import OverviewTab from './Tabs/OverviewTab';
 import PropertiesTab from './Tabs/PropertiesTab';
 import SummaryTab from './Tabs/SummaryTab';
 import TransactionsTab from './Tabs/TransactionsTab';
 
 const TABS: { value: MtdTabValue; label: string }[] = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'income-expenses', label: 'Income & Expenses' },
   { value: 'properties', label: 'Properties' },
+  { value: 'income-expenses', label: 'Income & Expenses' },
   { value: 'finance-costs', label: 'Finance Costs' },
   { value: 'transactions', label: 'Transactions' },
   { value: 'summary', label: 'Summary' },
@@ -137,7 +135,7 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
 }
 
 const MakingTaxDigital: React.FC = () => {
-  const [tab, setTab] = useState<MtdTabValue>('overview');
+  const [tab, setTab] = useState<MtdTabValue>('properties');
   const [quarter, setQuarter] = useState('Q1');
   const [taxYear, setTaxYear] = useState('2026/27');
   const data = useMemo(
@@ -204,7 +202,7 @@ const MakingTaxDigital: React.FC = () => {
       icon: FileText,
       title: 'View full report',
       description: 'See a detailed breakdown of all figures',
-      onClick: () => setTab('overview'),
+      onClick: () => setTab('income-expenses'),
     },
     {
       ...downloadReport,
@@ -255,12 +253,8 @@ const MakingTaxDigital: React.FC = () => {
           </TabsList>
         </div>
 
-        <TabsContent value='overview'>
-          <OverviewTab
-            data={data}
-            quickActions={transactionActions}
-            onNavigate={setTab}
-          />
+        <TabsContent value='properties'>
+          <PropertiesTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='income-expenses'>
           <IncomeExpensesTab
@@ -268,9 +262,6 @@ const MakingTaxDigital: React.FC = () => {
             onNavigate={setTab}
             onPending={onPending}
           />
-        </TabsContent>
-        <TabsContent value='properties'>
-          <PropertiesTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='finance-costs'>
           <FinanceCostsTab

@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Building2, Download, Home, Plus } from 'lucide-react';
+import { Building2, Download, Home, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -23,14 +23,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  MtdPeriodData,
-  MtdPropertyBusiness,
-} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import {
-  getPortfolioTotals,
   getPropertyTotals,
   MTD_PROPERTIES,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import {
+  MtdPeriodData,
+  MtdPropertyBusiness,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import {
   HelpfulInfo,
   IconBadge,
@@ -56,7 +55,6 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, onPending }) => {
   const [propertyFilter, setPropertyFilter] = useState('all');
   const [business, setBusiness] = useState<MtdPropertyBusiness>('UK');
 
-  const totals = getPortfolioTotals(data);
   const rows = getPropertyTotals(data).filter(
     (row) => propertyFilter === 'all' || row.property.alias === propertyFilter,
   );
@@ -71,7 +69,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, onPending }) => {
           action={
             <>
               <Button onClick={() => onPending('Add property')}>
-                <Plus /> Add property
+                <Plus />
+                Select property
               </Button>
               <Select value={propertyFilter} onValueChange={setPropertyFilter}>
                 <SelectTrigger className='w-40'>
@@ -136,29 +135,6 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, onPending }) => {
               </TableBody>
             </Table>
           </TableFrame>
-
-          <div className='rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 dark:border-blue-900/40 dark:bg-blue-950/20'>
-            <div className='mb-3 flex items-center gap-2'>
-              <BarChart3 className='size-5 text-blue-600 dark:text-blue-400' />
-              <p className='text-foreground text-sm font-semibold'>
-                Portfolio totals
-              </p>
-            </div>
-            <div className='divide-border grid grid-cols-1 gap-3 sm:grid-cols-3 sm:divide-x'>
-              {[
-                ['Total rental income', totals.income],
-                ['Total allowable expenses', totals.expenses],
-                ['Net property profit / (loss)', totals.profit],
-              ].map(([label, value]) => (
-                <div key={label} className='sm:px-4'>
-                  <p className='text-muted-foreground text-xs'>{label}</p>
-                  <p className='text-lg font-bold text-emerald-600 tabular-nums dark:text-emerald-400'>
-                    {toAmount(value as number)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
 
           <InfoNote>
             Add every relevant property for this reporting period. Flag

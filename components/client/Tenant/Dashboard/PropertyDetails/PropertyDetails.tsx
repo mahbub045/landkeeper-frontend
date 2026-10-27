@@ -1,7 +1,7 @@
 const PropertyDetails: React.FC = () => {
   return (
     <div>
-      {/* JSX here */}
+      {/* JSX here */}test
     </div>
   );
 };

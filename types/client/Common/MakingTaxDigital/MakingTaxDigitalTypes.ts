@@ -1,7 +1,6 @@
 export type MtdTabValue =
-  | 'overview'
-  | 'income-expenses'
   | 'properties'
+  | 'income-expenses'
   | 'finance-costs'
   | 'transactions'
   | 'summary';
