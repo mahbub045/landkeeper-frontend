@@ -20,7 +20,7 @@ export const MTD_QUARTERS: MtdQuarter[] = [
 
 export const MTD_TAX_YEARS = ['2026/27', '2025/26', '2024/25'];
 
-const MTD_PROPERTIES: MtdProperty[] = [
+export const MTD_PROPERTIES: MtdProperty[] = [
   {
     alias: 'riverside-view',
     name: 'Riverside View',
@@ -219,6 +219,29 @@ export function getPropertyName(alias: string): string {
   return MTD_PROPERTIES.find((p) => p.alias === alias)?.name ?? '—';
 }
 
+// Narrows a period to the properties selected in the properties table
+export function filterPeriodByProperties(
+  data: MtdPeriodData,
+  aliases: string[],
+): MtdPeriodData {
+  const matches = (e: { property_alias: string }) =>
+    aliases.includes(e.property_alias);
+  return {
+    income: data.income.filter(matches),
+    expenses: data.expenses.filter(matches),
+    financeCosts: data.financeCosts.filter(matches),
+  };
+}
+
+// How totals are labelled, e.g. "all properties" or "Oak Cottage"
+export function getScopeLabel(properties: MtdProperty[]): string {
+  if (properties.length === 1) return properties[0].name;
+  if (properties.length === MTD_PROPERTIES.length) return 'all properties';
+  return `${properties.length} selected properties`;
+}
+
+// Residential finance costs get a separate tax treatment, so they are not
+// deducted from profit here
 export function getPropertyTotals(data: MtdPeriodData): MtdPropertyTotals[] {
   return MTD_PROPERTIES.map((property) => {
     const income = sum(
@@ -231,18 +254,14 @@ export function getPropertyTotals(data: MtdPeriodData): MtdPropertyTotals[] {
         .filter((e) => e.property_alias === property.alias)
         .map((e) => e.amount),
     );
-    // Residential finance costs get a separate tax treatment, so they are
-    // not deducted from profit here
-    return {
-      property,
-      income,
-      expenses,
-      profit: income - expenses,
-    };
+    return { property, income, expenses, profit: income - expenses };
   });
 }
 
-export function getPortfolioTotals(data: MtdPeriodData): MtdPortfolioTotals {
+export function getPortfolioTotals(
+  data: MtdPeriodData,
+  propertyCount: number = MTD_PROPERTIES.length,
+): MtdPortfolioTotals {
   const income = sum(data.income.map((e) => e.amount));
   const expenses = sum(data.expenses.map((e) => e.amount));
   const mortgageInterest = sum(
@@ -258,6 +277,6 @@ export function getPortfolioTotals(data: MtdPeriodData): MtdPortfolioTotals {
     mortgageInterest,
     otherFinanceCosts,
     financeCosts: mortgageInterest + otherFinanceCosts,
-    propertyCount: MTD_PROPERTIES.length,
+    propertyCount,
   };
 }

@@ -10,8 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MtdPeriodData } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { getPropertyName } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { MtdTabProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import {
+  getPropertyName,
+  getScopeLabel,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
   RowActions,
@@ -20,28 +23,27 @@ import {
   toAmount,
 } from '../Shared/MtdShared';
 
-interface FinanceCostsTabProps {
-  data: MtdPeriodData;
-  onPending: (label: string) => void;
-}
-
-const FinanceCostsTab: React.FC<FinanceCostsTabProps> = ({
+const FinanceCostsTab: React.FC<MtdTabProps> = ({
   data,
+  properties,
   onPending,
 }) => {
+  // One property needs no per-row property column
+  const showProperty = properties.length > 1;
+
   return (
     <div className='grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]'>
       <div className='space-y-4'>
         <SectionCard
           icon={Landmark}
           title='Finance costs'
-          description='Record your finance costs for each property separately.'
+          description={`Finance costs recorded for ${getScopeLabel(properties)}.`}
         >
           <TableFrame>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Property</TableHead>
+                  {showProperty && <TableHead>Property</TableHead>}
                   <TableHead>Mortgage interest (£)</TableHead>
                   <TableHead>Other finance costs (£)</TableHead>
                   <TableHead>Lender / reference</TableHead>
@@ -52,9 +54,11 @@ const FinanceCostsTab: React.FC<FinanceCostsTabProps> = ({
               <TableBody>
                 {data.financeCosts.map((cost) => (
                   <TableRow key={cost.alias}>
-                    <TableCell className='text-foreground font-medium'>
-                      {getPropertyName(cost.property_alias)}
-                    </TableCell>
+                    {showProperty && (
+                      <TableCell className='text-foreground font-medium'>
+                        {getPropertyName(cost.property_alias)}
+                      </TableCell>
+                    )}
                     <TableCell className='tabular-nums'>
                       {toAmount(cost.mortgage_interest)}
                     </TableCell>

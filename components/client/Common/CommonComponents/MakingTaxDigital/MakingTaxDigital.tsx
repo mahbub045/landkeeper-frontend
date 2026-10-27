@@ -1,38 +1,54 @@
 'use client';
 
-import { BarChart3, FileText, Home, Landmark, Wallet } from 'lucide-react';
+import {
+  BarChart3,
+  FileSpreadsheet,
+  FileText,
+  Home,
+  Landmark,
+  LucideIcon,
+  Receipt,
+  Wallet,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  filterPeriodByProperties,
   getMtdPeriodData,
   getPortfolioTotals,
+  getPropertyTotals,
+  MTD_PROPERTIES,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   MtdPeriodData,
   MtdTabValue,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { MtdStat, MtdStatCards, toAmount } from './Shared/MtdShared';
+import MtdPropertiesTable from './Shared/MtdPropertiesTable';
+import { IconBadge, MtdStat, MtdStatCards, toAmount } from './Shared/MtdShared';
 import ReportingPeriod from './Shared/ReportingPeriod';
 import FinanceCostsTab from './Tabs/FinanceCostsTab';
 import IncomeExpensesTab from './Tabs/IncomeExpensesTab';
-import PropertiesTab from './Tabs/PropertiesTab';
 import SummaryTab from './Tabs/SummaryTab';
 
-const TABS: { value: MtdTabValue; label: string }[] = [
-  { value: 'properties', label: 'Properties' },
-  { value: 'income-expenses', label: 'Income & Expenses' },
-  { value: 'finance-costs', label: 'Finance Costs' },
-  { value: 'summary', label: 'Summary' },
+const TABS: { value: MtdTabValue; label: string; icon: LucideIcon }[] = [
+  { value: 'income-expenses', label: 'Income & Expenses', icon: Receipt },
+  { value: 'finance-costs', label: 'Finance Costs', icon: Landmark },
+  { value: 'summary', label: 'Summary', icon: FileSpreadsheet },
 ];
 
-function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
-  const totals = getPortfolioTotals(data);
+function getStats(
+  tab: MtdTabValue,
+  data: MtdPeriodData,
+  propertyCount: number,
+): MtdStat[] {
+  const totals = getPortfolioTotals(data, propertyCount);
   const propertiesStat: MtdStat = {
     icon: Home,
     label: 'Properties included',
-    value: String(totals.propertyCount),
+    value: `${totals.propertyCount} of ${MTD_PROPERTIES.length}`,
     tone: 'neutral',
   };
 
@@ -78,12 +94,22 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
 }
 
 const MakingTaxDigital: React.FC = () => {
-  const [tab, setTab] = useState<MtdTabValue>('properties');
+  const [tab, setTab] = useState<MtdTabValue>('income-expenses');
   const [quarter, setQuarter] = useState('Q1');
   const [taxYear, setTaxYear] = useState('2026/27');
-  const data = useMemo(
+  const [selected, setSelected] = useState<string[]>(() =>
+    MTD_PROPERTIES.map((p) => p.alias),
+  );
+  const periodData = useMemo(
     () => getMtdPeriodData(quarter, taxYear),
     [quarter, taxYear],
+  );
+  const data = useMemo(
+    () => filterPeriodByProperties(periodData, selected),
+    [periodData, selected],
+  );
+  const selectedProperties = MTD_PROPERTIES.filter((p) =>
+    selected.includes(p.alias),
   );
 
   // Actions that need the MTD API; replace with real handlers once it exists
@@ -102,47 +128,82 @@ const MakingTaxDigital: React.FC = () => {
         </p>
       </div>
 
-      <Tabs
-        value={tab}
-        onValueChange={(value) => setTab(value as MtdTabValue)}
-        className='gap-6'
-      >
-        <ReportingPeriod
-          quarter={quarter}
-          taxYear={taxYear}
-          onQuarterChange={setQuarter}
-          onTaxYearChange={setTaxYear}
-        />
+      <ReportingPeriod
+        quarter={quarter}
+        taxYear={taxYear}
+        onQuarterChange={setQuarter}
+        onTaxYearChange={setTaxYear}
+      />
 
-        <MtdStatCards stats={getStats(tab, data)} />
+      <MtdPropertiesTable
+        rows={getPropertyTotals(periodData)}
+        selected={selected}
+        onSelectedChange={setSelected}
+      />
 
-        <div className='border-border scrollbar-none overflow-x-auto overflow-y-hidden border-b pb-1.25 [&::-webkit-scrollbar]:hidden'>
-          <TabsList variant='line' className='h-10! gap-2'>
-            {TABS.map((t) => (
-              <TabsTrigger
-                key={t.value}
-                value={t.value}
-                className='cursor-pointer px-3 after:bg-blue-600 data-active:text-blue-700 dark:data-active:text-blue-400'
-              >
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+      {selectedProperties.length === 0 ? (
+        <Card className='border-border rounded-2xl border-dashed shadow-none'>
+          <CardContent className='flex flex-col items-center gap-3 py-10 text-center'>
+            <IconBadge icon={Home} />
+            <div>
+              <p className='text-foreground text-sm font-semibold'>
+                No properties selected
+              </p>
+              <p className='text-muted-foreground text-xs'>
+                Tick at least one property above to see its income, expenses and
+                summary.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Tabs
+          value={tab}
+          onValueChange={(value) => setTab(value as MtdTabValue)}
+          className='gap-6'
+        >
+          <MtdStatCards
+            stats={getStats(tab, data, selectedProperties.length)}
+          />
 
-        <TabsContent value='properties'>
-          <PropertiesTab data={data} onPending={onPending} />
-        </TabsContent>
-        <TabsContent value='income-expenses'>
-          <IncomeExpensesTab data={data} onPending={onPending} />
-        </TabsContent>
-        <TabsContent value='finance-costs'>
-          <FinanceCostsTab data={data} onPending={onPending} />
-        </TabsContent>
-        <TabsContent value='summary'>
-          <SummaryTab data={data} onPending={onPending} />
-        </TabsContent>
-      </Tabs>
+          <div className='border-border scrollbar-none overflow-x-auto overflow-y-hidden border-b pb-1.25 [&::-webkit-scrollbar]:hidden'>
+            <TabsList variant='line' className='h-10! gap-2'>
+              {TABS.map((t) => (
+                <TabsTrigger
+                  key={t.value}
+                  value={t.value}
+                  className='cursor-pointer gap-2 px-3 after:bg-blue-600 data-active:text-blue-700 dark:data-active:text-blue-400'
+                >
+                  <t.icon className='size-4' />
+                  {t.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+
+          <TabsContent value='income-expenses'>
+            <IncomeExpensesTab
+              data={data}
+              properties={selectedProperties}
+              onPending={onPending}
+            />
+          </TabsContent>
+          <TabsContent value='finance-costs'>
+            <FinanceCostsTab
+              data={data}
+              properties={selectedProperties}
+              onPending={onPending}
+            />
+          </TabsContent>
+          <TabsContent value='summary'>
+            <SummaryTab
+              data={data}
+              properties={selectedProperties}
+              onPending={onPending}
+            />
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };

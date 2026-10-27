@@ -18,12 +18,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { getPortfolioTotals } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import {
+  getPortfolioTotals,
+  getScopeLabel,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
 import {
   MtdDeclarationCheck,
   MtdDeclarationForm,
-  MtdPeriodData,
+  MtdTabProps,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { getTodayInputDate } from '@/utils/formatters';
 import {
@@ -60,12 +63,7 @@ const EMPTY_DECLARATION: MtdDeclarationForm = {
   notes: '',
 };
 
-interface SummaryTabProps {
-  data: MtdPeriodData;
-  onPending: (label: string) => void;
-}
-
-const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
+const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
   const [declaration, setDeclaration] =
     useState<MtdDeclarationForm>(EMPTY_DECLARATION);
   const setField = <K extends keyof MtdDeclarationForm>(
@@ -78,7 +76,8 @@ const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
       (value) => value.trim() !== '',
     );
 
-  const totals = getPortfolioTotals(data);
+  const totals = getPortfolioTotals(data, properties.length);
+  const scope = getScopeLabel(properties);
   // Other property income (parking, utilities recharged, etc.) is not yet
   // tracked separately from rent
   const otherIncome = 0;
@@ -87,7 +86,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
     {
       category: 'Total rental income',
       amount: toAmount(totals.income),
-      notes: 'From all included properties',
+      notes: `From ${scope}`,
     },
     {
       category: 'Total other property income',
@@ -130,7 +129,7 @@ const SummaryTab: React.FC<SummaryTabProps> = ({ data, onPending }) => {
         <SectionCard
           icon={FileSpreadsheet}
           title='MTD Summary'
-          description='A summary of your quarterly updates and annual totals for this period.'
+          description={`Quarterly updates and annual totals for ${scope}.`}
         >
           <TableFrame>
             <Table>

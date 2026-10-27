@@ -1,5 +1,4 @@
-export type MtdTabValue =
-  'properties' | 'income-expenses' | 'finance-costs' | 'summary';
+export type MtdTabValue = 'income-expenses' | 'finance-costs' | 'summary';
 
 export interface MtdQuarter {
   value: string;
@@ -40,18 +39,18 @@ export interface MtdFinanceCost {
   evidence: string;
 }
 
-export interface MtdPropertyTotals {
-  property: MtdProperty;
-  income: number;
-  expenses: number;
-  profit: number;
-}
-
 // Everything recorded for one quarter of one tax year
 export interface MtdPeriodData {
   income: MtdIncomeEntry[];
   expenses: MtdExpenseEntry[];
   financeCosts: MtdFinanceCost[];
+}
+
+export interface MtdPropertyTotals {
+  property: MtdProperty;
+  income: number;
+  expenses: number;
+  profit: number;
 }
 
 export interface MtdPortfolioTotals {
@@ -72,6 +71,19 @@ export interface MtdDeclarationForm {
   signatory: string;
   date: string;
   notes: string;
+}
+
+// Shared by every tab; `properties` are the ones ticked in the properties table
+export interface MtdTabProps {
+  data: MtdPeriodData;
+  properties: MtdProperty[];
+  onPending: (label: string) => void;
+}
+
+export interface MtdPropertiesTableProps {
+  rows: MtdPropertyTotals[];
+  selected: string[];
+  onSelectedChange: (aliases: string[]) => void;
 }
 
 export type MtdDeclarationCheck =

@@ -19,8 +19,9 @@ import {
 import {
   getPortfolioTotals,
   getPropertyName,
+  getScopeLabel,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
-import { MtdPeriodData } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import { MtdTabProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { formatDate } from '@/utils/formatters';
 import {
   HelpfulInfo,
@@ -29,11 +30,6 @@ import {
   TableFrame,
   toAmount,
 } from '../Shared/MtdShared';
-
-interface IncomeExpensesTabProps {
-  data: MtdPeriodData;
-  onPending: (label: string) => void;
-}
 
 function TotalRow({ label, value }: { label: string; value: number }) {
   return (
@@ -49,11 +45,15 @@ function TotalRow({ label, value }: { label: string; value: number }) {
   );
 }
 
-const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
+const IncomeExpensesTab: React.FC<MtdTabProps> = ({
   data,
+  properties,
   onPending,
 }) => {
-  const totals = getPortfolioTotals(data);
+  const totals = getPortfolioTotals(data, properties.length);
+  const scope = getScopeLabel(properties);
+  // One property needs no per-row property column
+  const showProperty = properties.length > 1;
 
   return (
     <div className='space-y-4'>
@@ -67,7 +67,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Property</TableHead>
+                  {showProperty && <TableHead>Property</TableHead>}
                   <TableHead>Income type</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date received</TableHead>
@@ -77,9 +77,11 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
               <TableBody>
                 {data.income.map((entry) => (
                   <TableRow key={entry.alias}>
-                    <TableCell className='text-foreground font-medium'>
-                      {getPropertyName(entry.property_alias)}
-                    </TableCell>
+                    {showProperty && (
+                      <TableCell className='text-foreground font-medium'>
+                        {getPropertyName(entry.property_alias)}
+                      </TableCell>
+                    )}
                     <TableCell>{entry.income_type}</TableCell>
                     <TableCell className='tabular-nums'>
                       {toAmount(entry.amount)}
@@ -94,7 +96,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
             </Table>
           </TableFrame>
           <TotalRow
-            label='Total rental income (all properties)'
+            label={`Total rental income (${scope})`}
             value={totals.income}
           />
         </SectionCard>
@@ -108,7 +110,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Property</TableHead>
+                  {showProperty && <TableHead>Property</TableHead>}
                   <TableHead>Expense category</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date paid</TableHead>
@@ -118,9 +120,11 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
               <TableBody>
                 {data.expenses.map((entry) => (
                   <TableRow key={entry.alias}>
-                    <TableCell className='text-foreground font-medium'>
-                      {getPropertyName(entry.property_alias)}
-                    </TableCell>
+                    {showProperty && (
+                      <TableCell className='text-foreground font-medium'>
+                        {getPropertyName(entry.property_alias)}
+                      </TableCell>
+                    )}
                     <TableCell>{entry.category}</TableCell>
                     <TableCell className='tabular-nums'>
                       {toAmount(entry.amount)}
@@ -137,7 +141,7 @@ const IncomeExpensesTab: React.FC<IncomeExpensesTabProps> = ({
             </Table>
           </TableFrame>
           <TotalRow
-            label='Total allowable expenses (all properties)'
+            label={`Total allowable expenses (${scope})`}
             value={totals.expenses}
           />
         </SectionCard>
