@@ -1,13 +1,7 @@
 export type MtdTabValue =
-  | 'properties'
-  | 'income-expenses'
-  | 'finance-costs'
-  | 'transactions'
-  | 'summary';
+  'properties' | 'income-expenses' | 'finance-costs' | 'summary';
 
 export type MtdSubmissionStatus = 'DRAFT' | 'READY' | 'SUBMITTED';
-
-export type MtdPropertyBusiness = 'UK' | 'OVERSEAS' | 'BOTH';
 
 export interface MtdQuarter {
   value: string;
@@ -48,17 +42,6 @@ export interface MtdFinanceCost {
   evidence: string;
 }
 
-export interface MtdTransaction {
-  alias: string;
-  date: string;
-  property_alias: string;
-  type: 'INCOME' | 'EXPENSE';
-  category: string;
-  description: string;
-  amount: number;
-  reference: string;
-}
-
 export interface MtdPropertyTotals {
   property: MtdProperty;
   income: number;
@@ -74,10 +57,6 @@ export interface MtdTrends {
   financeCosts: number;
   mortgageInterest: number;
   otherFinanceCosts: number;
-  transactions: number;
-  incomeTransactions: number;
-  expenseTransactions: number;
-  transactionValue: number;
 }
 
 // Everything recorded for one quarter of one tax year
@@ -85,7 +64,6 @@ export interface MtdPeriodData {
   income: MtdIncomeEntry[];
   expenses: MtdExpenseEntry[];
   financeCosts: MtdFinanceCost[];
-  transactions: MtdTransaction[];
   trends: MtdTrends;
   lastUpdated: string;
 }
@@ -99,3 +77,16 @@ export interface MtdPortfolioTotals {
   financeCosts: number;
   propertyCount: number;
 }
+
+// Sign-off required before the annual summary can be downloaded
+export interface MtdDeclarationForm {
+  propertiesIncluded: boolean;
+  entriesChecked: boolean;
+  itemsFlagged: boolean;
+  signatory: string;
+  date: string;
+  notes: string;
+}
+
+export type MtdDeclarationCheck =
+  'propertiesIncluded' | 'entriesChecked' | 'itemsFlagged';

@@ -9,7 +9,6 @@ import {
   MtdProperty,
   MtdPropertyTotals,
   MtdQuarter,
-  MtdTransaction,
   MtdTrends,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 
@@ -157,10 +156,6 @@ const BASE_TRENDS: MtdTrends = {
   financeCosts: 12,
   mortgageInterest: 10,
   otherFinanceCosts: 8,
-  transactions: 5,
-  incomeTransactions: 9,
-  expenseTransactions: 2,
-  transactionValue: 7,
 };
 
 const MONTHS = [
@@ -230,29 +225,6 @@ export function getMtdPeriodData(
     evidence,
   }));
 
-  const transactions: MtdTransaction[] = [
-    ...income.map((entry, index) => ({
-      alias: entry.alias,
-      date: entry.date,
-      property_alias: entry.property_alias,
-      type: 'INCOME' as const,
-      category: entry.income_type,
-      description: `Rent payment – ${monthName(entry.date)}`,
-      amount: entry.amount,
-      reference: `R-${String(123 + index).padStart(5, '0')}`,
-    })),
-    ...expenses.map((entry, index) => ({
-      alias: entry.alias,
-      date: entry.date,
-      property_alias: entry.property_alias,
-      type: 'EXPENSE' as const,
-      category: entry.category,
-      description: entry.category,
-      amount: entry.amount,
-      reference: `E-${String(45 + index).padStart(5, '0')}`,
-    })),
-  ].sort((a, b) => a.date.localeCompare(b.date));
-
   const trendShift = quarterIndex * 2 - yearsBack * 3;
   const trends = { ...BASE_TRENDS };
   for (const key of Object.keys(trends) as (keyof MtdTrends)[]) {
@@ -263,7 +235,6 @@ export function getMtdPeriodData(
     income,
     expenses,
     financeCosts,
-    transactions,
     trends,
     lastUpdated: shift(BASE_LAST_UPDATED),
   };

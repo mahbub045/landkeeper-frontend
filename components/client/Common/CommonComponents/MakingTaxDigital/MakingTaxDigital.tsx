@@ -1,17 +1,6 @@
 'use client';
 
-import {
-  ArrowLeftRight,
-  BarChart3,
-  CirclePlus,
-  CreditCard,
-  Download,
-  FileText,
-  Home,
-  Landmark,
-  PoundSterling,
-  Wallet,
-} from 'lucide-react';
+import { BarChart3, FileText, Home, Landmark, Wallet } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -19,30 +8,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getMtdPeriodData,
   getPortfolioTotals,
-  sum,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   MtdPeriodData,
   MtdTabValue,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import {
-  MtdStat,
-  MtdStatCards,
-  QuickAction,
-  toAmount,
-} from './Shared/MtdShared';
+import { MtdStat, MtdStatCards, toAmount } from './Shared/MtdShared';
 import ReportingPeriod from './Shared/ReportingPeriod';
 import FinanceCostsTab from './Tabs/FinanceCostsTab';
 import IncomeExpensesTab from './Tabs/IncomeExpensesTab';
 import PropertiesTab from './Tabs/PropertiesTab';
 import SummaryTab from './Tabs/SummaryTab';
-import TransactionsTab from './Tabs/TransactionsTab';
 
 const TABS: { value: MtdTabValue; label: string }[] = [
   { value: 'properties', label: 'Properties' },
   { value: 'income-expenses', label: 'Income & Expenses' },
   { value: 'finance-costs', label: 'Finance Costs' },
-  { value: 'transactions', label: 'Transactions' },
   { value: 'summary', label: 'Summary' },
 ];
 
@@ -77,37 +58,6 @@ function getStats(tab: MtdTabValue, data: MtdPeriodData): MtdStat[] {
         trend: data.trends.otherFinanceCosts,
       },
       propertiesStat,
-    ];
-  }
-
-  if (tab === 'transactions') {
-    const income = data.transactions.filter((t) => t.type === 'INCOME');
-    const expenses = data.transactions.filter((t) => t.type === 'EXPENSE');
-    return [
-      {
-        icon: ArrowLeftRight,
-        label: 'Total transactions',
-        value: String(data.transactions.length),
-        trend: data.trends.transactions,
-      },
-      {
-        icon: FileText,
-        label: 'Total income transactions',
-        value: String(income.length),
-        trend: data.trends.incomeTransactions,
-      },
-      {
-        icon: CreditCard,
-        label: 'Total expense transactions',
-        value: String(expenses.length),
-        trend: data.trends.expenseTransactions,
-      },
-      {
-        icon: PoundSterling,
-        label: 'Total value',
-        value: toAmount(sum(data.transactions.map((t) => t.amount))),
-        trend: data.trends.transactionValue,
-      },
     ];
   }
 
@@ -147,70 +97,6 @@ const MakingTaxDigital: React.FC = () => {
   const onPending = (label: string) =>
     toast.info(`${label} will be available soon.`);
 
-  const manageProperties: QuickAction = {
-    icon: Home,
-    title: 'Manage properties',
-    description: 'Edit property details and settings',
-    onClick: () => setTab('properties'),
-  };
-  const downloadReport: QuickAction = {
-    icon: Download,
-    title: 'Download report',
-    description: 'Export your MTD summary',
-    onClick: () => onPending('Download report'),
-  };
-  const transactionActions: QuickAction[] = [
-    {
-      icon: CirclePlus,
-      title: 'Add transaction',
-      description: 'Record a new income or expense',
-      onClick: () => onPending('Add transaction'),
-    },
-    {
-      icon: FileText,
-      title: 'View all transactions',
-      description: 'Browse your transaction records',
-      onClick: () => setTab('transactions'),
-    },
-    manageProperties,
-    downloadReport,
-  ];
-  const financeCostActions: QuickAction[] = [
-    {
-      icon: CirclePlus,
-      title: 'Add finance cost',
-      description: 'Record a new finance cost for a property',
-      onClick: () => onPending('Add finance cost'),
-    },
-    {
-      icon: FileText,
-      title: 'View all finance costs',
-      description: 'Browse your finance cost records',
-      onClick: () => setTab('finance-costs'),
-    },
-    manageProperties,
-    downloadReport,
-  ];
-  const summaryActions: QuickAction[] = [
-    {
-      icon: CirclePlus,
-      title: 'Edit summary',
-      description: 'Update your MTD summary details',
-      onClick: () => setTab('income-expenses'),
-    },
-    {
-      icon: FileText,
-      title: 'View full report',
-      description: 'See a detailed breakdown of all figures',
-      onClick: () => setTab('income-expenses'),
-    },
-    {
-      ...downloadReport,
-      description: 'Export your MTD summary as a PDF',
-    },
-    manageProperties,
-  ];
-
   return (
     <div className='space-y-6'>
       <div>
@@ -233,8 +119,6 @@ const MakingTaxDigital: React.FC = () => {
           taxYear={taxYear}
           onQuarterChange={setQuarter}
           onTaxYearChange={setTaxYear}
-          status='DRAFT'
-          lastUpdated={data.lastUpdated}
         />
 
         <MtdStatCards stats={getStats(tab, data)} />
@@ -257,32 +141,13 @@ const MakingTaxDigital: React.FC = () => {
           <PropertiesTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='income-expenses'>
-          <IncomeExpensesTab
-            data={data}
-            onNavigate={setTab}
-            onPending={onPending}
-          />
+          <IncomeExpensesTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='finance-costs'>
-          <FinanceCostsTab
-            data={data}
-            quickActions={financeCostActions}
-            onPending={onPending}
-          />
-        </TabsContent>
-        <TabsContent value='transactions'>
-          <TransactionsTab
-            data={data}
-            quickActions={transactionActions}
-            onPending={onPending}
-          />
+          <FinanceCostsTab data={data} onPending={onPending} />
         </TabsContent>
         <TabsContent value='summary'>
-          <SummaryTab
-            data={data}
-            quickActions={summaryActions}
-            onPending={onPending}
-          />
+          <SummaryTab data={data} onPending={onPending} />
         </TabsContent>
       </Tabs>
     </div>

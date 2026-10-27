@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  ChevronRight,
-  CircleCheck,
-  Info,
-  LucideIcon,
-  Pencil,
-  Trash2,
-} from 'lucide-react';
+import { CircleCheck, Info, LucideIcon, Pencil, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -183,20 +176,22 @@ export function RowActions({
   onEdit,
   onDelete,
 }: {
-  onEdit: () => void;
+  onEdit?: () => void;
   onDelete: () => void;
 }) {
   return (
     <div className='flex items-center gap-1.5'>
-      <Button
-        variant='ghost'
-        size='icon-sm'
-        aria-label='Edit'
-        onClick={onEdit}
-        className='bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-400'
-      >
-        <Pencil />
-      </Button>
+      {onEdit && (
+        <Button
+          variant='ghost'
+          size='icon-sm'
+          aria-label='Edit'
+          onClick={onEdit}
+          className='bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-400'
+        >
+          <Pencil />
+        </Button>
+      )}
       <Button
         variant='ghost'
         size='icon-sm'
@@ -216,46 +211,6 @@ export function InfoNote({ children }: { children: React.ReactNode }) {
       <Info className='mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400' />
       <p>{children}</p>
     </div>
-  );
-}
-
-export interface QuickAction {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  onClick: () => void;
-}
-
-export function QuickActions({ actions }: { actions: QuickAction[] }) {
-  return (
-    <Card className='border-border rounded-2xl shadow-md'>
-      <CardContent className='px-5 py-4'>
-        <h2 className='text-foreground mb-2 text-base font-semibold'>
-          Quick actions
-        </h2>
-        <div className='divide-border divide-y'>
-          {actions.map((action) => (
-            <button
-              key={action.title}
-              type='button'
-              onClick={action.onClick}
-              className='hover:bg-accent/50 group flex w-full cursor-pointer items-center gap-3 rounded-lg px-1 py-3 text-left transition-colors'
-            >
-              <IconBadge icon={action.icon} className='size-9' />
-              <div className='min-w-0 flex-1'>
-                <p className='text-sm font-medium text-blue-700 dark:text-blue-400'>
-                  {action.title}
-                </p>
-                <p className='text-muted-foreground text-xs'>
-                  {action.description}
-                </p>
-              </div>
-              <ChevronRight className='text-muted-foreground size-4 opacity-0 transition-opacity group-hover:opacity-100' />
-            </button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
