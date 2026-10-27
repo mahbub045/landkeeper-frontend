@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useJoinReferralMutation } from '@/store/api/endpoints/auth/JoinReferralProgramApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import Link from 'next/link';

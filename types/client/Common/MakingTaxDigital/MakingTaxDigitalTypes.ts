@@ -1,14 +1,4 @@
-export type MtdTabValue =
-  | 'overview'
-  | 'income-expenses'
-  | 'properties'
-  | 'finance-costs'
-  | 'transactions'
-  | 'summary';
-
-export type MtdSubmissionStatus = 'DRAFT' | 'READY' | 'SUBMITTED';
-
-export type MtdPropertyBusiness = 'UK' | 'OVERSEAS' | 'BOTH';
+export type MtdTabValue = 'income-expenses' | 'finance-costs' | 'summary';
 
 export interface MtdQuarter {
   value: string;
@@ -49,46 +39,18 @@ export interface MtdFinanceCost {
   evidence: string;
 }
 
-export interface MtdTransaction {
-  alias: string;
-  date: string;
-  property_alias: string;
-  type: 'INCOME' | 'EXPENSE';
-  category: string;
-  description: string;
-  amount: number;
-  reference: string;
+// Everything recorded for one quarter of one tax year
+export interface MtdPeriodData {
+  income: MtdIncomeEntry[];
+  expenses: MtdExpenseEntry[];
+  financeCosts: MtdFinanceCost[];
 }
 
 export interface MtdPropertyTotals {
   property: MtdProperty;
   income: number;
   expenses: number;
-  financeCosts: number;
   profit: number;
-}
-
-export interface MtdTrends {
-  income: number;
-  expenses: number;
-  profit: number;
-  financeCosts: number;
-  mortgageInterest: number;
-  otherFinanceCosts: number;
-  transactions: number;
-  incomeTransactions: number;
-  expenseTransactions: number;
-  transactionValue: number;
-}
-
-// Everything recorded for one quarter of one tax year
-export interface MtdPeriodData {
-  income: MtdIncomeEntry[];
-  expenses: MtdExpenseEntry[];
-  financeCosts: MtdFinanceCost[];
-  transactions: MtdTransaction[];
-  trends: MtdTrends;
-  lastUpdated: string;
 }
 
 export interface MtdPortfolioTotals {
@@ -100,3 +62,29 @@ export interface MtdPortfolioTotals {
   financeCosts: number;
   propertyCount: number;
 }
+
+// Sign-off required before the annual summary can be downloaded
+export interface MtdDeclarationForm {
+  propertiesIncluded: boolean;
+  entriesChecked: boolean;
+  itemsFlagged: boolean;
+  signatory: string;
+  date: string;
+  notes: string;
+}
+
+// Shared by every tab; `properties` are the ones ticked in the properties table
+export interface MtdTabProps {
+  data: MtdPeriodData;
+  properties: MtdProperty[];
+  onPending: (label: string) => void;
+}
+
+export interface MtdPropertiesTableProps {
+  rows: MtdPropertyTotals[];
+  selected: string[];
+  onSelectedChange: (aliases: string[]) => void;
+}
+
+export type MtdDeclarationCheck =
+  'propertiesIncluded' | 'entriesChecked' | 'itemsFlagged';

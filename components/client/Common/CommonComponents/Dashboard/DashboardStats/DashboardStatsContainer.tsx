@@ -14,6 +14,7 @@ import {
   TriangleAlert,
   Users,
 } from 'lucide-react';
+import { formatCurrency } from '@/utils/formatters';
 import DashboardStatsSkeleton from './DashboardStatsSkeleton';
 
 const buildStats = (summary: DashboardData): StatCard[] => {
@@ -37,14 +38,14 @@ const buildStats = (summary: DashboardData): StatCard[] => {
     },
     {
       title: 'Monthly Rental Income',
-      value: summary.financial.monthly_rental_income,
+      value: formatCurrency(Number(summary.financial.monthly_rental_income)),
       icon: PoundSterling,
       iconBg: 'bg-emerald-100 dark:bg-emerald-900/30',
       iconColor: 'text-emerald-500',
     },
     {
       title: 'Monthly Mortgage Payments',
-      value: summary.financial.monthly_mortgage_payment,
+      value: formatCurrency(Number(summary.financial.monthly_mortgage_payment)),
       icon: Landmark,
       iconBg: 'bg-amber-100 dark:bg-amber-900/30',
       iconColor: 'text-amber-500',

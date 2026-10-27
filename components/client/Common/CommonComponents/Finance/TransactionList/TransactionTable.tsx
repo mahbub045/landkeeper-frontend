@@ -1,6 +1,13 @@
 'use client';
 
-import { Eye, FileText, ImageIcon, Pencil, Trash2 } from 'lucide-react';
+import {
+  Eye,
+  FileText,
+  ImageIcon,
+  Pencil,
+  Receipt,
+  Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -90,9 +97,21 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
   if (transactions.length === 0) {
     return (
-      <p className='text-muted-foreground py-10 text-center text-sm'>
-        No transactions found.
-      </p>
+      <div className='flex flex-col items-center justify-center py-14 text-center'>
+        <div className='relative mb-4'>
+          <div className='absolute inset-0 rounded-full bg-gray-100 blur-md' />
+          <div className='relative flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-linear-to-b from-white to-gray-50 shadow-sm'>
+            <Receipt className='h-6 w-6 text-gray-400' />
+          </div>
+        </div>
+        <p className='text-base font-semibold text-gray-900'>
+          No transactions found
+        </p>
+        <p className='mt-1 max-w-xs text-sm text-gray-500'>
+          Income and expenses you record will appear here. Try adjusting your
+          filters if you expected to see something.
+        </p>
+      </div>
     );
   }
 

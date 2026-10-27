@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useSignupMutation } from '@/store/api/endpoints/auth/SignupApi';
 import { SignupFieldErrors } from '@/types/common/auth/SignUpTypes';
 import { Check, Eye, EyeOff, X } from 'lucide-react';

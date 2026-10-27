@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CERTIFICATE_OPTIONS } from '@/data/client/Common/Compliance/ComplianceData';
+import { CERTIFICATE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
 import { useUpdateComplianceMutation } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';

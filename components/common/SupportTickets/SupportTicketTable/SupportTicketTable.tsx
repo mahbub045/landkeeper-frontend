@@ -17,11 +17,11 @@ import {
 } from '@/types/common/SupportTickets/SupportTicketTypes';
 
 import {
-  PriorityOptions,
-  StatusOptions,
-  TABLE_COLUMNS,
-  TicketTypeOptions,
-} from '@/data/common/SupportTickets/SupportTicketsData';
+  SUPPORT_TICKET_PRIORITY_OPTIONS,
+  SUPPORT_TICKET_STATUS_OPTIONS,
+  SUPPORT_TICKET_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
+import { TABLE_COLUMNS } from '@/data/common/SupportTickets/SupportTicketsData';
 import { ChevronDown, MessageSquareWarning, Search } from 'lucide-react';
 import { useState } from 'react';
 import HoverInfoPopover from '../../HoverInfoPopover/HoverInfoPopover';
@@ -141,14 +141,14 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
           <div className='grid grid-cols-2 gap-2 lg:flex lg:items-center'>
             <MultiSelectFilter
               label='Filter by ticket type'
-              options={TicketTypeOptions}
+              options={SUPPORT_TICKET_TYPE_OPTIONS}
               selected={ticketTypeFilter}
               onChange={onTicketTypeFilterChange}
             />
 
             <MultiSelectFilter
               label='Filter by priority'
-              options={PriorityOptions}
+              options={SUPPORT_TICKET_PRIORITY_OPTIONS}
               selected={priorityFilter}
               onChange={onPriorityFilterChange}
             />
@@ -156,7 +156,7 @@ const SupportTicketTable: React.FC<SupportTicketTableProps> = ({
             <div className='col-span-2 lg:col-span-1'>
               <MultiSelectFilter
                 label='Filter by status'
-                options={StatusOptions}
+                options={SUPPORT_TICKET_STATUS_OPTIONS}
                 selected={statusFilter}
                 onChange={onStatusFilterChange}
               />

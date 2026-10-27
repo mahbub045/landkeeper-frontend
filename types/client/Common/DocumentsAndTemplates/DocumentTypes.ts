@@ -1,4 +1,4 @@
-import { documentCategoryOptions } from '@/data/client/Common/DocumentsAndTemplates/DocumentsData';
+import { DOCUMENT_CATEGORY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 
 export type DocCategory =
   | 'MORTGAGE_DOCUMENTS'
@@ -11,7 +11,7 @@ export type DocCategory =
   | 'LEGAL_DOCUMENT';
 
 export type DocumentCategory =
-  (typeof documentCategoryOptions)[number]['value'];
+  (typeof DOCUMENT_CATEGORY_OPTIONS)[number]['value'];
 
 export interface DocumentForm {
   propertyId: string;

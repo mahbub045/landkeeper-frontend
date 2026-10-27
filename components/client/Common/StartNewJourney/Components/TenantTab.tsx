@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/Common/Tenant/TenantsData';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { TenantForm } from '@/types/client/Common/Tenant/TenantsTypes';
 import { TenantStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';

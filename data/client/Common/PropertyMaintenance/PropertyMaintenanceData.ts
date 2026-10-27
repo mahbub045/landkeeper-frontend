@@ -31,40 +31,6 @@ export const canEditMaintenanceStatus = (role?: string) =>
     role as (typeof STATUS_EDITABLE_ROLES)[number],
   );
 
-export const STATUS_OPTIONS: Array<{
-  value: MaintenanceStatus;
-  label: string;
-}> = [
-  { value: 'SUBMITTED', label: 'Submitted' },
-  { value: 'ASSIGNED', label: 'Assigned' },
-  { value: 'IN_PROGRESS', label: 'In progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-];
-
-export const CATEGORY_OPTIONS: Array<{
-  value: MaintenanceCategory;
-  label: string;
-}> = [
-  { value: 'PLUMBING_WATER', label: 'Plumbing & Water' },
-  { value: 'HEATING_HOT_WATER', label: 'Heating & Hot Water' },
-  { value: 'ELECTRICAL', label: 'Electrical' },
-  { value: 'GAS', label: 'Gas' },
-  { value: 'ROOF_GUTTERING', label: 'Roof & Guttering' },
-  { value: 'DAMP_MOULD_CONDENSATION', label: 'Damp, Mould & Condensation' },
-  { value: 'DOORS_WINDOWS_LOCKS', label: 'Doors, Windows & Locks' },
-  { value: 'BATHROOM', label: 'Bathroom' },
-  { value: 'KITCHEN', label: 'Kitchen' },
-  { value: 'APPLIANCES', label: 'Appliances' },
-  { value: 'HEATING_VENTILATION', label: 'Heating & Ventilation' },
-  { value: 'STRUCTURAL_BUILDING', label: 'Structural & Building' },
-  { value: 'PEST_CONTROL', label: 'Pest Control' },
-  { value: 'SECURITY_SAFETY', label: 'Security & Safety' },
-  { value: 'EXTERNAL_AREAS', label: 'External Areas' },
-  { value: 'COMMUNAL_AREAS', label: 'Communal Areas' },
-  { value: 'CLEANING_GENERAL', label: 'Cleaning & General' },
-  { value: 'OTHER_GENERAL_MAINTENANCE', label: 'Other / General Maintenance' },
-];
-
 export const STATUS_STYLES: Record<MaintenanceStatus, string> = {
   SUBMITTED: 'bg-red-100 text-red-700 ring-red-600/20',
   ASSIGNED: 'bg-blue-100 text-blue-700 ring-blue-600/20',

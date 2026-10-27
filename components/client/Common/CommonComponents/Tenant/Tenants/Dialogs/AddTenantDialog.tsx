@@ -29,7 +29,7 @@ import {
   EMPTY_FORM,
   OVERRIDE_KEY_MAP,
 } from '@/data/client/Common/Tenant/TenantsData';
-import { TITLE_OPTIONS } from '@/data/common/TitleOptions';
+import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';

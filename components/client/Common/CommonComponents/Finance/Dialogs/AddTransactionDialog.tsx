@@ -20,10 +20,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  EMPTY_FORM,
-  TransactionCategoryOptions,
-} from '@/data/client/Common/Finance/FinanceData';
+import { TRANSACTION_CATEGORY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { EMPTY_FORM } from '@/data/client/Common/Finance/FinanceData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddFinanceMutation } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
@@ -281,7 +279,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
                   <SelectValue placeholder='Select category...' />
                 </SelectTrigger>
                 <SelectContent>
-                  {TransactionCategoryOptions.map((option) => (
+                  {TRANSACTION_CATEGORY_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>

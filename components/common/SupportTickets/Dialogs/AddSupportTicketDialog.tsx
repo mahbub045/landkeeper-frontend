@@ -21,10 +21,10 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  EMPTY_FORM,
-  PriorityOptions,
-  TicketTypeOptions,
-} from '@/data/common/SupportTickets/SupportTicketsData';
+  SUPPORT_TICKET_PRIORITY_OPTIONS,
+  SUPPORT_TICKET_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
+import { EMPTY_FORM } from '@/data/common/SupportTickets/SupportTicketsData';
 
 import { cn } from '@/lib/utils';
 import { useAddSupportTicketsMutation } from '@/store/api/endpoints/common/SupportTickets/SupportTicketsApi';
@@ -179,7 +179,7 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
                     <SelectValue placeholder='Select ticket type' />
                   </SelectTrigger>
                   <SelectContent>
-                    {TicketTypeOptions.map((option) => (
+                    {SUPPORT_TICKET_TYPE_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -206,7 +206,7 @@ const AddSupportTicketDialog: React.FC<AddSupportTicketModalProps> = ({
                     <SelectValue placeholder='Select priority' />
                   </SelectTrigger>
                   <SelectContent>
-                    {PriorityOptions.map((option) => (
+                    {SUPPORT_TICKET_PRIORITY_OPTIONS.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>

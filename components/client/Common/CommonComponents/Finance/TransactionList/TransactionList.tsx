@@ -104,9 +104,6 @@ const TransactionList: React.FC = () => {
               <h3 className='text-foreground text-sm font-semibold'>
                 All Transactions
               </h3>
-              <span className='text-muted-foreground text-sm'>
-                {data?.count ?? 0} transactions
-              </span>
             </CardHeader>
 
             <CardContent className='p-0'>

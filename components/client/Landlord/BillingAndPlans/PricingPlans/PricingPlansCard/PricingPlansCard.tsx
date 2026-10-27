@@ -304,7 +304,7 @@ const PricingPlansCard: React.FC = () => {
 
   return (
     <>
-      <div className='mx-auto mb-8 flex w-full max-w-md flex-col gap-2'>
+      {/* <div className='mx-auto mb-8 flex w-full max-w-md flex-col gap-2'>
         <label htmlFor='coupon-code' className='text-sm font-medium'>
           Have a coupon code?
         </label>
@@ -386,7 +386,7 @@ const PricingPlansCard: React.FC = () => {
             applied. Discounted prices are shown below.
           </p>
         )}
-      </div>
+      </div> */}
 
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {

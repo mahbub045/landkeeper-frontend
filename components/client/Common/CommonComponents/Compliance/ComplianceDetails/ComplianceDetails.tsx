@@ -3,11 +3,10 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
-  getCertStatusTone,
   CERTIFICATE_STYLES,
   getCertStatus,
+  getCertStatusTone,
   getDaysUntilExpiry,
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
@@ -38,6 +37,7 @@ import { getCertificateLabel } from '../CertificateRegistry/CertificateRow/Certi
 import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
 import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
+import ComplianceDetailsSkeleton from './ComplianceDetailsSkeleton';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
 import ComplianceRenewNotice from './ComplianceRenewNotice/ComplianceRenewNotice';
 import ComplianceShareList from './ComplianceShareList/ComplianceShareList';
@@ -82,72 +82,7 @@ const ComplianceDetails: React.FC = () => {
 
   if (isDeleted) return null;
 
-  if (isLoading) {
-    return (
-      <div className='mx-auto'>
-        <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <Skeleton className='mb-2 h-7 w-64' />
-            <Skeleton className='h-4 w-56' />
-          </div>
-          <div className='flex flex-wrap gap-2'>
-            <Skeleton className='h-9 w-20' />
-            <Skeleton className='h-9 w-24' />
-            <Skeleton className='h-9 w-20' />
-            <Skeleton className='h-9 w-20' />
-          </div>
-        </div>
-
-        <div className='mb-6 rounded-xl border p-5 sm:p-6'>
-          <Skeleton className='mb-2 h-5 w-40' />
-          <Skeleton className='mb-3 h-7 w-80 max-w-full' />
-          <div className='flex gap-2'>
-            <Skeleton className='h-5 w-20 rounded-full' />
-            <Skeleton className='h-5 w-32 rounded-full' />
-          </div>
-        </div>
-
-        <div className='space-y-6'>
-          <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-            <div className='rounded-xl border p-5 sm:p-6'>
-              <Skeleton className='mb-5 h-4 w-40' />
-              <div className='grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2'>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className='flex items-start gap-3'>
-                    <Skeleton className='size-8 shrink-0 rounded-lg' />
-                    <div className='min-w-0 flex-1'>
-                      <Skeleton className='mb-1 h-3 w-20' />
-                      <Skeleton className='h-4 w-32' />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className='rounded-xl border p-5 sm:p-6'>
-              <div className='mb-6 flex items-center justify-between'>
-                <Skeleton className='h-4 w-32' />
-                <Skeleton className='h-5 w-20 rounded-full' />
-              </div>
-              <Skeleton className='mt-8 mb-3 h-2 w-full rounded-full' />
-              <div className='mb-5 flex justify-between'>
-                <Skeleton className='h-8 w-24' />
-                <Skeleton className='h-8 w-24' />
-              </div>
-              <div className='grid grid-cols-3 gap-3 border-t pt-4'>
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className='h-8 w-24' />
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className='rounded-xl border p-5 sm:p-6'>
-            <Skeleton className='mb-4 h-4 w-24' />
-            <Skeleton className='h-80 w-full rounded-lg' />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <ComplianceDetailsSkeleton />;
 
   if (isError || !certificate) {
     return (

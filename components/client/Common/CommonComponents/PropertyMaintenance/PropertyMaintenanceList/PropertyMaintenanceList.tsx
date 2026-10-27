@@ -38,11 +38,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
+  MAINTENANCE_CATEGORY_OPTIONS,
+  MAINTENANCE_STATUS_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
+import {
   canEditMaintenanceStatus,
-  CATEGORY_OPTIONS,
   CATEGORY_STYLES,
   STATUS_DOT,
-  STATUS_OPTIONS,
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
 import {
@@ -67,7 +69,18 @@ import formatChoiceFieldValue, {
   truncateText,
 } from '@/utils/formatters';
 import { getPropertyMaintenanceDetailsUrl } from '@/utils/redirectPath';
-import { Check, Copy, Edit, Filter, Plus, Search, User, X } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  Edit,
+  Filter,
+  Plus,
+  Search,
+  SearchX,
+  User,
+  Wrench,
+  X,
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
@@ -298,7 +311,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Status
                   </p>
                   <div className='space-y-2'>
-                    {STATUS_OPTIONS.map((status) => (
+                    {MAINTENANCE_STATUS_OPTIONS.map((status) => (
                       <div
                         key={status.value}
                         className='flex items-center gap-2'
@@ -326,7 +339,7 @@ const PropertyMaintenanceList: React.FC = () => {
                     Category
                   </p>
                   <div className='space-y-2'>
-                    {CATEGORY_OPTIONS.map((category) => (
+                    {MAINTENANCE_CATEGORY_OPTIONS.map((category) => (
                       <div
                         key={category.value}
                         className='flex items-center gap-2'
@@ -412,21 +425,33 @@ const PropertyMaintenanceList: React.FC = () => {
             {!showTableLoading &&
               !isError &&
               maintenanceRequests.length === 0 && (
-                <TableRow>
+                <TableRow className='hover:bg-transparent'>
                   <TableCell
                     colSpan={TABLE_COLUMNS.length}
-                    className='py-10 text-center'
+                    className='py-14'
                   >
-                    <p className='text-sm text-gray-900'>
-                      {search
-                        ? 'No matching requests'
-                        : 'No maintenance requests yet'}
-                    </p>
-                    <p className='mt-1 text-sm text-gray-500'>
-                      {search
-                        ? 'Try a different search term.'
-                        : 'Add your first request to get started.'}
-                    </p>
+                    <div className='flex flex-col items-center justify-center text-center'>
+                      <div className='relative mb-4'>
+                        <div className='absolute inset-0 rounded-full bg-gray-100 blur-md' />
+                        <div className='relative flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-linear-to-b from-white to-gray-50 shadow-sm'>
+                          {search ? (
+                            <SearchX className='h-6 w-6 text-gray-400' />
+                          ) : (
+                            <Wrench className='h-6 w-6 text-gray-400' />
+                          )}
+                        </div>
+                      </div>
+                      <p className='text-base font-semibold text-gray-900'>
+                        {search
+                          ? 'No matching requests'
+                          : 'No maintenance requests yet'}
+                      </p>
+                      <p className='mt-1 max-w-xs text-sm text-gray-500'>
+                        {search
+                          ? 'Try a different search term or clear your filters.'
+                          : 'When something needs fixing, add a request here to track it from report to resolution.'}
+                      </p>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -569,7 +594,7 @@ const PropertyMaintenanceList: React.FC = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent align='center'>
-                          {STATUS_OPTIONS.map((status) => (
+                          {MAINTENANCE_STATUS_OPTIONS.map((status) => (
                             <SelectItem
                               key={status?.value}
                               value={status?.value}

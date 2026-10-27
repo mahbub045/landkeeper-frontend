@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { MAINTENANCE_CATEGORY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import {
   ACCEPTED_FILE_TYPES,
-  CATEGORY_OPTIONS,
   MAX_FILE_SIZE_MB,
   MAX_FILES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
@@ -205,7 +205,7 @@ const EditMaintenanceRequestForm: React.FC<EditMaintenanceRequestFormProps> = ({
             <SelectValue placeholder='Select a category' />
           </SelectTrigger>
           <SelectContent>
-            {CATEGORY_OPTIONS.map((option) => (
+            {MAINTENANCE_CATEGORY_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>

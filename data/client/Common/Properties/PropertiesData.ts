@@ -3,6 +3,7 @@ import {
   FilterTab,
   Tab,
 } from '@/types/client/Common/Properties/PropertyTypes';
+import { PROPERTY_TYPE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 
 export const TABS: Tab[] = ['Details', 'Property Picture'];
 export const TAB_PRIORITY: Tab[] = ['Details', 'Property Picture'];
@@ -33,42 +34,15 @@ export const FIELD_TAB_MAP: Record<string, Tab> = {
   documents_data: 'Property Picture',
 };
 
-export const PROPERTY_STATUS_OPTIONS = [
-  { value: 'OCCUPIED', label: 'Occupied' },
-  { value: 'VACANT', label: 'Vacant' },
-  { value: 'UNDER_MAINTENANCE', label: 'Under Maintenance' },
-];
-
 export const STATUS_STYLES: Record<string, string> = {
   OCCUPIED: 'bg-success/70 text-white',
   VACANT: 'bg-warning/70 text-white',
   UNDER_MAINTENANCE: 'bg-destructive/70 text-white',
 };
 
-export const PROPERTY_TYPE_OPTIONS = [
-  { value: 'HOUSE', label: 'House' },
-  { value: 'FLAT', label: 'Flat' },
-  { value: 'MAISONETTE', label: 'Maisonette' },
-  { value: 'BUNGALOW', label: 'Bungalow' },
-  { value: 'RESIDENTIAL', label: 'Residential' },
-  { value: 'HMO', label: 'HMO' },
-  { value: 'COMMERCIAL', label: 'Commercial' },
-  { value: 'HOLIDAY_LET', label: 'Holiday Let' },
-];
-
 export const FILTER_TABS: FilterTab[] = [
   'All',
   ...(PROPERTY_TYPE_OPTIONS.map((opt) => opt.label) as FilterTab[]),
-];
-
-export const PROPERTY_OWNER_OPTIONS = [
-  { value: 'OWNER', label: 'Owner' },
-  { value: 'COMPANY', label: 'Company' },
-];
-
-export const PROPERTY_TENURE_OPTIONS = [
-  { value: 'FREEHOLD', label: 'Freehold' },
-  { value: 'LEASEHOLD', label: 'Leasehold' },
 ];
 
 export const EMPTY_DETAILS_FORM: DetailsForm = {

@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   exhibitLabel,
   fileMeta,
@@ -31,6 +30,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 import MortgageDangerZone from './MortgageDangerZone/MortgageDangerZone';
+import MortgageDetailsSkeleton from './MortgageDetailsSkeleton';
 import MortgagePermissionList from './MortgagePermissionList/MortgagePermissionList';
 
 const MortgageDetails: React.FC = () => {
@@ -46,18 +46,7 @@ const MortgageDetails: React.FC = () => {
   const mortgageData: MortgagePropertyType | undefined = mortgage as
     MortgagePropertyType | undefined;
 
-  if (isLoading) {
-    return (
-      <div className='mx-auto space-y-8 py-10'>
-        <Skeleton className='h-24 w-full' />
-        <Skeleton className='h-20 w-full' />
-        <div className='grid gap-8 md:grid-cols-[1.6fr_1fr]'>
-          <Skeleton className='h-72 w-full' />
-          <Skeleton className='h-72 w-full' />
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <MortgageDetailsSkeleton />;
 
   if (isError || !mortgage) {
     return (

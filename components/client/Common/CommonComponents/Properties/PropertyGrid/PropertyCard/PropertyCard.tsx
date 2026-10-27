@@ -3,10 +3,8 @@
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  PROPERTY_STATUS_OPTIONS,
-  STATUS_STYLES,
-} from '@/data/client/Common/Properties/PropertiesData';
+import { PROPERTY_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { STATUS_STYLES } from '@/data/client/Common/Properties/PropertiesData';
 import { useAppSelector } from '@/store/hooks';
 import { PropertyCardProps } from '@/types/client/Common/Properties/PropertyTypes';
 import formatChoiceFieldValue, { getCurrencySign, removeUnderscoresAndCapitalize } from '@/utils/formatters';

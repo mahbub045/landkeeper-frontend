@@ -431,6 +431,7 @@ function AppSidebarSkeleton({
   return (
     <Sidebar
       collapsible='icon'
+      className='**:data-[slot=skeleton]:bg-sidebar-foreground/15'
       aria-busy='true'
       aria-label='Loading navigation'
     >

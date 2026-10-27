@@ -29,7 +29,7 @@ export const RentAndPaymentDashboard: React.FC = () => {
   return (
     <div className='mx-auto flex flex-col gap-6'>
       <div>
-        <h1 className='text-2xl font-semibold'>Rent & Payments Dashboard</h1>
+        <h1 className='text-2xl font-semibold'>Rent & Payments</h1>
         <p className='text-muted-foreground text-sm'>
           Manage your rent payments, view statements, and track your payment
           history.

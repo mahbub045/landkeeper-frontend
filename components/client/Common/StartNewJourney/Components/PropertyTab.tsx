@@ -24,7 +24,7 @@ import {
   PROPERTY_STATUS_OPTIONS,
   PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
-} from '@/data/client/Common/Properties/PropertiesData';
+} from '@/data/common/ChoiceFieldOptions';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';

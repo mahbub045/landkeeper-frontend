@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { documentCategoryOptions } from '@/data/client/Common/DocumentsAndTemplates/DocumentsData';
+import { DOCUMENT_CATEGORY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
 import { useAddDocumentsMutation } from '@/store/api/endpoints/client/Common/DocumentsAndTemplates/DocumentsApi';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
@@ -275,7 +275,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {documentCategoryOptions.map((option) => (
+                  {DOCUMENT_CATEGORY_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>

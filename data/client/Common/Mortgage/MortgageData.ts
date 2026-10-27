@@ -1,13 +1,6 @@
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
 import { File as FileDocumentIcon, FileText, ImageIcon } from 'lucide-react';
 
-export const INTEREST_RATE_TYPE_OPTIONS = [
-  { value: 'FIXED_RATE', label: 'Fixed Rate' },
-  { value: 'VARIABLE_RATE', label: 'Variable Rate' },
-  { value: 'TRACKER', label: 'Tracker' },
-  { value: 'OFFSET', label: 'Offset' },
-];
-
 export const EMPTY_MORTGAGE_FORM: MortgageForm = {
   property: '',
   lender_name: '',

@@ -25,10 +25,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  EMPTY_MORTGAGE_FORM,
-  INTEREST_RATE_TYPE_OPTIONS,
-} from '@/data/client/Common/Mortgage/MortgageData';
+import { INTEREST_RATE_TYPE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { EMPTY_MORTGAGE_FORM } from '@/data/client/Common/Mortgage/MortgageData';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateMortgageMutation } from '@/store/api/endpoints/client/Common/Mortgage/MortgageApi';
