@@ -21,7 +21,7 @@ export const MTD_QUARTERS: MtdQuarter[] = [
 
 export const MTD_TAX_YEARS = ['2026/27', '2025/26', '2024/25'];
 
-export const MTD_PROPERTIES: MtdProperty[] = [
+const MTD_PROPERTIES: MtdProperty[] = [
   {
     alias: 'riverside-view',
     name: 'Riverside View',
@@ -144,10 +144,6 @@ const BASE_FINANCE_COSTS: MtdFinanceCost[] = [
   },
 ];
 
-// The base entries above are Quarter 1 2026/27. Other periods are derived
-// from them so the page responds to the reporting period selector.
-const BASE_LAST_UPDATED = '2026-04-14T10:24:00';
-
 // Percentage change against the previous quarter, keyed by metric
 const BASE_TRENDS: MtdTrends = {
   income: 12,
@@ -173,7 +169,7 @@ const MONTHS = [
   'December',
 ];
 
-export const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
+const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
 
 // Moves an ISO date (or date-time) forward by whole months, keeping the day
 function shiftMonths(iso: string, months: number): string {
@@ -236,7 +232,6 @@ export function getMtdPeriodData(
     expenses,
     financeCosts,
     trends,
-    lastUpdated: shift(BASE_LAST_UPDATED),
   };
 }
 
@@ -256,18 +251,12 @@ export function getPropertyTotals(data: MtdPeriodData): MtdPropertyTotals[] {
         .filter((e) => e.property_alias === property.alias)
         .map((e) => e.amount),
     );
-    const financeCosts = sum(
-      data.financeCosts
-        .filter((e) => e.property_alias === property.alias)
-        .map((e) => e.mortgage_interest + e.other_finance_costs),
-    );
     // Residential finance costs get a separate tax treatment, so they are
     // not deducted from profit here
     return {
       property,
       income,
       expenses,
-      financeCosts,
       profit: income - expenses,
     };
   });

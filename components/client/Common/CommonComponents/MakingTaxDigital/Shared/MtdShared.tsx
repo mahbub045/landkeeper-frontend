@@ -121,48 +121,6 @@ export function SectionCard({
 }
 
 // Shaded strip of labelled totals shown under tables
-export function TotalsBar({
-  icon: Icon,
-  title,
-  description,
-  items,
-}: {
-  icon: LucideIcon;
-  title: string;
-  description?: string;
-  items: { label: string; value: string; highlight?: boolean }[];
-}) {
-  return (
-    <div className='flex flex-col gap-4 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 md:flex-row md:items-center md:justify-between dark:border-blue-900/40 dark:bg-blue-950/20'>
-      <div className='flex items-start gap-3'>
-        <Icon className='mt-0.5 size-5 shrink-0 text-blue-600 dark:text-blue-400' />
-        <div>
-          <p className='text-foreground text-sm font-semibold'>{title}</p>
-          {description && (
-            <p className='text-muted-foreground text-xs'>{description}</p>
-          )}
-        </div>
-      </div>
-      <div className='grid grid-cols-1 gap-3 sm:grid-cols-3 md:gap-8'>
-        {items.map((item) => (
-          <div key={item.label}>
-            <p
-              className={cn(
-                'text-base font-bold tabular-nums',
-                item.highlight
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-foreground',
-              )}
-            >
-              {item.value}
-            </p>
-            <p className='text-muted-foreground text-xs'>{item.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export function TableFrame({ children }: { children: React.ReactNode }) {
   return (

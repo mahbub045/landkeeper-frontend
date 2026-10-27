@@ -1,8 +1,6 @@
 export type MtdTabValue =
   'properties' | 'income-expenses' | 'finance-costs' | 'summary';
 
-export type MtdSubmissionStatus = 'DRAFT' | 'READY' | 'SUBMITTED';
-
 export interface MtdQuarter {
   value: string;
   label: string;
@@ -46,7 +44,6 @@ export interface MtdPropertyTotals {
   property: MtdProperty;
   income: number;
   expenses: number;
-  financeCosts: number;
   profit: number;
 }
 
@@ -65,7 +62,6 @@ export interface MtdPeriodData {
   expenses: MtdExpenseEntry[];
   financeCosts: MtdFinanceCost[];
   trends: MtdTrends;
-  lastUpdated: string;
 }
 
 export interface MtdPortfolioTotals {
