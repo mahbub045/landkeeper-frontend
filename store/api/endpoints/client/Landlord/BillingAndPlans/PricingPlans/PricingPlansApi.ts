@@ -27,7 +27,7 @@ export const PricingPlansApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['PricingPlans'],
+      invalidatesTags: ['PricingPlans', 'DashboardSummary'],
     }),
     checkCouponValidity: builder.mutation({
       query: ({ coupon_code }) => ({

@@ -15,18 +15,21 @@ export const DashboardApi = baseApi.injectEndpoints({
         url: '/dashboard/summary',
         method: 'GET',
       }),
+      providesTags: ['DashboardSummary'],
     }),
     getDashboardPropertyTypes: builder.query<PropertyTypesResponse, void>({
       query: () => ({
         url: '/dashboard/property-types',
         method: 'GET',
       }),
+      providesTags: ['DashboardSummary'],
     }),
     getDashboardComplianceTypes: builder.query<ComplianceTypesResponse, void>({
       query: () => ({
         url: '/dashboard/compliance-types',
         method: 'GET',
       }),
+      providesTags: ['DashboardSummary'],
     }),
     getDashboardIncomeExpense: builder.query<
       IncomeExpenseResponse,
@@ -37,12 +40,14 @@ export const DashboardApi = baseApi.injectEndpoints({
         method: 'GET',
         params,
       }),
+      providesTags: ['DashboardSummary'],
     }),
     getAlertsAndReminders: builder.query<AlertsRemindersResponse, void>({
       query: () => ({
         url: '/dashboard/alerts',
         method: 'GET',
       }),
+      providesTags: ['DashboardSummary'],
     }),
   }),
   overrideExisting: false,

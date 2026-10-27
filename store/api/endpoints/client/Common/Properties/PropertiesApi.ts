@@ -16,7 +16,7 @@ export const PropertiesApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Property'],
+      invalidatesTags: ['Property', 'DashboardSummary'],
     }),
     getPropertyDetails: builder.query({
       query: (alias) => ({
@@ -31,14 +31,14 @@ export const PropertiesApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Property'],
+      invalidatesTags: ['Property', 'DashboardSummary'],
     }),
     deleteProperty: builder.mutation({
       query: ({ property_alias }) => ({
         url: `/property/${property_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Property'],
+      invalidatesTags: ['Property', 'DashboardSummary'],
     }),
     getPropertyPermissions: builder.query({
       query: ({ property_alias }) => ({

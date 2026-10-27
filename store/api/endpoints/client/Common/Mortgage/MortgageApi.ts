@@ -23,7 +23,7 @@ export const MortgageApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Mortgage'],
+      invalidatesTags: ['Mortgage', 'DashboardSummary'],
     }),
     updateMortgage: builder.mutation({
       query: ({ mortgage_alias, payload }) => ({
@@ -31,14 +31,14 @@ export const MortgageApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Mortgage'],
+      invalidatesTags: ['Mortgage', 'DashboardSummary'],
     }),
     deleteMortgage: builder.mutation({
       query: ({ mortgage_alias }) => ({
         url: `/mortgage/${mortgage_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Mortgage'],
+      invalidatesTags: ['Mortgage', 'DashboardSummary'],
     }),
     getMortgagePermissions: builder.query({
       query: ({ mortgage_alias }) => ({

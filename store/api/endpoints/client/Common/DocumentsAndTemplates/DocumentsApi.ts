@@ -16,7 +16,7 @@ export const DocumentsApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Document'],
+      invalidatesTags: ['Document', 'DashboardSummary'],
     }),
     updateDocument: builder.mutation({
       query: ({ document_alias, payload }) => ({
@@ -24,14 +24,14 @@ export const DocumentsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: payload,
       }),
-      invalidatesTags: ['Document'],
+      invalidatesTags: ['Document', 'DashboardSummary'],
     }),
     deleteDocument: builder.mutation({
       query: ({ document_alias }) => ({
         url: `/document/${document_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Document'],
+      invalidatesTags: ['Document', 'DashboardSummary'],
     }),
   }),
 });
