@@ -29,6 +29,7 @@ export interface TransactionForm {
   type: string;
   propertyId: string;
   category: string;
+  otherCategory: string;
   amount: string;
   date: string;
   description: string;
@@ -54,12 +55,13 @@ export interface FinanceReceiptFile {
   id: number;
   file: string;
   description: string | null;
-};
+}
 export interface FinanceTransaction {
   alias: string;
   property: FinancePropertyRef;
   type: FinanceTxType;
   category: string;
+  other_category: string | null;
   amount: string;
   date: string;
   description: string;

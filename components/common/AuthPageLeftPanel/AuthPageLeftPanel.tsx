@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-// Monument markers scattered across the map — each represents a tracked
-// parcel. Positions are hand-placed to feel surveyed, not randomised.
+// Monument markers scattered across the map — each represents a managed
+// property. Positions are hand-placed to feel surveyed, not randomised.
 const MARKERS = [
   { top: '18%', left: '22%', pulse: false },
   { top: '34%', left: '68%', pulse: true },
@@ -11,15 +11,26 @@ const MARKERS = [
 ];
 
 const FIELD_LOG = [
-  { value: '12,400+', label: 'Parcels tracked' },
-  { value: '98%', label: 'Uptime guaranteed' },
-  { value: '340+', label: 'Organisations onboard' },
-  { value: '24/7', label: 'Support on call' },
+  { value: 'Managed', label: 'Properties & tenants' },
+  { value: 'Tracked', label: 'Rent, expenses & mortgages' },
+  { value: 'On time', label: 'Compliance & certificates' },
+  { value: 'Ready', label: 'Making Tax Digital' },
+];
+
+// Line-art skyline along the bottom edge. Ground sits at y=320 in the
+// illustration's viewBox; window grids are derived from cols/rows.
+const SKYLINE_GROUND = 320;
+const BUILDINGS = [
+  { x: 16, top: 170, w: 88, cols: 3, rows: 4 },
+  { x: 104, top: 80, w: 92, cols: 3, rows: 7 },
+  { x: 300, top: 30, w: 104, cols: 4, rows: 10 },
+  { x: 404, top: 140, w: 72, cols: 2, rows: 5 },
+  { x: 476, top: 100, w: 96, cols: 3, rows: 7 },
 ];
 
 const AuthPageLeftPanel: React.FC = () => {
   return (
-    <div className='bg-primary dark:bg-primary/80 relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2'>
+    <div className='relative hidden bg-[linear-gradient(160deg,oklch(0.27_0.09_262),oklch(0.38_0.15_261)_55%,oklch(0.5_0.19_260))] flex-col gap-12 overflow-hidden p-12 lg:flex lg:w-1/2'>
       {/* Topographic contour field */}
       <svg
         className='absolute inset-0 h-full w-full opacity-[0.12]'
@@ -89,8 +100,8 @@ const AuthPageLeftPanel: React.FC = () => {
           loading='eager'
         />
         <div className='text-primary-foreground/50 hidden text-right text-[11px] leading-tight tracking-wide sm:block'>
-          <p>SURVEY REF.</p>
-          <p className='text-primary-foreground/70'>23.8103° N, 90.4125° E</p>
+          <p>PORTFOLIO REF.</p>
+          <p className='text-primary-foreground/70'>51.5072° N, 0.1276° W</p>
         </div>
       </div>
 
@@ -103,8 +114,8 @@ const AuthPageLeftPanel: React.FC = () => {
         </h1>
 
         <p className='text-primary-foreground/70 max-w-sm text-[15px] leading-relaxed'>
-          Track parcels, monitor applications, and stay on top of every land
-          management task — all in one place.
+          Manage properties, tenants, rent, compliance and maintenance — all
+          in one place for landlords, letting agents and mortgage advisers.
         </p>
 
         {/* Field log — ledger-style stats */}
@@ -123,20 +134,86 @@ const AuthPageLeftPanel: React.FC = () => {
             </div>
           ))}
         </dl>
-      </div>
 
-      {/* Testimonial */}
-      <div className='relative z-10'>
-        <div className='border-secondary/60 relative border-l-2 pl-4'>
+        {/* Testimonial */}
+        <div className='border-secondary/60 relative mt-10 border-l-2 pl-4'>
           <p className='text-primary-foreground/80 text-sm italic'>
-            Landkeeper transformed how we handle our portfolio of 2,000+
-            parcels.
+            Landkeeper keeps every tenancy, certificate and payment across our
+            portfolio organised and on schedule.
           </p>
           <p className='text-primary-foreground/50 mt-2 text-xs tracking-wide uppercase'>
-            — Director, National Land Authority
+            — Portfolio Landlord
           </p>
         </div>
       </div>
+
+      {/* Skyline illustration */}
+      <svg
+        className='pointer-events-none absolute inset-x-0 bottom-0 h-[38%] w-full'
+        viewBox='0 0 600 322'
+        preserveAspectRatio='xMidYMax meet'
+        fill='none'
+        aria-hidden='true'
+      >
+        <g stroke='white' strokeOpacity={0.35} strokeWidth='1.5'>
+          {BUILDINGS.map((b, i) => {
+            const pad = 12;
+            const gap = 8;
+            const winW = (b.w - pad * 2 - gap * (b.cols - 1)) / b.cols;
+            return (
+              <g key={i}>
+                <rect
+                  x={b.x}
+                  y={b.top}
+                  width={b.w}
+                  height={SKYLINE_GROUND - b.top}
+                />
+                {Array.from({ length: b.rows * b.cols }).map((_, j) => {
+                  const r = Math.floor(j / b.cols);
+                  const c = j % b.cols;
+                  return (
+                    <rect
+                      key={j}
+                      x={b.x + pad + c * (winW + gap)}
+                      y={b.top + 20 + r * 24}
+                      width={winW}
+                      height={12}
+                      className={
+                        (r + c + i) % 5 === 0 ? 'fill-secondary/40' : undefined
+                      }
+                    />
+                  );
+                })}
+                <rect
+                  x={b.x + b.w / 2 - 7}
+                  y={SKYLINE_GROUND - 22}
+                  width={14}
+                  height={22}
+                />
+              </g>
+            );
+          })}
+
+          {/* Rooftop + antenna on the tallest tower */}
+          <rect x={330} y={12} width={44} height={18} />
+          <path d='M 352 12 L 352 0' />
+
+          {/* House */}
+          <path d='M 206 232 L 245 196 L 284 232' />
+          <rect x={212} y={228} width={66} height={SKYLINE_GROUND - 228} />
+          <rect x={220} y={244} width={16} height={16} className='fill-secondary/40' />
+          <rect x={254} y={244} width={16} height={16} />
+          <rect x={238} y={SKYLINE_GROUND - 30} width={14} height={30} />
+
+          {/* Trees */}
+          <circle cx={290} cy={306} r={9} />
+          <path d='M 586 320 L 586 292' />
+          <circle cx={586} cy={280} r={13} />
+
+          {/* Ground line */}
+          <path d={`M 0 ${SKYLINE_GROUND} L 600 ${SKYLINE_GROUND}`} />
+        </g>
+      </svg>
     </div>
   );
 };

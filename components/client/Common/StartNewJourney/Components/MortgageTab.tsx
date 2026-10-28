@@ -98,6 +98,7 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
             <Select
               value={value.interest_rate_type}
               onValueChange={(v) => set('interest_rate_type', v)}
+              required
             >
               <SelectTrigger
                 aria-invalid={!!errors.interest_rate_type}
@@ -363,10 +364,3 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
 MortgageTab.displayName = 'Mortgage';
 
 export default MortgageTab;
-
-export function validateMortgageStep(
-  value: MortgageStepValue,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  return errors;
-}

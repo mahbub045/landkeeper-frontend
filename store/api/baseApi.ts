@@ -53,6 +53,9 @@ export const TAG_TYPES = [
   'PricingPlans',
   'BillingDetails',
 
+  // Tenant Tags
+  'TenantDashboardPropertyDetails',
+
   // Payments
   'PaymentMethods',
   'RentPayments',

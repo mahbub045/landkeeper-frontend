@@ -20,6 +20,7 @@ export const EMPTY_FORM: TransactionForm = {
   type: '',
   propertyId: '',
   category: '',
+  otherCategory: '',
   amount: '',
   date: '',
   description: '',

@@ -3,12 +3,8 @@
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { EMPTY_DETAILS_FORM } from '@/data/client/Common/Properties/PropertiesData';
-
 import { snakeToCamel } from '@/utils/formatters';
-
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-
 import { useAddNewJourneyMutation } from '@/store/api/endpoints/client/StartNewJourney/StartNewJourneyApi';
 import {
   EMPTY_WIZARD_ERRORS,
@@ -18,23 +14,18 @@ import {
   WizardState,
   WizardTab,
 } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import { validateDocumentStep } from '@/utils/validator';
 import ComplianceTab, {
   EMPTY_COMPLIANCE_STEP_FORM,
-  validateComplianceStep,
 } from './Components/ComplianceTab';
 import DocumentsTab, {
   EMPTY_DOCUMENT_STEP_FORM,
 } from './Components/DocumentsTab';
 import MortgageTab, {
   EMPTY_MORTGAGE_STEP_FORM,
-  validateMortgageStep,
 } from './Components/MortgageTab';
-import PropertyTab, { validatePropertyStep } from './Components/PropertyTab';
-import TenantTab, {
-  EMPTY_TENANT_STEP_FORM,
-  validateTenantStep,
-} from './Components/TenantTab';
+import PropertyTab from './Components/PropertyTab';
+import TenantTab, { EMPTY_TENANT_STEP_FORM } from './Components/TenantTab';
+import { toast } from 'sonner';
 
 const EMPTY_STATE: WizardState = {
   property: EMPTY_DETAILS_FORM,
@@ -57,6 +48,19 @@ const SECTION_TO_TAB: Record<string, WizardTab> = {
   tenant: 'tenant',
   compliance: 'compliance',
   upload_document: 'document',
+};
+
+// Flat (non-nested) error keys the API returns without a section prefix,
+// e.g. `{"email": ["Email is already in use."]}`. `field` overrides the
+// error key on the tab when it differs from the API key.
+const FLAT_FIELD_TO_TAB: Record<string, { tab: WizardTab; field?: string }> = {
+  email: { tab: 'tenant' },
+  certificate_type: { tab: 'compliance' },
+  issue_date: { tab: 'compliance' },
+  expiry_date: { tab: 'compliance' },
+  certificate_number: { tab: 'compliance' },
+  issued_by: { tab: 'compliance' },
+  certificate_file: { tab: 'compliance', field: 'file' },
 };
 
 const StartNewJourney: React.FC = () => {
@@ -95,32 +99,13 @@ const StartNewJourney: React.FC = () => {
     return () => cancelAnimationFrame(rafId);
   }, [activeTab, pendingValidateTab]);
 
-  function getManualErrors(tab: WizardTab): Record<string, string> {
-    switch (tab) {
-      case 'property':
-        return validatePropertyStep(state.propertyFiles);
-      case 'mortgage':
-        return validateMortgageStep(state.mortgage);
-      case 'tenant':
-        return validateTenantStep(state.tenant);
-      case 'compliance':
-        return validateComplianceStep(state.compliance);
-      case 'document':
-        return validateDocumentStep(state.documentFiles);
-    }
-  }
-
-  // Runs native checkValidity() (works even on hidden forms) plus each
-  // step's manual guard for non-native controls (Select, dropzones).
-  // Updates errors for that tab either way and returns whether it passed.
+  // Native HTML validation only — every required field (inputs and Selects)
+  // carries `required`. checkValidity() works even on hidden forms. Clears
+  // stale API errors for the tab before re-checking.
   function validateTab(tab: WizardTab): boolean {
     const form = formRefs.current[tab];
-    const nativeValid = form ? form.checkValidity() : true;
-    const manualErrors = getManualErrors(tab);
-
-    setErrors((prev) => ({ ...prev, [tab]: manualErrors }));
-
-    return nativeValid && Object.keys(manualErrors).length === 0;
+    setErrors((prev) => ({ ...prev, [tab]: {} }));
+    return form ? form.checkValidity() : true;
   }
 
   function handleTabClick(tab: WizardTab) {
@@ -168,30 +153,53 @@ const StartNewJourney: React.FC = () => {
       document: {},
     };
     let firstInvalidTab: WizardTab | null = null;
-    let matchedAnySection = false;
+    let firstMessage: string | null = null;
 
-    for (const [sectionKey, sectionValue] of Object.entries(data)) {
-      const tab = SECTION_TO_TAB[sectionKey];
-      if (!tab || typeof sectionValue !== 'object' || sectionValue === null)
+    const addFieldError = (tab: WizardTab, field: string, val: unknown) => {
+      const message = Array.isArray(val) ? String(val[0]) : String(val);
+      // Tabs differ in key style (`first_name` vs `certificateType`), so set both
+      nextErrors[tab][field] = message;
+      nextErrors[tab][snakeToCamel(field)] = message;
+      firstInvalidTab ??= tab;
+      firstMessage ??= message;
+    };
+
+    for (const [key, value] of Object.entries(data)) {
+      // Nested: { tenant: { email: [...] } }
+      const sectionTab = SECTION_TO_TAB[key];
+      if (sectionTab && typeof value === 'object' && !Array.isArray(value)) {
+        for (const [field, val] of Object.entries(
+          value as Record<string, unknown>,
+        )) {
+          addFieldError(sectionTab, field, val);
+        }
         continue;
-
-      matchedAnySection = true;
-      for (const [field, val] of Object.entries(
-        sectionValue as Record<string, unknown>,
-      )) {
-        nextErrors[tab][snakeToCamel(field)] = Array.isArray(val)
-          ? String(val[0])
-          : String(val);
       }
-      if (!firstInvalidTab && Object.keys(nextErrors[tab]).length > 0) {
-        firstInvalidTab = tab;
+
+      // Flat: { email: [...] } or { tenant_email: [...] }
+      const flat = FLAT_FIELD_TO_TAB[key];
+      if (flat) {
+        addFieldError(flat.tab, flat.field ?? key, value);
+        continue;
+      }
+      const prefix = Object.keys(SECTION_TO_TAB).find((section) =>
+        key.startsWith(`${section}_`),
+      );
+      if (prefix) {
+        addFieldError(
+          SECTION_TO_TAB[prefix],
+          key.slice(prefix.length + 1),
+          value,
+        );
       }
     }
 
-    if (matchedAnySection) {
+    if (firstInvalidTab) {
       setErrors(nextErrors);
-      if (firstInvalidTab) setActiveTab(firstInvalidTab);
-      toast.error('Please fix the highlighted fields and try again.');
+      setActiveTab(firstInvalidTab);
+      toast.error(
+        firstMessage ?? 'Please fix the highlighted fields and try again.',
+      );
       return;
     }
 
@@ -211,9 +219,6 @@ const StartNewJourney: React.FC = () => {
       if (!validateTab(tab)) {
         setActiveTab(tab);
         setPendingValidateTab(tab);
-        toast.error(
-          `Please complete the required fields in "${WIZARD_TAB_LABELS[tab]}".`,
-        );
         return;
       }
     }

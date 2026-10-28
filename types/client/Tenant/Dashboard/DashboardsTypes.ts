@@ -1,18 +1,46 @@
-export interface PropertyAndTenancyDetailsType {
-  id: string;
-  address: string;
-  city: string;
-  term_start: string;
-  term_end: string;
-  term_length: string;
-  status: 'Active' | 'Ending soon' | 'Expired';
+import { PropertyDocument } from '@/types/client/Common/Properties/PropertyTypes';
+import { LucideIcon } from 'lucide-react';
+
+export interface TenantPropertyLandlord {
+  name: string;
+  contact_person: string | null;
+  mobile: string | null;
+  address: string | null;
 }
 
-export interface FinancialDataType {
-  id: string;
-  next_rent_due_date: string;
-  outstanding_balance: number;
-  is_paid_in_full: boolean;
-  rent_amount: number;
-  rent_cadence: 'month' | 'week';
+export interface TenantPropertyDetails {
+  alias: string;
+  property_name: string;
+  property_owner: string | null;
+  company_name: string;
+  property_type: string;
+  status: string;
+  address: string;
+  year_built: number | null;
+  property_tenure: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  notes: string | null;
+  documents: PropertyDocument[];
+  landlord: TenantPropertyLandlord;
+}
+
+export interface TenantPropertyOverviewCardProps {
+  property: TenantPropertyDetails;
+}
+
+export interface TenantLandlordCardProps {
+  landlord: TenantPropertyLandlord;
+}
+
+export interface OverviewStatProps {
+  icon: LucideIcon;
+  label: string;
+  value: React.ReactNode;
+}
+
+export interface ContactRowProps {
+  icon: LucideIcon;
+  label: string;
+  value: string | null;
 }

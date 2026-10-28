@@ -67,6 +67,19 @@ export const TRANSACTION_CATEGORY_OPTIONS: TransactionCategoryOption[] = [
   { value: 'OTHER', label: 'Other' },
 ];
 
+// Income gets Rental Income + Other; Expense gets the rest. Other is shared.
+export const TRANSACTION_CATEGORY_OPTIONS_BY_TYPE: Record<
+  string,
+  TransactionCategoryOption[]
+> = {
+  INCOME: TRANSACTION_CATEGORY_OPTIONS.filter((option) =>
+    ['RENTAL_INCOME', 'OTHER'].includes(option.value),
+  ),
+  EXPENSE: TRANSACTION_CATEGORY_OPTIONS.filter(
+    (option) => option.value !== 'RENTAL_INCOME',
+  ),
+};
+
 // ---------- Mortgage ----------
 
 export const INTEREST_RATE_TYPE_OPTIONS = [
