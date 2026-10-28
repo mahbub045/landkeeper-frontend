@@ -30,7 +30,7 @@ const BUILDINGS = [
 
 const AuthPageLeftPanel: React.FC = () => {
   return (
-    <div className='bg-primary dark:bg-primary/80 relative hidden flex-col gap-12 overflow-hidden p-12 lg:flex lg:w-1/2'>
+    <div className='relative hidden bg-[linear-gradient(160deg,oklch(0.27_0.09_262),oklch(0.38_0.15_261)_55%,oklch(0.5_0.19_260))] flex-col gap-12 overflow-hidden p-12 lg:flex lg:w-1/2'>
       {/* Topographic contour field */}
       <svg
         className='absolute inset-0 h-full w-full opacity-[0.12]'
