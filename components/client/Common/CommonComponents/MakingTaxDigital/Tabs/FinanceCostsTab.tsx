@@ -1,7 +1,8 @@
 'use client';
 
-import { Landmark } from 'lucide-react';
+import { Landmark, Trash2 } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -17,7 +18,6 @@ import {
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   HelpfulInfo,
-  RowActions,
   SectionCard,
   TableFrame,
   toAmount,
@@ -48,7 +48,7 @@ const FinanceCostsTab: React.FC<MtdTabProps> = ({
                   <TableHead>Other finance costs (£)</TableHead>
                   <TableHead>Lender / reference</TableHead>
                   <TableHead>Notes / evidence</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -69,10 +69,15 @@ const FinanceCostsTab: React.FC<MtdTabProps> = ({
                     <TableCell className='max-w-40 whitespace-normal'>
                       {cost.evidence}
                     </TableCell>
-                    <TableCell>
-                      <RowActions
-                        onDelete={() => onPending('Delete finance cost')}
-                      />
+                    <TableCell className='text-center'>
+                      <Button
+                        variant='destructive'
+                        size='icon-sm'
+                        aria-label='Delete'
+                        onClick={() => onPending('Delete finance cost')}
+                      >
+                        <Trash2 />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

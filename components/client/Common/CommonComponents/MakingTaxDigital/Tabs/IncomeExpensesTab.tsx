@@ -6,8 +6,10 @@ import {
   ChevronRight,
   Info,
   Receipt,
+  Trash2,
 } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -25,7 +27,6 @@ import { MtdTabProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDig
 import { formatDate } from '@/utils/formatters';
 import {
   HelpfulInfo,
-  RowActions,
   SectionCard,
   TableFrame,
   toAmount,
@@ -71,7 +72,7 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                   <TableHead>Income type</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date received</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -87,8 +88,15 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                       {toAmount(entry.amount)}
                     </TableCell>
                     <TableCell>{formatDate(entry.date)}</TableCell>
-                    <TableCell>
-                      <RowActions onDelete={() => onPending('Delete income')} />
+                    <TableCell className='text-center'>
+                      <Button
+                        variant='destructive'
+                        size='icon-sm'
+                        aria-label='Delete'
+                        onClick={() => onPending('Delete income')}
+                      >
+                        <Trash2 />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -114,7 +122,7 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                   <TableHead>Expense category</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date paid</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -130,10 +138,15 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                       {toAmount(entry.amount)}
                     </TableCell>
                     <TableCell>{formatDate(entry.date)}</TableCell>
-                    <TableCell>
-                      <RowActions
-                        onDelete={() => onPending('Delete expense')}
-                      />
+                    <TableCell className='text-center'>
+                      <Button
+                        variant='destructive'
+                        size='icon-sm'
+                        aria-label='Delete'
+                        onClick={() => onPending('Delete expense')}
+                      >
+                        <Trash2 />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

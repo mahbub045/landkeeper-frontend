@@ -1,8 +1,7 @@
 'use client';
 
-import { CircleCheck, Info, LucideIcon, Pencil, Trash2 } from 'lucide-react';
+import { CircleCheck, Info, LucideIcon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/utils/formatters';
@@ -110,39 +109,6 @@ export function TableFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className='border-border overflow-hidden rounded-xl border [&_th]:text-xs [&_th]:font-semibold [&_thead]:bg-blue-50/60 dark:[&_thead]:bg-blue-950/20'>
       {children}
-    </div>
-  );
-}
-
-export function RowActions({
-  onEdit,
-  onDelete,
-}: {
-  onEdit?: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <div className='flex items-center gap-1.5'>
-      {onEdit && (
-        <Button
-          variant='ghost'
-          size='icon-sm'
-          aria-label='Edit'
-          onClick={onEdit}
-          className='bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-400'
-        >
-          <Pencil />
-        </Button>
-      )}
-      <Button
-        variant='ghost'
-        size='icon-sm'
-        aria-label='Delete'
-        onClick={onDelete}
-        className='bg-blue-50 text-blue-600 hover:bg-red-100 hover:text-red-600 dark:bg-blue-950/30 dark:text-blue-400'
-      >
-        <Trash2 />
-      </Button>
     </div>
   );
 }
