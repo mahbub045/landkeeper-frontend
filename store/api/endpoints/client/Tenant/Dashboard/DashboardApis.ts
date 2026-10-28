@@ -2,22 +2,13 @@ import { baseApi } from '@/store/api/baseApi';
 
 export const TenantDashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPropertyAndTenancyDetails: builder.query({
+    getPropertyDetails: builder.query({
       query: () => ({
-        url: '/tenant/property-and-tenancy-details',
-        method: 'GET',
+        url: '/tenant/dashboard/property-details',
       }),
-    }),
-    getFinancialOverview: builder.query({
-      query: () => ({
-        url: '/tenant/financial-overview',
-        method: 'GET',
-      }),
+      providesTags: ['TenantDashboardPropertyDetails'],
     }),
   }),
 });
 
-export const {
-  useGetPropertyAndTenancyDetailsQuery,
-  useGetFinancialOverviewQuery,
-} = TenantDashboardApi;
+export const { useGetPropertyDetailsQuery } = TenantDashboardApi;

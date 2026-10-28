@@ -27,6 +27,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
   SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -172,6 +173,11 @@ function NavMenu({
   pathname: string;
   locked: boolean;
 }) {
+  // SidebarMenuSub is hidden in icon mode, so when collapsed on desktop the
+  // children are shown in a flyout dropdown next to the parent icon instead.
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === 'collapsed' && !isMobile;
+
   // Initialize from the current route instead of always starting empty, so
   // a hard reload lands with the correct submenu already expanded.
   const [openItems, setOpenItems] = React.useState<Set<string>>(
@@ -258,6 +264,86 @@ function NavMenu({
                       Subscribe to unlock this section
                     </TooltipContent>
                   </Tooltip>
+                ) : isCollapsed ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        style={
+                          isActive
+                            ? { borderBottomColor: getIconColor(item.label) }
+                            : undefined
+                        }
+                        className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                      >
+                        <item.icon
+                          style={{ color: getIconColor(item.label) }}
+                        />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side='right'
+                      align='start'
+                      sideOffset={8}
+                      className='min-w-48'
+                    >
+                      <DropdownMenuLabel>{item.label}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {item.children!.map((child) => {
+                        const childActive = child.href
+                          ? isNavActive(pathname, child.href)
+                          : false;
+                        const childDisabled =
+                          locked && !isAllowedWithoutSubscription(child.href);
+
+                        return childDisabled ? (
+                          <DropdownMenuItem
+                            key={child.href || child.label}
+                            disabled
+                          >
+                            <child.icon
+                              style={{ color: getIconColor(child.label) }}
+                              className='h-4 w-4'
+                            />
+                            {child.label}
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            key={child.href || child.label}
+                            asChild
+                            style={
+                              childActive
+                                ? {
+                                    borderBottomColor: getIconColor(
+                                      child.label,
+                                    ),
+                                  }
+                                : undefined
+                            }
+                            className={cn(
+                              'cursor-pointer rounded-lg border-b-2 border-transparent',
+                              childActive && 'bg-black/5 dark:bg-white/10',
+                            )}
+                          >
+                            <Link href={child.href || '#'}>
+                              {/* Explicit stroke so the dropdown item's
+                                  focus:**:text-accent-foreground doesn't
+                                  recolor the icon paths on hover. */}
+                              <child.icon
+                                style={{
+                                  color: getIconColor(child.label),
+                                  stroke: getIconColor(child.label),
+                                }}
+                                className='h-4 w-4'
+                              />
+                              {child.label}
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ) : (
                   <SidebarMenuButton
                     onClick={() => toggleOpen(item.label)}
@@ -280,7 +366,7 @@ function NavMenu({
                     />
                   </SidebarMenuButton>
                 )}
-                {openItems.has(item.label) && (
+                {!isCollapsed && openItems.has(item.label) && (
                   <SidebarMenuSub>
                     {item.children!.map((child) => {
                       const childActive = child.href
