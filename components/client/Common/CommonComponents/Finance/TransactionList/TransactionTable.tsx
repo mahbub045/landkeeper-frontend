@@ -168,7 +168,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
 
                 <TableCell>
                   <Badge variant='secondary' className='font-normal'>
-                    {formatChoiceFieldValue(tx.category)}
+                    {tx.category === 'OTHER' && tx.other_category
+                      ? tx.other_category
+                      : formatChoiceFieldValue(tx.category)}
                   </Badge>
                 </TableCell>
 
