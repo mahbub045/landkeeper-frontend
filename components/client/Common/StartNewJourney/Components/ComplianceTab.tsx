@@ -69,6 +69,7 @@ const ComplianceTab = forwardRef<HTMLFormElement, ComplianceStepProps>(
           <Select
             value={value.certificateType}
             onValueChange={(v) => set('certificateType', v)}
+            required
           >
             <SelectTrigger
               aria-invalid={!!errors.certificateType}
@@ -250,12 +251,3 @@ const ComplianceTab = forwardRef<HTMLFormElement, ComplianceStepProps>(
 ComplianceTab.displayName = 'Compliance';
 
 export default ComplianceTab;
-
-export function validateComplianceStep(
-  value: ComplianceStepValue,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!value.certificateType)
-    errors.certificateType = 'Please select a certificate type.';
-  return errors;
-}

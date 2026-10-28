@@ -831,17 +831,3 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
 PropertyTab.displayName = 'Property';
 
 export default PropertyTab;
-
-// Inline errors for the required fields, so Next shows them under each input
-// instead of relying only on the browser's native bubble.
-export function validatePropertyStep(
-  value: DetailsForm,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!value.property_name?.trim())
-    errors.property_name = 'Please enter a property name.';
-  if (!value.address?.trim()) errors.address = 'Please enter an address.';
-  if (value.property_owner === 'COMPANY' && !value.company_name?.trim())
-    errors.company_name = 'Please enter a company name.';
-  return errors;
-}

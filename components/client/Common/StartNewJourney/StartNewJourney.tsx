@@ -16,21 +16,15 @@ import {
 } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import ComplianceTab, {
   EMPTY_COMPLIANCE_STEP_FORM,
-  validateComplianceStep,
 } from './Components/ComplianceTab';
 import DocumentsTab, {
   EMPTY_DOCUMENT_STEP_FORM,
-  validateDocumentStep,
 } from './Components/DocumentsTab';
 import MortgageTab, {
   EMPTY_MORTGAGE_STEP_FORM,
-  validateMortgageStep,
 } from './Components/MortgageTab';
-import PropertyTab, { validatePropertyStep } from './Components/PropertyTab';
-import TenantTab, {
-  EMPTY_TENANT_STEP_FORM,
-  validateTenantStep,
-} from './Components/TenantTab';
+import PropertyTab from './Components/PropertyTab';
+import TenantTab, { EMPTY_TENANT_STEP_FORM } from './Components/TenantTab';
 import { toast } from 'sonner';
 
 const EMPTY_STATE: WizardState = {
@@ -105,32 +99,13 @@ const StartNewJourney: React.FC = () => {
     return () => cancelAnimationFrame(rafId);
   }, [activeTab, pendingValidateTab]);
 
-  function getManualErrors(tab: WizardTab): Record<string, string> {
-    switch (tab) {
-      case 'property':
-        return validatePropertyStep(state.property);
-      case 'mortgage':
-        return validateMortgageStep(state.mortgage);
-      case 'tenant':
-        return validateTenantStep(state.tenant);
-      case 'compliance':
-        return validateComplianceStep(state.compliance);
-      case 'document':
-        return validateDocumentStep(state.document);
-    }
-  }
-
-  // Runs native checkValidity() (works even on hidden forms) plus each
-  // step's manual guard for non-native controls (Select, dropzones).
-  // Updates errors for that tab either way and returns whether it passed.
+  // Native HTML validation only — every required field (inputs and Selects)
+  // carries `required`. checkValidity() works even on hidden forms. Clears
+  // stale API errors for the tab before re-checking.
   function validateTab(tab: WizardTab): boolean {
     const form = formRefs.current[tab];
-    const nativeValid = form ? form.checkValidity() : true;
-    const manualErrors = getManualErrors(tab);
-
-    setErrors((prev) => ({ ...prev, [tab]: manualErrors }));
-
-    return nativeValid && Object.keys(manualErrors).length === 0;
+    setErrors((prev) => ({ ...prev, [tab]: {} }));
+    return form ? form.checkValidity() : true;
   }
 
   function handleTabClick(tab: WizardTab) {

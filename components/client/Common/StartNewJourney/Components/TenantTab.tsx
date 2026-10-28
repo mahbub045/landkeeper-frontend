@@ -142,7 +142,11 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
             <FieldLabel className='gap-0 text-sm font-semibold'>
               Title<span className='text-danger'>*</span>
             </FieldLabel>
-            <Select value={value.title} onValueChange={(v) => set('title', v)}>
+            <Select
+              value={value.title}
+              onValueChange={(v) => set('title', v)}
+              required
+            >
               <SelectTrigger
                 id='title'
                 aria-invalid={!!errors.title}
@@ -397,19 +401,3 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
 TenantTab.displayName = 'Tenant';
 
 export default TenantTab;
-
-// Title uses shadcn Select, which doesn't enforce native `required` the way
-// a real <select> would — guard it manually like the other Select fields
-// across the codebase already do.
-export function validateTenantStep(
-  value: TenantStepValue,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!value.title) errors.title = 'Please select a title.';
-  if (!value.first_name?.trim())
-    errors.first_name = 'Please enter a first name.';
-  if (!value.last_name?.trim()) errors.last_name = 'Please enter a last name.';
-  if (!value.email?.trim()) errors.email = 'Please enter an email.';
-  if (!value.phone?.trim()) errors.phone = 'Please enter a phone number.';
-  return errors;
-}

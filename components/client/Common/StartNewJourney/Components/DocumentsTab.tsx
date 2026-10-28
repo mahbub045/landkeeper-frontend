@@ -191,13 +191,3 @@ const DocumentsTab = forwardRef<HTMLFormElement, DocumentStepProps>(
 DocumentsTab.displayName = 'DocumentStep';
 
 export default DocumentsTab;
-
-// Files are optional; only the document name is required.
-export function validateDocumentStep(
-  value: DocumentStepValue,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!value.name?.trim())
-    errors.documentName = 'Please enter a document name.';
-  return errors;
-}

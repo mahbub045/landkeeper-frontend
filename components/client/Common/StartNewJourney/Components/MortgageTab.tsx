@@ -98,6 +98,7 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
             <Select
               value={value.interest_rate_type}
               onValueChange={(v) => set('interest_rate_type', v)}
+              required
             >
               <SelectTrigger
                 aria-invalid={!!errors.interest_rate_type}
@@ -363,14 +364,3 @@ const MortgageTab = forwardRef<HTMLFormElement, MortgageStepProps>(
 MortgageTab.displayName = 'Mortgage';
 
 export default MortgageTab;
-
-export function validateMortgageStep(
-  value: MortgageStepValue,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!value.lender_name?.trim())
-    errors.lender_name = 'Please enter a lender name.';
-  if (!value.interest_rate_type)
-    errors.interest_rate_type = 'Please select an interest rate type.';
-  return errors;
-}
