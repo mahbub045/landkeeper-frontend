@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { TRANSACTION_CATEGORY_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { EMPTY_FORM } from '@/data/client/Common/Finance/FinanceData';
+import { TRANSACTION_CATEGORY_OPTIONS_BY_TYPE } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
 import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddFinanceMutation } from '@/store/api/endpoints/client/Common/Finance/FinanceApi';
@@ -100,7 +100,15 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // manual guards for the non-native controls (property combobox, category select)
+    // manual guards for the non-native controls (type select, property combobox, category select)
+    if (!form.type) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        type: 'Please select a type.',
+      }));
+      return;
+    }
+
     if (!form.propertyId) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -117,10 +125,21 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
       return;
     }
 
+    if (form.category === 'OTHER' && !form.otherCategory.trim()) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        otherCategory: 'Please enter a category.',
+      }));
+      return;
+    }
+
     const payload = new FormData();
     payload.append('property', form.propertyId);
     payload.append('type', form.type);
     payload.append('category', form.category);
+    if (form.category === 'OTHER') {
+      payload.append('other_category', form.otherCategory.trim());
+    }
     payload.append('amount', form.amount);
     payload.append('date', form.date);
     payload.append('description', form.description.trim());
@@ -158,7 +177,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
             Add Transaction
           </DialogTitle>
           <DialogDescription>
@@ -173,12 +192,17 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
             <div className='grid grid-cols-2 gap-4'>
               {/* Type */}
               <Field data-invalid={!!fieldErrors.type}>
-                <FieldLabel className='text-sm font-semibold'>Type</FieldLabel>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Type<span className='text-danger'>*</span>
+                </FieldLabel>
                 <Select
                   value={form.type}
-                  onValueChange={(v) =>
-                    set('type', v as TransactionForm['type'])
-                  }
+                  onValueChange={(v) => {
+                    set('type', v as TransactionForm['type']);
+                    // categories differ per type, so pick again
+                    set('category', '');
+                    set('otherCategory', '');
+                  }}
                 >
                   <SelectTrigger
                     className={fieldErrors.type ? 'border-danger' : ''}
@@ -271,23 +295,56 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
               </FieldLabel>
               <Select
                 value={form.category}
-                onValueChange={(v) => set('category', v)}
+                onValueChange={(v) => {
+                  set('category', v);
+                  if (v !== 'OTHER') set('otherCategory', '');
+                }}
+                disabled={!form.type}
               >
                 <SelectTrigger
                   className={fieldErrors.category ? 'border-danger' : ''}
                 >
-                  <SelectValue placeholder='Select category...' />
+                  <SelectValue
+                    placeholder={
+                      form.type ? 'Select category...' : 'Select a type first'
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {TRANSACTION_CATEGORY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                  {(TRANSACTION_CATEGORY_OPTIONS_BY_TYPE[form.type] ?? []).map(
+                    (option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
               <FieldError errors={[{ message: fieldErrors.category }]} />
             </Field>
+
+            {/* Other Category */}
+            {form.category === 'OTHER' && (
+              <Field data-invalid={!!fieldErrors.otherCategory}>
+                <FieldLabel className='gap-0 text-sm font-semibold'>
+                  Other Category<span className='text-danger'>*</span>
+                </FieldLabel>
+                <Input
+                  type='text'
+                  placeholder='Enter category...'
+                  value={form.otherCategory}
+                  onChange={(e) => set('otherCategory', e.target.value)}
+                  aria-invalid={!!fieldErrors.otherCategory}
+                  className={
+                    fieldErrors.otherCategory
+                      ? 'border-danger focus-visible:ring-danger/50'
+                      : ''
+                  }
+                  required
+                />
+                <FieldError errors={[{ message: fieldErrors.otherCategory }]} />
+              </Field>
+            )}
 
             {/* Amount + Date */}
             <div className='grid grid-cols-2 gap-4'>
