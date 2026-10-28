@@ -17,9 +17,20 @@ const FIELD_LOG = [
   { value: 'Ready', label: 'Making Tax Digital' },
 ];
 
+// Line-art skyline along the bottom edge. Ground sits at y=320 in the
+// illustration's viewBox; window grids are derived from cols/rows.
+const SKYLINE_GROUND = 320;
+const BUILDINGS = [
+  { x: 16, top: 170, w: 88, cols: 3, rows: 4 },
+  { x: 104, top: 80, w: 92, cols: 3, rows: 7 },
+  { x: 300, top: 30, w: 104, cols: 4, rows: 10 },
+  { x: 404, top: 140, w: 72, cols: 2, rows: 5 },
+  { x: 476, top: 100, w: 96, cols: 3, rows: 7 },
+];
+
 const AuthPageLeftPanel: React.FC = () => {
   return (
-    <div className='bg-primary dark:bg-primary/80 relative hidden flex-col justify-between overflow-hidden p-12 lg:flex lg:w-1/2'>
+    <div className='bg-primary dark:bg-primary/80 relative hidden flex-col gap-12 overflow-hidden p-12 lg:flex lg:w-1/2'>
       {/* Topographic contour field */}
       <svg
         className='absolute inset-0 h-full w-full opacity-[0.12]'
@@ -123,11 +134,9 @@ const AuthPageLeftPanel: React.FC = () => {
             </div>
           ))}
         </dl>
-      </div>
 
-      {/* Testimonial */}
-      <div className='relative z-10'>
-        <div className='border-secondary/60 relative border-l-2 pl-4'>
+        {/* Testimonial */}
+        <div className='border-secondary/60 relative mt-10 border-l-2 pl-4'>
           <p className='text-primary-foreground/80 text-sm italic'>
             Landkeeper keeps every tenancy, certificate and payment across our
             portfolio organised and on schedule.
@@ -137,6 +146,74 @@ const AuthPageLeftPanel: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Skyline illustration */}
+      <svg
+        className='pointer-events-none absolute inset-x-0 bottom-0 h-[38%] w-full'
+        viewBox='0 0 600 322'
+        preserveAspectRatio='xMidYMax meet'
+        fill='none'
+        aria-hidden='true'
+      >
+        <g stroke='white' strokeOpacity={0.35} strokeWidth='1.5'>
+          {BUILDINGS.map((b, i) => {
+            const pad = 12;
+            const gap = 8;
+            const winW = (b.w - pad * 2 - gap * (b.cols - 1)) / b.cols;
+            return (
+              <g key={i}>
+                <rect
+                  x={b.x}
+                  y={b.top}
+                  width={b.w}
+                  height={SKYLINE_GROUND - b.top}
+                />
+                {Array.from({ length: b.rows * b.cols }).map((_, j) => {
+                  const r = Math.floor(j / b.cols);
+                  const c = j % b.cols;
+                  return (
+                    <rect
+                      key={j}
+                      x={b.x + pad + c * (winW + gap)}
+                      y={b.top + 20 + r * 24}
+                      width={winW}
+                      height={12}
+                      className={
+                        (r + c + i) % 5 === 0 ? 'fill-secondary/40' : undefined
+                      }
+                    />
+                  );
+                })}
+                <rect
+                  x={b.x + b.w / 2 - 7}
+                  y={SKYLINE_GROUND - 22}
+                  width={14}
+                  height={22}
+                />
+              </g>
+            );
+          })}
+
+          {/* Rooftop + antenna on the tallest tower */}
+          <rect x={330} y={12} width={44} height={18} />
+          <path d='M 352 12 L 352 0' />
+
+          {/* House */}
+          <path d='M 206 232 L 245 196 L 284 232' />
+          <rect x={212} y={228} width={66} height={SKYLINE_GROUND - 228} />
+          <rect x={220} y={244} width={16} height={16} className='fill-secondary/40' />
+          <rect x={254} y={244} width={16} height={16} />
+          <rect x={238} y={SKYLINE_GROUND - 30} width={14} height={30} />
+
+          {/* Trees */}
+          <circle cx={290} cy={306} r={9} />
+          <path d='M 586 320 L 586 292' />
+          <circle cx={586} cy={280} r={13} />
+
+          {/* Ground line */}
+          <path d={`M 0 ${SKYLINE_GROUND} L 600 ${SKYLINE_GROUND}`} />
+        </g>
+      </svg>
     </div>
   );
 };
