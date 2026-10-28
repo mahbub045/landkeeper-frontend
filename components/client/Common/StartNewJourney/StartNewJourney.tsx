@@ -14,7 +14,6 @@ import {
   WizardState,
   WizardTab,
 } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
-import { validateDocumentStep } from '@/utils/validator';
 import ComplianceTab, {
   EMPTY_COMPLIANCE_STEP_FORM,
   validateComplianceStep,
@@ -54,6 +53,12 @@ const SECTION_TO_TAB: Record<string, WizardTab> = {
   tenant: 'tenant',
   compliance: 'compliance',
   upload_document: 'document',
+};
+
+// Flat (non-nested) error keys the API returns without a section prefix,
+// e.g. `{"email": ["Email is already in use."]}`.
+const FLAT_FIELD_TO_TAB: Record<string, WizardTab> = {
+  email: 'tenant',
 };
 
 const StartNewJourney: React.FC = () => {
@@ -103,7 +108,8 @@ const StartNewJourney: React.FC = () => {
       case 'compliance':
         return validateComplianceStep(state.compliance);
       case 'document':
-        return validateDocumentStep(state.documentFiles);
+        // Documents are optional
+        return {};
     }
   }
 
@@ -165,30 +171,50 @@ const StartNewJourney: React.FC = () => {
       document: {},
     };
     let firstInvalidTab: WizardTab | null = null;
-    let matchedAnySection = false;
+    let firstMessage: string | null = null;
 
-    for (const [sectionKey, sectionValue] of Object.entries(data)) {
-      const tab = SECTION_TO_TAB[sectionKey];
-      if (!tab || typeof sectionValue !== 'object' || sectionValue === null)
+    const addFieldError = (tab: WizardTab, field: string, val: unknown) => {
+      const message = Array.isArray(val) ? String(val[0]) : String(val);
+      nextErrors[tab][snakeToCamel(field)] = message;
+      firstInvalidTab ??= tab;
+      firstMessage ??= message;
+    };
+
+    for (const [key, value] of Object.entries(data)) {
+      // Nested: { tenant: { email: [...] } }
+      const sectionTab = SECTION_TO_TAB[key];
+      if (sectionTab && typeof value === 'object' && !Array.isArray(value)) {
+        for (const [field, val] of Object.entries(
+          value as Record<string, unknown>,
+        )) {
+          addFieldError(sectionTab, field, val);
+        }
         continue;
-
-      matchedAnySection = true;
-      for (const [field, val] of Object.entries(
-        sectionValue as Record<string, unknown>,
-      )) {
-        nextErrors[tab][snakeToCamel(field)] = Array.isArray(val)
-          ? String(val[0])
-          : String(val);
       }
-      if (!firstInvalidTab && Object.keys(nextErrors[tab]).length > 0) {
-        firstInvalidTab = tab;
+
+      // Flat: { email: [...] } or { tenant_email: [...] }
+      if (FLAT_FIELD_TO_TAB[key]) {
+        addFieldError(FLAT_FIELD_TO_TAB[key], key, value);
+        continue;
+      }
+      const prefix = Object.keys(SECTION_TO_TAB).find((section) =>
+        key.startsWith(`${section}_`),
+      );
+      if (prefix) {
+        addFieldError(
+          SECTION_TO_TAB[prefix],
+          key.slice(prefix.length + 1),
+          value,
+        );
       }
     }
 
-    if (matchedAnySection) {
+    if (firstInvalidTab) {
       setErrors(nextErrors);
-      if (firstInvalidTab) setActiveTab(firstInvalidTab);
-      toast.error('Please fix the highlighted fields and try again.');
+      setActiveTab(firstInvalidTab);
+      toast.error(
+        firstMessage ?? 'Please fix the highlighted fields and try again.',
+      );
       return;
     }
 
