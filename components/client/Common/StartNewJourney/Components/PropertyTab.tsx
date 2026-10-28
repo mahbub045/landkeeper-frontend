@@ -168,7 +168,7 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
         <div className='space-y-5'>
           <div className='flex justify-center'>
             <div className='border-primary/15 from-primary/10 via-primary/5 w-full rounded-xl border bg-linear-to-br to-transparent p-4'>
-              <Field data-invalid={!!errors.name}>
+              <Field data-invalid={!!errors.property_name}>
                 <div className='mb-1.5 flex items-center justify-between'>
                   <FieldLabel className='text-sm font-semibold'>
                     Property Name<span className='text-danger'>*</span>
@@ -832,10 +832,16 @@ PropertyTab.displayName = 'Property';
 
 export default PropertyTab;
 
-// Non-native validation (Select is native enough here since only address is
-// truly required by the backend sample; the only manual guard is the image
-// dropzone, which isn't a native form control).
-export function validatePropertyStep(files: File[]): Record<string, string> {
+// Inline errors for the required fields, so Next shows them under each input
+// instead of relying only on the browser's native bubble.
+export function validatePropertyStep(
+  value: DetailsForm,
+): Record<string, string> {
   const errors: Record<string, string> = {};
+  if (!value.property_name?.trim())
+    errors.property_name = 'Please enter a property name.';
+  if (!value.address?.trim()) errors.address = 'Please enter an address.';
+  if (value.property_owner === 'COMPANY' && !value.company_name?.trim())
+    errors.company_name = 'Please enter a company name.';
   return errors;
 }

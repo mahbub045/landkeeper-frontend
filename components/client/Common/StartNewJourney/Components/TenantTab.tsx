@@ -406,5 +406,10 @@ export function validateTenantStep(
 ): Record<string, string> {
   const errors: Record<string, string> = {};
   if (!value.title) errors.title = 'Please select a title.';
+  if (!value.first_name?.trim())
+    errors.first_name = 'Please enter a first name.';
+  if (!value.last_name?.trim()) errors.last_name = 'Please enter a last name.';
+  if (!value.email?.trim()) errors.email = 'Please enter an email.';
+  if (!value.phone?.trim()) errors.phone = 'Please enter a phone number.';
   return errors;
 }

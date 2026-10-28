@@ -255,7 +255,7 @@ export function validateComplianceStep(
   value: ComplianceStepValue,
 ): Record<string, string> {
   const errors: Record<string, string> = {};
-  // if (!value.certificateType)
-  //   errors.certificateType = 'Please select a certificate type.';
+  if (!value.certificateType)
+    errors.certificateType = 'Please select a certificate type.';
   return errors;
 }

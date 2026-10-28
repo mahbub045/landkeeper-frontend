@@ -20,6 +20,7 @@ import ComplianceTab, {
 } from './Components/ComplianceTab';
 import DocumentsTab, {
   EMPTY_DOCUMENT_STEP_FORM,
+  validateDocumentStep,
 } from './Components/DocumentsTab';
 import MortgageTab, {
   EMPTY_MORTGAGE_STEP_FORM,
@@ -56,9 +57,16 @@ const SECTION_TO_TAB: Record<string, WizardTab> = {
 };
 
 // Flat (non-nested) error keys the API returns without a section prefix,
-// e.g. `{"email": ["Email is already in use."]}`.
-const FLAT_FIELD_TO_TAB: Record<string, WizardTab> = {
-  email: 'tenant',
+// e.g. `{"email": ["Email is already in use."]}`. `field` overrides the
+// error key on the tab when it differs from the API key.
+const FLAT_FIELD_TO_TAB: Record<string, { tab: WizardTab; field?: string }> = {
+  email: { tab: 'tenant' },
+  certificate_type: { tab: 'compliance' },
+  issue_date: { tab: 'compliance' },
+  expiry_date: { tab: 'compliance' },
+  certificate_number: { tab: 'compliance' },
+  issued_by: { tab: 'compliance' },
+  certificate_file: { tab: 'compliance', field: 'file' },
 };
 
 const StartNewJourney: React.FC = () => {
@@ -100,7 +108,7 @@ const StartNewJourney: React.FC = () => {
   function getManualErrors(tab: WizardTab): Record<string, string> {
     switch (tab) {
       case 'property':
-        return validatePropertyStep(state.propertyFiles);
+        return validatePropertyStep(state.property);
       case 'mortgage':
         return validateMortgageStep(state.mortgage);
       case 'tenant':
@@ -108,8 +116,7 @@ const StartNewJourney: React.FC = () => {
       case 'compliance':
         return validateComplianceStep(state.compliance);
       case 'document':
-        // Documents are optional
-        return {};
+        return validateDocumentStep(state.document);
     }
   }
 
@@ -175,6 +182,8 @@ const StartNewJourney: React.FC = () => {
 
     const addFieldError = (tab: WizardTab, field: string, val: unknown) => {
       const message = Array.isArray(val) ? String(val[0]) : String(val);
+      // Tabs differ in key style (`first_name` vs `certificateType`), so set both
+      nextErrors[tab][field] = message;
       nextErrors[tab][snakeToCamel(field)] = message;
       firstInvalidTab ??= tab;
       firstMessage ??= message;
@@ -193,8 +202,9 @@ const StartNewJourney: React.FC = () => {
       }
 
       // Flat: { email: [...] } or { tenant_email: [...] }
-      if (FLAT_FIELD_TO_TAB[key]) {
-        addFieldError(FLAT_FIELD_TO_TAB[key], key, value);
+      const flat = FLAT_FIELD_TO_TAB[key];
+      if (flat) {
+        addFieldError(flat.tab, flat.field ?? key, value);
         continue;
       }
       const prefix = Object.keys(SECTION_TO_TAB).find((section) =>
@@ -234,9 +244,6 @@ const StartNewJourney: React.FC = () => {
       if (!validateTab(tab)) {
         setActiveTab(tab);
         setPendingValidateTab(tab);
-        toast.error(
-          `Please complete the required fields in "${WIZARD_TAB_LABELS[tab]}".`,
-        );
         return;
       }
     }
