@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-// Monument markers scattered across the map — each represents a tracked
-// parcel. Positions are hand-placed to feel surveyed, not randomised.
+// Monument markers scattered across the map — each represents a managed
+// property. Positions are hand-placed to feel surveyed, not randomised.
 const MARKERS = [
   { top: '18%', left: '22%', pulse: false },
   { top: '34%', left: '68%', pulse: true },
@@ -11,10 +11,10 @@ const MARKERS = [
 ];
 
 const FIELD_LOG = [
-  { value: '12,400+', label: 'Parcels tracked' },
-  { value: '98%', label: 'Uptime guaranteed' },
-  { value: '340+', label: 'Organisations onboard' },
-  { value: '24/7', label: 'Support on call' },
+  { value: 'Managed', label: 'Properties & tenants' },
+  { value: 'Tracked', label: 'Rent, expenses & mortgages' },
+  { value: 'On time', label: 'Compliance & certificates' },
+  { value: 'Ready', label: 'Making Tax Digital' },
 ];
 
 const AuthPageLeftPanel: React.FC = () => {
@@ -89,8 +89,8 @@ const AuthPageLeftPanel: React.FC = () => {
           loading='eager'
         />
         <div className='text-primary-foreground/50 hidden text-right text-[11px] leading-tight tracking-wide sm:block'>
-          <p>SURVEY REF.</p>
-          <p className='text-primary-foreground/70'>23.8103° N, 90.4125° E</p>
+          <p>PORTFOLIO REF.</p>
+          <p className='text-primary-foreground/70'>51.5072° N, 0.1276° W</p>
         </div>
       </div>
 
@@ -103,8 +103,8 @@ const AuthPageLeftPanel: React.FC = () => {
         </h1>
 
         <p className='text-primary-foreground/70 max-w-sm text-[15px] leading-relaxed'>
-          Track parcels, monitor applications, and stay on top of every land
-          management task — all in one place.
+          Manage properties, tenants, rent, compliance and maintenance — all
+          in one place for landlords, letting agents and mortgage advisers.
         </p>
 
         {/* Field log — ledger-style stats */}
@@ -129,11 +129,11 @@ const AuthPageLeftPanel: React.FC = () => {
       <div className='relative z-10'>
         <div className='border-secondary/60 relative border-l-2 pl-4'>
           <p className='text-primary-foreground/80 text-sm italic'>
-            Landkeeper transformed how we handle our portfolio of 2,000+
-            parcels.
+            Landkeeper keeps every tenancy, certificate and payment across our
+            portfolio organised and on schedule.
           </p>
           <p className='text-primary-foreground/50 mt-2 text-xs tracking-wide uppercase'>
-            — Director, National Land Authority
+            — Portfolio Landlord
           </p>
         </div>
       </div>
