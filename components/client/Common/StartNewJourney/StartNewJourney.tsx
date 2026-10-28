@@ -3,12 +3,8 @@
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { EMPTY_DETAILS_FORM } from '@/data/client/Common/Properties/PropertiesData';
-
 import { snakeToCamel } from '@/utils/formatters';
-
 import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-
 import { useAddNewJourneyMutation } from '@/store/api/endpoints/client/StartNewJourney/StartNewJourneyApi';
 import {
   EMPTY_WIZARD_ERRORS,
@@ -35,6 +31,7 @@ import TenantTab, {
   EMPTY_TENANT_STEP_FORM,
   validateTenantStep,
 } from './Components/TenantTab';
+import { toast } from 'sonner';
 
 const EMPTY_STATE: WizardState = {
   property: EMPTY_DETAILS_FORM,
