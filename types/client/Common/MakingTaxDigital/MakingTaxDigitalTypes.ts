@@ -5,6 +5,22 @@ export interface MtdQuarter {
   label: string;
 }
 
+// One report per tax year + quarter, from GET /mtd/reports
+export interface MtdReport {
+  alias: string;
+  current_tax_year: number;
+  current_quarter: string;
+  tax_year: number;
+  quarter: string;
+  properties: string[];
+  total_income: number;
+  total_allowable_expenses: number;
+  property_profit: number;
+  total_mortgage_interest: number;
+  total_properties: number;
+  number_of_properties_included: number;
+}
+
 export interface MtdProperty {
   alias: string;
   name: string;
@@ -80,9 +96,15 @@ export interface MtdTabProps {
   onPending: (label: string) => void;
 }
 
+export interface MtdSummaryTabProps extends MtdTabProps {
+  report: MtdReport | undefined;
+}
+
 export interface MtdPropertiesTableProps {
   rows: MtdPropertyTotals[];
   selected: string[];
+  // number_of_properties_included from the MTD report
+  includedCount: number;
   onSelectedChange: (aliases: string[]) => void;
 }
 

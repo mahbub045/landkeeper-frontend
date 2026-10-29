@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, Search } from 'lucide-react';
+import { CircleCheck, Home, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import Loading from '@/components/common/CustomLoader/Loading';
@@ -24,11 +24,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { MTD_LETTING_STATUS_STYLES } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   PROPERTY_STATUS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/common/ChoiceFieldOptions';
-import { MTD_LETTING_STATUS_STYLES } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { MtdPropertiesTableProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
@@ -39,6 +39,7 @@ import { SectionCard, TableFrame, toAmount } from './MtdShared';
 const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
   rows,
   selected,
+  includedCount,
   onSelectedChange,
 }) => {
   const toLabel = (options: typeof PROPERTY_TYPE_OPTIONS, value: string) =>
@@ -134,6 +135,11 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
               className='h-8! w-64 pr-8! pl-7!'
             />
             <HoverInfoPopover text='You can search using Property Name and Address.' />
+          </div>
+          <div className='border-success/30 bg-success/10 text-success inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs whitespace-nowrap'>
+            <CircleCheck className='size-3.5' />
+            <span className='font-semibold tabular-nums'>{includedCount}</span>
+            <span className='opacity-80'>of {totalCount} selected</span>
           </div>
         </div>
       }

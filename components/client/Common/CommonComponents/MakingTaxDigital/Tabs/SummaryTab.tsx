@@ -18,15 +18,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  getPortfolioTotals,
-  getScopeLabel,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { getPortfolioTotals } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
 import {
   MtdDeclarationCheck,
   MtdDeclarationForm,
-  MtdTabProps,
+  MtdSummaryTabProps,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { getTodayInputDate } from '@/utils/formatters';
 import {
@@ -63,7 +60,11 @@ const EMPTY_DECLARATION: MtdDeclarationForm = {
   notes: '',
 };
 
-const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
+const SummaryTab: React.FC<MtdSummaryTabProps> = ({
+  data,
+  report,
+  onPending,
+}) => {
   const [declaration, setDeclaration] =
     useState<MtdDeclarationForm>(EMPTY_DECLARATION);
   const setField = <K extends keyof MtdDeclarationForm>(
@@ -76,8 +77,16 @@ const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
       (value) => value.trim() !== '',
     );
 
-  const totals = getPortfolioTotals(data, properties.length);
-  const scope = getScopeLabel(properties);
+  // Finance costs still come from placeholder data until that endpoint is wired
+  const totals = getPortfolioTotals(data);
+  const income = report?.total_income ?? 0;
+  const expenses = report?.total_allowable_expenses ?? 0;
+  const profit = report?.property_profit ?? 0;
+  const included = report?.number_of_properties_included ?? 0;
+  const scope =
+    included > 0 && included === report?.total_properties
+      ? 'all properties'
+      : `${included} selected ${included === 1 ? 'property' : 'properties'}`;
   // Other property income (parking, utilities recharged, etc.) is not yet
   // tracked separately from rent
   const otherIncome = 0;
@@ -85,7 +94,7 @@ const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
   const rows = [
     {
       category: 'Total rental income',
-      amount: toAmount(totals.income),
+      amount: toAmount(income),
       notes: `From ${scope}`,
     },
     {
@@ -95,19 +104,19 @@ const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
     },
     {
       category: 'TOTAL PROPERTY INCOME',
-      amount: toAmount(totals.income + otherIncome),
+      amount: toAmount(income + otherIncome),
       notes: 'Sum of rental and other income',
       emphasis: true,
     },
     {
       category: 'Total allowable property expenses',
-      amount: toAmount(totals.expenses),
+      amount: toAmount(expenses),
       notes: 'Excludes finance costs',
     },
     {
       category:
         'NET PROPERTY PROFIT / (LOSS) before finance-cost tax treatment',
-      amount: toAmount(totals.profit),
+      amount: toAmount(profit),
       notes: 'Income minus allowable expenses',
       emphasis: true,
     },
@@ -118,7 +127,7 @@ const SummaryTab: React.FC<MtdTabProps> = ({ data, properties, onPending }) => {
     },
     {
       category: 'Number of properties included',
-      amount: String(totals.propertyCount),
+      amount: String(included),
       notes: 'Properties in this report',
     },
   ];
