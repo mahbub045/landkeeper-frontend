@@ -96,6 +96,10 @@ export interface MtdReportTabProps {
   onPending: (label: string) => void;
 }
 
+export interface DownloadSummaryCardProps {
+  report: MtdReport | undefined;
+}
+
 export interface MtdPropertiesTableProps {
   selected: string[];
   // number_of_properties_included from the MTD report

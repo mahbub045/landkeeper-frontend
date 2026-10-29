@@ -47,12 +47,29 @@ export const MakingTaxDigitalApi = baseApi.injectEndpoints({
       }),
       providesTags: ['MTD'],
     }),
+    getMTDReportConfirmationData: builder.query({
+      query: ({ reportAlias }) => ({
+        url: `/mtd/reports/${reportAlias}/download`,
+        method: 'GET',
+      }),
+      providesTags: ['MTD'],
+    }),
     dowloadMTDReport: builder.mutation({
       query: ({ reportAlias, payload }) => ({
         url: `/mtd/reports/${reportAlias}/download`,
         method: 'POST',
         body: payload,
+        responseHandler: async (response: Response) => {
+          if (response.ok) return response.blob();
+          const text = await response.text();
+          try {
+            return JSON.parse(text);
+          } catch {
+            return text;
+          }
+        },
       }),
+      invalidatesTags: ['MTD'],
     }),
   }),
 });
@@ -64,5 +81,6 @@ export const {
   useGetMTDFinanceCostsQuery,
   useUpdateMTDFinanceCostsMutation,
   useGetMTDSummaryQuery,
+  useGetMTDReportConfirmationDataQuery,
   useDowloadMTDReportMutation,
 } = MakingTaxDigitalApi;

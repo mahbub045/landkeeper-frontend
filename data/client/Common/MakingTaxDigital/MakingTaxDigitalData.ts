@@ -30,6 +30,13 @@ export const MTD_LETTING_STATUS_STYLES: Record<string, string> = {
     'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400',
 };
 
+// File extension for the downloaded summary, keyed by the response MIME type
+export const MTD_DOWNLOAD_EXTENSIONS: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'text/csv': 'csv',
+};
+
 // How report totals are labelled, e.g. "all properties" or "2 selected properties"
 export function getReportScopeLabel(
   report:
