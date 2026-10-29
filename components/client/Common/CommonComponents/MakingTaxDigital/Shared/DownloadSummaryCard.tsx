@@ -13,11 +13,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { MTD_DOWNLOAD_EXTENSIONS } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
-import { useDowloadMTDReportMutation } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
+import {
+  useDowloadMTDReportMutation,
+  useGetMTDReportConfirmationDataQuery,
+} from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
 import {
   DownloadSummaryCardProps,
+  DownloadSummaryFormProps,
   MtdDeclarationCheck,
   MtdDeclarationForm,
+  MtdReportConfirmation,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { downloadBlob } from '@/utils/downloadBlob';
 import { getTodayInputDate } from '@/utils/formatters';
@@ -73,11 +78,61 @@ async function getApiErrorMessage(err: unknown): Promise<string | undefined> {
   return typeof message === 'string' ? `${field}: ${message}` : undefined;
 }
 
+// Starts from the declaration saved on the report, if there is one
+function toDeclarationForm(
+  confirmation: MtdReportConfirmation | undefined,
+): MtdDeclarationForm {
+  if (!confirmation) return EMPTY_DECLARATION;
+  return {
+    propertiesIncluded: !!confirmation.confirmed_all_properties_included,
+    entriesChecked: !!confirmation.confirmed_entries_checked,
+    itemsFlagged: !!confirmation.confirmed_items_flagged,
+    signatory: confirmation.confirmed_by_name ?? '',
+    date: confirmation.confirmed_at?.slice(0, 10) ?? '',
+    notes: confirmation.review_notes ?? '',
+  };
+}
+
+// ── Shell: loads the saved declaration before showing the form ──────────
+
 const DownloadSummaryCard: React.FC<DownloadSummaryCardProps> = ({
   report,
 }) => {
-  const [declaration, setDeclaration] =
-    useState<MtdDeclarationForm>(EMPTY_DECLARATION);
+  const { data, isLoading } = useGetMTDReportConfirmationDataQuery(
+    { reportAlias: report?.alias },
+    { skip: !report },
+  );
+  const confirmation: MtdReportConfirmation | undefined = data;
+
+  if (!report || isLoading) {
+    return (
+      <Card className='border-border rounded-2xl shadow-md'>
+        <CardContent className='flex justify-center py-10'>
+          <Loading />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Keyed per report so the form resets when the reporting period changes
+  return (
+    <DownloadSummaryForm
+      key={report.alias}
+      report={report}
+      confirmation={confirmation}
+    />
+  );
+};
+
+// ── Declaration form + download ─────────────────────────────────────────
+
+const DownloadSummaryForm: React.FC<DownloadSummaryFormProps> = ({
+  report,
+  confirmation,
+}) => {
+  const [declaration, setDeclaration] = useState<MtdDeclarationForm>(() =>
+    toDeclarationForm(confirmation),
+  );
   const setField = <K extends keyof MtdDeclarationForm>(
     key: K,
     value: MtdDeclarationForm[K],
@@ -92,7 +147,6 @@ const DownloadSummaryCard: React.FC<DownloadSummaryCardProps> = ({
     useDowloadMTDReportMutation();
 
   async function handleDownload() {
-    if (!report) return;
     try {
       const blob: Blob = await downloadReport({
         reportAlias: report.alias,
@@ -139,7 +193,7 @@ const DownloadSummaryCard: React.FC<DownloadSummaryCardProps> = ({
             </div>
           </div>
           <Button
-            disabled={!isDeclarationComplete || !report || isDownloading}
+            disabled={!isDeclarationComplete || isDownloading}
             onClick={handleDownload}
           >
             {isDownloading ? <Loading className='text-white!' /> : <Download />}

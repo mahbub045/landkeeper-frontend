@@ -96,8 +96,23 @@ export interface MtdReportTabProps {
   onPending: (label: string) => void;
 }
 
+// Saved declaration from GET /mtd/reports/{alias}/download
+export interface MtdReportConfirmation {
+  confirmed_all_properties_included: boolean | null;
+  confirmed_entries_checked: boolean | null;
+  confirmed_items_flagged: boolean | null;
+  confirmed_by_name: string | null;
+  confirmed_at: string | null;
+  review_notes: string | null;
+}
+
 export interface DownloadSummaryCardProps {
   report: MtdReport | undefined;
+}
+
+export interface DownloadSummaryFormProps {
+  report: MtdReport;
+  confirmation: MtdReportConfirmation | undefined;
 }
 
 export interface MtdPropertiesTableProps {
