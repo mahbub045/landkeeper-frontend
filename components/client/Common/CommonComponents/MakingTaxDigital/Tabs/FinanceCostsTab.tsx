@@ -44,7 +44,7 @@ const FinanceCostsTab: React.FC<MtdReportTabProps> = ({
   const [editing, setEditing] = useState<MtdFinanceCostItem | null>(null);
 
   return (
-    <div className='grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]'>
+    <div className='space-y-4'>
       <div className='space-y-4'>
         <SectionCard
           icon={Landmark}
