@@ -21,6 +21,7 @@ import {
   getPortfolioTotals,
   getPropertyTotals,
   MTD_PROPERTIES,
+  MTD_TAX_YEARS,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   MtdPeriodData,
@@ -96,7 +97,7 @@ function getStats(
 const MakingTaxDigital: React.FC = () => {
   const [tab, setTab] = useState<MtdTabValue>('income-expenses');
   const [quarter, setQuarter] = useState('Q1');
-  const [taxYear, setTaxYear] = useState('2026/27');
+  const [taxYear, setTaxYear] = useState(MTD_TAX_YEARS[0].value);
   const [selected, setSelected] = useState<string[]>(() =>
     MTD_PROPERTIES.map((p) => p.alias),
   );

@@ -18,7 +18,16 @@ export const MTD_QUARTERS: MtdQuarter[] = [
   { value: 'Q4', label: 'Quarter 4 (6 Jan – 5 Apr)' },
 ];
 
-export const MTD_TAX_YEARS = ['2026/27', '2025/26', '2024/25'];
+export const MTD_TAX_YEARS = [
+  {
+    value: '2026',
+    label: '2026/27',
+  },
+  {
+    value: '2025',
+    label: '2025/26',
+  },
+];
 
 // Letting status pill colours, keyed by property status value
 export const MTD_LETTING_STATUS_STYLES: Record<string, string> = {
@@ -186,7 +195,7 @@ export function getMtdPeriodData(
     0,
     MTD_QUARTERS.findIndex((q) => q.value === quarter),
   );
-  const yearsBack = Math.max(0, MTD_TAX_YEARS.indexOf(taxYear));
+  const yearsBack = Math.max(0, MTD_TAX_YEARS.findIndex((y) => y.value === taxYear));
   const monthOffset = quarterIndex * 3 - yearsBack * 12;
 
   // Deterministic per-period variation; every multiplier is 1 for the base
