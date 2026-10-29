@@ -18,7 +18,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import { getPortfolioTotals } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import {
+  getPortfolioTotals,
+  getReportScopeLabel,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
 import {
   MtdDeclarationCheck,
@@ -83,10 +86,7 @@ const SummaryTab: React.FC<MtdSummaryTabProps> = ({
   const expenses = report?.total_allowable_expenses ?? 0;
   const profit = report?.property_profit ?? 0;
   const included = report?.number_of_properties_included ?? 0;
-  const scope =
-    included > 0 && included === report?.total_properties
-      ? 'all properties'
-      : `${included} selected ${included === 1 ? 'property' : 'properties'}`;
+  const scope = getReportScopeLabel(report);
   // Other property income (parking, utilities recharged, etc.) is not yet
   // tracked separately from rent
   const otherIncome = 0;

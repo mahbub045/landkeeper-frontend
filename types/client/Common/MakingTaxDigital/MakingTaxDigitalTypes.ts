@@ -100,6 +100,26 @@ export interface MtdSummaryTabProps extends MtdTabProps {
   report: MtdReport | undefined;
 }
 
+// One income or expense line from GET /mtd/reports/{alias}/income-expenses
+export interface MtdTransaction {
+  alias: string;
+  property_name: string;
+  type: 'INCOME' | 'EXPENSE';
+  category: string;
+  amount: string;
+  date: string;
+}
+
+export interface MtdIncomeExpenses {
+  income: MtdTransaction[];
+  expenses: MtdTransaction[];
+}
+
+export interface MtdIncomeExpensesTabProps {
+  report: MtdReport | undefined;
+  onPending: (label: string) => void;
+}
+
 export interface MtdPropertiesTableProps {
   rows: MtdPropertyTotals[];
   selected: string[];

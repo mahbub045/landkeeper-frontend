@@ -183,11 +183,7 @@ const MakingTaxDigital: React.FC = () => {
           </div>
 
           <TabsContent value='income-expenses'>
-            <IncomeExpensesTab
-              data={data}
-              properties={selectedProperties}
-              onPending={onPending}
-            />
+            <IncomeExpensesTab report={report} onPending={onPending} />
           </TabsContent>
           <TabsContent value='finance-costs'>
             <FinanceCostsTab

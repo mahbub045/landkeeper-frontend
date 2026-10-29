@@ -9,6 +9,7 @@ import {
   MtdProperty,
   MtdPropertyTotals,
   MtdQuarter,
+  MtdReport,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 
 export const MTD_QUARTERS: MtdQuarter[] = [
@@ -195,7 +196,10 @@ export function getMtdPeriodData(
     0,
     MTD_QUARTERS.findIndex((q) => q.value === quarter),
   );
-  const yearsBack = Math.max(0, MTD_TAX_YEARS.findIndex((y) => y.value === taxYear));
+  const yearsBack = Math.max(
+    0,
+    MTD_TAX_YEARS.findIndex((y) => y.value === taxYear),
+  );
   const monthOffset = quarterIndex * 3 - yearsBack * 12;
 
   // Deterministic per-period variation; every multiplier is 1 for the base
@@ -256,6 +260,14 @@ export function getScopeLabel(properties: MtdProperty[]): string {
   if (properties.length === 1) return properties[0].name;
   if (properties.length === MTD_PROPERTIES.length) return 'all properties';
   return `${properties.length} selected properties`;
+}
+
+// How report totals are labelled, e.g. "all properties" or "2 selected properties"
+export function getReportScopeLabel(report: MtdReport | undefined): string {
+  const included = report?.number_of_properties_included ?? 0;
+  if (included > 0 && included === report?.total_properties)
+    return 'all properties';
+  return `${included} selected ${included === 1 ? 'property' : 'properties'}`;
 }
 
 // Residential finance costs get a separate tax treatment, so they are not
