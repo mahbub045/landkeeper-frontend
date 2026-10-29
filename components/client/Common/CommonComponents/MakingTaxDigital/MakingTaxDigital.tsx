@@ -10,16 +10,12 @@ import {
   Receipt,
   Wallet,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  getMtdPeriodData,
-  getPropertyTotals,
-  MTD_TAX_YEARS,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { MTD_TAX_YEARS } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   MakingTaxDigitalApi,
   useGetMTDReportsQuery,
@@ -105,12 +101,6 @@ const MakingTaxDigital: React.FC = () => {
     }
   }
 
-  // Per-property income/expense columns still use placeholder data
-  const periodData = useMemo(
-    () => getMtdPeriodData(quarter, taxYear),
-    [quarter, taxYear],
-  );
-
   // Actions that need the MTD API; replace with real handlers once it exists
   const onPending = (label: string) =>
     toast.info(`${label} will be available soon.`);
@@ -135,7 +125,6 @@ const MakingTaxDigital: React.FC = () => {
       />
 
       <MtdPropertiesTable
-        rows={getPropertyTotals(periodData)}
         selected={selected}
         includedCount={report?.number_of_properties_included ?? 0}
         onSelectedChange={handleSelectedChange}

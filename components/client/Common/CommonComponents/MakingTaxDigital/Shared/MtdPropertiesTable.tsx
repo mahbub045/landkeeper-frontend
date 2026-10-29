@@ -34,10 +34,9 @@ import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Prope
 import { MtdPropertiesTableProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { Property } from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
-import { SectionCard, TableFrame, toAmount } from './MtdShared';
+import { SectionCard, TableFrame } from './MtdShared';
 
 const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
-  rows,
   selected,
   includedCount,
   onSelectedChange,
@@ -88,14 +87,6 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
       ];
     return [1, '...', page - 1, page, page + 1, '...', totalPages];
   };
-
-  // Income/expense totals per property; 0 until the MTD API supplies them
-  const totalsFor = (alias: string) =>
-    rows.find((row) => row.property.alias === alias) ?? {
-      income: 0,
-      expenses: 0,
-      profit: 0,
-    };
 
   const selectedCount = properties.filter((p) =>
     selected.includes(p.alias),
@@ -167,15 +158,12 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
               <TableHead>Property type</TableHead>
               <TableHead>Ownership share</TableHead>
               <TableHead>Letting status</TableHead>
-              <TableHead>Rental income</TableHead>
-              <TableHead>Allowable expenses</TableHead>
-              <TableHead>Profit / (loss)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isFetching ? (
               <TableRow>
-                <TableCell colSpan={9}>
+                <TableCell colSpan={6}>
                   <div className='flex justify-center py-6'>
                     <Loading />
                   </div>
@@ -184,7 +172,7 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
             ) : properties.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={9}
+                  colSpan={6}
                   className='text-muted-foreground py-6 text-center'
                 >
                   No properties found.
@@ -193,7 +181,6 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
             ) : (
               properties.map((property) => {
                 const isSelected = selected.includes(property.alias);
-                const totals = totalsFor(property.alias);
                 return (
                   <TableRow
                     key={property.alias}
@@ -236,15 +223,6 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
                       >
                         {toLabel(PROPERTY_STATUS_OPTIONS, property.status)}
                       </span>
-                    </TableCell>
-                    <TableCell className='tabular-nums'>
-                      {toAmount(totals.income)}
-                    </TableCell>
-                    <TableCell className='tabular-nums'>
-                      {toAmount(totals.expenses)}
-                    </TableCell>
-                    <TableCell className='font-semibold text-emerald-600 tabular-nums dark:text-emerald-400'>
-                      {toAmount(totals.profit)}
                     </TableCell>
                   </TableRow>
                 );
