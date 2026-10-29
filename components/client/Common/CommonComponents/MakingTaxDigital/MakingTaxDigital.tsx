@@ -44,6 +44,11 @@ const TABS: { value: MtdTabValue; label: string; icon: LucideIcon }[] = [
 function getStats(report: MtdReport | undefined): MtdStat[] {
   return [
     {
+      icon: Home,
+      label: 'Total mortgage interest',
+      value: toAmount(report?.total_mortgage_interest ?? 0),
+    },
+    {
       icon: Wallet,
       label: 'Total rental income',
       value: toAmount(report?.total_income ?? 0),
@@ -57,11 +62,6 @@ function getStats(report: MtdReport | undefined): MtdStat[] {
       icon: BarChart3,
       label: 'Property profit / (loss)',
       value: toAmount(report?.property_profit ?? 0),
-    },
-    {
-      icon: Home,
-      label: 'Total mortgage interest',
-      value: toAmount(report?.total_mortgage_interest ?? 0),
     },
   ];
 }
