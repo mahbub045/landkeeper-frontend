@@ -21,7 +21,8 @@ import {
   useGetMTDReportsQuery,
   useSelectMTDPropertiesMutation,
 } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setMtdActiveTab } from '@/store/slices/mtdTabSlice';
 import {
   MtdReport,
   MtdTabValue,
@@ -66,7 +67,7 @@ function getStats(report: MtdReport | undefined): MtdStat[] {
 }
 
 const MakingTaxDigital: React.FC = () => {
-  const [tab, setTab] = useState<MtdTabValue>('income-expenses');
+  const tab = useAppSelector((state) => state.mtdTabs.activeTab);
   const [quarter, setQuarter] = useState('Q1');
   const [taxYear, setTaxYear] = useState(MTD_TAX_YEARS[0].value);
   const dispatch = useAppDispatch();
@@ -148,7 +149,9 @@ const MakingTaxDigital: React.FC = () => {
       ) : (
         <Tabs
           value={tab}
-          onValueChange={(value) => setTab(value as MtdTabValue)}
+          onValueChange={(value) =>
+            dispatch(setMtdActiveTab(value as MtdTabValue))
+          }
           className='gap-6'
         >
           <MtdStatCards stats={getStats(report)} />

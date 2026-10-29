@@ -1,5 +1,9 @@
 export type MtdTabValue = 'income-expenses' | 'finance-costs' | 'summary';
 
+export interface MtdTabState {
+  activeTab: MtdTabValue;
+}
+
 export interface MtdQuarter {
   value: string;
   label: string;

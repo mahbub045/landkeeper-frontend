@@ -10,6 +10,7 @@ import permissionAccessTabsReducer, {
 } from './slices/permissionTabsSlice';
 import landlordDetailsTabsReducer from './slices/landlordDetailsTabSlice';
 import landlordAliasReducer from './slices/landlordAliasSlice';
+import mtdTabsReducer from './slices/mtdTabSlice';
 import teamAccessUiReducer from './slices/teamAccessUiSlice';
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
     billingTabs: billingTabsReducer,
     landlordDetailsTabs: landlordDetailsTabsReducer,
     landlordAlias: landlordAliasReducer,
+    mtdTabs: mtdTabsReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
