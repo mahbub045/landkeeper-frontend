@@ -20,6 +20,15 @@ export const MTD_QUARTERS: MtdQuarter[] = [
 
 export const MTD_TAX_YEARS = ['2026/27', '2025/26', '2024/25'];
 
+// Letting status pill colours, keyed by property status value
+export const MTD_LETTING_STATUS_STYLES: Record<string, string> = {
+  OCCUPIED:
+    'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400',
+  VACANT: 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400',
+  UNDER_MAINTENANCE:
+    'bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400',
+};
+
 export const MTD_PROPERTIES: MtdProperty[] = [
   {
     alias: 'riverside-view',

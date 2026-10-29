@@ -20,7 +20,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -29,6 +28,7 @@ import {
   PROPERTY_STATUS_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/common/ChoiceFieldOptions';
+import { MTD_LETTING_STATUS_STYLES } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { MtdPropertiesTableProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
@@ -101,10 +101,6 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
   ).length;
   const allSelected =
     properties.length > 0 && selectedCount === properties.length;
-  const sumOf = (key: 'income' | 'expenses' | 'profit') =>
-    properties
-      .filter((p) => selected.includes(p.alias))
-      .reduce((total, p) => total + totalsFor(p.alias)[key], 0);
 
   const toggle = (alias: string) =>
     onSelectedChange(
@@ -225,7 +221,13 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
                       {property.shareholder?.[0]?.share_percentage ?? 100}%
                     </TableCell>
                     <TableCell>
-                      <span className='inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400'>
+                      <span
+                        className={cn(
+                          'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+                          MTD_LETTING_STATUS_STYLES[property.status] ??
+                            'bg-muted text-muted-foreground',
+                        )}
+                      >
                         {toLabel(PROPERTY_STATUS_OPTIONS, property.status)}
                       </span>
                     </TableCell>
@@ -243,23 +245,6 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
               })
             )}
           </TableBody>
-          <TableFooter className='bg-blue-50/60 dark:bg-blue-950/20'>
-            <TableRow>
-              <TableCell />
-              <TableCell colSpan={5} className='text-foreground font-semibold'>
-                Total for selected properties
-              </TableCell>
-              <TableCell className='font-semibold tabular-nums'>
-                {toAmount(sumOf('income'))}
-              </TableCell>
-              <TableCell className='font-semibold tabular-nums'>
-                {toAmount(sumOf('expenses'))}
-              </TableCell>
-              <TableCell className='font-bold text-emerald-600 tabular-nums dark:text-emerald-400'>
-                {toAmount(sumOf('profit'))}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
       </TableFrame>
 

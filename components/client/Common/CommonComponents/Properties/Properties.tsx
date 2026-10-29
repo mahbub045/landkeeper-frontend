@@ -13,8 +13,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { PROPERTY_TYPE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { FILTER_TABS } from '@/data/client/Common/Properties/PropertiesData';
+import { PROPERTY_TYPE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { useGetCommonPermissionsQuery } from '@/store/api/endpoints/common/Permissions/CommonPermissionsApi';
 import {
@@ -59,7 +59,7 @@ const Properties: React.FC = () => {
       typeOption && { property_type: typeOption.value }),
   };
 
-  const { data, isLoading, isError } = useGetPropertiesQuery(queryParams);
+  const { data, isFetching, isError } = useGetPropertiesQuery(queryParams);
   const { data: commonPermissions } = useGetCommonPermissionsQuery(undefined);
 
   const properties: Property[] = data?.results ?? [];
@@ -153,7 +153,7 @@ const Properties: React.FC = () => {
             <PropertyGrid
               properties={properties}
               activeFilter={activeFilter}
-              isLoading={isLoading}
+              isLoading={isFetching}
             />
 
             <div className='flex items-center justify-between'>
