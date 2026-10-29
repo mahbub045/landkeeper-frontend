@@ -9,7 +9,7 @@ import {
   MtdProperty,
   MtdPropertyTotals,
   MtdQuarter,
-  MtdReport,
+  MtdSummary,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 
 export const MTD_QUARTERS: MtdQuarter[] = [
@@ -263,7 +263,7 @@ export function getScopeLabel(properties: MtdProperty[]): string {
 }
 
 // How report totals are labelled, e.g. "all properties" or "2 selected properties"
-export function getReportScopeLabel(report: MtdReport | undefined): string {
+export function getReportScopeLabel(report: MtdSummary | undefined): string {
   const included = report?.number_of_properties_included ?? 0;
   if (included > 0 && included === report?.total_properties)
     return 'all properties';

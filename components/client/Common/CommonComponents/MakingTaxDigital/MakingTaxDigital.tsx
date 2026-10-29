@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getMtdPeriodData,
   getPropertyTotals,
-  MTD_PROPERTIES,
   MTD_TAX_YEARS,
 } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
@@ -106,13 +105,11 @@ const MakingTaxDigital: React.FC = () => {
     }
   }
 
-  // Tabs still run on placeholder data until their MTD endpoints are wired
+  // Per-property income/expense columns still use placeholder data
   const periodData = useMemo(
     () => getMtdPeriodData(quarter, taxYear),
     [quarter, taxYear],
   );
-  const data = periodData;
-  const selectedProperties = MTD_PROPERTIES;
 
   // Actions that need the MTD API; replace with real handlers once it exists
   const onPending = (label: string) =>
@@ -186,19 +183,10 @@ const MakingTaxDigital: React.FC = () => {
             <IncomeExpensesTab report={report} onPending={onPending} />
           </TabsContent>
           <TabsContent value='finance-costs'>
-            <FinanceCostsTab
-              data={data}
-              properties={selectedProperties}
-              onPending={onPending}
-            />
+            <FinanceCostsTab report={report} onPending={onPending} />
           </TabsContent>
           <TabsContent value='summary'>
-            <SummaryTab
-              data={data}
-              report={report}
-              properties={selectedProperties}
-              onPending={onPending}
-            />
+            <SummaryTab report={report} onPending={onPending} />
           </TabsContent>
         </Tabs>
       )}

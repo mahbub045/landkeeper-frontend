@@ -96,8 +96,14 @@ export interface MtdTabProps {
   onPending: (label: string) => void;
 }
 
-export interface MtdSummaryTabProps extends MtdTabProps {
-  report: MtdReport | undefined;
+// Totals from GET /mtd/reports/{alias}/summary
+export interface MtdSummary {
+  total_income: number;
+  total_allowable_expenses: number;
+  property_profit: number;
+  total_mortgage_interest: number;
+  total_properties: number;
+  number_of_properties_included: number;
 }
 
 // One income or expense line from GET /mtd/reports/{alias}/income-expenses
@@ -115,7 +121,40 @@ export interface MtdIncomeExpenses {
   expenses: MtdTransaction[];
 }
 
-export interface MtdIncomeExpensesTabProps {
+export interface MtdEvidenceFile {
+  id: string;
+  name: string;
+}
+
+// One finance cost from GET /mtd/reports/{alias}/finance-costs
+export interface MtdFinanceCostItem {
+  alias: string;
+  property_name: string;
+  lender_name: string;
+  monthly_payment: number | null;
+  notes: string | null;
+  evidence: MtdEvidenceFile[];
+}
+
+export interface MtdFinanceCosts {
+  finance_costs: MtdFinanceCostItem[];
+}
+
+export interface EditFinanceCostDialogProps {
+  reportAlias: string | undefined;
+  financeCost: MtdFinanceCostItem | null;
+  open: boolean;
+  onClose: () => void;
+}
+
+export interface EditFinanceCostFormProps {
+  reportAlias: string;
+  financeCost: MtdFinanceCostItem;
+  onClose: () => void;
+}
+
+// Tabs that load their own rows for the current report
+export interface MtdReportTabProps {
   report: MtdReport | undefined;
   onPending: (label: string) => void;
 }

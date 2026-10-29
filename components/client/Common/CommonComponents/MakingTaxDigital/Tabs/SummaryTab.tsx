@@ -3,6 +3,7 @@
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { useState } from 'react';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,15 +19,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  getPortfolioTotals,
-  getReportScopeLabel,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { getReportScopeLabel } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import { cn } from '@/lib/utils';
+import { useGetMTDSummaryQuery } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
 import {
   MtdDeclarationCheck,
   MtdDeclarationForm,
-  MtdSummaryTabProps,
+  MtdReportTabProps,
+  MtdSummary,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import { getTodayInputDate } from '@/utils/formatters';
 import {
@@ -63,11 +63,13 @@ const EMPTY_DECLARATION: MtdDeclarationForm = {
   notes: '',
 };
 
-const SummaryTab: React.FC<MtdSummaryTabProps> = ({
-  data,
-  report,
-  onPending,
-}) => {
+const SummaryTab: React.FC<MtdReportTabProps> = ({ report, onPending }) => {
+  const { data, isFetching } = useGetMTDSummaryQuery(
+    { reportAlias: report?.alias },
+    { skip: !report },
+  );
+  const summary: MtdSummary | undefined = data;
+
   const [declaration, setDeclaration] =
     useState<MtdDeclarationForm>(EMPTY_DECLARATION);
   const setField = <K extends keyof MtdDeclarationForm>(
@@ -80,13 +82,12 @@ const SummaryTab: React.FC<MtdSummaryTabProps> = ({
       (value) => value.trim() !== '',
     );
 
-  // Finance costs still come from placeholder data until that endpoint is wired
-  const totals = getPortfolioTotals(data);
-  const income = report?.total_income ?? 0;
-  const expenses = report?.total_allowable_expenses ?? 0;
-  const profit = report?.property_profit ?? 0;
-  const included = report?.number_of_properties_included ?? 0;
-  const scope = getReportScopeLabel(report);
+  const income = summary?.total_income ?? 0;
+  const expenses = summary?.total_allowable_expenses ?? 0;
+  const profit = summary?.property_profit ?? 0;
+  const mortgageInterest = summary?.total_mortgage_interest ?? 0;
+  const included = summary?.number_of_properties_included ?? 0;
+  const scope = getReportScopeLabel(summary);
   // Other property income (parking, utilities recharged, etc.) is not yet
   // tracked separately from rent
   const otherIncome = 0;
@@ -122,7 +123,7 @@ const SummaryTab: React.FC<MtdSummaryTabProps> = ({
     },
     {
       category: 'Total residential finance costs (separately recorded)',
-      amount: toAmount(totals.financeCosts),
+      amount: toAmount(mortgageInterest),
       notes: 'Mortgage and other finance costs',
     },
     {
@@ -150,23 +151,35 @@ const SummaryTab: React.FC<MtdSummaryTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    key={row.category}
-                    className={cn(
-                      row.emphasis &&
-                        'bg-blue-50/60 font-semibold text-blue-700 dark:bg-blue-950/20 dark:text-blue-400',
-                    )}
-                  >
-                    <TableCell className='whitespace-normal'>
-                      {row.category}
-                    </TableCell>
-                    <TableCell className='tabular-nums'>{row.amount}</TableCell>
-                    <TableCell className='text-muted-foreground'>
-                      {row.notes}
+                {isFetching ? (
+                  <TableRow>
+                    <TableCell colSpan={3}>
+                      <div className='flex justify-center py-6'>
+                        <Loading />
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  rows.map((row) => (
+                    <TableRow
+                      key={row.category}
+                      className={cn(
+                        row.emphasis &&
+                          'bg-blue-50/60 font-semibold text-blue-700 dark:bg-blue-950/20 dark:text-blue-400',
+                      )}
+                    >
+                      <TableCell className='whitespace-normal'>
+                        {row.category}
+                      </TableCell>
+                      <TableCell className='tabular-nums'>
+                        {row.amount}
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {row.notes}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableFrame>

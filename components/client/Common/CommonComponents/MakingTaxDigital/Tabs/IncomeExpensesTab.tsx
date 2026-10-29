@@ -23,7 +23,7 @@ import { getReportScopeLabel } from '@/data/client/Common/MakingTaxDigital/Makin
 import { useGetMTDIncomeExpensesQuery } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
 import {
   MtdIncomeExpenses,
-  MtdIncomeExpensesTabProps,
+  MtdReportTabProps,
 } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import {
@@ -47,7 +47,7 @@ function TotalRow({ label, value }: { label: string; value: number }) {
   );
 }
 
-const IncomeExpensesTab: React.FC<MtdIncomeExpensesTabProps> = ({
+const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
   report,
   onPending,
 }) => {
