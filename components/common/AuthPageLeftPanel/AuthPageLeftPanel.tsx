@@ -151,10 +151,16 @@ const AuthPageLeftPanel: React.FC = () => {
       <div className='relative z-10 flex flex-1 flex-col justify-center'>
         <Carousel setApi={setApi} opts={{ loop: true }} className='w-full'>
           <CarouselContent>
-            {SLIDES.map(({ key, title, description, Illustration }) => (
-              <CarouselItem key={key} className='select-none'>
+            {SLIDES.map(({ key, title, description, Illustration }, i) => (
+              // data-active replays the entrance animations (globals.css)
+              // each time this slide comes into view.
+              <CarouselItem
+                key={key}
+                data-active={current === i}
+                className='select-none'
+              >
                 <Illustration />
-                <div className='mx-auto mt-10 max-w-sm text-center'>
+                <div className='feature-copy mx-auto mt-10 max-w-sm text-center'>
                   <h2 className='text-primary-foreground text-3xl leading-tight font-semibold tracking-tight'>
                     {title}
                   </h2>

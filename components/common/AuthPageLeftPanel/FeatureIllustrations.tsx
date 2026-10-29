@@ -28,29 +28,29 @@ import type { FeatureAppIconProps } from '@/types/common/auth/AuthPageLeftPanelT
 // after the product screens they represent. Purely decorative.
 
 const CARD =
-  'absolute rounded-2xl bg-white text-slate-800 shadow-2xl shadow-black/25';
+  'feature-card absolute rounded-2xl bg-white text-slate-800 shadow-2xl shadow-black/25';
 
 // Coloured confetti shapes scattered around every stage.
 const Confetti: React.FC = () => (
   <>
-    <span className='absolute top-[8%] left-[6%] h-3 w-3 rounded-full bg-orange-400/90' />
-    <span className='absolute top-[2%] right-[10%] h-4 w-2 rotate-45 rounded-full bg-amber-300' />
-    <span className='bg-secondary absolute right-[2%] bottom-[30%] h-3 w-5 -rotate-12 rounded-full' />
-    <span className='absolute bottom-[6%] left-[14%] h-2.5 w-2.5 rounded-full bg-fuchsia-400/90' />
-    <span className='absolute top-[40%] left-[0%] h-4 w-2 -rotate-30 rounded-full bg-emerald-300/90' />
+    <span className='feature-confetti absolute top-[8%] left-[6%] h-3 w-3 rounded-full bg-orange-400/90' />
+    <span className='feature-confetti absolute top-[2%] right-[10%] h-4 w-2 rotate-45 rounded-full bg-amber-300' />
+    <span className='feature-confetti bg-secondary absolute right-[2%] bottom-[30%] h-3 w-5 -rotate-12 rounded-full' />
+    <span className='feature-confetti absolute bottom-[6%] left-[14%] h-2.5 w-2.5 rounded-full bg-fuchsia-400/90' />
+    <span className='feature-confetti absolute top-[40%] left-[0%] h-4 w-2 -rotate-30 rounded-full bg-emerald-300/90' />
   </>
 );
 
 const AppIcon: React.FC<FeatureAppIconProps> = ({ icon: Icon, className }) => (
   <div
-    className={`absolute flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-xl shadow-black/20 ${className}`}
+    className={`feature-card absolute flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-xl shadow-black/20 ${className}`}
   >
     <Icon className='text-primary h-6 w-6' />
   </div>
 );
 
 export const PropertiesIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={Building2} className='top-[6%] left-[30%]' />
 
@@ -110,7 +110,7 @@ export const PropertiesIllustration: React.FC = () => (
 );
 
 export const RentIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={PoundSterling} className='top-[4%] right-[18%]' />
 
@@ -127,8 +127,8 @@ export const RentIllustration: React.FC = () => (
         {[45, 60, 52, 70, 64, 82, 95].map((h, i) => (
           <span
             key={i}
-            style={{ height: `${h}%` }}
-            className={`flex-1 rounded-t-md ${i === 6 ? 'bg-primary' : 'bg-primary/25'}`}
+            style={{ height: `${h}%`, animationDelay: `${400 + i * 70}ms` }}
+            className={`feature-grow-y flex-1 origin-bottom rounded-t-md ${i === 6 ? 'bg-primary' : 'bg-primary/25'}`}
           />
         ))}
       </div>
@@ -159,7 +159,7 @@ export const RentIllustration: React.FC = () => (
 );
 
 export const ComplianceIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={ShieldCheck} className='top-[8%] left-[10%]' />
 
@@ -248,7 +248,7 @@ export const ComplianceIllustration: React.FC = () => (
 );
 
 export const MtdIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={Landmark} className='top-[4%] left-[44%]' />
 
@@ -303,7 +303,7 @@ export const MtdIllustration: React.FC = () => (
 );
 
 export const DashboardIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={LayoutDashboard} className='top-[2%] left-[8%]' />
 
@@ -380,7 +380,7 @@ const EXPENSE_SEGMENTS = [
 ];
 
 export const ReportsIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={ChartColumn} className='top-[2%] right-[14%]' />
 
@@ -440,7 +440,7 @@ export const ReportsIllustration: React.FC = () => (
           <div className='mt-0.5 h-1.5 rounded-full bg-slate-100'>
             <div
               style={{ width: `${width}%` }}
-              className='bg-primary h-full rounded-full'
+              className='feature-grow-x bg-primary h-full origin-left rounded-full'
             />
           </div>
         </div>
@@ -457,7 +457,7 @@ export const ReportsIllustration: React.FC = () => (
 );
 
 export const MarketplaceIllustration: React.FC = () => (
-  <div className='relative mx-auto h-75 w-full max-w-95'>
+  <div className='feature-stage relative mx-auto h-75 w-full max-w-95'>
     <Confetti />
     <AppIcon icon={Store} className='top-[4%] left-[40%]' />
 
