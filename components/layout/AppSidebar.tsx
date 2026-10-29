@@ -703,7 +703,7 @@ const AppSidebar: React.FC = () => {
           <Button
             type='button'
             size='lg'
-            variant='secondary'
+            variant='default'
             disabled={sidebarLocked}
             className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
           >

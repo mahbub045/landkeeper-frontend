@@ -1,6 +1,7 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageRightPanel from '@/components/common/AuthPageRightPanel/AuthPageRightPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
@@ -60,17 +61,21 @@ export default function SignInPage() {
       <AuthPageLeftPanel />
 
       {/* Right Panel — Login Form */}
-      <div className='flex w-full items-center justify-center bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
-        <div className='w-full max-w-md'>
+      <AuthPageRightPanel>
+        <div>
           {/* Mobile logo */}
           <AuthPageMobileLogo />
 
           <div className='mb-8'>
+            <p className='text-primary mb-2 text-sm font-semibold'>
+              Welcome back 👋
+            </p>
             <h2 className='text-2xl font-bold text-gray-900 dark:text-gray-50'>
-              Sign in
+              Sign in to Landkeeper
             </h2>
             <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
-              Enter your credentials to access your account
+              Pick up where you left off — your properties, tenants and finances
+              are waiting.
             </p>
           </div>
 
@@ -202,7 +207,7 @@ export default function SignInPage() {
             © {new Date().getFullYear()} Landkeeper. All rights reserved.
           </p>
         </div>
-      </div>
+      </AuthPageRightPanel>
     </div>
   );
 }
