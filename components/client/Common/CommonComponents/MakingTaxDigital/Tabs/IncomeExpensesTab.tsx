@@ -9,6 +9,7 @@ import {
   Trash2,
 } from 'lucide-react';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -18,13 +19,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { getReportScopeLabel } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { useGetMTDIncomeExpensesQuery } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
 import {
-  getPortfolioTotals,
-  getPropertyName,
-  getScopeLabel,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
-import { MtdTabProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { formatDate } from '@/utils/formatters';
+  MtdIncomeExpenses,
+  MtdReportTabProps,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import {
   HelpfulInfo,
   SectionCard,
@@ -46,15 +47,44 @@ function TotalRow({ label, value }: { label: string; value: number }) {
   );
 }
 
-const IncomeExpensesTab: React.FC<MtdTabProps> = ({
-  data,
-  properties,
+const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
+  report,
   onPending,
 }) => {
-  const totals = getPortfolioTotals(data, properties.length);
-  const scope = getScopeLabel(properties);
+  const { data, isFetching } = useGetMTDIncomeExpensesQuery(
+    { reportAlias: report?.alias },
+    { skip: !report },
+  );
+  const { income, expenses }: MtdIncomeExpenses = data ?? {
+    income: [],
+    expenses: [],
+  };
+
+  const scope = getReportScopeLabel(report);
   // One property needs no per-row property column
-  const showProperty = properties.length > 1;
+  const showProperty = (report?.number_of_properties_included ?? 0) > 1;
+  const columnCount = showProperty ? 5 : 4;
+
+  // Loading / empty placeholder row, or null when there are entries to show
+  const placeholderRow = (count: number, emptyText: string) =>
+    isFetching ? (
+      <TableRow>
+        <TableCell colSpan={columnCount}>
+          <div className='flex justify-center py-6'>
+            <Loading />
+          </div>
+        </TableCell>
+      </TableRow>
+    ) : count === 0 ? (
+      <TableRow>
+        <TableCell
+          colSpan={columnCount}
+          className='text-muted-foreground py-6 text-center'
+        >
+          {emptyText}
+        </TableCell>
+      </TableRow>
+    ) : null;
 
   return (
     <div className='space-y-4'>
@@ -76,36 +106,42 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.income.map((entry) => (
-                  <TableRow key={entry.alias}>
-                    {showProperty && (
-                      <TableCell className='text-foreground font-medium'>
-                        {getPropertyName(entry.property_alias)}
+                {placeholderRow(
+                  income.length,
+                  'No income recorded for this quarter.',
+                ) ??
+                  income.map((entry) => (
+                    <TableRow key={entry.alias}>
+                      {showProperty && (
+                        <TableCell className='text-foreground font-medium'>
+                          {entry.property_name}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        {formatChoiceFieldValue(entry.category)}
                       </TableCell>
-                    )}
-                    <TableCell>{entry.income_type}</TableCell>
-                    <TableCell className='tabular-nums'>
-                      {toAmount(entry.amount)}
-                    </TableCell>
-                    <TableCell>{formatDate(entry.date)}</TableCell>
-                    <TableCell className='text-center'>
-                      <Button
-                        variant='destructive'
-                        size='icon-sm'
-                        aria-label='Delete'
-                        onClick={() => onPending('Delete income')}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell className='tabular-nums'>
+                        {toAmount(Number(entry.amount))}
+                      </TableCell>
+                      <TableCell>{formatDate(entry.date)}</TableCell>
+                      <TableCell className='text-center'>
+                        <Button
+                          variant='destructive'
+                          size='icon-sm'
+                          aria-label='Delete'
+                          onClick={() => onPending('Delete income')}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableFrame>
           <TotalRow
             label={`Total rental income (${scope})`}
-            value={totals.income}
+            value={report?.total_income ?? 0}
           />
         </SectionCard>
 
@@ -126,36 +162,42 @@ const IncomeExpensesTab: React.FC<MtdTabProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.expenses.map((entry) => (
-                  <TableRow key={entry.alias}>
-                    {showProperty && (
-                      <TableCell className='text-foreground font-medium'>
-                        {getPropertyName(entry.property_alias)}
+                {placeholderRow(
+                  expenses.length,
+                  'No expenses recorded for this quarter.',
+                ) ??
+                  expenses.map((entry) => (
+                    <TableRow key={entry.alias}>
+                      {showProperty && (
+                        <TableCell className='text-foreground font-medium'>
+                          {entry.property_name}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        {formatChoiceFieldValue(entry.category)}
                       </TableCell>
-                    )}
-                    <TableCell>{entry.category}</TableCell>
-                    <TableCell className='tabular-nums'>
-                      {toAmount(entry.amount)}
-                    </TableCell>
-                    <TableCell>{formatDate(entry.date)}</TableCell>
-                    <TableCell className='text-center'>
-                      <Button
-                        variant='destructive'
-                        size='icon-sm'
-                        aria-label='Delete'
-                        onClick={() => onPending('Delete expense')}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      <TableCell className='tabular-nums'>
+                        {toAmount(Number(entry.amount))}
+                      </TableCell>
+                      <TableCell>{formatDate(entry.date)}</TableCell>
+                      <TableCell className='text-center'>
+                        <Button
+                          variant='destructive'
+                          size='icon-sm'
+                          aria-label='Delete'
+                          onClick={() => onPending('Delete expense')}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableFrame>
           <TotalRow
             label={`Total allowable expenses (${scope})`}
-            value={totals.expenses}
+            value={report?.total_allowable_expenses ?? 0}
           />
         </SectionCard>
       </div>

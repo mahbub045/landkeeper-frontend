@@ -48,6 +48,7 @@ export const TAG_TYPES = [
   'PropertyMaintenance',
   'PropertyMaintenanceComments',
   'Marketplace',
+  'MTD',
 
   //Landlord Tags
   'PricingPlans',

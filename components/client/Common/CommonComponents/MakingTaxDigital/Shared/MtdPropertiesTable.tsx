@@ -1,32 +1,98 @@
 'use client';
 
-import { Home } from 'lucide-react';
+import { CircleCheck, Home, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+import Loading from '@/components/common/CustomLoader/Loading';
+import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { MTD_LETTING_STATUS_STYLES } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import {
+  PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
+import { useGetPropertiesQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { MtdPropertiesTableProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
-import { SectionCard, TableFrame, toAmount } from './MtdShared';
+import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
+import { SectionCard, TableFrame } from './MtdShared';
 
 const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
-  rows,
   selected,
+  includedCount,
   onSelectedChange,
 }) => {
-  const allSelected = selected.length === rows.length;
-  const selectedRows = rows.filter((row) =>
-    selected.includes(row.property.alias),
-  );
-  const sumOf = (key: 'income' | 'expenses' | 'profit') =>
-    selectedRows.reduce((total, row) => total + row[key], 0);
+  const toLabel = (options: typeof PROPERTY_TYPE_OPTIONS, value: string) =>
+    options.find((opt) => opt.value === value)?.label ?? value;
+
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setDebouncedSearch(search),
+      SEARCH_DEBOUNCE_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const queryParams = {
+    page,
+    page_size: PAGE_LIMIT,
+    ...(debouncedSearch && { search: debouncedSearch }),
+  };
+
+  const { data, isFetching } = useGetPropertiesQuery(queryParams);
+  const properties: Property[] = data?.results ?? [];
+  const totalCount = data?.count ?? 0;
+  const totalPages = Math.ceil(totalCount / PAGE_LIMIT);
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+    setPage(1);
+  }
+
+  const getPageNumbers = () => {
+    if (totalPages <= 5)
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (page <= 3) return [1, 2, 3, 4, '...', totalPages];
+    if (page >= totalPages - 2)
+      return [
+        1,
+        '...',
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    return [1, '...', page - 1, page, page + 1, '...', totalPages];
+  };
+
+  const selectedCount = properties.filter((p) =>
+    selected.includes(p.alias),
+  ).length;
+  const allSelected =
+    properties.length > 0 && selectedCount === properties.length;
 
   const toggle = (alias: string) =>
     onSelectedChange(
@@ -34,8 +100,14 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
         ? selected.filter((a) => a !== alias)
         : [...selected, alias],
     );
+  // Selection persists across pages, so select-all only affects this page
+  const pageAliases = properties.map((p) => p.alias);
   const toggleAll = () =>
-    onSelectedChange(allSelected ? [] : rows.map((row) => row.property.alias));
+    onSelectedChange(
+      allSelected
+        ? selected.filter((a) => !pageAliases.includes(a))
+        : [...new Set([...selected, ...pageAliases])],
+    );
 
   return (
     <SectionCard
@@ -43,9 +115,24 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
       title='Properties included in this report'
       description='Tick the properties to include. Every tab below uses this selection.'
       action={
-        <span className='rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'>
-          {selected.length} of {rows.length} selected
-        </span>
+        <div className='flex items-center gap-2'>
+          <div className='relative w-64'>
+            <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
+            <Input
+              type='text'
+              placeholder='Search...'
+              value={search}
+              onChange={handleSearchChange}
+              className='h-8! w-64 pr-8! pl-7!'
+            />
+            <HoverInfoPopover text='You can search using Property Name and Address.' />
+          </div>
+          <div className='border-success/30 bg-success/10 text-success inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs whitespace-nowrap'>
+            <CircleCheck className='size-3.5' />
+            <span className='font-semibold tabular-nums'>{includedCount}</span>
+            <span className='opacity-80'>of {totalCount} selected</span>
+          </div>
+        </div>
       }
     >
       <TableFrame>
@@ -58,7 +145,7 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
                   checked={
                     allSelected
                       ? true
-                      : selected.length > 0
+                      : selectedCount > 0
                         ? 'indeterminate'
                         : false
                   }
@@ -71,79 +158,135 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
               <TableHead>Property type</TableHead>
               <TableHead>Ownership share</TableHead>
               <TableHead>Letting status</TableHead>
-              <TableHead>Rental income</TableHead>
-              <TableHead>Allowable expenses</TableHead>
-              <TableHead>Profit / (loss)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => {
-              const isSelected = selected.includes(row.property.alias);
-              return (
-                <TableRow
-                  key={row.property.alias}
-                  data-state={isSelected ? 'selected' : undefined}
-                  onClick={() => toggle(row.property.alias)}
-                  className={cn(
-                    'cursor-pointer',
-                    isSelected
-                      ? 'bg-blue-50/40 dark:bg-blue-950/15'
-                      : 'text-muted-foreground opacity-70',
-                  )}
+            {isFetching ? (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <div className='flex justify-center py-6'>
+                    <Loading />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : properties.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className='text-muted-foreground py-6 text-center'
                 >
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      aria-label={`Include ${row.property.name}`}
-                      checked={isSelected}
-                      onCheckedChange={() => toggle(row.property.alias)}
-                      className='border-primary cursor-pointer'
-                    />
-                  </TableCell>
-                  <TableCell className='text-foreground font-medium'>
-                    {row.property.name}
-                  </TableCell>
-                  <TableCell className='max-w-44 whitespace-normal'>
-                    {row.property.address}
-                  </TableCell>
-                  <TableCell>{row.property.property_type}</TableCell>
-                  <TableCell>{row.property.ownership_share}%</TableCell>
-                  <TableCell>
-                    <span className='inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400'>
-                      {row.property.letting_status}
-                    </span>
-                  </TableCell>
-                  <TableCell className='tabular-nums'>
-                    {toAmount(row.income)}
-                  </TableCell>
-                  <TableCell className='tabular-nums'>
-                    {toAmount(row.expenses)}
-                  </TableCell>
-                  <TableCell className='font-semibold text-emerald-600 tabular-nums dark:text-emerald-400'>
-                    {toAmount(row.profit)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                  No properties found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              properties.map((property) => {
+                const isSelected = selected.includes(property.alias);
+                return (
+                  <TableRow
+                    key={property.alias}
+                    data-state={isSelected ? 'selected' : undefined}
+                    onClick={() => toggle(property.alias)}
+                    className={cn(
+                      'cursor-pointer',
+                      isSelected
+                        ? 'bg-blue-50/40 dark:bg-blue-950/15'
+                        : 'text-muted-foreground opacity-70',
+                    )}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        aria-label={`Include ${property.property_name}`}
+                        checked={isSelected}
+                        onCheckedChange={() => toggle(property.alias)}
+                        className='border-primary cursor-pointer'
+                      />
+                    </TableCell>
+                    <TableCell className='text-foreground font-medium'>
+                      {property.property_name}
+                    </TableCell>
+                    <TableCell className='max-w-44 whitespace-normal'>
+                      {property.address}
+                    </TableCell>
+                    <TableCell>
+                      {toLabel(PROPERTY_TYPE_OPTIONS, property.property_type)}
+                    </TableCell>
+                    <TableCell>
+                      {property.shareholder?.[0]?.share_percentage ?? 100}%
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
+                          MTD_LETTING_STATUS_STYLES[property.status] ??
+                            'bg-muted text-muted-foreground',
+                        )}
+                      >
+                        {toLabel(PROPERTY_STATUS_OPTIONS, property.status)}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
           </TableBody>
-          <TableFooter className='bg-blue-50/60 dark:bg-blue-950/20'>
-            <TableRow>
-              <TableCell />
-              <TableCell colSpan={5} className='text-foreground font-semibold'>
-                Total for selected properties
-              </TableCell>
-              <TableCell className='font-semibold tabular-nums'>
-                {toAmount(sumOf('income'))}
-              </TableCell>
-              <TableCell className='font-semibold tabular-nums'>
-                {toAmount(sumOf('expenses'))}
-              </TableCell>
-              <TableCell className='font-bold text-emerald-600 tabular-nums dark:text-emerald-400'>
-                {toAmount(sumOf('profit'))}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
         </Table>
       </TableFrame>
+
+      <div className='flex items-center justify-between'>
+        {totalCount > 0 && (
+          <p className='text-muted-foreground text-sm whitespace-nowrap'>
+            Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
+            {Math.min(page * PAGE_LIMIT, totalCount)} of {totalCount} Properties
+          </p>
+        )}
+        {totalPages > 1 && (
+          <Pagination className='justify-end'>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => page > 1 && setPage((p) => p - 1)}
+                  aria-disabled={page === 1}
+                  className={
+                    page === 1
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }
+                />
+              </PaginationItem>
+
+              {getPageNumbers().map((p, i) =>
+                p === '...' ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      isActive={p === page}
+                      onClick={() => setPage(p as number)}
+                      className='cursor-pointer'
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => page < totalPages && setPage((p) => p + 1)}
+                  aria-disabled={page === totalPages}
+                  className={
+                    page === totalPages
+                      ? 'pointer-events-none opacity-50'
+                      : 'cursor-pointer'
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+      </div>
     </SectionCard>
   );
 };

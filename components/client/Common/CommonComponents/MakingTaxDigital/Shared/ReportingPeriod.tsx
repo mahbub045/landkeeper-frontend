@@ -47,6 +47,21 @@ const ReportingPeriod: React.FC<ReportingPeriodProps> = ({
           </div>
           <div className='grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2'>
             <div className='space-y-1.5'>
+              <Label htmlFor='mtd-tax-year'>Tax year</Label>
+              <Select value={taxYear} onValueChange={onTaxYearChange}>
+                <SelectTrigger id='mtd-tax-year'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MTD_TAX_YEARS.map((year) => (
+                    <SelectItem key={year.value} value={year.value}>
+                      {year.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>{' '}
+            <div className='space-y-1.5'>
               <Label htmlFor='mtd-quarter'>Quarter</Label>
               <Select value={quarter} onValueChange={onQuarterChange}>
                 <SelectTrigger id='mtd-quarter'>
@@ -56,21 +71,6 @@ const ReportingPeriod: React.FC<ReportingPeriodProps> = ({
                   {MTD_QUARTERS.map((q) => (
                     <SelectItem key={q.value} value={q.value}>
                       {q.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='space-y-1.5'>
-              <Label htmlFor='mtd-tax-year'>Tax year</Label>
-              <Select value={taxYear} onValueChange={onTaxYearChange}>
-                <SelectTrigger id='mtd-tax-year'>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MTD_TAX_YEARS.map((year) => (
-                    <SelectItem key={year} value={year}>
-                      {year}
                     </SelectItem>
                   ))}
                 </SelectContent>

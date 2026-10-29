@@ -1,7 +1,9 @@
 'use client';
 
-import { Landmark, Trash2 } from 'lucide-react';
+import { FileText, Landmark, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
+import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -11,11 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MtdTabProps } from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import { getReportScopeLabel } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import { useGetMTDFinanceCostsQuery } from '@/store/api/endpoints/client/Common/MakingTaxDigital/MakingTaxDigitalApi';
 import {
-  getPropertyName,
-  getScopeLabel,
-} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+  MtdFinanceCostItem,
+  MtdReportTabProps,
+} from '@/types/client/Common/MakingTaxDigital/MakingTaxDigitalTypes';
+import EditFinanceCostDialog from '../Dialogs/EditFinanceCostDialog';
 import {
   HelpfulInfo,
   SectionCard,
@@ -23,64 +27,116 @@ import {
   toAmount,
 } from '../Shared/MtdShared';
 
-const FinanceCostsTab: React.FC<MtdTabProps> = ({
-  data,
-  properties,
+const FinanceCostsTab: React.FC<MtdReportTabProps> = ({
+  report,
   onPending,
 }) => {
+  const { data, isFetching } = useGetMTDFinanceCostsQuery(
+    { reportAlias: report?.alias },
+    { skip: !report },
+  );
+  const financeCosts: MtdFinanceCostItem[] = data?.finance_costs ?? [];
+
   // One property needs no per-row property column
-  const showProperty = properties.length > 1;
+  const showProperty = (report?.number_of_properties_included ?? 0) > 1;
+  const columnCount = showProperty ? 6 : 5;
+
+  const [editing, setEditing] = useState<MtdFinanceCostItem | null>(null);
 
   return (
-    <div className='grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]'>
+    <div className='space-y-4'>
       <div className='space-y-4'>
         <SectionCard
           icon={Landmark}
           title='Finance costs'
-          description={`Finance costs recorded for ${getScopeLabel(properties)}.`}
+          description={`Finance costs recorded for ${getReportScopeLabel(report)}.`}
         >
           <TableFrame>
             <Table>
               <TableHeader>
                 <TableRow>
                   {showProperty && <TableHead>Property</TableHead>}
-                  <TableHead>Mortgage interest (£)</TableHead>
-                  <TableHead>Other finance costs (£)</TableHead>
-                  <TableHead>Lender / reference</TableHead>
-                  <TableHead>Notes / evidence</TableHead>
+                  <TableHead>Lender</TableHead>
+                  <TableHead>Monthly payment (£)</TableHead>
+                  <TableHead>Notes</TableHead>
+                  <TableHead>Evidence</TableHead>
                   <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.financeCosts.map((cost) => (
-                  <TableRow key={cost.alias}>
-                    {showProperty && (
-                      <TableCell className='text-foreground font-medium'>
-                        {getPropertyName(cost.property_alias)}
-                      </TableCell>
-                    )}
-                    <TableCell className='tabular-nums'>
-                      {toAmount(cost.mortgage_interest)}
-                    </TableCell>
-                    <TableCell className='tabular-nums'>
-                      {toAmount(cost.other_finance_costs)}
-                    </TableCell>
-                    <TableCell>{cost.lender_reference}</TableCell>
-                    <TableCell className='max-w-40 whitespace-normal'>
-                      {cost.evidence}
-                    </TableCell>
-                    <TableCell className='text-center'>
-                      <Button
-                        variant='destructive'
-                        size='icon-sm'
-                        aria-label='Delete'
-                        onClick={() => onPending('Delete finance cost')}
-                      >
-                        <Trash2 />
-                      </Button>
+                {isFetching ? (
+                  <TableRow>
+                    <TableCell colSpan={columnCount}>
+                      <div className='flex justify-center py-6'>
+                        <Loading />
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : financeCosts.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columnCount}
+                      className='text-muted-foreground py-6 text-center'
+                    >
+                      No finance costs recorded for this quarter.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  financeCosts.map((cost) => (
+                    <TableRow key={cost.alias}>
+                      {showProperty && (
+                        <TableCell className='text-foreground font-medium'>
+                          {cost.property_name}
+                        </TableCell>
+                      )}
+                      <TableCell>{cost.lender_name}</TableCell>
+                      <TableCell className='tabular-nums'>
+                        {cost.monthly_payment === null
+                          ? '—'
+                          : toAmount(cost.monthly_payment)}
+                      </TableCell>
+                      <TableCell className='max-w-40 whitespace-normal'>
+                        {cost.notes || '—'}
+                      </TableCell>
+                      <TableCell className='max-w-56 whitespace-normal'>
+                        {cost.evidence.length === 0 ? (
+                          <span className='text-muted-foreground'>—</span>
+                        ) : (
+                          <div className='flex flex-wrap gap-1'>
+                            {cost.evidence.map((file) => (
+                              <span
+                                key={file.id}
+                                title={file.name}
+                                className='border-border bg-muted/50 inline-flex max-w-full items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs'
+                              >
+                                <FileText className='text-muted-foreground size-3 shrink-0' />
+                                <span className='truncate'>{file.name}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className='space-x-1 text-center whitespace-nowrap'>
+                        <Button
+                          variant='outline'
+                          size='icon-sm'
+                          aria-label='Edit'
+                          onClick={() => setEditing(cost)}
+                        >
+                          <Pencil />
+                        </Button>
+                        <Button
+                          variant='destructive'
+                          size='icon-sm'
+                          aria-label='Delete'
+                          onClick={() => onPending('Delete finance cost')}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableFrame>
@@ -101,6 +157,13 @@ const FinanceCostsTab: React.FC<MtdTabProps> = ({
           ]}
         />
       </div>
+
+      <EditFinanceCostDialog
+        reportAlias={report?.alias}
+        financeCost={editing}
+        open={!!editing}
+        onClose={() => setEditing(null)}
+      />
     </div>
   );
 };
