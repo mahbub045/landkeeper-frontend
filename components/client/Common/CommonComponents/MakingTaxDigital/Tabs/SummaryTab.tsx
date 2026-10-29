@@ -82,20 +82,19 @@ const SummaryTab: React.FC<MtdReportTabProps> = ({ report, onPending }) => {
       (value) => value.trim() !== '',
     );
 
+  const rentalIncome = summary?.total_rental_income ?? 0;
+  const otherIncome = summary?.total_other_income ?? 0;
   const income = summary?.total_income ?? 0;
   const expenses = summary?.total_allowable_expenses ?? 0;
   const profit = summary?.property_profit ?? 0;
   const mortgageInterest = summary?.total_mortgage_interest ?? 0;
   const included = summary?.number_of_properties_included ?? 0;
   const scope = getReportScopeLabel(summary);
-  // Other property income (parking, utilities recharged, etc.) is not yet
-  // tracked separately from rent
-  const otherIncome = 0;
 
   const rows = [
     {
       category: 'Total rental income',
-      amount: toAmount(income),
+      amount: toAmount(rentalIncome),
       notes: `From ${scope}`,
     },
     {
@@ -105,7 +104,7 @@ const SummaryTab: React.FC<MtdReportTabProps> = ({ report, onPending }) => {
     },
     {
       category: 'TOTAL PROPERTY INCOME',
-      amount: toAmount(income + otherIncome),
+      amount: toAmount(income),
       notes: 'Sum of rental and other income',
       emphasis: true,
     },

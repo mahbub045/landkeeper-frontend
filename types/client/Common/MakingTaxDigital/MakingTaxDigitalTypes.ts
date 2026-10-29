@@ -98,6 +98,8 @@ export interface MtdTabProps {
 
 // Totals from GET /mtd/reports/{alias}/summary
 export interface MtdSummary {
+  total_rental_income: number;
+  total_other_income: number;
   total_income: number;
   total_allowable_expenses: number;
   property_profit: number;
