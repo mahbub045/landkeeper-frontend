@@ -692,7 +692,7 @@ const AppSidebar: React.FC = () => {
             size='lg'
             variant='default'
             disabled={sidebarLocked}
-            className='mt-3 w-full gap-2 rounded-xl shadow-sm transition-all group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0 hover:-translate-y-px hover:shadow-md'
+            className='mt-3 w-full gap-2 rounded-xl bg-black text-white shadow-sm transition-all group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0 hover:bg-black/85 hover:text-white hover:shadow-md dark:bg-white dark:text-black dark:hover:bg-white/85 dark:hover:text-black'
           >
             <Plus className='size-4' />
             <span className='group-data-[collapsible=icon]:hidden'>

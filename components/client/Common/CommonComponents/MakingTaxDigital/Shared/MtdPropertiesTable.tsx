@@ -115,15 +115,15 @@ const MtdPropertiesTable: React.FC<MtdPropertiesTableProps> = ({
       title='Properties included in this report'
       description='Tick the properties to include. Every tab below uses this selection.'
       action={
-        <div className='flex items-center gap-2'>
-          <div className='relative w-64'>
+        <div className='flex w-full flex-wrap items-center gap-2 sm:w-auto'>
+          <div className='relative min-w-40 flex-1 sm:w-64 sm:flex-none'>
             <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
             <Input
               type='text'
               placeholder='Search...'
               value={search}
               onChange={handleSearchChange}
-              className='h-8! w-64 pr-8! pl-7!'
+              className='h-8! w-full pr-8! pl-7!'
             />
             <HoverInfoPopover text='You can search using Property Name and Address.' />
           </div>
