@@ -139,7 +139,7 @@ const DownloadSummaryForm: React.FC<DownloadSummaryFormProps> = ({
   ) => setDeclaration((prev) => ({ ...prev, [key]: value }));
   const isDeclarationComplete =
     DECLARATION_CHECKS.every((check) => declaration[check.key]) &&
-    [declaration.signatory, declaration.date, declaration.notes].every(
+    [declaration.signatory, declaration.date].every(
       (value) => value.trim() !== '',
     );
 
@@ -251,9 +251,7 @@ const DownloadSummaryForm: React.FC<DownloadSummaryFormProps> = ({
         </div>
 
         <Field>
-          <FieldLabel htmlFor='mtd-declaration-notes' className='gap-0'>
-            Notes<span className='text-danger'>*</span>
-          </FieldLabel>
+          <FieldLabel htmlFor='mtd-declaration-notes'>Notes</FieldLabel>
           <Textarea
             id='mtd-declaration-notes'
             value={declaration.notes}
