@@ -128,7 +128,7 @@ const UploadTemplateDialog: React.FC<UploadTemplateDialogProps> = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className='rounded-sm sm:max-w-150'>
         <DialogHeader>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle>
             Upload Template
           </DialogTitle>
           <DialogDescription>

@@ -167,7 +167,7 @@ const AddCertificateDialog: React.FC<AddCertificateModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle>
             Add Certificate
           </DialogTitle>
           <DialogDescription>

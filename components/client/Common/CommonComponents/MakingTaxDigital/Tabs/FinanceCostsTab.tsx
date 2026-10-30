@@ -57,7 +57,7 @@ const FinanceCostsTab: React.FC<MtdReportTabProps> = ({
                 <TableRow>
                   {showProperty && <TableHead>Property</TableHead>}
                   <TableHead>Lender</TableHead>
-                  <TableHead>Monthly payment (£)</TableHead>
+                  <TableHead>Mortgage payment (£)</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead>Evidence</TableHead>
                   <TableHead className='text-center'>Action</TableHead>
