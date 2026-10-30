@@ -47,7 +47,7 @@ const PropertyDetails: React.FC = () => {
       </div>
 
       {/* ── Gallery ── */}
-      {property.documents.length > 0 ? (
+      {property.documents?.length ? (
         <PropertyGallery docs={property.documents} />
       ) : (
         <div className='border-border text-muted-foreground flex h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed'>
@@ -61,7 +61,7 @@ const PropertyDetails: React.FC = () => {
         <div className='lg:col-span-2'>
           <PropertyOverviewCard property={property} />
         </div>
-        <LandlordCard landlord={property.landlord} />
+        {property.landlord && <LandlordCard landlord={property.landlord} />}
       </div>
 
       {/* ── Notes ── */}

@@ -21,8 +21,8 @@ export interface TenantPropertyDetails {
   bedrooms: number | null;
   bathrooms: number | null;
   notes: string | null;
-  documents: PropertyDocument[];
-  landlord: TenantPropertyLandlord;
+  documents?: PropertyDocument[];
+  landlord?: TenantPropertyLandlord | null;
 }
 
 export interface TenantPropertyOverviewCardProps {
