@@ -28,9 +28,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { OVERRIDE_KEY_MAP } from '@/data/client/Common/Tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
-import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
+import {
+  useFilterPropertiesQuery,
+  useFilterPropertyRoomsQuery,
+} from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useUpdateTenantMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
-import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import {
+  Property,
+  PropertyRoom,
+} from '@/types/client/Common/Properties/PropertyTypes';
 import {
   TenantForm,
   TenantTypes,
@@ -47,8 +53,12 @@ function tenantToForm(tenant: TenantTypes): TenantForm {
   return {
     propertyId: tenant.property ? String(tenant.property.id) : '',
     propertyAlias: tenant.property?.alias ?? '',
-    propertyType: '',
-    room: '',
+    propertyType: tenant.property?.property_type ?? '',
+    // The API may return the room as an alias string or a nested object.
+    room:
+      typeof tenant.room === 'string'
+        ? tenant.room
+        : (tenant.room?.alias ?? ''),
     title: tenant.title ?? '',
     first_name: tenant.first_name ?? '',
     middle_name: tenant.middle_name ?? '',
@@ -132,7 +142,36 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     { skip: !propertyOpen },
   );
 
+  const isHmo = form.propertyType === 'HMO';
+  const { data: propertyRooms, isFetching: isRoomsLoading } =
+    useFilterPropertyRoomsQuery(
+      { propertyAlias: form.propertyAlias },
+      { skip: !form.propertyAlias || !isHmo },
+    );
+
   const [updateTenant, { isLoading: loading }] = useUpdateTenantMutation();
+
+  function selectProperty(p?: Property) {
+    setForm((prev) => ({
+      ...prev,
+      propertyId: p ? String(p.id) : '',
+      propertyAlias: p?.alias ?? '',
+      propertyType: p?.property_type ?? '',
+      room: '',
+    }));
+  }
+
+  // Picking a room pre-fills the rent with that room's monthly rent.
+  function selectRoom(alias: string) {
+    const room = propertyRooms?.find((r: PropertyRoom) => r.alias === alias);
+    setForm((prev) => ({
+      ...prev,
+      room: alias,
+      rent_amount: room
+        ? String(parseFloat(room.monthly_rent))
+        : prev.rent_amount,
+    }));
+  }
 
   // ── Avatar handlers ────────────────────────────────────────────────────────
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -189,6 +228,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
     formData.append('guarantor_name', form.guarantor_name);
     formData.append('notes', form.notes);
     formData.append('property', form.propertyId);
+    if (isHmo && form.room) formData.append('room', form.room);
 
     try {
       await updateTenant({
@@ -349,7 +389,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
               }
               onChange={(e) => {
                 setPropertySearch(e.target.value);
-                set('propertyId', '');
+                selectProperty();
                 setSelectedPropertyName('');
                 setPropertyOpen(true);
               }}
@@ -381,7 +421,7 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
                       <li
                         key={p.alias}
                         onMouseDown={() => {
-                          set('propertyId', String(p.id));
+                          selectProperty(p);
                           setSelectedPropertyName(p.property_name);
                           setPropertySearch('');
                           setPropertyOpen(false);
@@ -403,6 +443,46 @@ const UpdateTenantForm: React.FC<UpdateTenantFormProps> = ({
           </div>
           <FieldError errors={[{ message: fieldErrors.propertyId }]} />
         </Field>
+
+        {/* Room (HMO only) */}
+        {isHmo && (
+          <Field data-invalid={!!fieldErrors.room}>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Room<span className='text-danger'>*</span>
+            </FieldLabel>
+            <Select
+              value={form.room}
+              onValueChange={selectRoom}
+              disabled={isRoomsLoading}
+            >
+              <SelectTrigger
+                className={cn(
+                  'h-10 w-full',
+                  fieldErrors.room && 'border-danger',
+                )}
+              >
+                <SelectValue
+                  placeholder={
+                    isRoomsLoading
+                      ? 'Loading rooms...'
+                      : propertyRooms?.length
+                        ? 'Select a room'
+                        : 'No rooms found'
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {propertyRooms?.map((r: PropertyRoom) => (
+                  <SelectItem key={r.alias} value={r.alias ?? ''}>
+                    {r.room_name} ({getCurrencySign()}
+                    {parseFloat(r.monthly_rent).toLocaleString()}/mo)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[{ message: fieldErrors.room }]} />
+          </Field>
+        )}
 
         {/* Title + First Name */}
         <div className='grid grid-cols-2 gap-4'>
