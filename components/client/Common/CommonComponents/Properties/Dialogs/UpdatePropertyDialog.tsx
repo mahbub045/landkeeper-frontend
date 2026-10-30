@@ -55,6 +55,7 @@ import Image from 'next/image';
 import HmoRoomsFields, {
   appendRooms,
   applyDetailsChange,
+  applyRoomsChange,
   firstErrorMessage,
   isHmo,
 } from './HmoRoomsFields';
@@ -965,13 +966,22 @@ const DetailsTab: React.FC<{
             placeholder={getCurrencySign()}
             value={form.monthly_rental_income}
             onChange={(e) => set('monthly_rental_income', e.target.value)}
+            readOnly={isHmo(form.property_type)}
             aria-invalid={!!errors.monthly_rental_income}
-            className={
+            className={[
               errors.monthly_rental_income
                 ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
+                : '',
+              isHmo(form.property_type)
+                ? 'text-muted-foreground cursor-default shadow-none'
+                : '',
+            ].join(' ')}
           />
+          {isHmo(form.property_type) && (
+            <FieldDescription className='text-muted-foreground text-xs'>
+              Total of the HMO room rents.
+            </FieldDescription>
+          )}
           <FieldError errors={[{ message: errors.monthly_rental_income }]} />
         </Field>
 
@@ -1040,7 +1050,7 @@ const DetailsTab: React.FC<{
       {isHmo(form.property_type) && (
         <HmoRoomsFields
           rooms={form.rooms}
-          onChange={(rooms) => onChange({ ...form, rooms })}
+          onChange={(rooms) => onChange(applyRoomsChange(form, rooms))}
           error={errors.rooms}
         />
       )}

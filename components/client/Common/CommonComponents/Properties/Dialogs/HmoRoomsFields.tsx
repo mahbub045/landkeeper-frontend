@@ -34,6 +34,28 @@ export function syncRoomsToBedrooms(
   ];
 }
 
+export function sumRoomRents(rooms: PropertyRoom[]): number {
+  const total = rooms.reduce(
+    (sum, r) => sum + (parseFloat(r.monthly_rent) || 0),
+    0,
+  );
+  return Math.round(total * 100) / 100;
+}
+
+// For HMOs the monthly rental income is the sum of the room rents, so set
+// both together.
+export function applyRoomsChange(
+  form: DetailsForm,
+  rooms: PropertyRoom[],
+): DetailsForm {
+  const total = sumRoomRents(rooms);
+  return {
+    ...form,
+    rooms,
+    monthly_rental_income: total > 0 ? String(total) : '',
+  };
+}
+
 // Applies a field change to the details form, keeping HMO rooms in sync with
 // the bedrooms count whenever bedrooms or property type changes.
 export function applyDetailsChange(
@@ -46,7 +68,10 @@ export function applyDetailsChange(
     (key === 'bedrooms' || key === 'property_type') &&
     isHmo(next.property_type)
   ) {
-    next.rooms = syncRoomsToBedrooms(next.rooms, next.bedrooms);
+    return applyRoomsChange(
+      next,
+      syncRoomsToBedrooms(next.rooms, next.bedrooms),
+    );
   }
   return next;
 }
@@ -89,10 +114,7 @@ const HmoRoomsFields: React.FC<HmoRoomsFieldsProps> = ({
     onChange(rooms.map((r, i) => (i === index ? { ...r, [key]: value } : r)));
   }
 
-  const totalRent = rooms.reduce(
-    (sum, r) => sum + (parseFloat(r.monthly_rent) || 0),
-    0,
-  );
+  const totalRent = sumRoomRents(rooms);
 
   return (
     <Field data-invalid={!!error}>
