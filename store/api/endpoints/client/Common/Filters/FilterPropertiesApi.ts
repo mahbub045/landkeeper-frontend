@@ -10,7 +10,14 @@ export const FilterPropertiesApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Property'],
     }),
+    filterPropertyRooms: builder.query({
+      query: ({ propertyAlias }) => ({
+        url: `/filters/properties/${propertyAlias}/rooms`,
+        method: 'GET',
+      }),
+      providesTags: ['Property'],
+    }),
   }),
 });
-
-export const { useFilterPropertiesQuery } = FilterPropertiesApi;
+export const { useFilterPropertiesQuery, useFilterPropertyRoomsQuery } =
+  FilterPropertiesApi;

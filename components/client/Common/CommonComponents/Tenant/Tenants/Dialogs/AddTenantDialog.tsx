@@ -31,9 +31,15 @@ import {
 } from '@/data/client/Common/Tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { cn } from '@/lib/utils';
-import { useFilterPropertiesQuery } from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
+import {
+  useFilterPropertiesQuery,
+  useFilterPropertyRoomsQuery,
+} from '@/store/api/endpoints/client/Common/Filters/FilterPropertiesApi';
 import { useAddTenantsMutation } from '@/store/api/endpoints/client/Common/Tenant/TenantsApi';
-import { Property } from '@/types/client/Common/Properties/PropertyTypes';
+import {
+  Property,
+  PropertyRoom,
+} from '@/types/client/Common/Properties/PropertyTypes';
 import {
   AddTenantModalProps,
   TenantForm,
@@ -66,10 +72,38 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
 
   // ── RTK Queries  ───────────────────────────────────────────────────────────────────
 
-  const { data, isLoading } = useFilterPropertiesQuery(
+  const { data: properties, isLoading } = useFilterPropertiesQuery(
     propertySearch ? { search: propertySearch } : {},
     { skip: !propertyOpen },
   );
+  const isHmo = form.propertyType === 'HMO';
+  const { data: propertyRooms, isFetching: isRoomsLoading } =
+    useFilterPropertyRoomsQuery(
+      { propertyAlias: form.propertyAlias },
+      { skip: !form.propertyAlias || !isHmo },
+    );
+
+  function selectProperty(p?: Property) {
+    setForm((prev) => ({
+      ...prev,
+      propertyId: p ? String(p.id) : '',
+      propertyAlias: p?.alias ?? '',
+      propertyType: p?.property_type ?? '',
+      room: '',
+    }));
+  }
+
+  // Picking a room pre-fills the rent with that room's monthly rent.
+  function selectRoom(alias: string) {
+    const room = propertyRooms?.find((r: PropertyRoom) => r.alias === alias);
+    setForm((prev) => ({
+      ...prev,
+      room: alias,
+      rent_amount: room
+        ? String(parseFloat(room.monthly_rent))
+        : prev.rent_amount,
+    }));
+  }
 
   const [addTenant] = useAddTenantsMutation();
 
@@ -124,6 +158,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
     formData.append('guarantor_name', form.guarantor_name);
     formData.append('notes', form.notes);
     formData.append('property', form.propertyId);
+    if (isHmo && form.room) formData.append('room', form.room);
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -174,7 +209,7 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
             Add Tenant
           </DialogTitle>
           <DialogDescription>Add a new tenant to the system.</DialogDescription>
@@ -282,14 +317,14 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                 placeholder='Search by property name...'
                 value={
                   form.propertyId
-                    ? (data?.find(
+                    ? (properties?.find(
                         (p: Property) => String(p.id) === form.propertyId,
                       )?.property_name ?? propertySearch)
                     : propertySearch
                 }
                 onChange={(e) => {
                   setPropertySearch(e.target.value);
-                  set('propertyId', ''); // clear selection when user types
+                  selectProperty(); // clear selection when user types
                   setPropertyOpen(true);
                 }}
                 onClick={() => setPropertyOpen(true)}
@@ -309,17 +344,17 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
                     <div className='flex items-center justify-center gap-2 px-4 py-3 text-sm'>
                       <Loading />
                     </div>
-                  ) : !data?.length ? (
+                  ) : !properties?.length ? (
                     <p className='text-muted-foreground px-4 py-3 text-sm'>
                       No properties found.
                     </p>
                   ) : (
                     <ul className='max-h-60 overflow-y-auto py-1'>
-                      {data.map((p: Property) => (
+                      {properties.map((p: Property) => (
                         <li
                           key={p.alias}
                           onMouseDown={() => {
-                            set('propertyId', String(p.id));
+                            selectProperty(p);
                             setPropertySearch('');
                             setPropertyOpen(false);
                           }}
@@ -340,6 +375,46 @@ const AddTenantDialog: React.FC<AddTenantModalProps> = ({
             </div>
             <FieldError errors={[{ message: fieldErrors.propertyId }]} />
           </Field>
+
+          {/* Room (HMO only) */}
+          {isHmo && (
+            <Field data-invalid={!!fieldErrors.room}>
+              <FieldLabel className='gap-0 text-sm font-semibold'>
+                Room<span className='text-danger'>*</span>
+              </FieldLabel>
+              <Select
+                value={form.room}
+                onValueChange={selectRoom}
+                disabled={isRoomsLoading}
+              >
+                <SelectTrigger
+                  className={cn(
+                    'h-10 w-full',
+                    fieldErrors.room && 'border-danger',
+                  )}
+                >
+                  <SelectValue
+                    placeholder={
+                      isRoomsLoading
+                        ? 'Loading rooms...'
+                        : propertyRooms?.length
+                          ? 'Select a room'
+                          : 'No rooms found'
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {propertyRooms?.map((r: PropertyRoom) => (
+                    <SelectItem key={r.alias} value={r.alias ?? ''}>
+                      {r.room_name} ({getCurrencySign()}
+                      {parseFloat(r.monthly_rent).toLocaleString()}/mo)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError errors={[{ message: fieldErrors.room }]} />
+            </Field>
+          )}
 
           {/* First Name + Last Name */}
           <div className='grid grid-cols-2 gap-4'>

@@ -46,6 +46,9 @@ import { toast } from 'sonner';
 function tenantToForm(tenant: TenantTypes): TenantForm {
   return {
     propertyId: tenant.property ? String(tenant.property.id) : '',
+    propertyAlias: tenant.property?.alias ?? '',
+    propertyType: '',
+    room: '',
     title: tenant.title ?? '',
     first_name: tenant.first_name ?? '',
     middle_name: tenant.middle_name ?? '',

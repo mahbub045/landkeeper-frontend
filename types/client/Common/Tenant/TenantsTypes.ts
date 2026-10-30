@@ -48,6 +48,9 @@ export interface TenantRowProps {
 
 export interface TenantForm {
   propertyId: string;
+  propertyAlias: string;
+  propertyType: string;
+  room: string;
   title: string;
   first_name: string;
   middle_name: string;
