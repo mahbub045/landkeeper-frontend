@@ -52,6 +52,12 @@ import formatChoiceFieldValue, {
 } from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
+import HmoRoomsFields, {
+  appendRooms,
+  applyDetailsChange,
+  firstErrorMessage,
+  isHmo,
+} from './HmoRoomsFields';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -111,6 +117,10 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
     purchase_date: property?.purchase_date ?? '',
     bedrooms: property?.bedrooms != null ? String(property.bedrooms) : '',
     bathrooms: property?.bathrooms != null ? String(property.bathrooms) : '',
+    rooms: (property?.rooms ?? []).map((room) => ({
+      room_name: room.room_name ?? '',
+      monthly_rent: cleanDecimal(room.monthly_rent),
+    })),
     year_built: property?.year_built != null ? String(property.year_built) : '',
     property_tenure: property?.property_tenure ?? '',
     remaining_lease_term:
@@ -211,7 +221,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
 
       Object.entries(apiError).forEach(([key, val]) => {
         if (key === 'message') return;
-        const message = Array.isArray(val) ? val[0] : String(val);
+        const message = firstErrorMessage(val) ?? String(val);
         const mapped = OVERRIDE_KEY_MAP[key] ?? key;
         if (!(mapped in FIELD_TAB_MAP)) {
           nonFieldMessages.push(message);
@@ -313,6 +323,7 @@ const UpdatePropertyDialog: React.FC<UpdatePropertyModalProps> = ({
       appendIfPresent('council_tax_band', details.council_tax_band);
       appendIfPresent('local_authority', details.local_authority);
       appendIfPresent('notes', details.notes);
+      appendRooms(formData, details);
 
       // ── Documents ───────────────────────────────────────────────────────
       // Re-attach whichever pre-fetched existing docs the user kept, plus
@@ -516,7 +527,7 @@ const DetailsTab: React.FC<{
   const { data: profileData } = useGetProfileInfoQuery(undefined);
 
   function set(key: keyof DetailsForm, value: string) {
-    onChange({ ...form, [key]: value });
+    onChange(applyDetailsChange(form, key, value));
   }
 
   // Auto-fill the property name from the address whenever the address
@@ -985,12 +996,19 @@ const DetailsTab: React.FC<{
 
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.bedrooms}>
-          <FieldLabel className='text-sm font-semibold'>Bedrooms</FieldLabel>
+          <FieldLabel className='text-sm font-semibold'>
+            Bedrooms
+            {isHmo(form.property_type) && (
+              <span className='text-danger'>*</span>
+            )}
+          </FieldLabel>
           <Input
             type='number'
             value={form.bedrooms}
             onChange={(e) => set('bedrooms', e.target.value)}
             aria-invalid={!!errors.bedrooms}
+            min={0}
+            required={isHmo(form.property_type)}
             placeholder='e.g. 3'
             className={
               errors.bedrooms
@@ -1018,6 +1036,14 @@ const DetailsTab: React.FC<{
           <FieldError errors={[{ message: errors.bathrooms }]} />
         </Field>
       </div>
+
+      {isHmo(form.property_type) && (
+        <HmoRoomsFields
+          rooms={form.rooms}
+          onChange={(rooms) => onChange({ ...form, rooms })}
+          error={errors.rooms}
+        />
+      )}
 
       <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.year_built}>

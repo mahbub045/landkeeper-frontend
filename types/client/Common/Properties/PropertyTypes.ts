@@ -53,6 +53,7 @@ export interface Property {
   annual_ground_rent: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
+  rooms?: PropertyRoom[];
   council_tax_band: string | null;
   local_authority: string | null;
   monthly_rental_income: string | null;
@@ -60,6 +61,11 @@ export interface Property {
   documents: PropertyDocument[];
   created_at: string;
   updated_at: string;
+}
+
+export interface PropertyRoom {
+  room_name: string;
+  monthly_rent: string;
 }
 
 export interface DetailsForm {
@@ -86,6 +92,7 @@ export interface DetailsForm {
   local_authority: string;
   bedrooms: string;
   bathrooms: string;
+  rooms: PropertyRoom[];
   monthly_rental_income: string;
   notes: string;
 }
@@ -110,6 +117,12 @@ export interface AddPropertyModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+}
+
+export interface HmoRoomsFieldsProps {
+  rooms: PropertyRoom[];
+  onChange: (rooms: PropertyRoom[]) => void;
+  error?: string;
 }
 
 export interface UpdatePropertyModalProps {
