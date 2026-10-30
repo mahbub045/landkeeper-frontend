@@ -457,43 +457,42 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.purchase_price}>
+            <Field data-invalid={!!errors.bedrooms}>
               <FieldLabel className='text-sm font-semibold'>
-                Purchase Price
+                Bedrooms
               </FieldLabel>
               <Input
                 type='number'
-                placeholder={getCurrencySign()}
-                maxLength={10}
-                value={value.purchase_price}
-                onChange={(e) => set('purchase_price', e.target.value)}
-                aria-invalid={!!errors.purchase_price}
+                value={value.bedrooms}
+                placeholder='e.g. 3'
+                onChange={(e) => set('bedrooms', e.target.value)}
+                aria-invalid={!!errors.bedrooms}
                 className={
-                  errors.purchase_price
+                  errors.bedrooms
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.purchase_price }]} />
+              <FieldError errors={[{ message: errors.bedrooms }]} />
             </Field>
 
-            <Field data-invalid={!!errors.current_value}>
+            <Field data-invalid={!!errors.bathrooms}>
               <FieldLabel className='text-sm font-semibold'>
-                Current Value
+                Bathrooms
               </FieldLabel>
               <Input
                 type='number'
-                placeholder={getCurrencySign()}
-                value={value.current_value}
-                onChange={(e) => set('current_value', e.target.value)}
-                aria-invalid={!!errors.current_value}
+                value={value.bathrooms}
+                placeholder='e.g. 2'
+                onChange={(e) => set('bathrooms', e.target.value)}
+                aria-invalid={!!errors.bathrooms}
                 className={
-                  errors.current_value
+                  errors.bathrooms
                     ? 'border-danger focus-visible:ring-danger/50'
                     : ''
                 }
               />
-              <FieldError errors={[{ message: errors.current_value }]} />
+              <FieldError errors={[{ message: errors.bathrooms }]} />
             </Field>
           </div>
 
@@ -535,46 +534,6 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 }
               />
               <FieldError errors={[{ message: errors.purchase_date }]} />
-            </Field>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.bedrooms}>
-              <FieldLabel className='text-sm font-semibold'>
-                Bedrooms
-              </FieldLabel>
-              <Input
-                type='number'
-                value={value.bedrooms}
-                placeholder='e.g. 3'
-                onChange={(e) => set('bedrooms', e.target.value)}
-                aria-invalid={!!errors.bedrooms}
-                className={
-                  errors.bedrooms
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: errors.bedrooms }]} />
-            </Field>
-
-            <Field data-invalid={!!errors.bathrooms}>
-              <FieldLabel className='text-sm font-semibold'>
-                Bathrooms
-              </FieldLabel>
-              <Input
-                type='number'
-                value={value.bathrooms}
-                placeholder='e.g. 2'
-                onChange={(e) => set('bathrooms', e.target.value)}
-                aria-invalid={!!errors.bathrooms}
-                className={
-                  errors.bathrooms
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: errors.bathrooms }]} />
             </Field>
           </div>
         </div>
@@ -621,6 +580,47 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               </SelectContent>
             </Select>
             <FieldError errors={[{ message: errors.property_tenure }]} />
+          </Field>
+        </div>
+
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.purchase_price}>
+            <FieldLabel className='text-sm font-semibold'>
+              Purchase Price
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              maxLength={10}
+              value={value.purchase_price}
+              onChange={(e) => set('purchase_price', e.target.value)}
+              aria-invalid={!!errors.purchase_price}
+              className={
+                errors.purchase_price
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.purchase_price }]} />
+          </Field>
+
+          <Field data-invalid={!!errors.current_value}>
+            <FieldLabel className='text-sm font-semibold'>
+              Current Value
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={value.current_value}
+              onChange={(e) => set('current_value', e.target.value)}
+              aria-invalid={!!errors.current_value}
+              className={
+                errors.current_value
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.current_value }]} />
           </Field>
         </div>
 
