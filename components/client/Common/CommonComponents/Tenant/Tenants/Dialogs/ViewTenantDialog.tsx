@@ -9,8 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { getRent, isHmo } from '@/data/client/Common/Tenant/TenantsData';
 import { ViewTenantDialogProps } from '@/types/client/Common/Tenant/TenantsTypes';
-import { getCurrencySign } from '@/utils/formatters';
+import { formatDate, getCurrencySign } from '@/utils/formatters';
 import { User } from 'lucide-react';
 
 function InfoRow({ label, value }: { label: string; value?: string | null }) {
@@ -20,15 +21,6 @@ function InfoRow({ label, value }: { label: string; value?: string | null }) {
       <p className='text-foreground text-sm'>{value || '—'}</p>
     </div>
   );
-}
-
-function formatDate(date?: string | null) {
-  if (!date) return '—';
-  return new Date(date).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
 }
 
 const ViewTenantDialog: React.FC<ViewTenantDialogProps> = ({
@@ -47,9 +39,7 @@ const ViewTenantDialog: React.FC<ViewTenantDialogProps> = ({
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-185'>
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle>
-            Tenant Details
-          </DialogTitle>
+          <DialogTitle>Tenant Details</DialogTitle>
         </DialogHeader>
 
         {/* Scrollable body */}
@@ -108,8 +98,12 @@ const ViewTenantDialog: React.FC<ViewTenantDialogProps> = ({
             <InfoRow
               label='Rent Amount'
               value={
-                tenant.rent_amount
-                  ? `${getCurrencySign()}${Number(tenant.rent_amount).toLocaleString('en-GB')} / month`
+                getRent(tenant)
+                  ? `${getCurrencySign()}${Number(getRent(tenant)).toLocaleString('en-GB')} / month${
+                      isHmo(tenant) && tenant.room_name
+                        ? ` (${tenant.room_name})`
+                        : ''
+                    }`
                   : undefined
               }
             />

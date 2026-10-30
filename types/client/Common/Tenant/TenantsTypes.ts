@@ -19,6 +19,9 @@ export interface TenantTypes {
   is_password_set: boolean;
   property: Property;
   room?: TenantRoom | string | null;
+  // Set for tenants of an HMO property
+  room_name?: string | null;
+  monthly_rent?: string | null;
   created_at: string;
 }
 

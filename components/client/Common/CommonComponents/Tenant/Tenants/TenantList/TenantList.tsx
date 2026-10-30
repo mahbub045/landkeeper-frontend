@@ -39,6 +39,8 @@ import {
 } from '@/components/ui/tooltip';
 import {
   avatarColor,
+  getRent,
+  isHmo,
   TABLE_COLUMNS,
 } from '@/data/client/Common/Tenant/TenantsData';
 import {
@@ -286,15 +288,20 @@ const TenantList: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell className='text-sm font-bold'>
-                          {tenant.rent_amount ? (
+                          {getRent(tenant) ? (
                             <>
                               {getCurrencySign()}
-                              <span>{tenant.rent_amount}</span>
+                              <span>{getRent(tenant)}</span>
                             </>
                           ) : (
                             <small className='text-muted-foreground'>
                               {getCurrencySign()} 0
                             </small>
+                          )}
+                          {isHmo(tenant) && tenant.room_name && (
+                            <span className='text-muted-foreground ml-1 text-xs font-normal'>
+                              ({tenant.room_name})
+                            </span>
                           )}
                         </TableCell>
                         <TableCell className='text-sm'>
@@ -451,7 +458,10 @@ const TenantList: React.FC = () => {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={8} className='py-16 text-center'>
+                      <TableCell
+                        colSpan={TABLE_COLUMNS.length}
+                        className='py-16 text-center'
+                      >
                         <div className='text-muted-foreground flex flex-col items-center justify-center gap-2'>
                           <User className='size-10' />
                           <span className='text-sm'>No tenants found</span>
