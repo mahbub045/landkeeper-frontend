@@ -7,7 +7,10 @@ import { TenantStepValue } from '@/components/client/Common/StartNewJourney/Comp
 import { CertificateForm } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { DocumentForm } from '@/types/client/Common/DocumentsAndTemplates/DocumentTypes';
 import { MortgageForm } from '@/types/client/Common/Mortgage/MortgageTypes';
-import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
+import {
+  DetailsForm,
+  PropertyRoom,
+} from '@/types/client/Common/Properties/PropertyTypes';
 import { TenantForm } from '../Common/Tenant/TenantsTypes';
 
 export type WizardTab =
@@ -102,4 +105,11 @@ export interface MortgageStepProps {
   files: File[];
   onFilesChange: (files: File[]) => void;
   errors: Record<string, string>;
+}
+
+// Shared between the Property and Tenant tabs via Redux, so the Tenant tab can
+// offer the HMO rooms entered on the Property tab.
+export interface StartNewJourneyState {
+  isHmo: boolean;
+  rooms: PropertyRoom[];
 }

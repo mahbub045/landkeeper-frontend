@@ -12,6 +12,7 @@ import landlordDetailsTabsReducer from './slices/landlordDetailsTabSlice';
 import landlordAliasReducer from './slices/landlordAliasSlice';
 import mtdTabsReducer from './slices/mtdTabSlice';
 import teamAccessUiReducer from './slices/teamAccessUiSlice';
+import startNewJourneyReducer from './slices/startNewJourneySlice';
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ export const store = configureStore({
     landlordDetailsTabs: landlordDetailsTabsReducer,
     landlordAlias: landlordAliasReducer,
     mtdTabs: mtdTabsReducer,
+    startNewJourney: startNewJourneyReducer,
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
   },
