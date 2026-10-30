@@ -58,7 +58,7 @@ const DeleteTenantDialog: React.FC<DeleteTenantDialogProps> = ({
           <div className='bg-danger/10 mb-4 flex size-14 items-center justify-center rounded-full'>
             <AlertTriangle className='text-danger size-7' />
           </div>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
             Delete Tenant
           </DialogTitle>
           <DialogDescription className='text-muted-foreground mt-1 text-sm'>

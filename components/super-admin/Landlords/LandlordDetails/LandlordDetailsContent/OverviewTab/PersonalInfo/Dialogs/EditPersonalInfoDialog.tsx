@@ -99,7 +99,7 @@ const EditPersonalInfoDialog: React.FC<EditPersonalInfoDialogProps> = ({
               <UserPen className='size-5' />
             </div>
             <div className='text-left'>
-              <DialogTitle className='text-foreground text-xl font-bold'>
+              <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
                 Edit Personal Information
               </DialogTitle>
               <DialogDescription>

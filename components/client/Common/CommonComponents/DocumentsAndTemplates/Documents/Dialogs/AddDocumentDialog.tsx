@@ -178,7 +178,7 @@ const AddDocumentDialog: React.FC<UploadDocumentDialogProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 py-6'>
-          <DialogTitle className='text-foreground text-xl font-bold'>
+          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
             Upload Document
           </DialogTitle>
           <DialogDescription>
