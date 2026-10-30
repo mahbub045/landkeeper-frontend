@@ -4,6 +4,10 @@ import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { EMPTY_DETAILS_FORM } from '@/data/client/Common/Properties/PropertiesData';
 import { snakeToCamel } from '@/utils/formatters';
+import { getPropertiesUrl } from '@/utils/redirectPath';
+import { useAppSelector } from '@/store/hooks';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useAddNewJourneyMutation } from '@/store/api/endpoints/client/StartNewJourney/StartNewJourneyApi';
 import {
@@ -73,6 +77,12 @@ const StartNewJourney: React.FC = () => {
   );
   const [pendingValidateTab, setPendingValidateTab] =
     useState<WizardTab | null>(null);
+
+  const router = useRouter();
+  const { data: session } = useSession();
+  const landlordAlias = useAppSelector(
+    (state) => state.landlordAlias.landlordAlias,
+  );
 
   const [addNewJourney, { isLoading: submitting }] = useAddNewJourneyMutation();
 
@@ -343,6 +353,7 @@ const StartNewJourney: React.FC = () => {
       await addNewJourney(fd).unwrap();
       toast.success('Property created successfully.');
       resetWizard();
+      router.push(getPropertiesUrl(session, landlordAlias));
     } catch (err) {
       handleApiError(err);
     }
