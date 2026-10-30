@@ -21,6 +21,7 @@ import PropertyGallery from './PropertyGallery/PropertyGallery';
 import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
 import PropertyPermissionList from './PropertyPermissionList/PropertyPermissionList';
+import PropertyRooms from './PropertyRooms/PropertyRooms';
 
 const PropertyDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -111,6 +112,11 @@ const PropertyDetails: React.FC = () => {
         <PropertyInfo property={property} />
         <PropertyFinancials property={property} />
       </div>
+
+      {/* ── HMO Rooms ── */}
+      {property.property_type === 'HMO' && !!property.rooms?.length && (
+        <PropertyRooms rooms={property.rooms} />
+      )}
 
       {/* ── Notes ── */}
       {property.notes && <PropertyNotes notes={property.notes} />}

@@ -20,9 +20,12 @@ export interface TenantPropertyDetails {
   property_tenure: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
+  room_name?: string | null;
+  monthly_rent?: number | string | null;
+  monthly_rental_income?: number | string | null;
   notes: string | null;
-  documents: PropertyDocument[];
-  landlord: TenantPropertyLandlord;
+  documents?: PropertyDocument[];
+  landlord?: TenantPropertyLandlord | null;
 }
 
 export interface TenantPropertyOverviewCardProps {

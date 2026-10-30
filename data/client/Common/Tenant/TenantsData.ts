@@ -11,6 +11,9 @@ export const AVATAR_COLORS = [
 
 export const EMPTY_FORM: TenantForm = {
   propertyId: '',
+  propertyAlias: '',
+  propertyType: '',
+  room: '',
   title: '',
   first_name: '',
   middle_name: '',

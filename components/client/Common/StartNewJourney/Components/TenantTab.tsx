@@ -21,11 +21,13 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { EMPTY_FORM as EMPTY_TENANT_DIALOG_FORM } from '@/data/client/Common/Tenant/TenantsData';
 import { TITLE_OPTIONS } from '@/data/common/ChoiceFieldOptions';
+import { cn } from '@/lib/utils';
+import { useAppSelector } from '@/store/hooks';
 import { TenantForm } from '@/types/client/Common/Tenant/TenantsTypes';
 import { TenantStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import { getCurrencySign } from '@/utils/formatters';
 import { Upload, User, X } from 'lucide-react';
-import { forwardRef, useRef } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 
 export type TenantStepValue = Omit<TenantForm, 'propertyId'>;
 
@@ -48,9 +50,32 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
     ref,
   ) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { isHmo, rooms } = useAppSelector((state) => state.startNewJourney);
+    const roomOptions = rooms.filter((r) => r.room_name.trim());
 
     function set(key: keyof TenantStepValue, v: string) {
       onChange({ ...value, [key]: v });
+    }
+
+    // Drop the chosen room if it was renamed/removed on the Property tab.
+    useEffect(() => {
+      if (
+        value.room &&
+        (!isHmo || !roomOptions.some((r) => r.room_name === value.room))
+      ) {
+        onChange({ ...value, room: '' });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isHmo, rooms]);
+
+    // Picking a room pre-fills the rent with that room's monthly rent.
+    function selectRoom(name: string) {
+      const room = roomOptions.find((r) => r.room_name === name);
+      onChange({
+        ...value,
+        room: name,
+        rent_amount: room?.monthly_rent || value.rent_amount,
+      });
     }
 
     function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -263,6 +288,40 @@ const TenantTab = forwardRef<HTMLFormElement, TenantStepProps>(
             <FieldError errors={[{ message: errors.phone }]} />
           </Field>
         </div>
+
+        {isHmo && (
+          <Field data-invalid={!!errors.room_name}>
+            <FieldLabel className='gap-0 text-sm font-semibold'>
+              Room<span className='text-danger'>*</span>
+            </FieldLabel>
+            <Select value={value.room} onValueChange={selectRoom} required>
+              <SelectTrigger
+                className={cn(
+                  'h-10 w-full',
+                  errors.room_name && 'border-danger',
+                )}
+              >
+                <SelectValue
+                  placeholder={
+                    roomOptions.length
+                      ? 'Select a room'
+                      : 'Add room names on the Property tab first'
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {roomOptions.map((r, i) => (
+                  <SelectItem key={`${r.room_name}-${i}`} value={r.room_name}>
+                    {r.room_name}
+                    {r.monthly_rent &&
+                      ` (${getCurrencySign()}${Number(r.monthly_rent).toLocaleString()}/mo)`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[{ message: errors.room_name }]} />
+          </Field>
+        )}
 
         <div className='grid grid-cols-2 gap-4'>
           <Field data-invalid={!!errors.rent_amount}>

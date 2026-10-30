@@ -25,7 +25,17 @@ import {
   PROPERTY_TENURE_OPTIONS,
   PROPERTY_TYPE_OPTIONS,
 } from '@/data/common/ChoiceFieldOptions';
+import HmoRoomsFields, {
+  applyDetailsChange,
+  applyRoomsChange,
+  isHmo,
+} from '@/components/client/Common/CommonComponents/Properties/Dialogs/HmoRoomsFields';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
+import { useAppDispatch } from '@/store/hooks';
+import {
+  resetJourneyHmoRooms,
+  setJourneyHmoRooms,
+} from '@/store/slices/startNewJourneySlice';
 import { DetailsForm } from '@/types/client/Common/Properties/PropertyTypes';
 import { PropertyDetailsStepProps } from '@/types/client/StartNewJourney/StartNewJourneyTypes';
 import formatChoiceFieldValue, {
@@ -41,10 +51,27 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
     const [dragging, setDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: profileData } = useGetProfileInfoQuery(undefined);
+    const dispatch = useAppDispatch();
 
     function set(key: keyof DetailsForm, v: string) {
-      onChange({ ...value, [key]: v });
+      onChange(applyDetailsChange(value, key, v));
     }
+
+    // Publish the HMO rooms so the Tenant tab can offer them as choices.
+    useEffect(() => {
+      dispatch(
+        setJourneyHmoRooms({
+          isHmo: isHmo(value.property_type),
+          rooms: value.rooms,
+        }),
+      );
+    }, [dispatch, value.property_type, value.rooms]);
+
+    useEffect(() => {
+      return () => {
+        dispatch(resetJourneyHmoRooms());
+      };
+    }, [dispatch]);
 
     useEffect(() => {
       if (isNameCustom) return;
@@ -457,91 +484,12 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
           </div>
 
           <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.purchase_price}>
-              <FieldLabel className='text-sm font-semibold'>
-                Purchase Price
-              </FieldLabel>
-              <Input
-                type='number'
-                placeholder={getCurrencySign()}
-                maxLength={10}
-                value={value.purchase_price}
-                onChange={(e) => set('purchase_price', e.target.value)}
-                aria-invalid={!!errors.purchase_price}
-                className={
-                  errors.purchase_price
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: errors.purchase_price }]} />
-            </Field>
-
-            <Field data-invalid={!!errors.current_value}>
-              <FieldLabel className='text-sm font-semibold'>
-                Current Value
-              </FieldLabel>
-              <Input
-                type='number'
-                placeholder={getCurrencySign()}
-                value={value.current_value}
-                onChange={(e) => set('current_value', e.target.value)}
-                aria-invalid={!!errors.current_value}
-                className={
-                  errors.current_value
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: errors.current_value }]} />
-            </Field>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4'>
-            <Field data-invalid={!!errors.monthly_rental_income}>
-              <FieldLabel className='text-sm font-semibold'>
-                Monthly Rental Income
-              </FieldLabel>
-              <Input
-                type='number'
-                placeholder={getCurrencySign()}
-                value={value.monthly_rental_income}
-                onChange={(e) => set('monthly_rental_income', e.target.value)}
-                aria-invalid={!!errors.monthly_rental_income}
-                className={
-                  errors.monthly_rental_income
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError
-                errors={[{ message: errors.monthly_rental_income }]}
-              />
-            </Field>
-
-            <Field data-invalid={!!errors.purchase_date}>
-              <FieldLabel className='text-sm font-semibold'>
-                Purchase Date
-              </FieldLabel>
-              <Input
-                type='date'
-                value={value.purchase_date}
-                onChange={(e) => set('purchase_date', e.target.value)}
-                aria-invalid={!!errors.purchase_date}
-                className={
-                  errors.purchase_date
-                    ? 'border-danger focus-visible:ring-danger/50'
-                    : ''
-                }
-              />
-              <FieldError errors={[{ message: errors.purchase_date }]} />
-            </Field>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4'>
             <Field data-invalid={!!errors.bedrooms}>
               <FieldLabel className='text-sm font-semibold'>
                 Bedrooms
+                {isHmo(value.property_type) && (
+                  <span className='text-danger'>*</span>
+                )}
               </FieldLabel>
               <Input
                 type='number'
@@ -549,6 +497,8 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 placeholder='e.g. 3'
                 onChange={(e) => set('bedrooms', e.target.value)}
                 aria-invalid={!!errors.bedrooms}
+                min={0}
+                required={isHmo(value.property_type)}
                 className={
                   errors.bedrooms
                     ? 'border-danger focus-visible:ring-danger/50'
@@ -575,6 +525,64 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
                 }
               />
               <FieldError errors={[{ message: errors.bathrooms }]} />
+            </Field>
+          </div>
+
+          {isHmo(value.property_type) && (
+            <HmoRoomsFields
+              rooms={value.rooms}
+              onChange={(rooms) => onChange(applyRoomsChange(value, rooms))}
+              error={errors.rooms}
+            />
+          )}
+
+          <div className='grid grid-cols-2 gap-4'>
+            <Field data-invalid={!!errors.monthly_rental_income}>
+              <FieldLabel className='text-sm font-semibold'>
+                Monthly Rental Income
+              </FieldLabel>
+              <Input
+                type='number'
+                placeholder={getCurrencySign()}
+                value={value.monthly_rental_income}
+                onChange={(e) => set('monthly_rental_income', e.target.value)}
+                readOnly={isHmo(value.property_type)}
+                aria-invalid={!!errors.monthly_rental_income}
+                className={[
+                  errors.monthly_rental_income
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : '',
+                  isHmo(value.property_type)
+                    ? 'text-muted-foreground cursor-default shadow-none'
+                    : '',
+                ].join(' ')}
+              />
+              {isHmo(value.property_type) && (
+                <FieldDescription className='text-muted-foreground text-xs'>
+                  Total of the HMO room rents.
+                </FieldDescription>
+              )}
+              <FieldError
+                errors={[{ message: errors.monthly_rental_income }]}
+              />
+            </Field>
+
+            <Field data-invalid={!!errors.purchase_date}>
+              <FieldLabel className='text-sm font-semibold'>
+                Purchase Date
+              </FieldLabel>
+              <Input
+                type='date'
+                value={value.purchase_date}
+                onChange={(e) => set('purchase_date', e.target.value)}
+                aria-invalid={!!errors.purchase_date}
+                className={
+                  errors.purchase_date
+                    ? 'border-danger focus-visible:ring-danger/50'
+                    : ''
+                }
+              />
+              <FieldError errors={[{ message: errors.purchase_date }]} />
             </Field>
           </div>
         </div>
@@ -621,6 +629,47 @@ const PropertyTab = forwardRef<HTMLFormElement, PropertyDetailsStepProps>(
               </SelectContent>
             </Select>
             <FieldError errors={[{ message: errors.property_tenure }]} />
+          </Field>
+        </div>
+
+        <div className='grid grid-cols-2 gap-4'>
+          <Field data-invalid={!!errors.purchase_price}>
+            <FieldLabel className='text-sm font-semibold'>
+              Purchase Price
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              maxLength={10}
+              value={value.purchase_price}
+              onChange={(e) => set('purchase_price', e.target.value)}
+              aria-invalid={!!errors.purchase_price}
+              className={
+                errors.purchase_price
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.purchase_price }]} />
+          </Field>
+
+          <Field data-invalid={!!errors.current_value}>
+            <FieldLabel className='text-sm font-semibold'>
+              Current Value
+            </FieldLabel>
+            <Input
+              type='number'
+              placeholder={getCurrencySign()}
+              value={value.current_value}
+              onChange={(e) => set('current_value', e.target.value)}
+              aria-invalid={!!errors.current_value}
+              className={
+                errors.current_value
+                  ? 'border-danger focus-visible:ring-danger/50'
+                  : ''
+              }
+            />
+            <FieldError errors={[{ message: errors.current_value }]} />
           </Field>
         </div>
 

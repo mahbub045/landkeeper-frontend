@@ -18,6 +18,7 @@ export interface TenantTypes {
   is_active: boolean;
   is_password_set: boolean;
   property: Property;
+  room?: TenantRoom | string | null;
   created_at: string;
 }
 
@@ -25,6 +26,13 @@ interface Property {
   id: number;
   alias: string;
   property_name: string;
+  property_type?: string;
+}
+
+interface TenantRoom {
+  alias: string;
+  room_name?: string;
+  monthly_rent?: string;
 }
 
 export interface TenantListResponse {
@@ -48,6 +56,9 @@ export interface TenantRowProps {
 
 export interface TenantForm {
   propertyId: string;
+  propertyAlias: string;
+  propertyType: string;
+  room: string;
   title: string;
   first_name: string;
   middle_name: string;

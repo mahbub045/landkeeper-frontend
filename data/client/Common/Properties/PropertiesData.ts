@@ -22,6 +22,7 @@ export const FIELD_TAB_MAP: Record<string, Tab> = {
   monthly_rental_income: 'Details',
   bedrooms: 'Details',
   bathrooms: 'Details',
+  rooms: 'Details',
   year_built: 'Details',
   property_tenure: 'Details',
   remaining_lease_term: 'Details',
@@ -65,6 +66,7 @@ export const EMPTY_DETAILS_FORM: DetailsForm = {
   local_authority: '',
   bedrooms: '',
   bathrooms: '',
+  rooms: [],
   monthly_rental_income: '',
   notes: '',
 };

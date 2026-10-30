@@ -4,6 +4,10 @@ import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
 import { EMPTY_DETAILS_FORM } from '@/data/client/Common/Properties/PropertiesData';
 import { snakeToCamel } from '@/utils/formatters';
+import { getPropertiesUrl } from '@/utils/redirectPath';
+import { useAppSelector } from '@/store/hooks';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useAddNewJourneyMutation } from '@/store/api/endpoints/client/StartNewJourney/StartNewJourneyApi';
 import {
@@ -73,6 +77,12 @@ const StartNewJourney: React.FC = () => {
   );
   const [pendingValidateTab, setPendingValidateTab] =
     useState<WizardTab | null>(null);
+
+  const router = useRouter();
+  const { data: session } = useSession();
+  const landlordAlias = useAppSelector(
+    (state) => state.landlordAlias.landlordAlias,
+  );
 
   const [addNewJourney, { isLoading: submitting }] = useAddNewJourneyMutation();
 
@@ -267,6 +277,12 @@ const StartNewJourney: React.FC = () => {
     fd.append('property_bedrooms', p.bedrooms ?? '');
     fd.append('property_bathrooms', p.bathrooms ?? '');
     fd.append('property_notes', p.notes ?? '');
+    if (p.property_type === 'HMO') {
+      p.rooms.forEach((room, i) => {
+        fd.append(`property_rooms[${i}].room_name`, room.room_name);
+        fd.append(`property_rooms[${i}].monthly_rent`, room.monthly_rent);
+      });
+    }
     state.propertyFiles.forEach((file) =>
       fd.append('property_documents_data', file),
     );
@@ -308,6 +324,9 @@ const StartNewJourney: React.FC = () => {
     fd.append('tenant_employment_details', t.employment_details ?? '');
     fd.append('tenant_guarantor_name', t.guarantor_name ?? '');
     fd.append('tenant_notes', t.notes ?? '');
+    if (p.property_type === 'HMO' && t.room) {
+      fd.append('tenant_room_name', t.room);
+    }
     fd.append('tenant_is_active', 'true');
     if (state.tenantAvatar) fd.append('tenant_avatar', state.tenantAvatar);
 
@@ -334,6 +353,7 @@ const StartNewJourney: React.FC = () => {
       await addNewJourney(fd).unwrap();
       toast.success('Property created successfully.');
       resetWizard();
+      router.push(getPropertiesUrl(session, landlordAlias));
     } catch (err) {
       handleApiError(err);
     }
