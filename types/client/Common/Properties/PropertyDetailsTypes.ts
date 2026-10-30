@@ -1,4 +1,4 @@
-import { Property, PropertyDocument } from './PropertyTypes';
+import { Property, PropertyDocument, PropertyRoom } from './PropertyTypes';
 
 export interface PropertyDetailsProps {
   onEdit?: () => void;
@@ -38,6 +38,10 @@ export interface PropertyFinancialsProps {
 
 export interface PropertyInfoProps {
   property: Property;
+}
+
+export interface PropertyRoomsProps {
+  rooms: PropertyRoom[];
 }
 
 export interface PropertyNotesProps {

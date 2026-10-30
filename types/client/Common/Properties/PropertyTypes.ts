@@ -64,6 +64,7 @@ export interface Property {
 }
 
 export interface PropertyRoom {
+  alias?: string;
   room_name: string;
   monthly_rent: string;
 }
