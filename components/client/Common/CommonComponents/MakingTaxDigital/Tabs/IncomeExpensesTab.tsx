@@ -6,11 +6,9 @@ import {
   ChevronRight,
   Info,
   Receipt,
-  Trash2,
 } from 'lucide-react';
 
 import Loading from '@/components/common/CustomLoader/Loading';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -102,7 +100,6 @@ const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
                   <TableHead>Income type</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date received</TableHead>
-                  <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -124,16 +121,6 @@ const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
                         {toAmount(Number(entry.amount))}
                       </TableCell>
                       <TableCell>{formatDate(entry.date)}</TableCell>
-                      <TableCell className='text-center'>
-                        <Button
-                          variant='destructive'
-                          size='icon-sm'
-                          aria-label='Delete'
-                          onClick={() => onPending('Delete income')}
-                        >
-                          <Trash2 />
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
@@ -158,7 +145,6 @@ const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
                   <TableHead>Expense category</TableHead>
                   <TableHead>Amount (£)</TableHead>
                   <TableHead>Date paid</TableHead>
-                  <TableHead className='text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -180,16 +166,6 @@ const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
                         {toAmount(Number(entry.amount))}
                       </TableCell>
                       <TableCell>{formatDate(entry.date)}</TableCell>
-                      <TableCell className='text-center'>
-                        <Button
-                          variant='destructive'
-                          size='icon-sm'
-                          aria-label='Delete'
-                          onClick={() => onPending('Delete expense')}
-                        >
-                          <Trash2 />
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
