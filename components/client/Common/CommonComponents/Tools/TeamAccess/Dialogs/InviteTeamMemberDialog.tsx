@@ -125,7 +125,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberModalProps> = ({
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-135'>
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
+          <DialogTitle>
             Invite Team Member
           </DialogTitle>
           <DialogDescription>

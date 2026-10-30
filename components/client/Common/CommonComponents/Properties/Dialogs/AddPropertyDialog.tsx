@@ -260,7 +260,7 @@ const AddPropertyDialog: React.FC<AddPropertyModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-0'>
-          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
+          <DialogTitle>
             Add New Property
           </DialogTitle>
           <DialogDescription>

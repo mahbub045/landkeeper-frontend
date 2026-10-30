@@ -255,7 +255,7 @@ const UpdateSupportTicketDialog: React.FC<UpdateSupportTicketDialogProps> = ({
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
+          <DialogTitle>
             Update Support Ticket
           </DialogTitle>
           <DialogDescription>

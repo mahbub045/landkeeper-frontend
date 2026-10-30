@@ -177,7 +177,7 @@ const AddTransactionDialog: React.FC<AddTransactionModalProps> = ({
       >
         {/* Header */}
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
+          <DialogTitle>
             Add Transaction
           </DialogTitle>
           <DialogDescription>

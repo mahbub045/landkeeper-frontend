@@ -150,7 +150,7 @@ const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className='flex max-h-[90vh] w-full flex-col overflow-hidden p-0 sm:max-w-lg'>
         <DialogHeader className='shrink-0 border-b px-6 pt-6 pb-5'>
-          <DialogTitle className='text-primary -mb-2 text-xl font-bold'>
+          <DialogTitle>
             {profileData.is_password_available
               ? 'Change Password'
               : 'Set Password'}
