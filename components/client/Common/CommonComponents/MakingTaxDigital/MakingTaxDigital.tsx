@@ -15,7 +15,11 @@ import { toast } from 'sonner';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MTD_TAX_YEARS } from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
+import {
+  MTD_QUARTERS,
+  MTD_TAX_YEARS,
+  pickOption,
+} from '@/data/client/Common/MakingTaxDigital/MakingTaxDigitalData';
 import {
   MakingTaxDigitalApi,
   useGetMTDReportsQuery,
@@ -68,13 +72,24 @@ function getStats(report: MtdReport | undefined): MtdStat[] {
 
 const MakingTaxDigital: React.FC = () => {
   const tab = useAppSelector((state) => state.mtdTabs.activeTab);
-  const [quarter, setQuarter] = useState('Q1');
-  const [taxYear, setTaxYear] = useState(MTD_TAX_YEARS[0].value);
+  // Unset until the first response says which period is current
+  const [quarter, setQuarter] = useState<string>();
+  const [taxYear, setTaxYear] = useState<string>();
   const dispatch = useAppDispatch();
 
-  const reportParams = { tax_year: taxYear, quarter };
+  const reportParams = {
+    tax_year: taxYear ?? MTD_TAX_YEARS[0].value,
+    quarter: quarter ?? MTD_QUARTERS[0].value,
+  };
   const { data: reports } = useGetMTDReportsQuery(reportParams);
   const report: MtdReport | undefined = reports?.[0];
+
+  // Jump to the current tax year and quarter once, falling back to the
+  // first option when the API value isn't in the list
+  if (reports && taxYear === undefined)
+    setTaxYear(pickOption(MTD_TAX_YEARS, report?.current_tax_year));
+  if (reports && quarter === undefined)
+    setQuarter(pickOption(MTD_QUARTERS, report?.current_quarter));
   const selected = report?.properties ?? [];
   const [selectMTDProperties] = useSelectMTDPropertiesMutation();
 
@@ -119,8 +134,8 @@ const MakingTaxDigital: React.FC = () => {
       </div>
 
       <ReportingPeriod
-        quarter={quarter}
-        taxYear={taxYear}
+        quarter={reportParams.quarter}
+        taxYear={reportParams.tax_year}
         onQuarterChange={setQuarter}
         onTaxYearChange={setTaxYear}
       />
