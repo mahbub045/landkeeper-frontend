@@ -1,6 +1,7 @@
 'use client';
 
 import AuthPageLeftPanel from '@/components/common/AuthPageLeftPanel/AuthPageLeftPanel';
+import AuthPageRightPanel from '@/components/common/AuthPageRightPanel/AuthPageRightPanel';
 import AuthPageMobileLogo from '@/components/common/AuthPageMobileLogo/AuthPageMobileLogo';
 import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
@@ -181,8 +182,8 @@ export default function SignupPage() {
       <AuthPageLeftPanel />
 
       {/* Right Panel */}
-      <div className='flex w-full items-center justify-center overflow-y-auto bg-white p-8 lg:w-1/2 dark:bg-gray-900'>
-        <div className='w-full max-w-lg py-8'>
+      <AuthPageRightPanel cardClassName='max-w-lg'>
+        <div>
           {/* Mobile Logo */}
           <AuthPageMobileLogo />
 
@@ -503,7 +504,7 @@ export default function SignupPage() {
             © {new Date().getFullYear()} Landkeeper. All rights reserved.
           </p>
         </div>
-      </div>
+      </AuthPageRightPanel>
     </div>
   );
 }

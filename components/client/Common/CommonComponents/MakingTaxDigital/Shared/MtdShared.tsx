@@ -94,7 +94,9 @@ export function SectionCard({
             </div>
           </div>
           {action && (
-            <div className='flex flex-wrap items-center gap-2'>{action}</div>
+            <div className='flex w-full flex-wrap items-center gap-2 sm:w-auto'>
+              {action}
+            </div>
           )}
         </div>
         {children}

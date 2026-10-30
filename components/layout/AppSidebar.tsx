@@ -164,6 +164,20 @@ function getIconColor(key: string) {
   return ICON_COLORS[Math.abs(hash) % ICON_COLORS.length];
 }
 
+// Exposes the item's icon color as --nav-color so the active accent bar and
+// tinted background can match it.
+function navColorStyle(key: string) {
+  return { '--nav-color': getIconColor(key) } as React.CSSProperties;
+}
+
+// Shared styles for enabled nav buttons: a left accent bar plus a background
+// tinted with the item's own color when active.
+const NAV_BUTTON_CLASS =
+  'relative h-9 cursor-pointer rounded-lg transition-colors duration-200 before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-r-full before:bg-(--nav-color) before:opacity-0 before:transition-opacity data-active:bg-[color-mix(in_oklab,var(--nav-color)_12%,transparent)] data-active:font-semibold data-active:shadow-none data-active:before:opacity-100 data-active:hover:bg-[color-mix(in_oklab,var(--nav-color)_18%,transparent)] [&>svg:first-child]:transition-transform [&>svg:first-child]:duration-200 hover:[&>svg:first-child]:scale-110';
+
+const NAV_BUTTON_DISABLED_CLASS =
+  'h-9 cursor-not-allowed rounded-lg opacity-40';
+
 function NavMenu({
   items,
   pathname,
@@ -251,13 +265,13 @@ function NavMenu({
                       <SidebarMenuButton
                         isActive={isActive}
                         aria-disabled={parentDisabled}
-                        className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                        className={NAV_BUTTON_DISABLED_CLASS}
                       >
                         <item.icon
                           style={{ color: getIconColor(item.label) }}
                         />
                         <span>{item.label}</span>
-                        <ChevronRight className='ml-auto' />
+                        <ChevronRight className='text-muted-foreground ml-auto' />
                       </SidebarMenuButton>
                     </TooltipTrigger>
                     <TooltipContent side='right'>
@@ -269,12 +283,8 @@ function NavMenu({
                     <DropdownMenuTrigger asChild>
                       <SidebarMenuButton
                         isActive={isActive}
-                        style={
-                          isActive
-                            ? { borderBottomColor: getIconColor(item.label) }
-                            : undefined
-                        }
-                        className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                        style={navColorStyle(item.label)}
+                        className={NAV_BUTTON_CLASS}
                       >
                         <item.icon
                           style={{ color: getIconColor(item.label) }}
@@ -312,18 +322,11 @@ function NavMenu({
                           <DropdownMenuItem
                             key={child.href || child.label}
                             asChild
-                            style={
-                              childActive
-                                ? {
-                                    borderBottomColor: getIconColor(
-                                      child.label,
-                                    ),
-                                  }
-                                : undefined
-                            }
+                            style={navColorStyle(child.label)}
                             className={cn(
-                              'cursor-pointer rounded-lg border-b-2 border-transparent',
-                              childActive && 'bg-black/5 dark:bg-white/10',
+                              'cursor-pointer rounded-lg',
+                              childActive &&
+                                'bg-[color-mix(in_oklab,var(--nav-color)_12%,transparent)] font-semibold',
                             )}
                           >
                             <Link href={child.href || '#'}>
@@ -349,25 +352,21 @@ function NavMenu({
                     onClick={() => toggleOpen(item.label)}
                     isActive={isActive}
                     tooltip={item.label}
-                    style={
-                      isActive
-                        ? { borderBottomColor: getIconColor(item.label) }
-                        : undefined
-                    }
-                    className='h-9 cursor-pointer rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:shadow-none data-active:hover:bg-black/15 dark:data-active:bg-white/15 dark:data-active:hover:bg-white/20'
+                    style={navColorStyle(item.label)}
+                    className={NAV_BUTTON_CLASS}
                   >
                     <item.icon style={{ color: getIconColor(item.label) }} />
                     <span>{item.label}</span>
                     <ChevronRight
                       className={cn(
-                        'ml-auto transition-transform',
+                        'text-muted-foreground ml-auto transition-transform duration-200',
                         openItems.has(item.label) && 'rotate-90',
                       )}
                     />
                   </SidebarMenuButton>
                 )}
                 {!isCollapsed && openItems.has(item.label) && (
-                  <SidebarMenuSub>
+                  <SidebarMenuSub className='border-sidebar-border/70 mt-0.5 mr-0 gap-0.5'>
                     {item.children!.map((child) => {
                       const childActive = child.href
                         ? isNavActive(pathname, child.href)
@@ -383,7 +382,7 @@ function NavMenu({
                                 <SidebarMenuSubButton
                                   isActive={childActive}
                                   aria-disabled={childDisabled}
-                                  className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                                  className={NAV_BUTTON_DISABLED_CLASS}
                                 >
                                   <child.icon
                                     style={{
@@ -402,16 +401,8 @@ function NavMenu({
                             <SidebarMenuSubButton
                               asChild
                               isActive={childActive}
-                              style={
-                                childActive
-                                  ? {
-                                      borderBottomColor: getIconColor(
-                                        child.label,
-                                      ),
-                                    }
-                                  : undefined
-                              }
-                              className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/5 data-active:shadow-none data-active:hover:bg-black/10 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                              style={navColorStyle(child.label)}
+                              className={NAV_BUTTON_CLASS}
                             >
                               <Link href={child.href || '#'}>
                                 <child.icon
@@ -441,7 +432,7 @@ function NavMenu({
                         <SidebarMenuButton
                           isActive={isNavActive(pathname, item.href)}
                           aria-disabled={itemDisabled}
-                          className='h-9 cursor-not-allowed rounded-lg border-b-2 border-transparent opacity-40'
+                          className={NAV_BUTTON_DISABLED_CLASS}
                         >
                           <item.icon
                             style={{ color: getIconColor(item.label) }}
@@ -462,12 +453,8 @@ function NavMenu({
                       asChild
                       isActive={isNavActive(pathname, item.href)}
                       tooltip={item.label}
-                      style={
-                        isNavActive(pathname, item.href)
-                          ? { borderBottomColor: getIconColor(item.label) }
-                          : undefined
-                      }
-                      className='h-9 rounded-lg border-b-2 border-transparent data-active:bg-black/10 data-active:hover:bg-black/15 dark:data-active:bg-white/10 dark:data-active:hover:bg-white/15'
+                      style={navColorStyle(item.label)}
+                      className={NAV_BUTTON_CLASS}
                     >
                       <Link href={item.href}>
                         <item.icon
@@ -703,9 +690,9 @@ const AppSidebar: React.FC = () => {
           <Button
             type='button'
             size='lg'
-            variant='secondary'
+            variant='default'
             disabled={sidebarLocked}
-            className='rounded-xlf mt-3 w-full gap-2 group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0'
+            className='mt-3 w-full gap-2 rounded-xl bg-black text-white shadow-sm transition-all group-data-[collapsible=icon]:mb-0 group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:px-0 hover:bg-black/85 hover:text-white hover:shadow-md dark:bg-white dark:text-black dark:hover:bg-white/85 dark:hover:text-black'
           >
             <Plus className='size-4' />
             <span className='group-data-[collapsible=icon]:hidden'>
@@ -717,7 +704,7 @@ const AppSidebar: React.FC = () => {
 
       <SidebarContent className='gap-1 px-2 py-2'>
         <SidebarGroup className='p-0'>
-          <SidebarGroupLabel className='px-3 text-[11px] font-semibold tracking-wider uppercase'>
+          <SidebarGroupLabel className='text-muted-foreground/80 px-3 text-[11px] font-semibold tracking-wider uppercase'>
             Menu
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -737,7 +724,7 @@ const AppSidebar: React.FC = () => {
           <DropdownMenuTrigger asChild>
             <button
               type='button'
-              className='flex w-full cursor-pointer items-center gap-3 rounded-lg p-1 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center'
+              className='hover:bg-sidebar-accent focus-visible:ring-sidebar-ring data-[state=open]:bg-sidebar-accent flex w-full cursor-pointer items-center gap-3 rounded-xl p-2 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 focus-visible:ring-2'
             >
               <Avatar size='lg'>
                 <AvatarImage
@@ -748,7 +735,7 @@ const AppSidebar: React.FC = () => {
                   {getInitials(profileData?.first_name) ?? 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className='min-w-0 group-data-[collapsible=icon]:hidden'>
+              <div className='flex min-w-0 flex-1 flex-col items-start gap-1 group-data-[collapsible=icon]:hidden'>
                 <p className='truncate text-sm font-semibold'>
                   {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
                   {profileData?.first_name} {profileData?.middle_name}{' '}
@@ -758,7 +745,10 @@ const AppSidebar: React.FC = () => {
                   {formatChoiceFieldValue(userRole)}
                 </Badge>
               </div>
-              <Settings size={16} />
+              <Settings
+                size={16}
+                className='text-muted-foreground shrink-0 group-data-[collapsible=icon]:hidden'
+              />
             </button>
           </DropdownMenuTrigger>
 

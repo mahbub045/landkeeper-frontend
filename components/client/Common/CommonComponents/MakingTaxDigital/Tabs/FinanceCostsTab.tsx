@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText, Landmark, Pencil, Trash2 } from 'lucide-react';
+import { FileText, Landmark, Pencil } from 'lucide-react';
 import { useState } from 'react';
 
 import Loading from '@/components/common/CustomLoader/Loading';
@@ -60,7 +60,7 @@ const FinanceCostsTab: React.FC<MtdReportTabProps> = ({
                   <TableHead>Monthly payment (£)</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead>Evidence</TableHead>
-                  <TableHead className='text-center'>Actions</TableHead>
+                  <TableHead className='text-center'>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -118,20 +118,12 @@ const FinanceCostsTab: React.FC<MtdReportTabProps> = ({
                       </TableCell>
                       <TableCell className='space-x-1 text-center whitespace-nowrap'>
                         <Button
-                          variant='outline'
+                          variant='default'
                           size='icon-sm'
                           aria-label='Edit'
                           onClick={() => setEditing(cost)}
                         >
                           <Pencil />
-                        </Button>
-                        <Button
-                          variant='destructive'
-                          size='icon-sm'
-                          aria-label='Delete'
-                          onClick={() => onPending('Delete finance cost')}
-                        >
-                          <Trash2 />
                         </Button>
                       </TableCell>
                     </TableRow>
