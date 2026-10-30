@@ -5,14 +5,16 @@ import {
   OverviewStatProps,
   TenantPropertyOverviewCardProps,
 } from '@/types/client/Tenant/Dashboard/DashboardsTypes';
-import formatChoiceFieldValue from '@/utils/formatters';
+import formatChoiceFieldValue, { getCurrencySign } from '@/utils/formatters';
 import {
   Bath,
   Bed,
   Building2,
   CalendarDays,
+  DoorOpen,
   ScrollText,
   Users,
+  Wallet,
 } from 'lucide-react';
 
 const OverviewStat: React.FC<OverviewStatProps> = ({
@@ -41,6 +43,14 @@ const PropertyOverviewCard: React.FC<TenantPropertyOverviewCardProps> = ({
       ? property.company_name
       : formatChoiceFieldValue(property.property_owner) || null;
 
+  const isHmo = property.property_type === 'HMO';
+  const fmtMonthly = (val?: number | string | null) =>
+    val != null && val !== ''
+      ? `${getCurrencySign()}${Number(val).toLocaleString()}/mo`
+      : null;
+  const rent = fmtMonthly(property.monthly_rent);
+  const rentalIncome = fmtMonthly(property.monthly_rental_income);
+
   return (
     <Card className='border-border h-full rounded-2xl shadow-sm'>
       <CardHeader className='pb-2'>
@@ -54,12 +64,20 @@ const PropertyOverviewCard: React.FC<TenantPropertyOverviewCardProps> = ({
           label='Type'
           value={formatChoiceFieldValue(property.property_type)}
         />
-        <OverviewStat icon={Bed} label='Bedrooms' value={property.bedrooms} />
-        <OverviewStat
-          icon={Bath}
-          label='Bathrooms'
-          value={property.bathrooms}
-        />
+        {!isHmo && (
+          <>
+            <OverviewStat
+              icon={Bed}
+              label='Bedrooms'
+              value={property.bedrooms}
+            />
+            <OverviewStat
+              icon={Bath}
+              label='Bathrooms'
+              value={property.bathrooms}
+            />
+          </>
+        )}
         <OverviewStat
           icon={ScrollText}
           label='Tenure'
@@ -71,6 +89,22 @@ const PropertyOverviewCard: React.FC<TenantPropertyOverviewCardProps> = ({
           value={property.year_built}
         />
         <OverviewStat icon={Users} label='Ownership' value={owner} />
+        {isHmo ? (
+          <>
+            <OverviewStat
+              icon={DoorOpen}
+              label='Your Room'
+              value={property.room_name || null}
+            />
+            <OverviewStat icon={Wallet} label='Room Rent' value={rent} />
+          </>
+        ) : (
+          <OverviewStat
+            icon={Wallet}
+            label='Monthly Rent'
+            value={rentalIncome}
+          />
+        )}
       </CardContent>
     </Card>
   );
