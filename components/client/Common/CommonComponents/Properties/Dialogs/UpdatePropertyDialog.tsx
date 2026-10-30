@@ -26,18 +26,18 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  PROPERTY_OWNER_OPTIONS,
-  PROPERTY_STATUS_OPTIONS,
-  PROPERTY_TENURE_OPTIONS,
-  PROPERTY_TYPE_OPTIONS,
-} from '@/data/common/ChoiceFieldOptions';
-import {
   FIELD_TAB_MAP,
   OVERRIDE_KEY_MAP,
   TAB_LABELS,
   TAB_PRIORITY,
   TABS,
 } from '@/data/client/Common/Properties/PropertiesData';
+import {
+  PROPERTY_OWNER_OPTIONS,
+  PROPERTY_STATUS_OPTIONS,
+  PROPERTY_TENURE_OPTIONS,
+  PROPERTY_TYPE_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
 import { useUpdatePropertyMutation } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { useGetProfileInfoQuery } from '@/store/api/endpoints/common/ProfileSettings/ProfileApi';
 import {
@@ -52,6 +52,8 @@ import formatChoiceFieldValue, {
 } from '@/utils/formatters';
 import { CloudUpload, Lock, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import HmoRoomsFields, {
   appendRooms,
   applyDetailsChange,
@@ -59,8 +61,6 @@ import HmoRoomsFields, {
   firstErrorMessage,
   isHmo,
 } from './HmoRoomsFields';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -916,95 +916,6 @@ const DetailsTab: React.FC<{
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.purchase_price}>
-          <FieldLabel className='text-sm font-semibold'>
-            Purchase Price
-          </FieldLabel>
-          <Input
-            type='number'
-            placeholder={getCurrencySign()}
-            maxLength={10}
-            value={form.purchase_price}
-            onChange={(e) => set('purchase_price', e.target.value)}
-            aria-invalid={!!errors.purchase_price}
-            className={
-              errors.purchase_price
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
-          />
-          <FieldError errors={[{ message: errors.purchase_price }]} />
-        </Field>
-
-        <Field data-invalid={!!errors.current_value}>
-          <FieldLabel className='text-sm font-semibold'>
-            Current Value
-          </FieldLabel>
-          <Input
-            type='number'
-            placeholder={getCurrencySign()}
-            value={form.current_value}
-            onChange={(e) => set('current_value', e.target.value)}
-            aria-invalid={!!errors.current_value}
-            className={
-              errors.current_value
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
-          />
-          <FieldError errors={[{ message: errors.current_value }]} />
-        </Field>
-      </div>
-
-      <div className='grid grid-cols-2 gap-4'>
-        <Field data-invalid={!!errors.monthly_rental_income}>
-          <FieldLabel className='text-sm font-semibold'>
-            Monthly Rental Income
-          </FieldLabel>
-          <Input
-            type='number'
-            placeholder={getCurrencySign()}
-            value={form.monthly_rental_income}
-            onChange={(e) => set('monthly_rental_income', e.target.value)}
-            readOnly={isHmo(form.property_type)}
-            aria-invalid={!!errors.monthly_rental_income}
-            className={[
-              errors.monthly_rental_income
-                ? 'border-danger focus-visible:ring-danger/50'
-                : '',
-              isHmo(form.property_type)
-                ? 'text-muted-foreground cursor-default shadow-none'
-                : '',
-            ].join(' ')}
-          />
-          {isHmo(form.property_type) && (
-            <FieldDescription className='text-muted-foreground text-xs'>
-              Total of the HMO room rents.
-            </FieldDescription>
-          )}
-          <FieldError errors={[{ message: errors.monthly_rental_income }]} />
-        </Field>
-
-        <Field data-invalid={!!errors.purchase_date}>
-          <FieldLabel className='text-sm font-semibold'>
-            Purchase Date
-          </FieldLabel>
-          <Input
-            type='date'
-            value={form.purchase_date}
-            onChange={(e) => set('purchase_date', e.target.value)}
-            aria-invalid={!!errors.purchase_date}
-            className={
-              errors.purchase_date
-                ? 'border-danger focus-visible:ring-danger/50'
-                : ''
-            }
-          />
-          <FieldError errors={[{ message: errors.purchase_date }]} />
-        </Field>
-      </div>
-
-      <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.bedrooms}>
           <FieldLabel className='text-sm font-semibold'>
             Bedrooms
@@ -1056,6 +967,54 @@ const DetailsTab: React.FC<{
       )}
 
       <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.monthly_rental_income}>
+          <FieldLabel className='text-sm font-semibold'>
+            Monthly Rental Income
+          </FieldLabel>
+          <Input
+            type='number'
+            placeholder={getCurrencySign()}
+            value={form.monthly_rental_income}
+            onChange={(e) => set('monthly_rental_income', e.target.value)}
+            readOnly={isHmo(form.property_type)}
+            aria-invalid={!!errors.monthly_rental_income}
+            className={[
+              errors.monthly_rental_income
+                ? 'border-danger focus-visible:ring-danger/50'
+                : '',
+              isHmo(form.property_type)
+                ? 'text-muted-foreground cursor-default shadow-none'
+                : '',
+            ].join(' ')}
+          />
+          {isHmo(form.property_type) && (
+            <FieldDescription className='text-muted-foreground text-xs'>
+              Total of the HMO room rents.
+            </FieldDescription>
+          )}
+          <FieldError errors={[{ message: errors.monthly_rental_income }]} />
+        </Field>
+
+        <Field data-invalid={!!errors.purchase_date}>
+          <FieldLabel className='text-sm font-semibold'>
+            Purchase Date
+          </FieldLabel>
+          <Input
+            type='date'
+            value={form.purchase_date}
+            onChange={(e) => set('purchase_date', e.target.value)}
+            aria-invalid={!!errors.purchase_date}
+            className={
+              errors.purchase_date
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.purchase_date }]} />
+        </Field>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4'>
         <Field data-invalid={!!errors.year_built}>
           <FieldLabel className='text-sm font-semibold'>Year Built</FieldLabel>
           <Input
@@ -1095,6 +1054,47 @@ const DetailsTab: React.FC<{
             </SelectContent>
           </Select>
           <FieldError errors={[{ message: errors.property_tenure }]} />
+        </Field>
+      </div>
+
+      <div className='grid grid-cols-2 gap-4'>
+        <Field data-invalid={!!errors.purchase_price}>
+          <FieldLabel className='text-sm font-semibold'>
+            Purchase Price
+          </FieldLabel>
+          <Input
+            type='number'
+            placeholder={getCurrencySign()}
+            maxLength={10}
+            value={form.purchase_price}
+            onChange={(e) => set('purchase_price', e.target.value)}
+            aria-invalid={!!errors.purchase_price}
+            className={
+              errors.purchase_price
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.purchase_price }]} />
+        </Field>
+
+        <Field data-invalid={!!errors.current_value}>
+          <FieldLabel className='text-sm font-semibold'>
+            Current Value
+          </FieldLabel>
+          <Input
+            type='number'
+            placeholder={getCurrencySign()}
+            value={form.current_value}
+            onChange={(e) => set('current_value', e.target.value)}
+            aria-invalid={!!errors.current_value}
+            className={
+              errors.current_value
+                ? 'border-danger focus-visible:ring-danger/50'
+                : ''
+            }
+          />
+          <FieldError errors={[{ message: errors.current_value }]} />
         </Field>
       </div>
 

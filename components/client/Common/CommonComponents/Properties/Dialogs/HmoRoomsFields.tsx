@@ -153,13 +153,6 @@ const HmoRoomsFields: React.FC<HmoRoomsFieldsProps> = ({
               />
             </div>
           ))}
-          <p className='text-muted-foreground text-right text-xs'>
-            Total monthly rent:{' '}
-            <span className='text-foreground font-medium'>
-              {getCurrencySign()}
-              {totalRent.toLocaleString()}
-            </span>
-          </p>
         </div>
       )}
       <FieldError errors={[{ message: error }]} />
