@@ -58,7 +58,15 @@ import { useEffect, useState } from 'react';
 import DeleteProviderDialog from './Dialogs/DeleteProviderDialog';
 import ProviderFormDialog from './Dialogs/ProviderFormDialog';
 
-const COLUMN_COUNT = 7;
+const TABLE_COLUMNS = [
+  { header: 'Provider', individualClass: 'pl-4' },
+  { header: 'Categories', individualClass: 'hidden md:table-cell' },
+  { header: 'Contact', individualClass: 'hidden xl:table-cell' },
+  { header: 'Status' },
+  { header: 'Highlights', individualClass: 'hidden sm:table-cell' },
+  { header: 'Last Updated', individualClass: 'hidden lg:table-cell' },
+  { header: 'Actions', individualClass: 'pr-4 text-center' },
+];
 
 const Providers: React.FC = () => {
   const [search, setSearch] = useState('');
@@ -236,35 +244,28 @@ const Providers: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow className='bg-muted/50 hover:bg-muted/50'>
-                  <TableHead className='pl-4'>Provider</TableHead>
-                  <TableHead className='hidden md:table-cell'>
-                    Categories
-                  </TableHead>
-                  <TableHead className='hidden xl:table-cell'>
-                    Contact
-                  </TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className='hidden sm:table-cell'>
-                    Highlights
-                  </TableHead>
-                  <TableHead className='hidden lg:table-cell'>
-                    Last Updated
-                  </TableHead>
-                  <TableHead className='pr-4 text-center'>Actions</TableHead>
+                  {TABLE_COLUMNS.map((column, index) => (
+                    <TableHead key={index} className={column.individualClass}>
+                      {column.header}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isFetching ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell colSpan={COLUMN_COUNT} className='px-4'>
+                      <TableCell
+                        colSpan={TABLE_COLUMNS.length}
+                        className='px-4'
+                      >
                         <Skeleton className='h-12 w-full' />
                       </TableCell>
                     </TableRow>
                   ))
                 ) : providers.length === 0 ? (
                   <TableRow className='hover:bg-transparent'>
-                    <TableCell colSpan={COLUMN_COUNT}>
+                    <TableCell colSpan={TABLE_COLUMNS.length}>
                       <div className='flex flex-col items-center justify-center gap-2 py-12 text-center'>
                         <SearchX className='text-muted-foreground size-8' />
                         <p className='text-foreground font-semibold'>

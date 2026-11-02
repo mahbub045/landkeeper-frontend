@@ -44,6 +44,16 @@ import { useMemo, useState } from 'react';
 import CategoryFormDialog from './Dialogs/CategoryFormDialog';
 import DeleteCategoryDialog from './Dialogs/DeleteCategoryDialog';
 
+const TABLE_COLUMNS = [
+  { header: '#', individualClass: 'w-14 pl-4' },
+  { header: 'Category' },
+  { header: 'Description', individualClass: 'hidden md:table-cell' },
+  { header: 'Providers', individualClass: 'text-center' },
+  { header: 'Status' },
+  { header: 'Last Updated', individualClass: 'hidden lg:table-cell' },
+  { header: 'Actions', individualClass: 'pr-4 text-center' },
+];
+
 const Categories: React.FC = () => {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<MarketplaceBooleanFilter>('ALL');
@@ -219,31 +229,28 @@ const Categories: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow className='bg-muted/50 hover:bg-muted/50'>
-                  <TableHead className='w-14 pl-4'>#</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className='hidden md:table-cell'>
-                    Description
-                  </TableHead>
-                  <TableHead className='text-center'>Providers</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className='hidden lg:table-cell'>
-                    Last Updated
-                  </TableHead>
-                  <TableHead className='pr-4 text-center'>Actions</TableHead>
+                  {TABLE_COLUMNS.map((column, index) => (
+                    <TableHead key={index} className={column.individualClass}>
+                      {column.header}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell colSpan={7} className='px-4'>
+                      <TableCell
+                        colSpan={TABLE_COLUMNS.length}
+                        className='px-4'
+                      >
                         <Skeleton className='h-10 w-full' />
                       </TableCell>
                     </TableRow>
                   ))
                 ) : filteredCategories.length === 0 ? (
                   <TableRow className='hover:bg-transparent'>
-                    <TableCell colSpan={7}>
+                    <TableCell colSpan={TABLE_COLUMNS.length}>
                       <div className='flex flex-col items-center justify-center gap-2 py-12 text-center'>
                         <SearchX className='text-muted-foreground size-8' />
                         <p className='text-foreground font-semibold'>
