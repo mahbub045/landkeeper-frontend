@@ -2,7 +2,7 @@ import { baseApi } from '@/store/api/baseApi';
 
 export const ReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getPortfolioReports: builder.mutation({
+    downloadPortfolioReports: builder.mutation({
       query: (params) => ({
         url: '/report/properties-portfolio',
         method: 'GET',
@@ -13,4 +13,4 @@ export const ReportsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetPortfolioReportsMutation } = ReportsApi;
+export const { useDownloadPortfolioReportsMutation } = ReportsApi;
