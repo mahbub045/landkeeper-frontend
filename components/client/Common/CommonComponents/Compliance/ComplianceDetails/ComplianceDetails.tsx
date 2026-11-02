@@ -168,7 +168,7 @@ const ComplianceDetails: React.FC = () => {
         </div>
       </div>
 
-      {status !== 'Valid' && (
+      {certificate.expiry_date && status !== 'Valid' && (
         <ComplianceRenewNotice
           status={status}
           expiryText={expiryText}
@@ -224,9 +224,7 @@ const ComplianceDetails: React.FC = () => {
               {formatChoiceFieldValue(certificate.certificate_type)}
             </Badge>
           )}
-          <span className='text-muted-foreground text-xs'>
-            {expiryText}
-          </span>
+          <span className='text-muted-foreground text-xs'>{expiryText}</span>
         </div>
       </div>
 
