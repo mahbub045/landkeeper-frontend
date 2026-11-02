@@ -229,7 +229,7 @@ const Categories: React.FC = () => {
                   <TableHead className='hidden lg:table-cell'>
                     Last Updated
                   </TableHead>
-                  <TableHead className='pr-4 text-right'>Actions</TableHead>
+                  <TableHead className='pr-4 text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -310,23 +310,21 @@ const Categories: React.FC = () => {
                         <TableCell className='text-muted-foreground hidden text-sm lg:table-cell'>
                           {formatDate(category.updated_at)}
                         </TableCell>
-                        <TableCell className='pr-4 text-right'>
-                          <div className='flex justify-end gap-1'>
+                        <TableCell className='pr-4 text-center'>
+                          <div className='flex justify-center gap-1'>
                             <Button
-                              variant='ghost'
+                              variant='outline'
                               size='icon'
                               aria-label={`Edit ${category.name}`}
                               onClick={() => openEdit(category)}
-                              className='text-muted-foreground hover:text-primary size-8'
                             >
                               <Pencil className='size-4' />
                             </Button>
                             <Button
-                              variant='ghost'
+                              variant='destructive'
                               size='icon'
                               aria-label={`Delete ${category.name}`}
                               onClick={() => setDeleteTarget(category)}
-                              className='text-muted-foreground hover:text-danger size-8'
                             >
                               <Trash2 className='size-4' />
                             </Button>

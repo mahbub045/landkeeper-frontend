@@ -250,7 +250,7 @@ const Providers: React.FC = () => {
                   <TableHead className='hidden lg:table-cell'>
                     Last Updated
                   </TableHead>
-                  <TableHead className='pr-4 text-right'>Actions</TableHead>
+                  <TableHead className='pr-4 text-center'>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -435,23 +435,21 @@ const Providers: React.FC = () => {
                           {formatDate(provider.updated_at)}
                         </TableCell>
 
-                        <TableCell className='pr-4 text-right'>
-                          <div className='flex justify-end gap-1'>
+                        <TableCell className='pr-4 text-center'>
+                          <div className='flex justify-center gap-1'>
                             <Button
-                              variant='ghost'
+                              variant='outline'
                               size='icon'
                               aria-label={`Edit ${provider.name}`}
                               onClick={() => openEdit(provider)}
-                              className='text-muted-foreground hover:text-primary size-8'
                             >
                               <Pencil className='size-4' />
                             </Button>
                             <Button
-                              variant='ghost'
+                              variant='destructive'
                               size='icon'
                               aria-label={`Delete ${provider.name}`}
                               onClick={() => setDeleteTarget(provider)}
-                              className='text-muted-foreground hover:text-danger size-8'
                             >
                               <Trash2 className='size-4' />
                             </Button>
