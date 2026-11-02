@@ -32,6 +32,7 @@ import UpdateMortgageDialog from '../Dialogs/UpdateMortgageDialog';
 import MortgageDangerZone from './MortgageDangerZone/MortgageDangerZone';
 import MortgageDetailsSkeleton from './MortgageDetailsSkeleton';
 import MortgagePermissionList from './MortgagePermissionList/MortgagePermissionList';
+import MortgageTimestamps from './MortgageTimestamps/MortgageTimestamps';
 
 const MortgageDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -153,7 +154,7 @@ const MortgageDetails: React.FC = () => {
       {/* Timeline */}
       <Card className='shadow-md'>
         <CardHeader className='pb-2'>
-          <p className='text-muted-foreground text-sm font-medium'>Key dates</p>
+          <p className='text-foreground text-base font-semibold'>Key dates</p>
         </CardHeader>
         <CardContent>
           <div className='relative mt-2 mb-8 h-16'>
@@ -217,7 +218,7 @@ const MortgageDetails: React.FC = () => {
         {/* Particulars register */}
         <Card className='shadow-md'>
           <CardHeader className='pb-2'>
-            <p className='text-muted-foreground text-sm font-medium'>
+            <p className='text-foreground text-base font-semibold'>
               Particulars
             </p>
           </CardHeader>
@@ -271,7 +272,7 @@ const MortgageDetails: React.FC = () => {
         <div className='space-y-8'>
           <Card className='shadow-md'>
             <CardHeader className='pb-2'>
-              <p className='text-muted-foreground text-sm font-medium'>
+              <p className='text-foreground text-base font-semibold'>
                 Documents
               </p>
             </CardHeader>
@@ -316,7 +317,7 @@ const MortgageDetails: React.FC = () => {
             <Card className='shadow-md'>
               <CardHeader className='flex flex-row items-center gap-2 pb-2'>
                 <StickyNote className='text-muted-foreground h-4 w-4' />
-                <p className='text-muted-foreground text-sm font-medium'>
+                <p className='text-foreground text-base font-semibold'>
                   Notes
                 </p>
               </CardHeader>
@@ -329,6 +330,11 @@ const MortgageDetails: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Record history */}
+      <MortgageTimestamps
+        createdAt={mortgageData?.created_at}
+        updatedAt={mortgageData?.updated_at}
+      />
       {/* Permission list */}
       {session?.user?.role === 'LANDLORD' && (
         <MortgagePermissionList mortgageAlias={mortgageData?.alias ?? ''} />

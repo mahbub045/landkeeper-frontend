@@ -3,8 +3,8 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PROPERTY_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { STATUS_STYLES } from '@/data/client/Common/Properties/PropertiesData';
+import { PROPERTY_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
 import { useGetPropertyDetailsQuery } from '@/store/api/endpoints/client/Common/Properties/PropertiesApi';
 import { useAppSelector } from '@/store/hooks';
 import { getPropertiesUrl } from '@/utils/redirectPath';
@@ -22,6 +22,7 @@ import PropertyInfo from './Propertyinfo/Propertyinfo';
 import PropertyNotes from './Propertynotes/PropertyNotes';
 import PropertyPermissionList from './PropertyPermissionList/PropertyPermissionList';
 import PropertyRooms from './PropertyRooms/PropertyRooms';
+import PropertyTimestamps from './PropertyTimestamps/PropertyTimestamps';
 
 const PropertyDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -117,6 +118,12 @@ const PropertyDetails: React.FC = () => {
       {property.property_type === 'HMO' && !!property.rooms?.length && (
         <PropertyRooms rooms={property.rooms} />
       )}
+
+      {/* ── Record History ── */}
+      <PropertyTimestamps
+        createdAt={property.created_at}
+        updatedAt={property.updated_at}
+      />
 
       {/* ── Notes ── */}
       {property.notes && <PropertyNotes notes={property.notes} />}
