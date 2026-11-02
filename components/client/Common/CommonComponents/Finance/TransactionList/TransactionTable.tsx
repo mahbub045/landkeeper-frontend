@@ -119,12 +119,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     { header: '#' },
     { header: 'Date' },
     { header: 'Property' },
-    { header: 'Type' },
-    { header: 'Category' },
+    { header: 'Type', individualClass: 'text-center' },
+    { header: 'Category', individualClass: 'text-center' },
     { header: 'Description' },
-    { header: 'Amount', individualClass: 'text-right' },
+    { header: 'Amount', individualClass: 'text-center' },
     { header: 'File', individualClass: 'text-center' },
-    { header: 'Actions', individualClass: 'text-right' },
+    { header: 'Actions', individualClass: 'text-center' },
   ];
 
   return (
@@ -153,7 +153,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   {renderTextPreview(tx.property.property_name)}
                 </TableCell>
 
-                <TableCell>
+                <TableCell className='text-center text-xs'>
                   <Badge
                     variant='outline'
                     className={
@@ -166,7 +166,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                   </Badge>
                 </TableCell>
 
-                <TableCell>
+                <TableCell className='text-center text-xs'>
                   <Badge variant='secondary' className='font-normal'>
                     {tx.category === 'OTHER' && tx.other_category
                       ? tx.other_category
@@ -179,7 +179,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </TableCell>
 
                 <TableCell
-                  className={`text-right text-xs font-bold tabular-nums ${
+                  className={`text-center text-xs font-bold tabular-nums ${
                     tx.type === 'EXPENSE' ? 'text-danger' : 'text-success'
                   }`}
                 >
@@ -236,7 +236,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </TableCell>
 
                 <TableCell className='pr-4'>
-                  <div className='flex items-center justify-end gap-2'>
+                  <div className='flex items-center justify-center gap-2'>
                     <Button
                       variant='default'
                       size='icon'

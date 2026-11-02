@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useGetPortfolioReportsMutation } from '@/store/api/endpoints/client/Common/ReportsAndAnalytics/ReportsApi';
+import { useDownloadPortfolioReportsMutation } from '@/store/api/endpoints/client/Common/ReportsAndAnalytics/ReportsApi';
 import { Building2, FileSpreadsheet, FileText } from 'lucide-react';
 
 type ExportFormat = 'xlsx' | 'pdf';
@@ -22,11 +22,12 @@ const EXPORT_OPTIONS: {
 ];
 
 const PortfolioSummaryReport: React.FC = () => {
-  const [getPortfolioReports, { isLoading }] = useGetPortfolioReportsMutation();
+  const [downloadPortfolioReports, { isLoading }] =
+    useDownloadPortfolioReportsMutation();
 
   const handleExport = async (format: ExportFormat) => {
     try {
-      const response = await getPortfolioReports({
+      const response = await downloadPortfolioReports({
         export_format: format,
       }).unwrap();
 

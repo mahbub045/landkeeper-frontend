@@ -40,6 +40,11 @@ export interface PropertyInfoProps {
   property: Property;
 }
 
+export interface PropertyTimestampsProps {
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PropertyRoomsProps {
   rooms: PropertyRoom[];
 }

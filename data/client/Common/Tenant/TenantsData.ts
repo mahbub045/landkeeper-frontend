@@ -1,4 +1,14 @@
-import { TenantForm } from '@/types/client/Common/Tenant/TenantsTypes';
+import {
+  TenantForm,
+  TenantTypes,
+} from '@/types/client/Common/Tenant/TenantsTypes';
+
+export const isHmo = (tenant: TenantTypes) =>
+  tenant.property?.property_type === 'HMO';
+
+// HMO tenants pay their room's monthly rent, others the tenancy rent
+export const getRent = (tenant: TenantTypes) =>
+  isHmo(tenant) ? tenant.monthly_rent : tenant.rent_amount;
 
 export const AVATAR_COLORS = [
   'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400',

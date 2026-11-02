@@ -1,8 +1,6 @@
 'use client';
 
-import Loading from '@/components/common/CustomLoader/Loading';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
@@ -15,19 +13,13 @@ import {
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
-import {
-  ArrowRight,
-  Building2,
-  Check,
-  LoaderCircle,
-  Tag,
-  X,
-} from 'lucide-react';
+import { ArrowRight, Building2, Check, LoaderCircle, Tag } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import PricingPlanDowngradeDialog from './Dialogs/PricingPlanDowngradeDialog';
 import PricingPlanPaymentDialog from './Dialogs/PricingPlanPaymentDialog';
+import PricingPlanCouponField from './PricingPlanCouponField';
 import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
 
 const PricingPlansCard: React.FC = () => {
@@ -304,89 +296,19 @@ const PricingPlansCard: React.FC = () => {
 
   return (
     <>
-      {/* <div className='mx-auto mb-8 flex w-full max-w-md flex-col gap-2'>
-        <label htmlFor='coupon-code' className='text-sm font-medium'>
-          Have a coupon code?
-        </label>
-        <form
-          className='flex items-center gap-2'
-          onSubmit={(e) => {
-            e.preventDefault();
-            applyCoupon();
-          }}
-        >
-          <div className='relative flex-1'>
-            <Tag
-              className={cn(
-                'absolute top-1/2 left-3.5 size-4 -translate-y-1/2 transition-colors',
-                isCouponApplied ? 'text-green-600' : 'text-muted-foreground',
-              )}
-              aria-hidden='true'
-            />
-            <Input
-              id='coupon-code'
-              value={inputValue}
-              onChange={(e) => {
-                setCouponInput(e.target.value);
-                if (couponError) setCouponError('');
-              }}
-              placeholder='e.g. MDM-123456'
-              autoComplete='off'
-              disabled={isFetching || isCheckingCoupon}
-              aria-invalid={Boolean(couponError)}
-              className={cn(
-                'border-primary focus-visible:outline-primary h-11 rounded-xl pr-11 pl-10! font-medium tracking-wide shadow-xs transition-colors focus-visible:ring-0',
-                isCouponApplied &&
-                  'border-green-500/60 bg-green-500/5 focus-visible:ring-green-500/30',
-                couponError &&
-                  'border-destructive focus-visible:outline-destructive',
-              )}
-            />
-            {(inputValue || activeCoupon) &&
-              !isFetching &&
-              !isCheckingCoupon && (
-                <button
-                  type='button'
-                  onClick={clearCoupon}
-                  aria-label='Remove coupon'
-                  className='text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
-                >
-                  <X className='size-4' aria-hidden='true' />
-                </button>
-              )}
-          </div>
-          <Button
-            type='submit'
-            className='h-11 rounded-xl px-5'
-            disabled={
-              isFetching ||
-              isCheckingCoupon ||
-              !inputValue.trim() ||
-              inputValue.trim() === activeCoupon
-            }
-          >
-            {isFetching || isCheckingCoupon ? (
-              <Loading className='text-white!' />
-            ) : isCouponApplied ? (
-              <Check />
-            ) : null}
-            {isCouponApplied ? 'Applied' : 'Apply Coupon'}
-          </Button>
-        </form>
-        {couponError && (
-          <p className='text-destructive flex items-center gap-1.5 text-xs'>
-            <X className='size-3.5' aria-hidden='true' />
-            {couponError}
-          </p>
-        )}
-        {isCouponApplied && (
-          <p className='flex items-center gap-1.5 text-xs text-green-600'>
-            <Check className='size-3.5' aria-hidden='true' />
-            Coupon <span className='font-semibold'>{activeCoupon}</span>{' '}
-            applied. Discounted prices are shown below.
-          </p>
-        )}
-      </div> */}
+      {/* <PricingPlanCouponField
+        inputValue={inputValue}
+        activeCoupon={activeCoupon}
+        couponError={couponError}
+        isCouponApplied={isCouponApplied}
+        isLoading={isFetching || isCheckingCoupon}
+        onInputChange={(value) => {
+          setCouponInput(value);
+          if (couponError) setCouponError('');
+        }}
+        onApply={applyCoupon}
+        onClear={clearCoupon}
+      /> */}
 
       <div className='grid items-start gap-5 lg:grid-cols-3'>
         {pricingPlans.results.map((plan: PricingPlan) => {

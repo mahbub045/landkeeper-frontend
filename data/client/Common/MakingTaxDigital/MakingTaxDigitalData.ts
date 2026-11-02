@@ -21,6 +21,15 @@ export const MTD_TAX_YEARS = [
   },
 ];
 
+// The given value if it is one of the options, otherwise the first option
+export function pickOption(
+  options: { value: string }[],
+  value: string | number | undefined,
+): string {
+  const match = options.find((o) => o.value === String(value));
+  return (match ?? options[0]).value;
+}
+
 // Letting status pill colours, keyed by property status value
 export const MTD_LETTING_STATUS_STYLES: Record<string, string> = {
   OCCUPIED:
