@@ -133,10 +133,6 @@ const Documents: React.FC = () => {
               <h2 className='text-foreground text-sm font-semibold'>
                 Document Library
               </h2>
-
-              <span className='text-muted-foreground text-sm'>
-                {data?.count ?? 0} documents
-              </span>
             </CardHeader>
 
             <CardContent className='p-0'>
