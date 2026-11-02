@@ -101,6 +101,11 @@ export interface DeleteCertificateDialogProps {
   certificateNumber?: string;
 }
 
+export interface ComplianceTimestampsProps {
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ComplianceExpiryTimelineProps {
   issueDate: string;
   expiryDate: string;

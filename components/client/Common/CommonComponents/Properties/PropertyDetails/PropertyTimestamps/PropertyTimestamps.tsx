@@ -11,19 +11,25 @@ const PropertyTimestamps: React.FC<PropertyTimestampsProps> = ({
 }) => {
   const items = [
     { icon: CalendarPlus, label: 'Created On', value: formatDate(createdAt) },
-    { icon: CalendarClock, label: 'Last Updated', value: formatDate(updatedAt) },
+    {
+      icon: CalendarClock,
+      label: 'Last Updated',
+      value: formatDate(updatedAt),
+    },
   ];
 
   return (
     <Card className='border-border rounded-2xl shadow-sm'>
       <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold'>Record History</CardTitle>
+        <CardTitle className='text-base font-semibold'>
+          Record History
+        </CardTitle>
       </CardHeader>
       <CardContent className='grid gap-3 px-5 pb-5 sm:grid-cols-2'>
         {items.map(({ icon: Icon, label, value }) => (
           <div
             key={label}
-            className='bg-muted/40 flex items-center gap-3 rounded-xl p-3'
+            className='bg-muted/40 flex items-center gap-3 rounded-xl p-3 shadow'
           >
             <div className='bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg'>
               <Icon className='size-4' />

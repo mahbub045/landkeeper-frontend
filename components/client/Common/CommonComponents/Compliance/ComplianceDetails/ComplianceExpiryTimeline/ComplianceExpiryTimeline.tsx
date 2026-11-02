@@ -35,8 +35,9 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
   issueDate,
   expiryDate,
 }) => {
-  const issueTime = new Date(issueDate).getTime();
-  const expiryTime = new Date(expiryDate).getTime();
+  // new Date(null) is the 1970 epoch, not NaN, so check for missing dates too
+  const issueTime = issueDate ? new Date(issueDate).getTime() : NaN;
+  const expiryTime = expiryDate ? new Date(expiryDate).getTime() : NaN;
 
   if (Number.isNaN(issueTime) || Number.isNaN(expiryTime)) {
     return (

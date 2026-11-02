@@ -11,7 +11,11 @@ const MortgageTimestamps: React.FC<MortgageTimestampsProps> = ({
 }) => {
   const items = [
     { icon: CalendarPlus, label: 'Created on', value: formatDate(createdAt) },
-    { icon: CalendarClock, label: 'Last updated', value: formatDate(updatedAt) },
+    {
+      icon: CalendarClock,
+      label: 'Last updated',
+      value: formatDate(updatedAt),
+    },
   ];
 
   return (
@@ -25,7 +29,7 @@ const MortgageTimestamps: React.FC<MortgageTimestampsProps> = ({
         {items.map(({ icon: Icon, label, value }) => (
           <div
             key={label}
-            className='bg-muted/40 flex items-center gap-3 rounded-md p-3'
+            className='bg-muted/40 flex items-center gap-3 rounded-md p-3 shadow'
           >
             <div className='bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-md'>
               <Icon className='size-4' />

@@ -41,13 +41,16 @@ import ComplianceDetailsSkeleton from './ComplianceDetailsSkeleton';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
 import ComplianceRenewNotice from './ComplianceRenewNotice/ComplianceRenewNotice';
 import ComplianceShareList from './ComplianceShareList/ComplianceShareList';
+import ComplianceTimestamps from './ComplianceTimestamps/ComplianceTimestamps';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
 const getFileExtension = (url: string) =>
   url.split('?')[0].split('.').pop()?.toLowerCase() ?? '';
 
-const getExpiryText = (daysUntilExpiry: number) => {
+const getExpiryText = (expiryDate: string | null, daysUntilExpiry: number) => {
+  // new Date(null) is the 1970 epoch, which would read as decades overdue
+  if (!expiryDate) return 'No expiry date set';
   if (daysUntilExpiry < 0)
     return `Expired ${Math.abs(daysUntilExpiry)} day${Math.abs(daysUntilExpiry) === 1 ? '' : 's'} ago`;
   if (daysUntilExpiry === 0) return 'Expires today';
@@ -95,6 +98,7 @@ const ComplianceDetails: React.FC = () => {
   const status = getCertStatus(certificate.expiry_date);
   const { color, dot } = getCertStatusTone(certificate.expiry_date);
   const daysUntilExpiry = getDaysUntilExpiry(certificate.expiry_date);
+  const expiryText = getExpiryText(certificate.expiry_date, daysUntilExpiry);
   const fileExtension = certificate.certificate_file
     ? getFileExtension(certificate.certificate_file)
     : '';
@@ -167,7 +171,7 @@ const ComplianceDetails: React.FC = () => {
       {status !== 'Valid' && (
         <ComplianceRenewNotice
           status={status}
-          expiryText={getExpiryText(daysUntilExpiry)}
+          expiryText={expiryText}
           daysUntilExpiry={daysUntilExpiry}
           onRenewClick={() => setEditOpen(true)}
         />
@@ -221,7 +225,7 @@ const ComplianceDetails: React.FC = () => {
             </Badge>
           )}
           <span className='text-muted-foreground text-xs'>
-            {getExpiryText(daysUntilExpiry)}
+            {expiryText}
           </span>
         </div>
       </div>
@@ -305,6 +309,12 @@ const ComplianceDetails: React.FC = () => {
             </div>
           )}
         </section>
+
+        {/* Record History */}
+        <ComplianceTimestamps
+          createdAt={certificate.created_at}
+          updatedAt={certificate.updated_at}
+        />
       </div>
 
       {/* Shares */}
