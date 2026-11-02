@@ -19,7 +19,7 @@ export const ReportsApi = baseApi.injectEndpoints({
         responseHandler: async (response: Response) => response.blob(),
       }),
     }),
-    downloadExpenseReports: builder.mutation({
+    downloadExpenseReports: builder.mutation<Blob, ReportDateRangeParams>({
       query: (params) => ({
         url: '/report/expense',
         method: 'GET',
