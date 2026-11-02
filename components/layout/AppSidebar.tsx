@@ -173,7 +173,7 @@ function navColorStyle(key: string) {
 // Shared styles for enabled nav buttons: a left accent bar plus a background
 // tinted with the item's own color when active.
 const NAV_BUTTON_CLASS =
-  'relative h-9 cursor-pointer rounded-lg transition-colors duration-200 before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-r-full before:bg-(--nav-color) before:opacity-0 before:transition-opacity data-active:bg-[color-mix(in_oklab,var(--nav-color)_12%,transparent)] data-active:font-semibold data-active:shadow-none data-active:before:opacity-100 data-active:hover:bg-[color-mix(in_oklab,var(--nav-color)_18%,transparent)] [&>svg:first-child]:transition-transform [&>svg:first-child]:duration-200 hover:[&>svg:first-child]:scale-110';
+  'relative h-9 cursor-pointer rounded-lg transition-colors duration-200 before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-r-full before:bg-(--nav-color) before:opacity-0 before:transition-opacity data-active:bg-[color-mix(in_oklab,var(--nav-color)_12%,transparent)] data-active:focus-visible:bg-[color-mix(in_oklab,var(--nav-color)_12%,transparent)] data-active:font-semibold data-active:shadow-none data-active:before:opacity-100 data-active:hover:bg-[color-mix(in_oklab,var(--nav-color)_18%,transparent)] [&>svg:first-child]:transition-transform [&>svg:first-child]:duration-200 hover:[&>svg:first-child]:scale-110';
 
 const NAV_BUTTON_DISABLED_CLASS =
   'h-9 cursor-not-allowed rounded-lg opacity-40';
@@ -724,7 +724,7 @@ const AppSidebar: React.FC = () => {
           <DropdownMenuTrigger asChild>
             <button
               type='button'
-              className='hover:bg-sidebar-accent focus-visible:ring-sidebar-ring data-[state=open]:bg-sidebar-accent flex w-full cursor-pointer items-center gap-3 rounded-xl p-2 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 focus-visible:ring-2'
+              className='hover:bg-sidebar-accent focus-visible:bg-sidebar-accent data-[state=open]:bg-sidebar-accent flex w-full cursor-pointer items-center gap-3 rounded-xl p-2 text-left transition-colors outline-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 focus-visible:ring-2'
             >
               <Avatar size='lg'>
                 <AvatarImage
@@ -752,7 +752,11 @@ const AppSidebar: React.FC = () => {
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align='end' className='w-56'>
+          <DropdownMenuContent
+            align='end'
+            className='w-56'
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
             <DropdownMenuLabel>
               <div className='flex flex-col gap-1'>
                 <span className='font-medium'>

@@ -124,7 +124,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
     { header: 'Description' },
     { header: 'Amount', individualClass: 'text-right' },
     { header: 'File', individualClass: 'text-center' },
-    { header: 'Actions', individualClass: 'text-right' },
+    { header: 'Actions', individualClass: 'text-center' },
   ];
 
   return (
@@ -236,7 +236,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
                 </TableCell>
 
                 <TableCell className='pr-4'>
-                  <div className='flex items-center justify-end gap-2'>
+                  <div className='flex items-center justify-center gap-2'>
                     <Button
                       variant='default'
                       size='icon'
