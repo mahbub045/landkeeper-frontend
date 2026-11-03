@@ -16,7 +16,7 @@ const PublicPageShell: React.FC<PublicPageShellProps> = ({ children }) => {
   return (
     <div className='bg-background flex min-h-screen flex-col'>
       <header className='bg-background/80 sticky top-0 z-40 border-b backdrop-blur'>
-        <div className='mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 md:px-6'>
+        <div className='flex h-16 items-center justify-between gap-4 px-4 md:px-6'>
           <Link href='/' aria-label='Landkeeper home'>
             <Image
               src='/images/logo-black.png'
@@ -66,7 +66,7 @@ const PublicPageShell: React.FC<PublicPageShellProps> = ({ children }) => {
         </div>
       </header>
 
-      <main className='mx-auto w-full max-w-5xl flex-1 px-4 py-10 md:px-6 md:py-14'>
+      <main className='w-full flex-1 px-4 py-10 md:px-6 md:py-14'>
         {children}
       </main>
 
