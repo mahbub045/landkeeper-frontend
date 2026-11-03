@@ -70,3 +70,9 @@ export interface PricingPlanCouponFieldProps {
   onApply: () => void;
   onClear: () => void;
 }
+
+export type PricingPlansSkeletonBarProps = React.ComponentProps<'div'>;
+
+export interface PricingPlansSkeletonHeaderProps {
+  isPopular: boolean;
+}

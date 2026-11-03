@@ -1,73 +1,160 @@
 import { cn } from '@/lib/utils';
+import {
+  PricingPlansSkeletonBarProps,
+  PricingPlansSkeletonHeaderProps,
+} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+
+const FEATURE_ROWS = 10;
+const nameWidths = ['55%', '40%', '62%', '48%', '70%', '44%', '58%', '36%'];
+
+const Bar = ({ className, ...props }: PricingPlansSkeletonBarProps) => (
+  <div className={cn('bg-muted animate-pulse rounded', className)} {...props} />
+);
+
+// The plan header block: eyebrow, name, price.
+const HeaderBlock = ({ isPopular }: PricingPlansSkeletonHeaderProps) => (
+  <div
+    className={cn(
+      'relative flex flex-col items-center rounded-t-2xl px-4 pt-6 pb-5',
+      isPopular
+        ? 'bg-violet-100 dark:bg-violet-400/10'
+        : 'bg-muted/60 dark:bg-white/4',
+    )}
+  >
+    {isPopular && (
+      <Bar className='absolute -top-3 h-6 w-24 rounded-full bg-violet-200 dark:bg-violet-400/20' />
+    )}
+    <Bar className='h-2.5 w-24' />
+    <Bar className='mt-2.5 h-6 w-28' />
+    <Bar className='mt-3 h-8 w-32' />
+  </div>
+);
+
+// The Properties / Users card.
+const LimitsBlock = () => (
+  <div className='border-border/70 divide-border/70 divide-y rounded-xl border'>
+    {[0, 1].map((row) => (
+      <div
+        key={row}
+        className='flex items-center justify-between gap-3 px-3 py-2'
+      >
+        <div className='flex items-center gap-2.5'>
+          <Bar className='size-8 rounded-lg' />
+          <Bar className='h-3.5 w-16' />
+        </div>
+        <Bar className='h-4 w-12' />
+      </div>
+    ))}
+  </div>
+);
 
 export default function PricingPlansCardSkeleton() {
   return (
-    <div className='grid items-start gap-5 lg:grid-cols-3'>
-      {[0, 1, 2].map((item) => {
-        const isPopular = item === 1;
-        return (
-          <div
-            key={item}
-            className={cn(
-              'border-border/70 relative flex min-h-140 flex-col overflow-hidden rounded-2xl border bg-white p-6 dark:bg-white/4',
-              isPopular && 'lg:-mt-3 lg:min-h-146 lg:p-7',
-            )}
-          >
-            {isPopular && (
-              <div className='bg-muted absolute inset-x-0 top-0 h-1 animate-pulse' />
-            )}
-
-            {/* icon + eyebrow + title */}
-            <div className='flex items-start justify-between gap-4'>
-              <div className='w-full'>
-                <div className='bg-muted mb-4 size-10 animate-pulse rounded-xl' />
-                <div className='bg-muted h-3 w-24 animate-pulse rounded' />
-                <div className='bg-muted mt-3 h-7 w-32 animate-pulse rounded' />
-              </div>
-              {isPopular && (
-                <div className='bg-muted h-6 w-24 shrink-0 animate-pulse rounded-full' />
+    <>
+      {/* Mobile / tablet: tabs + one plan */}
+      <div className='mx-auto w-full max-w-2xl lg:hidden'>
+        <div className='bg-muted/70 flex gap-1 rounded-xl p-1'>
+          {[0, 1, 2].map((tab) => (
+            <div
+              key={tab}
+              className={cn(
+                'flex flex-1 flex-col items-center gap-1.5 rounded-lg py-2',
+                tab === 1 && 'bg-background shadow-sm',
               )}
+            >
+              <Bar className='h-3.5 w-16' />
+              <Bar className='h-2.5 w-10' />
             </div>
+          ))}
+        </div>
 
-            {/* price */}
-            <div className='mt-7 flex items-end gap-2'>
-              <div className='bg-muted h-11 w-28 animate-pulse rounded' />
-              <div className='bg-muted mb-2 h-4 w-12 animate-pulse rounded' />
-            </div>
-
-            {/* stats row */}
-            <div className='border-border/70 mt-5 grid grid-cols-2 gap-2 border-y py-4 text-sm'>
-              <div>
-                <div className='bg-muted h-3 w-20 animate-pulse rounded' />
-                <div className='bg-muted mt-2 h-4 w-24 animate-pulse rounded' />
-              </div>
-              <div>
-                <div className='bg-muted h-3 w-20 animate-pulse rounded' />
-                <div className='bg-muted mt-2 h-4 w-16 animate-pulse rounded' />
-              </div>
-            </div>
-
-            {/* features */}
-            <div className='mt-5 flex-1'>
-              <div className='bg-muted h-4 w-36 animate-pulse rounded' />
-              <ul className='mt-3 space-y-3'>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <li key={i} className='flex items-center gap-2.5'>
-                    <div className='bg-muted size-4 shrink-0 animate-pulse rounded-full' />
-                    <div
-                      className='bg-muted h-3.5 animate-pulse rounded'
-                      style={{ width: `${70 - i * 6}%` }}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* button */}
-            <div className='bg-muted mt-9 h-11 w-full animate-pulse rounded-md' />
+        <div className='pt-5'>
+          <HeaderBlock isPopular />
+          <div className='rounded-b-2xl border-x border-b border-violet-200 px-4 pt-4 pb-5 dark:border-violet-400/20'>
+            <LimitsBlock />
+            <ul className='divide-border/60 mt-4 divide-y'>
+              {Array.from({ length: FEATURE_ROWS }).map((_, i) => (
+                <li
+                  key={i}
+                  className='flex items-center justify-between gap-4 py-3.5'
+                >
+                  <Bar
+                    className='h-3.5'
+                    style={{ width: nameWidths[i % nameWidths.length] }}
+                  />
+                  <Bar className='size-5 shrink-0 rounded-full' />
+                </li>
+              ))}
+            </ul>
+            <Bar className='mt-4 h-10 w-full rounded-md' />
           </div>
-        );
-      })}
-    </div>
+        </div>
+      </div>
+
+      {/* Desktop: comparison table */}
+      <div className='bg-card/80 hidden rounded-3xl border p-5 pt-9 shadow-sm lg:block'>
+        <div className='grid grid-cols-[28%_1fr_1fr_1fr] gap-x-3'>
+          <div className='flex flex-col justify-end px-3 pb-4'>
+            <Bar className='h-2.5 w-28' />
+            <Bar className='mt-2.5 h-5 w-24' />
+          </div>
+          {[0, 1, 2].map((col) => (
+            <HeaderBlock key={col} isPopular={col === 1} />
+          ))}
+
+          <div />
+          {[0, 1, 2].map((col) => (
+            <div
+              key={col}
+              className={cn(
+                'border-x px-3 pt-3 pb-4',
+                col === 1 &&
+                  'border-violet-200 bg-violet-50/50 dark:border-violet-400/20 dark:bg-violet-400/5',
+              )}
+            >
+              <LimitsBlock />
+            </div>
+          ))}
+
+          {Array.from({ length: FEATURE_ROWS }).flatMap((_, i) => [
+            <div
+              key={`name-${i}`}
+              className='border-border/60 flex items-center border-t px-3 py-3.5'
+            >
+              <Bar
+                className='h-3.5'
+                style={{ width: nameWidths[i % nameWidths.length] }}
+              />
+            </div>,
+            ...[0, 1, 2].map((col) => (
+              <div
+                key={`cell-${i}-${col}`}
+                className={cn(
+                  'border-t-border/60 flex items-center justify-center border-x border-t py-3.5',
+                  col === 1 &&
+                    'border-x-violet-200 bg-violet-50/50 dark:border-x-violet-400/20 dark:bg-violet-400/5',
+                )}
+              >
+                <Bar className='size-5 rounded-full' />
+              </div>
+            )),
+          ])}
+
+          <div />
+          {[0, 1, 2].map((col) => (
+            <div
+              key={col}
+              className={cn(
+                'border-t-border/60 rounded-b-2xl border-x border-t border-b px-4 pt-4 pb-5',
+                col === 1 &&
+                  'border-x-violet-200 border-b-violet-200 bg-violet-50/50 dark:border-x-violet-400/20 dark:border-b-violet-400/20 dark:bg-violet-400/5',
+              )}
+            >
+              <Bar className='h-10 w-full rounded-md' />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
