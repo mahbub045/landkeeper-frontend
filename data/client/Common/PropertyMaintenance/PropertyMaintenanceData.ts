@@ -23,8 +23,11 @@ import {
   Zap,
 } from 'lucide-react';
 
-
-export const STATUS_EDITABLE_ROLES = ['LANDLORD', 'ADMIN'] as const;
+export const STATUS_EDITABLE_ROLES = [
+  'LANDLORD',
+  'ADMIN',
+  'SUPER_ADMIN',
+] as const;
 
 export const canEditMaintenanceStatus = (role?: string) =>
   STATUS_EDITABLE_ROLES.includes(
@@ -126,8 +129,6 @@ export const CATEGORY_META: Record<
 export const CATEGORY_STYLES = Object.fromEntries(
   Object.entries(CATEGORY_META).map(([key, { classes }]) => [key, classes]),
 ) as Record<MaintenanceCategory, string>;
-
-
 
 export const MAX_FILES = 5;
 export const MAX_FILE_SIZE_MB = 20;
