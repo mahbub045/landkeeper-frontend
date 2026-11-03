@@ -1,7 +1,7 @@
 import { LandlordDetailsTab } from '@/store/slices/landlordDetailsTabSlice';
 import { LucideIcon } from 'lucide-react';
 
-export type LandlordPlan = 'BASIC' | 'STANDARD' | 'PREMIUM';
+export type LandlordPlan = 'STARTER' | 'STANDARD' | 'PREMIUM';
 
 export interface LandlordType {
   alias: string;
@@ -78,8 +78,7 @@ export interface LandlordDetailsTabParent {
 }
 
 export type LandlordDetailsTabItem =
-  | LandlordDetailsTabLink
-  | LandlordDetailsTabParent;
+  LandlordDetailsTabLink | LandlordDetailsTabParent;
 
 export interface LandlordDetailsTabGroup {
   label: string;

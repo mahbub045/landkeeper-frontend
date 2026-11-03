@@ -11,7 +11,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import { PricingPlan } from '@/types/common/PricingPlans/PricingPlansType';
 import { ArrowRight, TriangleAlert } from 'lucide-react';
 
 interface PricingPlanDowngradeDialogProps {

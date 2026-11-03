@@ -289,7 +289,35 @@ export const getSupportTicketDetailsUrl = (
   return '/auth/login';
 };
 
-export const getStartNewJourneyUrl = (session: Session | null) => {
+// All users Support Ticket List (null when the role has no ticket section)
+export const getSupportTicketsUrl = (session: Session | null) => {
+  const role = session?.user?.role;
+  if (!role) return null;
+
+  if (role === 'SUPER_ADMIN') {
+    return '/super-admin/support-tickets';
+  }
+
+  if (role === 'LANDLORD') {
+    return '/client/landlord/support-tickets';
+  }
+
+  if (role === 'ADMIN') {
+    return '/client/admin/support-tickets';
+  }
+
+  if (role === 'LETTING_AGENT') {
+    return '/client/letting-agent/support-tickets';
+  }
+
+  if (role === 'MORTGAGE_ADVISER') {
+    return '/client/mortgage-adviser/support-tickets';
+  }
+
+  return null;
+};
+
+export const getStartNewJourneyUrl =(session: Session | null) => {
   if (!session) {
     return '/auth/login';
   }

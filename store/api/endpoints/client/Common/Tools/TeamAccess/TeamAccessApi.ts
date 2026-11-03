@@ -24,7 +24,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['TeamAccess'],
+      invalidatesTags: ['TeamAccess', 'CommonPermissions'],
     }),
     editAcceptedUser: builder.mutation({
       query: ({ alias, body }) => ({
@@ -39,7 +39,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
         url: `/organisation/users/${alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['TeamAccess'],
+      invalidatesTags: ['TeamAccess', 'CommonPermissions'],
     }),
     resendInviteEmail: builder.mutation({
       query: (alias) => ({
@@ -53,7 +53,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
         url: `/auth/invites/${alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['TeamAccess'],
+      invalidatesTags: ['TeamAccess', 'CommonPermissions'],
     }),
   }),
 });

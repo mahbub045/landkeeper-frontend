@@ -386,6 +386,7 @@ function buildItemsForRole(role: UserRole | undefined): NavItem[] {
         label: 'Maintenance Requests',
         href: '/client/tenant/maintenance-requests',
         icon: Wrench,
+        visibleToPlans: STANDARD_PREMIUM_PLANS,
       },
       {
         label: 'Documents',

@@ -2,6 +2,8 @@
 
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import HoverInfoPopover from '@/components/common/HoverInfoPopover/HoverInfoPopover';
+import LimitReachedAlert from '@/components/common/UsageLimit/LimitReachedAlert';
+import UsageLimit from '@/components/common/UsageLimit/UsageLimit';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,7 +25,7 @@ import {
 } from '@/types/client/Common/Properties/PropertyTypes';
 import { PAGE_LIMIT, SEARCH_DEBOUNCE_MS } from '@/utils/commonConstants.ts';
 import { isSuperAdmin_Landlord_Admin_LettingAgent } from '@/utils/rolePermissions';
-import { Plus, Search } from 'lucide-react';
+import { Building2, Plus, Search } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import AddPropertyDialog from './Dialogs/AddPropertyDialog';
@@ -116,6 +118,18 @@ const Properties: React.FC = () => {
           </div>
 
           <div className='flex items-center gap-2'>
+            {isSuperAdmin_Landlord_Admin_LettingAgent(
+              session?.user?.role ?? null,
+            ) &&
+              commonPermissions && (
+                <UsageLimit
+                  icon={Building2}
+                  label='Properties'
+                  used={commonPermissions.property_count}
+                  max={commonPermissions.max_properties}
+                />
+              )}
+
             <div className='relative w-64'>
               <Search className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2' />
               <Input
@@ -139,6 +153,17 @@ const Properties: React.FC = () => {
               )}
           </div>
         </div>
+
+        {isSuperAdmin_Landlord_Admin_LettingAgent(
+          session?.user?.role ?? null,
+        ) &&
+          commonPermissions &&
+          !commonPermissions.can_create_property && (
+            <LimitReachedAlert
+              resource='properties'
+              max={commonPermissions.max_properties}
+            />
+          )}
 
         <PropertyFilter
           filterTabs={FILTER_TABS}

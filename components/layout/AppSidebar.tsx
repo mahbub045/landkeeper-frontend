@@ -736,12 +736,12 @@ const AppSidebar: React.FC = () => {
                 </AvatarFallback>
               </Avatar>
               <div className='flex min-w-0 flex-1 flex-col items-start gap-1 group-data-[collapsible=icon]:hidden'>
-                <p className='truncate text-sm font-semibold'>
+                <p className='w-full truncate text-sm font-semibold'>
                   {formatChoiceFieldValue(profileData?.title) ?? ''}{' '}
                   {profileData?.first_name} {profileData?.middle_name}{' '}
                   {profileData?.last_name}
                 </p>
-                <Badge className='truncate text-xs'>
+                <Badge className='block max-w-full truncate text-xs'>
                   {formatChoiceFieldValue(userRole)}
                 </Badge>
               </div>

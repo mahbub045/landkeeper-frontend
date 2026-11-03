@@ -2,10 +2,10 @@
 
 import { Package } from 'lucide-react';
 
+import PricingPlansCardSkeleton from '@/components/common/PricingPlans/PricingPlansCardSkeleton';
+import PricingPlansComparisonTable from '@/components/common/PricingPlans/PricingPlansComparisonTable';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
-import { useGetPricingPlansQuery } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
-import PricingPlanCard from './PricingPlanCard';
-import PricingPlanCardSkeleton from './PricingPlanCardSkeleton';
+import { useGetPricingPlansQuery } from '@/store/api/endpoints/common/PricingPlans/PricingPlansApi';
 
 const PricingPlanList: React.FC = () => {
   const {
@@ -34,11 +34,7 @@ const PricingPlanList: React.FC = () => {
       {isError ? (
         <CustomErrorMessage title='pricing plans' />
       ) : isLoading ? (
-        <div className='grid gap-5 md:grid-cols-2 xl:grid-cols-3'>
-          {Array.from({ length: 3 }).map((_, i) => (
-            <PricingPlanCardSkeleton key={i} />
-          ))}
-        </div>
+        <PricingPlansCardSkeleton withActions={false} />
       ) : plans.length === 0 ? (
         <div className='border-border flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed py-16 text-center'>
           <Package className='text-muted-foreground size-8' />
@@ -47,11 +43,7 @@ const PricingPlanList: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className='grid items-stretch gap-5 md:grid-cols-2 xl:grid-cols-3'>
-          {plans.map((plan) => (
-            <PricingPlanCard key={plan.alias} plan={plan} />
-          ))}
-        </div>
+        <PricingPlansComparisonTable plans={plans} />
       )}
     </div>
   );
