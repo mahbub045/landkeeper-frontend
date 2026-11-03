@@ -19,7 +19,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import PricingPlanDowngradeDialog from './Dialogs/PricingPlanDowngradeDialog';
 import PricingPlanPaymentDialog from './Dialogs/PricingPlanPaymentDialog';
-import PricingPlanCouponField from './PricingPlanCouponField';
 import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
 
 const PricingPlansCard: React.FC = () => {
@@ -32,9 +31,6 @@ const PricingPlansCard: React.FC = () => {
     SelectPricingPlanResponse,
     'client_secret' | 'mode'
   > | null>(null);
-  const [expandedPlans, setExpandedPlans] = useState<Record<string, boolean>>(
-    {},
-  );
   const [downgradePlan, setDowngradePlan] = useState<PricingPlan | null>(null);
 
   // Coupon state: `couponInput` is what the user is typing,
@@ -240,10 +236,6 @@ const PricingPlansCard: React.FC = () => {
     }, 1500);
   };
 
-  const toggleFeatures = (alias: string) => {
-    setExpandedPlans((prev) => ({ ...prev, [alias]: !prev[alias] }));
-  };
-
   const isDowngradePlan = (plan: PricingPlan) => {
     const currentPlan = pricingPlans?.results?.find(
       (p: PricingPlan) => p.current_plan,
@@ -316,9 +308,6 @@ const PricingPlansCard: React.FC = () => {
             pricingPlanMeta[plan.plan_type as keyof typeof pricingPlanMeta] ??
             pricingPlanMeta.BASIC;
           const Icon = meta.icon;
-          const visibleFeatures = plan.features.slice(0, 7);
-          const remainingFeatures =
-            plan.features.length - visibleFeatures.length;
           const isPopular = plan.plan_type === 'STANDARD';
 
           return (
@@ -417,17 +406,8 @@ const PricingPlansCard: React.FC = () => {
 
               <div className='mt-5 flex-1'>
                 <p className='text-sm font-semibold'>Included in this plan</p>
-                <ul
-                  className={cn(
-                    'mt-3 space-y-3',
-                    expandedPlans[plan.alias] &&
-                      'max-h-52 overflow-y-auto pr-1',
-                  )}
-                >
-                  {(expandedPlans[plan.alias]
-                    ? plan.features
-                    : visibleFeatures
-                  ).map((feature) => (
+                <ul className='mt-3 space-y-3'>
+                  {plan.features.map((feature) => (
                     <li
                       key={feature.code}
                       className='text-muted-foreground flex gap-2.5 text-sm'
@@ -440,19 +420,6 @@ const PricingPlansCard: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-
-                {remainingFeatures > 0 && (
-                  <Button
-                    variant='link'
-                    onClick={() => toggleFeatures(plan.alias)}
-                    className='mt-1 pl-6 text-xs'
-                    aria-expanded={!!expandedPlans[plan.alias]}
-                  >
-                    {expandedPlans[plan.alias]
-                      ? 'Show less'
-                      : `+ ${remainingFeatures} more feature${remainingFeatures === 1 ? '' : 's'}`}
-                  </Button>
-                )}
               </div>
               <div className='mt-3'>
                 <Button
