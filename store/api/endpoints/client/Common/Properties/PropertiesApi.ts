@@ -16,7 +16,7 @@ export const PropertiesApi = baseApi.injectEndpoints({
         method: 'POST',
         body: payload,
       }),
-      invalidatesTags: ['Property', 'DashboardSummary'],
+      invalidatesTags: ['Property', 'DashboardSummary', 'CommonPermissions'],
     }),
     getPropertyDetails: builder.query({
       query: (alias) => ({
@@ -38,7 +38,7 @@ export const PropertiesApi = baseApi.injectEndpoints({
         url: `/property/${property_alias}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Property', 'DashboardSummary'],
+      invalidatesTags: ['Property', 'DashboardSummary', 'CommonPermissions'],
     }),
     getPropertyPermissions: builder.query({
       query: ({ property_alias }) => ({
