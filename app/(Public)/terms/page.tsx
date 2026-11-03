@@ -3,6 +3,7 @@ import {
   LEGAL_LAST_UPDATED,
   TERMS_SECTIONS,
 } from '@/data/common/LegalPages/LegalPagesData';
+import { FileText } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <LegalDocument
+      icon={FileText}
       title='Terms of Service'
       description='The terms that apply when you use the Landkeeper property management portal.'
       lastUpdated={LEGAL_LAST_UPDATED}

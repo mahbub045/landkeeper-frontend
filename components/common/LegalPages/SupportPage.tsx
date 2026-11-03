@@ -1,5 +1,6 @@
 'use client';
 
+import PublicPageHero from '@/components/common/LegalPages/PublicPageHero';
 import {
   Accordion,
   AccordionContent,
@@ -7,107 +8,192 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   SUPPORT_CONTACT_CHANNELS,
   SUPPORT_EMAIL,
   SUPPORT_FAQS,
 } from '@/data/common/LegalPages/LegalPagesData';
+import { SupportContactChannel } from '@/types/common/LegalPages/LegalPagesTypes';
 import { getSupportTicketsUrl } from '@/utils/redirectPath';
-import { LifeBuoy, Mail, Ticket } from 'lucide-react';
+import { ArrowRight, LifeBuoy, Mail, Search, SearchX, Ticket } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 
 const SupportPage: React.FC = () => {
   const { data: session } = useSession();
+  const [search, setSearch] = useState('');
   const supportTicketsUrl = getSupportTicketsUrl(session);
 
+  const channels: SupportContactChannel[] = supportTicketsUrl
+    ? [
+        {
+          icon: Ticket,
+          title: 'Raise a ticket',
+          description: 'Track your request and replies from your dashboard.',
+          value: 'Go to support tickets',
+          href: supportTicketsUrl,
+          isInternal: true,
+        },
+        ...SUPPORT_CONTACT_CHANNELS,
+      ]
+    : SUPPORT_CONTACT_CHANNELS;
+
+  const filteredFaqs = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return SUPPORT_FAQS;
+    return SUPPORT_FAQS.filter(
+      (faq) =>
+        faq.question.toLowerCase().includes(term) ||
+        faq.answer.toLowerCase().includes(term),
+    );
+  }, [search]);
+
   return (
-    <div className='space-y-12'>
-      {/* Heading */}
-      <div className='text-center'>
-        <div className='bg-primary/10 text-primary mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full'>
-          <LifeBuoy className='h-8 w-8' />
+    <>
+      <PublicPageHero
+        icon={LifeBuoy}
+        eyebrow='Help centre'
+        title='How can we help?'
+        description='Search our frequently asked questions, or get in touch with the Landkeeper support team.'
+      >
+        <div className='relative mx-auto max-w-xl'>
+          <Search className='text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2' />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder='Search for answers...'
+            className='bg-background h-12 rounded-full pl-12 shadow-sm md:text-base'
+          />
         </div>
-        <h1 className='text-3xl font-bold tracking-tight md:text-4xl'>
-          How can we help?
-        </h1>
-        <p className='text-muted-foreground mx-auto mt-3 max-w-xl'>
-          Find quick answers below, or get in touch with the Landkeeper support
-          team.
-        </p>
-        <div className='mt-6 flex flex-col justify-center gap-3 sm:flex-row'>
-          {supportTicketsUrl && (
-            <Button asChild>
-              <Link href={supportTicketsUrl}>
-                <Ticket />
-                Open a support ticket
-              </Link>
-            </Button>
-          )}
-          <Button asChild variant={supportTicketsUrl ? 'outline' : 'default'}>
-            <a href={`mailto:${SUPPORT_EMAIL}`}>
-              <Mail />
-              Email support
-            </a>
-          </Button>
-        </div>
-      </div>
+      </PublicPageHero>
 
-      {/* Contact channels */}
-      <div className='grid gap-4 sm:grid-cols-2'>
-        {SUPPORT_CONTACT_CHANNELS.map((channel) => (
-          <Card key={channel.title}>
-            <CardHeader>
-              <div className='bg-primary/10 text-primary mb-2 flex h-10 w-10 items-center justify-center rounded-lg'>
-                <channel.icon className='h-5 w-5' />
-              </div>
-              <CardTitle>{channel.title}</CardTitle>
-              <CardDescription>{channel.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {channel.href ? (
-                <a
+      <div className='space-y-16 px-4 py-12 md:px-6 md:py-16 xl:px-12'>
+        {/* Contact channels */}
+        <section>
+          <div className='mb-6'>
+            <h2 className='text-2xl font-semibold tracking-tight'>
+              Get in touch
+            </h2>
+            <p className='text-muted-foreground mt-1'>
+              Choose the option that works best for you.
+            </p>
+          </div>
+          <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
+            {channels.map((channel) => {
+              const content = (
+                <>
+                  <div className='bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-5 flex h-12 w-12 items-center justify-center rounded-xl transition-colors'>
+                    <channel.icon className='h-6 w-6' />
+                  </div>
+                  <h3 className='text-lg font-semibold'>{channel.title}</h3>
+                  <p className='text-muted-foreground mt-1 text-sm'>
+                    {channel.description}
+                  </p>
+                  <p className='mt-5 flex items-center gap-2 text-sm font-medium break-all'>
+                    <span className={channel.href ? 'text-primary' : ''}>
+                      {channel.value}
+                    </span>
+                    {channel.href && (
+                      <ArrowRight className='text-primary h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1' />
+                    )}
+                  </p>
+                </>
+              );
+              const cardClassName =
+                'group bg-card relative rounded-2xl border p-6 transition-all';
+
+              if (!channel.href) {
+                return (
+                  <div key={channel.title} className={cardClassName}>
+                    {content}
+                  </div>
+                );
+              }
+
+              const linkClassName = `${cardClassName} hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md`;
+              return channel.isInternal ? (
+                <Link
+                  key={channel.title}
                   href={channel.href}
-                  className='text-primary text-sm font-medium break-all hover:underline'
+                  className={linkClassName}
                 >
-                  {channel.value}
-                </a>
+                  {content}
+                </Link>
               ) : (
-                <p className='text-sm font-medium'>{channel.value}</p>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <a
+                  key={channel.title}
+                  href={channel.href}
+                  className={linkClassName}
+                >
+                  {content}
+                </a>
+              );
+            })}
+          </div>
+        </section>
 
-      {/* FAQs */}
-      <div>
-        <h2 className='mb-4 text-xl font-semibold tracking-tight'>
-          Frequently asked questions
-        </h2>
-        <Card>
-          <CardContent>
-            <Accordion type='single' collapsible>
-              {SUPPORT_FAQS.map((faq) => (
-                <AccordionItem key={faq.question} value={faq.question}>
-                  <AccordionTrigger>{faq.question}</AccordionTrigger>
-                  <AccordionContent className='text-muted-foreground'>
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </CardContent>
-        </Card>
+        {/* FAQs */}
+        <section className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-14'>
+          <div>
+            <h2 className='text-2xl font-semibold tracking-tight'>
+              Frequently asked questions
+            </h2>
+            <p className='text-muted-foreground mt-2'>
+              Quick answers to the questions we hear most often.
+            </p>
+            <div className='bg-muted/50 mt-6 rounded-2xl border p-5'>
+              <p className='font-medium'>Can&rsquo;t find what you need?</p>
+              <p className='text-muted-foreground mt-1 text-sm'>
+                Our team usually replies within one working day.
+              </p>
+              <Button asChild variant='outline' size='sm' className='mt-4'>
+                <a href={`mailto:${SUPPORT_EMAIL}`}>
+                  <Mail />
+                  Contact support
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          <div className='bg-card rounded-2xl border px-6 py-2'>
+            {filteredFaqs.length > 0 ? (
+              <Accordion type='single' collapsible>
+                {filteredFaqs.map((faq) => (
+                  <AccordionItem key={faq.question} value={faq.question}>
+                    <AccordionTrigger className='cursor-pointer py-5 text-base hover:no-underline'>
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className='text-muted-foreground pb-5 leading-relaxed'>
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            ) : (
+              <div className='flex flex-col items-center py-14 text-center'>
+                <div className='bg-muted mb-4 flex h-12 w-12 items-center justify-center rounded-full'>
+                  <SearchX className='text-muted-foreground h-6 w-6' />
+                </div>
+                <p className='font-medium'>No results for &ldquo;{search}&rdquo;</p>
+                <p className='text-muted-foreground mt-1 text-sm'>
+                  Try a different search, or contact our support team.
+                </p>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='mt-3'
+                  onClick={() => setSearch('')}
+                >
+                  Clear search
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
-    </div>
+    </>
   );
 };
 

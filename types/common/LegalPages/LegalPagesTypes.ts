@@ -9,9 +9,14 @@ export interface LegalSection {
 }
 
 export interface LegalDocumentProps {
+  icon: LucideIcon;
   title: string;
   description: string;
   lastUpdated: string;
+  sections: LegalSection[];
+}
+
+export interface LegalTableOfContentsProps {
   sections: LegalSection[];
 }
 
@@ -31,8 +36,18 @@ export interface SupportContactChannel {
   description: string;
   value: string;
   href: string;
+  /** Internal routes use next/link; mailto and external links use <a> */
+  isInternal?: boolean;
 }
 
 export interface PublicPageShellProps {
   children: React.ReactNode;
+}
+
+export interface PublicPageHeroProps {
+  icon: LucideIcon;
+  eyebrow: string;
+  title: string;
+  description: string;
+  children?: React.ReactNode;
 }
