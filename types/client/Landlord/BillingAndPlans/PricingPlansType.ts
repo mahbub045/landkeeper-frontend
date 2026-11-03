@@ -2,15 +2,20 @@ export type PricingPlanFeature = {
   code: string;
   name: string;
   description: string;
+  is_included: boolean;
+  value: string;
 };
 
 export type PricingPlan = {
   alias: string;
   name: string;
-  plan_type: 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
+  plan_type: 'STARTER' | 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
   monthly_price: string;
   max_properties: number;
-  referral_discount_percent: string;
+  max_users: number | null;
+  description?: string;
+  is_active?: boolean;
+  referral_discount_percent?: string;
   features: PricingPlanFeature[];
   current_plan: boolean;
   discounted_price?: string;
@@ -35,6 +40,13 @@ export interface SelectPricingPlanResponse {
   client_secret: string | null;
   mode?: 'payment' | 'setup';
   message?: string;
+}
+
+export interface PricingPlansComparisonTableProps {
+  plans: PricingPlan[];
+  isSelectingPlan: boolean;
+  selectedPlanType: string | null;
+  onChoosePlan: (plan: PricingPlan) => void;
 }
 
 export interface PricingPlanCouponFieldProps {

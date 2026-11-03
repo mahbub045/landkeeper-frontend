@@ -8,6 +8,8 @@ export const pricingPlanMeta = {
     bar: 'bg-sky-500',
     iconTile: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
     icon: Sparkles,
+    header: 'bg-sky-100 text-sky-950 dark:bg-sky-900/40 dark:text-sky-50',
+    column: '',
   },
   STANDARD: {
     eyebrow: 'Most popular',
@@ -17,6 +19,9 @@ export const pricingPlanMeta = {
     iconTile:
       'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
     icon: Crown,
+    header: 'bg-violet-600 text-white',
+    column:
+      'bg-violet-50/70 border-x border-violet-300 dark:bg-violet-400/[0.06] dark:border-violet-400/30',
   },
   PREMIUM: {
     eyebrow: 'For serious portfolios',
@@ -26,6 +31,8 @@ export const pricingPlanMeta = {
     iconTile:
       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
     icon: Gem,
+    header: 'bg-slate-900 text-white dark:bg-slate-800',
+    column: '',
   },
 } as const;
 

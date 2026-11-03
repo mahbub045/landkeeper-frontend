@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import PricingPlanDowngradeDialog from './Dialogs/PricingPlanDowngradeDialog';
 import PricingPlanPaymentDialog from './Dialogs/PricingPlanPaymentDialog';
 import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
+import PricingPlansComparisonTable from './PricingPlansComparisonTable';
 
 const PricingPlansCard: React.FC = () => {
   const { update } = useSession();
@@ -302,152 +303,12 @@ const PricingPlansCard: React.FC = () => {
         onClear={clearCoupon}
       /> */}
 
-      <div className='grid items-start gap-5 lg:grid-cols-3'>
-        {pricingPlans.results.map((plan: PricingPlan) => {
-          const meta =
-            pricingPlanMeta[plan.plan_type as keyof typeof pricingPlanMeta] ??
-            pricingPlanMeta.BASIC;
-          const Icon = meta.icon;
-          const isPopular = plan.plan_type === 'STANDARD';
-
-          return (
-            <article
-              key={plan.alias}
-              className={cn(
-                'relative flex min-h-140 flex-col overflow-hidden rounded-2xl border p-6 transition-transform duration-300 hover:-translate-y-1',
-                meta.accent,
-                isPopular && 'lg:-mt-3 lg:min-h-146 lg:p-7',
-              )}
-            >
-              <div className={cn('absolute inset-x-0 top-0 h-1', meta.bar)} />
-
-              <div className='flex items-start justify-between gap-4'>
-                <div>
-                  <div
-                    className={cn(
-                      'mb-4 flex size-10 items-center justify-center rounded-xl',
-                      meta.iconTile,
-                    )}
-                  >
-                    <Icon className='size-5' aria-hidden='true' />
-                  </div>
-                  <p className='text-muted-foreground text-xs font-semibold tracking-[0.16em] uppercase'>
-                    {meta.eyebrow}
-                  </p>
-                  <h3 className='mt-2 text-2xl font-semibold tracking-tight'>
-                    {plan.name}
-                  </h3>
-                </div>
-                {isPopular && (
-                  <span className='rounded-full bg-violet-500 px-3 py-1 text-xs font-semibold text-white'>
-                    Recommended
-                  </span>
-                )}
-              </div>
-
-              <div className='mt-7 flex items-end gap-2'>
-                <span className='text-4xl font-semibold tracking-[-0.04em]'>
-                  {getCurrencySign()}
-                  {Number(plan.discounted_price ?? plan.monthly_price).toFixed(
-                    2,
-                  )}
-                </span>
-                {plan.discounted_price && (
-                  <span className='text-muted-foreground mb-2 text-lg line-through'>
-                    {getCurrencySign()}
-                    {Number(plan.monthly_price).toFixed(2)}
-                  </span>
-                )}
-                <span className='text-muted-foreground mb-2 text-sm'>
-                  / month
-                </span>
-              </div>
-
-              {plan.discounted_price && (
-                <p className='mt-2 flex items-center gap-1.5 text-xs font-medium text-green-600'>
-                  <Tag className='size-3.5' aria-hidden='true' />
-                  {plan.discount_value && (
-                    <>
-                      {plan.discount_type === 'fixed'
-                        ? `${getCurrencySign()}${Number(plan.discount_value).toFixed(2)}`
-                        : `${Number(plan.discount_value)}%`}{' '}
-                      off ·{' '}
-                    </>
-                  )}
-                  You save {getCurrencySign()}
-                  {(
-                    Number(plan.monthly_price) - Number(plan.discounted_price)
-                  ).toFixed(2)}{' '}
-                  / month
-                </p>
-              )}
-
-              <div className='border-border/70 bg-background/60 mt-5 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 backdrop-blur-sm'>
-                <div className='flex items-center gap-3'>
-                  <div
-                    className={cn(
-                      'flex size-9 items-center justify-center rounded-lg',
-                      meta.iconTile,
-                    )}
-                  >
-                    <Building2 className='size-4' aria-hidden='true' />
-                  </div>
-                  <span className='text-muted-foreground text-sm font-medium'>
-                    Properties
-                  </span>
-                </div>
-                <p className='text-foreground text-lg font-semibold tabular-nums'>
-                  <span className='text-muted-foreground mr-1.5 text-xs font-medium'>
-                    Up to
-                  </span>
-                  {plan.max_properties}
-                </p>
-              </div>
-
-              <div className='mt-5 flex-1'>
-                <p className='text-sm font-semibold'>Included in this plan</p>
-                <ul className='mt-3 space-y-3'>
-                  {plan.features.map((feature) => (
-                    <li
-                      key={feature.code}
-                      className='text-muted-foreground flex gap-2.5 text-sm'
-                    >
-                      <Check
-                        className='text-primary mt-0.5 size-4 shrink-0'
-                        aria-hidden='true'
-                      />
-                      <span>{feature.name}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className='mt-3'>
-                <Button
-                  type='button'
-                  variant={isPopular ? 'default' : 'outline'}
-                  size='lg'
-                  className='w-full'
-                  disabled={isSelectingPlan || plan.current_plan === true}
-                  onClick={() => onChoosePlan(plan)}
-                >
-                  {isSelectingPlan && selectedPlanType === plan.alias ? (
-                    <>
-                      <LoaderCircle className='animate-spin' />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      {plan?.current_plan ? 'Current plan' : 'Choose'}{' '}
-                      {plan.name}
-                      <ArrowRight data-icon='inline-end' />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      <PricingPlansComparisonTable
+        plans={pricingPlans.results}
+        isSelectingPlan={isSelectingPlan}
+        selectedPlanType={selectedPlanType}
+        onChoosePlan={onChoosePlan}
+      />
       <PricingPlanDowngradeDialog
         currentPlanName={
           pricingPlans?.results?.find((p: PricingPlan) => p.current_plan)?.name
