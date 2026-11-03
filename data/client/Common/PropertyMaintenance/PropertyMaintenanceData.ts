@@ -24,9 +24,9 @@ import {
 } from 'lucide-react';
 
 export const STATUS_EDITABLE_ROLES = [
+  'SUPER_ADMIN',
   'LANDLORD',
   'ADMIN',
-  'SUPER_ADMIN',
 ] as const;
 
 export const canEditMaintenanceStatus = (role?: string) =>
