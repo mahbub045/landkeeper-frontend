@@ -9,7 +9,7 @@ export const pricingPlanMeta = {
     iconTile: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
     icon: Sparkles,
     header:
-      'bg-linear-to-b from-sky-100 to-sky-50 text-sky-950 dark:from-sky-900/50 dark:to-sky-900/30 dark:text-sky-50',
+      'bg-linear-to-b from-sky-500 to-sky-600 text-white shadow-[0_14px_32px_-16px_var(--color-sky-500)]',
     column: 'bg-card border-x border-sky-200/80 dark:border-sky-400/20',
     rowHover: 'group-hover:bg-sky-50/70 dark:group-hover:bg-sky-400/5',
   },
@@ -36,8 +36,9 @@ export const pricingPlanMeta = {
       'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
     icon: Gem,
     header:
-      'bg-linear-to-b from-slate-800 to-slate-950 text-white dark:from-slate-700 dark:to-slate-900',
-    column: 'bg-card border-x border-slate-200 dark:border-white/10',
-    rowHover: 'group-hover:bg-slate-50 dark:group-hover:bg-white/5',
+      'bg-linear-to-br from-yellow-300 via-amber-400 to-amber-600 text-amber-950 shadow-[0_14px_32px_-16px_var(--color-amber-500)]',
+    column:
+      'bg-amber-50/50 border-x border-amber-300/80 dark:bg-amber-300/[0.06] dark:border-amber-300/30',
+    rowHover: 'group-hover:bg-amber-100/70 dark:group-hover:bg-amber-300/10',
   },
 } as const;
