@@ -49,6 +49,17 @@ export interface PricingPlansComparisonTableProps {
   onChoosePlan: (plan: PricingPlan) => void;
 }
 
+export interface PricingPlanFeatureCellProps {
+  feature?: PricingPlanFeature;
+}
+
+export interface PricingPlanSectionProps {
+  plan: PricingPlan;
+}
+
+export type PricingPlanChooseButtonProps = PricingPlanSectionProps &
+  Omit<PricingPlansComparisonTableProps, 'plans'>;
+
 export interface PricingPlanCouponFieldProps {
   inputValue: string;
   activeCoupon: string;
