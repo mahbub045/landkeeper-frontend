@@ -30,6 +30,7 @@ export interface AlertSeverityStyle {
   iconBg: string;
   iconColor: string;
   titleColor: string;
+  borderColor: string;
   badgeVariant: VariantProps<typeof badgeVariants>['variant'];
 }
 

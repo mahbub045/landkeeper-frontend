@@ -60,6 +60,7 @@ const AlertsReminders: React.FC = () => {
               iconBg,
               iconColor,
               titleColor,
+              borderColor,
               badgeVariant,
             } = ALERT_SEVERITY_STYLES[getAlertSeverity(alert.days)];
             const content = (
@@ -88,8 +89,7 @@ const AlertsReminders: React.FC = () => {
               </>
             );
             const key = `${alert.title}-${alert.property}-${idx}`;
-            const rowClass =
-              'border-border flex items-center gap-3 rounded-xl border p-3 shadow-sm';
+            const rowClass = `border-border flex items-center gap-3 rounded-xl border border-b-2 p-3 shadow-sm ${borderColor}`;
 
             return alert.alias ? (
               <Link
