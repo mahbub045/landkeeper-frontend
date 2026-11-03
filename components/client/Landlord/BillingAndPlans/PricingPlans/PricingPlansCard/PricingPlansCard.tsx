@@ -6,7 +6,7 @@ import {
   useCheckCouponValidityMutation,
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
-} from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
+} from '@/store/api/endpoints/common/PricingPlans/PricingPlansApi';
 import { SelectPricingPlanResponse } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 import { PricingPlan } from '@/types/common/PricingPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';

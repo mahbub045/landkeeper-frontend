@@ -5,7 +5,7 @@ import { Package } from 'lucide-react';
 import PricingPlansCardSkeleton from '@/components/common/PricingPlans/PricingPlansCardSkeleton';
 import PricingPlansComparisonTable from '@/components/common/PricingPlans/PricingPlansComparisonTable';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
-import { useGetPricingPlansQuery } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
+import { useGetPricingPlansQuery } from '@/store/api/endpoints/common/PricingPlans/PricingPlansApi';
 
 const PricingPlanList: React.FC = () => {
   const {
