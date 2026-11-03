@@ -7,7 +7,7 @@ export interface SubscriptionFeature {
 export interface SubscriptionPlan {
   alias: string;
   name: string;
-  plan_type: 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
+  plan_type: 'STARTER' | 'STANDARD' | 'PREMIUM' | string;
   monthly_price: string;
   max_properties: number;
   referral_discount_percent: string;
@@ -25,7 +25,7 @@ export type SubscriptionStatus =
 export interface PendingPlan {
   alias: string;
   name: string;
-  plan_type: 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
+  plan_type: 'STARTER' | 'STANDARD' | 'PREMIUM' | string;
   monthly_price: string;
   max_properties: number;
   effective_date: string;

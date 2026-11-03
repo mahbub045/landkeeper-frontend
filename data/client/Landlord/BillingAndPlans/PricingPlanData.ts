@@ -1,5 +1,5 @@
 export const planTierTheme = {
-  BASIC: {
+  STARTER: {
     bar: 'before:bg-sky-500',
     container:
       'border-sky-200 from-sky-50 dark:border-sky-400/20 dark:from-sky-400/10',
@@ -26,7 +26,7 @@ export const planTierTheme = {
 } as const;
 
 export const pricingPlanBadgeStyles = {
-  BASIC: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+  STARTER: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
   STANDARD:
     'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
   PREMIUM:

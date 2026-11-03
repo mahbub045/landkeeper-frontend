@@ -61,7 +61,7 @@ const SUBSCRIPTION_STATUS_OPTIONS: FilterOption[] = [
 
 const PLAN_OPTIONS: FilterOption[] = [
   { value: 'all', label: 'All plans' },
-  { value: 'BASIC', label: 'Basic', dot: 'bg-sky-500' },
+  { value: 'STARTER', label: 'Basic', dot: 'bg-sky-500' },
   { value: 'STANDARD', label: 'Standard', dot: 'bg-violet-500' },
   { value: 'PREMIUM', label: 'Premium', dot: 'bg-amber-500' },
 ];

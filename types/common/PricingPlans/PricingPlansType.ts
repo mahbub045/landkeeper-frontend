@@ -9,7 +9,7 @@ export type PricingPlanFeature = {
 export type PricingPlan = {
   alias: string;
   name: string;
-  plan_type: 'STARTER' | 'BASIC' | 'STANDARD' | 'PREMIUM' | string;
+  plan_type: 'STARTER' | 'STARTER' | 'STANDARD' | 'PREMIUM' | string;
   monthly_price: string;
   max_properties: number;
   max_users: number | null;

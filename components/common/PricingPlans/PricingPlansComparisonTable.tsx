@@ -24,7 +24,7 @@ import {
 
 const getPlanMeta = (plan: PricingPlan) =>
   pricingPlanMeta[plan.plan_type as keyof typeof pricingPlanMeta] ??
-  pricingPlanMeta.BASIC;
+  pricingPlanMeta.STARTER;
 
 const isPopularPlan = (plan: PricingPlan) => plan.plan_type === 'STANDARD';
 

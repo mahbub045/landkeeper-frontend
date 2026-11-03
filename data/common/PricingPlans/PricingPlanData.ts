@@ -1,7 +1,7 @@
 import { Crown, Gem, Sparkles } from 'lucide-react';
 
 export const pricingPlanMeta = {
-  BASIC: {
+  STARTER: {
     eyebrow: 'A focused start',
     accent:
       'border-sky-200 bg-sky-50/40 dark:border-sky-400/20 dark:bg-sky-400/[0.04]',
