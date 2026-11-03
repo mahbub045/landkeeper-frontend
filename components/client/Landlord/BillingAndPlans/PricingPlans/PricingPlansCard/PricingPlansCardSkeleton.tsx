@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import {
   PricingPlansSkeletonBarProps,
+  PricingPlansCardSkeletonProps,
   PricingPlansSkeletonHeaderProps,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
 
@@ -48,7 +49,9 @@ const LimitsBlock = () => (
   </div>
 );
 
-export default function PricingPlansCardSkeleton() {
+export default function PricingPlansCardSkeleton({
+  withActions = true,
+}: PricingPlansCardSkeletonProps) {
   return (
     <>
       {/* Mobile / tablet: tabs + one plan */}
@@ -86,7 +89,7 @@ export default function PricingPlansCardSkeleton() {
                 </li>
               ))}
             </ul>
-            <Bar className='mt-4 h-10 w-full rounded-md' />
+            {withActions && <Bar className='mt-4 h-10 w-full rounded-md' />}
           </div>
         </div>
       </div>
@@ -150,7 +153,7 @@ export default function PricingPlansCardSkeleton() {
                   'border-x-violet-200 border-b-violet-200 bg-violet-50/50 dark:border-x-violet-400/20 dark:border-b-violet-400/20 dark:bg-violet-400/5',
               )}
             >
-              <Bar className='h-10 w-full rounded-md' />
+              {withActions && <Bar className='h-10 w-full rounded-md' />}
             </div>
           ))}
         </div>

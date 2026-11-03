@@ -42,11 +42,16 @@ export interface SelectPricingPlanResponse {
   message?: string;
 }
 
-export interface PricingPlansComparisonTableProps {
-  plans: PricingPlan[];
+export interface PricingPlanSelectionProps {
   isSelectingPlan: boolean;
   selectedPlanType: string | null;
   onChoosePlan: (plan: PricingPlan) => void;
+}
+
+// Without `selection` the table is read-only (no Choose buttons).
+export interface PricingPlansComparisonTableProps {
+  plans: PricingPlan[];
+  selection?: PricingPlanSelectionProps;
 }
 
 export interface PricingPlanFeatureCellProps {
@@ -58,7 +63,7 @@ export interface PricingPlanSectionProps {
 }
 
 export type PricingPlanChooseButtonProps = PricingPlanSectionProps &
-  Omit<PricingPlansComparisonTableProps, 'plans'>;
+  PricingPlanSelectionProps;
 
 export interface PricingPlanCouponFieldProps {
   inputValue: string;
@@ -72,6 +77,10 @@ export interface PricingPlanCouponFieldProps {
 }
 
 export type PricingPlansSkeletonBarProps = React.ComponentProps<'div'>;
+
+export interface PricingPlansCardSkeletonProps {
+  withActions?: boolean;
+}
 
 export interface PricingPlansSkeletonHeaderProps {
   isPopular: boolean;

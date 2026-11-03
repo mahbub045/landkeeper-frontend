@@ -305,9 +305,7 @@ const PricingPlansCard: React.FC = () => {
 
       <PricingPlansComparisonTable
         plans={pricingPlans.results}
-        isSelectingPlan={isSelectingPlan}
-        selectedPlanType={selectedPlanType}
-        onChoosePlan={onChoosePlan}
+        selection={{ isSelectingPlan, selectedPlanType, onChoosePlan }}
       />
       <PricingPlanDowngradeDialog
         currentPlanName={

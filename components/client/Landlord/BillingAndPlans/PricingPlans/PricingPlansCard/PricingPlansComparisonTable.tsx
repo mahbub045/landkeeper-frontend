@@ -181,7 +181,7 @@ const PlanChooseButton = ({
 
 const PricingPlansComparisonTable: React.FC<
   PricingPlansComparisonTableProps
-> = ({ plans, ...buttonProps }) => {
+> = ({ plans, selection }) => {
   // Rows follow the first plan's feature order; any feature that only exists
   // on a later plan is appended so nothing is dropped.
   const featureRows = plans
@@ -201,7 +201,10 @@ const PricingPlansComparisonTable: React.FC<
   return (
     <>
       {/* Mobile: one plan at a time, switched with tabs. */}
-      <Tabs defaultValue={defaultTab} className='mx-auto w-full max-w-2xl lg:hidden'>
+      <Tabs
+        defaultValue={defaultTab}
+        className='mx-auto w-full max-w-2xl lg:hidden'
+      >
         <TabsList
           className='bg-muted/70 w-full gap-1 rounded-xl'
           style={{ height: 'auto', padding: '0.25rem' }}
@@ -260,9 +263,11 @@ const PricingPlansComparisonTable: React.FC<
                   ))}
                 </ul>
 
-                <div className='mt-4'>
-                  <PlanChooseButton plan={plan} {...buttonProps} />
-                </div>
+                {selection && (
+                  <div className='mt-4'>
+                    <PlanChooseButton plan={plan} {...selection} />
+                  </div>
+                )}
               </div>
             </TabsContent>
           );
@@ -352,12 +357,15 @@ const PricingPlansComparisonTable: React.FC<
                   <td
                     key={plan.alias}
                     className={cn(
-                      'rounded-b-2xl border-t border-b px-4 pt-4 pb-5',
+                      'rounded-b-2xl border-t border-b px-4',
+                      selection ? 'pt-4 pb-5' : 'pt-2',
                       getPlanMeta(plan).column,
                       'border-t-border/60',
                     )}
                   >
-                    <PlanChooseButton plan={plan} {...buttonProps} />
+                    {selection && (
+                      <PlanChooseButton plan={plan} {...selection} />
+                    )}
                   </td>
                 ))}
               </tr>
