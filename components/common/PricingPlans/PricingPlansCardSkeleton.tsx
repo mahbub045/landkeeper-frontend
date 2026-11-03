@@ -3,7 +3,7 @@ import {
   PricingPlansSkeletonBarProps,
   PricingPlansCardSkeletonProps,
   PricingPlansSkeletonHeaderProps,
-} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+} from '@/types/common/PricingPlans/PricingPlansType';
 
 const FEATURE_ROWS = 10;
 const nameWidths = ['55%', '40%', '62%', '48%', '70%', '44%', '58%', '36%'];

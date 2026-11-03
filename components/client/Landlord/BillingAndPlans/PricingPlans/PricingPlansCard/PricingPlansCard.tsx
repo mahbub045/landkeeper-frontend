@@ -1,17 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   useCheckCouponValidityMutation,
   useGetPricingPlansQuery,
   useSelectPricingPlanMutation,
 } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
-import {
-  PricingPlan,
-  SelectPricingPlanResponse,
-} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import { SelectPricingPlanResponse } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import { PricingPlan } from '@/types/common/PricingPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
 import { ArrowRight, Building2, Check, LoaderCircle, Tag } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -19,8 +16,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import PricingPlanDowngradeDialog from './Dialogs/PricingPlanDowngradeDialog';
 import PricingPlanPaymentDialog from './Dialogs/PricingPlanPaymentDialog';
-import PricingPlansCardSkeleton from './PricingPlansCardSkeleton';
-import PricingPlansComparisonTable from './PricingPlansComparisonTable';
+import PricingPlansCardSkeleton from '@/components/common/PricingPlans/PricingPlansCardSkeleton';
+import PricingPlansComparisonTable from '@/components/common/PricingPlans/PricingPlansComparisonTable';
 
 const PricingPlansCard: React.FC = () => {
   const { update } = useSession();

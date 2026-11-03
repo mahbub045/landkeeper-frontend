@@ -1,9 +1,9 @@
 import { baseApi } from '@/store/api/baseApi';
 import {
-  PricingPlansResponse,
   SelectPricingPlanRequest,
   SelectPricingPlanResponse,
 } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import { PricingPlansResponse } from '@/types/common/PricingPlans/PricingPlansType';
 
 export const PricingPlansApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -2,8 +2,8 @@
 
 import { Package } from 'lucide-react';
 
-import PricingPlansCardSkeleton from '@/components/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansCard/PricingPlansCardSkeleton';
-import PricingPlansComparisonTable from '@/components/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansCard/PricingPlansComparisonTable';
+import PricingPlansCardSkeleton from '@/components/common/PricingPlans/PricingPlansCardSkeleton';
+import PricingPlansComparisonTable from '@/components/common/PricingPlans/PricingPlansComparisonTable';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import { useGetPricingPlansQuery } from '@/store/api/endpoints/client/Landlord/BillingAndPlans/PricingPlans/PricingPlansApi';
 

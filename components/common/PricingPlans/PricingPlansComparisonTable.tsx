@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { pricingPlanMeta } from '@/data/client/Landlord/BillingAndPlans/PricingPlanData';
+import { pricingPlanMeta } from '@/data/common/PricingPlans/PricingPlanData';
 import { cn } from '@/lib/utils';
 import {
   PricingPlan,
@@ -10,7 +10,7 @@ import {
   PricingPlanFeatureCellProps,
   PricingPlanSectionProps,
   PricingPlansComparisonTableProps,
-} from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+} from '@/types/common/PricingPlans/PricingPlansType';
 import { getCurrencySign } from '@/utils/formatters';
 import {
   ArrowRight,

@@ -2,7 +2,7 @@
 
 import { CardPaymentForm } from '@/components/common/PaymentElement/CardPaymentForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { PricingPlan } from '@/types/client/Landlord/BillingAndPlans/PricingPlansType';
+import { PricingPlan } from '@/types/common/PricingPlans/PricingPlansType';
 
 interface PricingPlanPaymentDialogProps {
   selectedPlan: PricingPlan | null;
