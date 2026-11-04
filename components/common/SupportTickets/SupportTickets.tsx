@@ -50,7 +50,7 @@ const SupportTicket: React.FC = () => {
 
   const {
     data: supportTicketData,
-    isLoading,
+    isFetching,
     isError,
   } = useGetSupportTicketsQuery(queryParams);
 
@@ -127,7 +127,7 @@ const SupportTicket: React.FC = () => {
             onPriorityFilterChange={handlePriorityFilterChange}
             statusFilter={statusFilter}
             onStatusFilterChange={handleStatusFilterChange}
-            isLoading={isLoading}
+            isLoading={isFetching}
           />
 
           <div className='flex items-center justify-between'>

@@ -93,7 +93,7 @@ const TenantPayments: React.FC = () => {
 
   const {
     data: tenantPayments,
-    isLoading,
+    isFetching,
     isError,
   } = useGetTenantPaymentsQuery(queryParams);
 
@@ -200,7 +200,7 @@ const TenantPayments: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
+                  {isFetching ? (
                     Array.from({ length: 5 }).map((_, rowIdx) => (
                       <TableRow key={rowIdx}>
                         {TABLE_COLUMN.map((col) => (

@@ -60,7 +60,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
 
   const {
     data: mortgagePermissions,
-    isLoading,
+    isFetching,
     isError,
   } = useGetMortgagePermissionsQuery({
     mortgage_alias: mortgageAlias,
@@ -96,7 +96,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
   const permissions = mortgagePermissions?.results ?? [];
   const count = mortgagePermissions?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(count / PAGE_LIMIT));
-  const isEmpty = !isLoading && !isError && permissions.length === 0;
+  const isEmpty = !isFetching && !isError && permissions.length === 0;
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -143,7 +143,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
 
       {isError ? (
         <CustomErrorMessage title='mortgage access' />
-      ) : isLoading ? (
+      ) : isFetching ? (
         <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3'>
           {Array.from({ length: 2 }).map((_, i) => (
             <Card key={i} className='shadow-sm'>

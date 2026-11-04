@@ -68,7 +68,7 @@ const ViewCertificateSharesDialog: React.FC<
 
   const {
     data: certificateShares,
-    isLoading: isCertificateSharesLoading,
+    isFetching: isCertificateSharesFetching,
     isError,
   } = useGetCertificateSharesQuery(
     {
@@ -194,7 +194,7 @@ const ViewCertificateSharesDialog: React.FC<
                 </TableRow>
               </TableHeader>
               <tbody>
-                {isCertificateSharesLoading && (
+                {isCertificateSharesFetching && (
                   <TableRow>
                     <TableCell colSpan={5} className='py-6 text-center'>
                       <Loading className='mx-auto size-5' />
@@ -202,7 +202,7 @@ const ViewCertificateSharesDialog: React.FC<
                   </TableRow>
                 )}
 
-                {!isCertificateSharesLoading && isError && (
+                {!isCertificateSharesFetching && isError && (
                   <TableRow>
                     <TableCell colSpan={5} className='py-10 text-center'>
                       <CustomErrorMessage title='shares' />
@@ -210,7 +210,7 @@ const ViewCertificateSharesDialog: React.FC<
                   </TableRow>
                 )}
 
-                {!isCertificateSharesLoading &&
+                {!isCertificateSharesFetching &&
                   !isError &&
                   results.length === 0 && (
                     <TableRow>
@@ -220,7 +220,7 @@ const ViewCertificateSharesDialog: React.FC<
                     </TableRow>
                   )}
 
-                {!isCertificateSharesLoading &&
+                {!isCertificateSharesFetching &&
                   !isError &&
                   results.map((share: CirtificateShare, index: number) => (
                     <TableRow key={share.alias}>
@@ -265,7 +265,7 @@ const ViewCertificateSharesDialog: React.FC<
             </Table>
 
             {/* Pagination footer */}
-            {!isCertificateSharesLoading && !isError && results.length > 0 && (
+            {!isCertificateSharesFetching && !isError && results.length > 0 && (
               <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                 <p className='text-muted-foreground text-sm whitespace-nowrap'>
                   Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}

@@ -60,7 +60,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 
   const {
     data: propertyPermissions,
-    isLoading,
+    isFetching,
     isError,
   } = useGetPropertyPermissionsQuery({
     property_alias: propertyAlias,
@@ -96,7 +96,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   const permissions = propertyPermissions?.results ?? [];
   const count = propertyPermissions?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(count / PAGE_LIMIT));
-  const isEmpty = !isLoading && !isError && permissions.length === 0;
+  const isEmpty = !isFetching && !isError && permissions.length === 0;
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -143,7 +143,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 
       {isError ? (
         <CustomErrorMessage title='property access' />
-      ) : isLoading ? (
+      ) : isFetching ? (
         <div className='grid gap-3 sm:grid-cols-2'>
           {Array.from({ length: 2 }).map((_, i) => (
             <Card key={i} className='shadow-sm'>

@@ -46,7 +46,7 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
 
   const {
     data: certificateShares,
-    isLoading,
+    isFetching,
     isError,
   } = useGetCertificateSharesQuery({
     certificateAlias,
@@ -56,7 +56,7 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
   const shares = certificateShares?.results ?? [];
   const count = certificateShares?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(count / PAGE_LIMIT));
-  const isEmpty = !isLoading && !isError && shares.length === 0;
+  const isEmpty = !isFetching && !isError && shares.length === 0;
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -110,7 +110,7 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
 
       {isError ? (
         <CustomErrorMessage title='certificate shares' />
-      ) : isLoading ? (
+      ) : isFetching ? (
         <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
           {Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className='shadow-sm'>

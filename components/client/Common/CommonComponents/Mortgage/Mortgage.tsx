@@ -106,9 +106,13 @@ const Mortgage: React.FC = () => {
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
-  const { data, isLoading, isError } = useGetMortgagesQuery(queryParams);
+  const {
+    data: mortgagesData,
+    isFetching,
+    isError,
+  } = useGetMortgagesQuery(queryParams);
 
-  const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
+  const totalPages = Math.ceil((mortgagesData?.count ?? 0) / PAGE_LIMIT);
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value);
@@ -144,7 +148,7 @@ const Mortgage: React.FC = () => {
         </div>
       </div>
 
-      {isLoading ? <SummaryCardsSkeleton /> : <SummaryCards />}
+      {isFetching ? <SummaryCardsSkeleton /> : <SummaryCards />}
 
       <div className='mt-15 flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
         <div className='min-w-0'>
@@ -182,20 +186,23 @@ const Mortgage: React.FC = () => {
         </div>
       </div>
 
-      {isLoading && <MortgageListSkeleton />}
+      {isFetching && <MortgageListSkeleton />}
 
-      {!isLoading && isError && <CustomErrorMessage title='mortgages' />}
+      {!isFetching && isError && <CustomErrorMessage title='mortgages' />}
 
-      {!isLoading && !isError && (
+      {!isFetching && !isError && (
         <>
-          <MortgageList mortgages={data?.results ?? []} isLoading={isLoading} />
+          <MortgageList
+            mortgages={mortgagesData?.results ?? []}
+            isLoading={isFetching}
+          />
 
           <div className='flex flex-wrap items-center justify-between gap-3'>
-            {(data?.count ?? 0) > 0 && (
+            {(mortgagesData?.count ?? 0) > 0 && (
               <p className='text-muted-foreground text-sm whitespace-nowrap'>
                 Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
-                {data?.count ?? 0} Mortgages
+                {Math.min(page * PAGE_LIMIT, mortgagesData?.count ?? 0)} of{' '}
+                {mortgagesData?.count ?? 0} Mortgages
               </p>
             )}
             {totalPages > 1 && (

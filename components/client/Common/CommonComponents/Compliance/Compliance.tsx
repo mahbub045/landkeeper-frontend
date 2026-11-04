@@ -38,7 +38,7 @@ const Compliance: React.FC = () => {
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
-  const { data, isLoading, isError } = useGetCompliancesQuery(queryParams);
+  const { data, isFetching, isError } = useGetCompliancesQuery(queryParams);
 
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
 
@@ -91,7 +91,7 @@ const Compliance: React.FC = () => {
         <>
           <CertificateRegistry
             certificates={apiCertificates}
-            isLoading={isLoading}
+            isLoading={isFetching}
             startIndex={(page - 1) * PAGE_LIMIT}
             search={search}
             onSearchChange={handleSearchChange}
