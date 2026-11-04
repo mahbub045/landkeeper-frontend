@@ -44,7 +44,7 @@ const TransactionList: React.FC = () => {
     ...(debouncedSearch && { search: debouncedSearch }),
   };
 
-  const { data, isLoading, isError } = useGetFinanceQuery(queryParams);
+  const { data, isFetching, isError } = useGetFinanceQuery(queryParams);
 
   const transactions: FinanceTransaction[] = data?.results ?? [];
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
@@ -109,7 +109,7 @@ const TransactionList: React.FC = () => {
             <CardContent className='p-0'>
               <TransactionTable
                 transactions={transactions}
-                isLoading={isLoading}
+                isLoading={isFetching}
               />
             </CardContent>
           </Card>

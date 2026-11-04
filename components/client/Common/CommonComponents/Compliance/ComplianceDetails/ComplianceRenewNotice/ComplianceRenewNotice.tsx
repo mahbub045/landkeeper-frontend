@@ -26,7 +26,7 @@ const ComplianceRenewNotice: React.FC<ComplianceRenewNoticeProps> = ({
 
   return (
     <div
-      className={`mb-6 flex items-start gap-3 rounded-xl border p-3 shadow-sm ${RENEW_NOTICE_BACKGROUNDS[severity]}`}
+      className={`flex items-start gap-3 rounded-2xl border p-4 shadow-xs ${RENEW_NOTICE_BACKGROUNDS[severity]}`}
     >
       <span
         className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}

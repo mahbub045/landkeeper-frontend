@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { PropertyFinancialsProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import { getCurrencySign } from '@/utils/formatters';
+import { Wallet } from 'lucide-react';
 
 const fmt = (val: string | number | null | undefined) => {
   if (val === null || val === undefined || val === '') return '—';
@@ -28,23 +29,18 @@ const PropertyFinancials: React.FC<PropertyFinancialsProps> = ({
   const isLeasehold = property.property_tenure === 'LEASEHOLD';
 
   return (
-    <Card className='border-border rounded-2xl shadow-sm'>
-      <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold'>Financials</CardTitle>
-      </CardHeader>
-      <CardContent className='divide-border divide-y px-5 pb-4'>
-        <InfoRow
-          label='Rent / Month'
-          value={
-            property.monthly_rental_income ? (
-              <span className='text-primary font-bold'>
-                {fmt(property.monthly_rental_income)}/mo
-              </span>
-            ) : (
-              '—'
-            )
-          }
-        />
+    <DetailsSection title='Financials' icon={Wallet} className='h-full'>
+      {/* Headline rent figure */}
+      <div className='bg-primary/5 border-primary/15 mb-3 rounded-xl border p-4'>
+        <p className='text-muted-foreground text-xs'>Rent / Month</p>
+        <p className='text-primary mt-0.5 text-2xl font-bold tracking-tight'>
+          {property.monthly_rental_income
+            ? `${fmt(property.monthly_rental_income)}/mo`
+            : '—'}
+        </p>
+      </div>
+
+      <div className='divide-border divide-y'>
         <InfoRow label='Purchase Price' value={fmt(property.purchase_price)} />
         <InfoRow label='Current Value' value={fmt(property.current_value)} />
 
@@ -60,8 +56,8 @@ const PropertyFinancials: React.FC<PropertyFinancialsProps> = ({
             />
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </DetailsSection>
   );
 };
 

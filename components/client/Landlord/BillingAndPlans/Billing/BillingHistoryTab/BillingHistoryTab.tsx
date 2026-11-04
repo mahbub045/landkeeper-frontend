@@ -33,11 +33,11 @@ export default function BillingHistoryTab() {
   const { downloadFile, isDownloading } = useDownloadFile();
   const [downloadingAlias, setDownloadingAlias] = useState<string | null>(null);
 
-  const { data, isLoading, isError } = useBillingHistoryQuery({
+  const { data, isFetching, isError } = useBillingHistoryQuery({
     page,
   }) as {
     data: BillingHistoryResponse | undefined;
-    isLoading: boolean;
+    isFetching: boolean;
     isError: boolean;
   };
 
@@ -64,7 +64,7 @@ export default function BillingHistoryTab() {
     return pages;
   };
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className='border-border/70 rounded-2xl border bg-white p-6 dark:bg-white/4'>
         <div className='bg-muted mb-5 h-5 w-32 animate-pulse rounded' />

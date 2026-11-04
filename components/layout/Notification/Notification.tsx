@@ -41,7 +41,6 @@ const Notification: React.FC = () => {
   //   RTK Hooks
   const {
     data: notificationsData,
-    isLoading,
     isFetching,
     error,
     refetch: refetchNotifications,
@@ -250,7 +249,7 @@ const Notification: React.FC = () => {
         </div>
 
         <div className='max-h-80 overflow-y-auto'>
-          {isLoading ? (
+          {isFetching ? (
             <div className='flex items-center justify-center px-4 py-10'>
               <Loading />
             </div>
@@ -367,7 +366,7 @@ const Notification: React.FC = () => {
           )}
         </div>
 
-        {!isLoading && totalCount > 0 && (
+        {!isFetching && totalCount > 0 && (
           <div className='flex items-center justify-between border-t px-4 py-2'>
             <Button
               variant='ghost'

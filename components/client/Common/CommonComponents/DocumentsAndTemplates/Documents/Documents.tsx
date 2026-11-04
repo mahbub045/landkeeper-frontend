@@ -51,7 +51,7 @@ const Documents: React.FC = () => {
     ...(activeFilter !== 'ALL' && { document_category: activeFilter }),
   };
 
-  const { data, isLoading, isError } = useGetDocumentsQuery(queryParams);
+  const { data, isFetching, isError } = useGetDocumentsQuery(queryParams);
 
   const documents: PropertyDocument[] = data?.results ?? [];
   const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
@@ -139,7 +139,7 @@ const Documents: React.FC = () => {
               <DocumentList
                 documents={documents}
                 activeFilterLabel={activeFilterLabel}
-                isLoading={isLoading}
+                isLoading={isFetching}
               />
             </CardContent>
           </Card>

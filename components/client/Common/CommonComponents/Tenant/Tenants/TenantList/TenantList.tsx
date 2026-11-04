@@ -118,7 +118,7 @@ const TenantList: React.FC = () => {
 
   const {
     data: tenantsData,
-    isLoading,
+    isFetching,
     isError,
   } = useGetTenantsQuery(queryParams);
 
@@ -203,7 +203,7 @@ const TenantList: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
+                  {isFetching ? (
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i} className='text-center'>
                         <TableCell>

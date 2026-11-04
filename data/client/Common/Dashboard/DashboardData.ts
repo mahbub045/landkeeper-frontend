@@ -48,6 +48,7 @@ export const ALERT_SEVERITY_STYLES: Record<AlertSeverity, AlertSeverityStyle> =
       iconBg: 'bg-red-100 dark:bg-red-900/30',
       iconColor: 'text-red-500',
       titleColor: 'text-red-600 dark:text-red-400',
+      borderColor: 'border-b-red-400 dark:border-b-red-500',
       badgeVariant: 'dangerLight',
     },
     urgent: {
@@ -55,6 +56,7 @@ export const ALERT_SEVERITY_STYLES: Record<AlertSeverity, AlertSeverityStyle> =
       iconBg: 'bg-amber-100 dark:bg-amber-900/30',
       iconColor: 'text-amber-500',
       titleColor: 'text-amber-600 dark:text-amber-400',
+      borderColor: 'border-b-amber-400 dark:border-b-amber-500',
       badgeVariant: 'warningLight',
     },
     upcoming: {
@@ -62,6 +64,7 @@ export const ALERT_SEVERITY_STYLES: Record<AlertSeverity, AlertSeverityStyle> =
       iconBg: 'bg-blue-100 dark:bg-blue-900/30',
       iconColor: 'text-blue-400',
       titleColor: 'text-blue-600 dark:text-blue-400',
+      borderColor: 'border-b-blue-400 dark:border-b-blue-500',
       badgeVariant: 'infoLight',
     },
   };

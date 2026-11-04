@@ -57,7 +57,7 @@ const LandlordList: React.FC = () => {
   const activeFilterCount = countActiveLandlordFilters(filters);
   const hasFilters = activeFilterCount > 0;
 
-  const { data, isLoading, isFetching, isError } = useGetLandlordsQuery({
+  const { data, isFetching, isError } = useGetLandlordsQuery({
     page,
     page_size: PAGE_LIMIT,
     ...(debouncedSearch && { search: debouncedSearch }),
@@ -154,7 +154,7 @@ const LandlordList: React.FC = () => {
 
       {isError ? (
         <CustomErrorMessage title='landlords' />
-      ) : isLoading || isFetching ? (
+      ) : isFetching ? (
         <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'>
           {Array.from({ length: 12 }).map((_, i) => (
             <LandlordCardSkeleton key={i} />

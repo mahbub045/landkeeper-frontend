@@ -4,7 +4,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getTeamMembers: builder.query({
       query: (params) => ({
-        url: '/organisation/users',
+        url: `/organisation/users`,
         method: 'GET',
         params,
       }),
@@ -20,7 +20,7 @@ export const TeamAccessApi = baseApi.injectEndpoints({
     }),
     inviteTeamMember: builder.mutation({
       query: (body) => ({
-        url: '/auth/send/invites',
+        url: `/auth/send/invites`,
         method: 'POST',
         body,
       }),

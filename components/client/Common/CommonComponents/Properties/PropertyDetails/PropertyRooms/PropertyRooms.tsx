@@ -1,9 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { PropertyRoomsProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
 import { getCurrencySign } from '@/utils/formatters';
-import { DoorOpen } from 'lucide-react';
+import { BedDouble, DoorOpen } from 'lucide-react';
 
 const fmt = (val: string | number | null | undefined) => {
   if (val === null || val === undefined || val === '') return '—';
@@ -18,38 +18,37 @@ const PropertyRooms: React.FC<PropertyRoomsProps> = ({ rooms }) => {
   );
 
   return (
-    <Card className='border-border rounded-2xl shadow-sm'>
-      <CardHeader className='flex flex-row items-center justify-between pb-2'>
-        <CardTitle className='text-base font-semibold'>HMO Rooms</CardTitle>
-        <span className='text-muted-foreground text-xs'>
-          {rooms.length} {rooms.length === 1 ? 'room' : 'rooms'}
+    <DetailsSection
+      title='HMO Rooms'
+      icon={BedDouble}
+      description={`${rooms.length} ${rooms.length === 1 ? 'room' : 'rooms'}`}
+      action={
+        <span className='bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-semibold'>
+          {fmt(totalRent)}/mo total
         </span>
-      </CardHeader>
-      <CardContent className='px-5 pb-4'>
-        <div className='divide-border divide-y'>
-          {rooms.map((room, i) => (
-            <div
-              key={room.alias ?? i}
-              className='flex items-center justify-between gap-4 py-2.5'
-            >
-              <span className='text-foreground flex items-center gap-1.5 text-sm font-medium'>
-                <DoorOpen className='text-primary size-3.5' />
+      }
+    >
+      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3'>
+        {rooms.map((room, i) => (
+          <div
+            key={room.alias ?? i}
+            className='bg-muted/40 flex items-center justify-between gap-4 rounded-xl p-3'
+          >
+            <span className='text-foreground flex min-w-0 items-center gap-2 text-sm font-medium'>
+              <span className='bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg'>
+                <DoorOpen className='size-4' />
+              </span>
+              <span className='truncate'>
                 {room.room_name || `Room ${i + 1}`}
               </span>
-              <span className='text-foreground text-sm font-medium'>
-                {fmt(room.monthly_rent)}/mo
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className='border-border mt-1 flex items-center justify-between border-t pt-3'>
-          <span className='text-muted-foreground text-sm'>Total</span>
-          <span className='text-primary text-sm font-bold'>
-            {fmt(totalRent)}/mo
-          </span>
-        </div>
-      </CardContent>
-    </Card>
+            </span>
+            <span className='text-foreground shrink-0 text-sm font-semibold'>
+              {fmt(room.monthly_rent)}/mo
+            </span>
+          </div>
+        ))}
+      </div>
+    </DetailsSection>
   );
 };
 

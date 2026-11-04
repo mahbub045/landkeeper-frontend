@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import {
   ContactRowProps,
   TenantLandlordCardProps,
@@ -30,30 +30,30 @@ const ContactRow: React.FC<ContactRowProps> = ({
 
 const LandlordCard: React.FC<TenantLandlordCardProps> = ({ landlord }) => {
   return (
-    <Card className='border-border h-full rounded-2xl shadow-sm'>
-      <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold'>Your Landlord</CardTitle>
-      </CardHeader>
-      <CardContent className='px-5 pb-1'>
-        <div className='border-border flex items-center gap-3 border-b pb-4'>
-          <div className='bg-primary text-primary-foreground flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold'>
-            {getInitials(landlord.name)}
-          </div>
-          <p className='text-foreground text-sm leading-snug font-semibold'>
-            {landlord.name}
-          </p>
+    <DetailsSection
+      title='Your Landlord'
+      icon={UserRound}
+      className='h-full'
+      contentClassName='pb-1'
+    >
+      <div className='border-border flex items-center gap-3 border-b pb-4'>
+        <div className='bg-primary text-primary-foreground flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold'>
+          {getInitials(landlord.name)}
         </div>
-        <div className='divide-border divide-y'>
-          <ContactRow
-            icon={UserRound}
-            label='Contact Person'
-            value={landlord.contact_person}
-          />
-          <ContactRow icon={Phone} label='Mobile' value={landlord.mobile} />
-          <ContactRow icon={MapPin} label='Address' value={landlord.address} />
-        </div>
-      </CardContent>
-    </Card>
+        <p className='text-foreground text-sm leading-snug font-semibold'>
+          {landlord.name}
+        </p>
+      </div>
+      <div className='divide-border divide-y'>
+        <ContactRow
+          icon={UserRound}
+          label='Contact Person'
+          value={landlord.contact_person}
+        />
+        <ContactRow icon={Phone} label='Mobile' value={landlord.mobile} />
+        <ContactRow icon={MapPin} label='Address' value={landlord.address} />
+      </div>
+    </DetailsSection>
   );
 };
 

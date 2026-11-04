@@ -28,21 +28,12 @@ export interface ImageWithLoaderProps {
   unoptimized?: boolean;
 }
 
-export interface PropertyDangerZoneProps {
-  onDeleteClick: () => void;
-}
-
 export interface PropertyFinancialsProps {
   property: Property;
 }
 
 export interface PropertyInfoProps {
   property: Property;
-}
-
-export interface PropertyTimestampsProps {
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface PropertyRoomsProps {

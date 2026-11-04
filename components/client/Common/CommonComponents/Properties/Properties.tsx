@@ -61,11 +61,15 @@ const Properties: React.FC = () => {
       typeOption && { property_type: typeOption.value }),
   };
 
-  const { data, isFetching, isError } = useGetPropertiesQuery(queryParams);
+  const {
+    data: propertiesData,
+    isFetching,
+    isError,
+  } = useGetPropertiesQuery(queryParams);
   const { data: commonPermissions } = useGetCommonPermissionsQuery(undefined);
 
-  const properties: Property[] = data?.results ?? [];
-  const totalPages = Math.ceil((data?.count ?? 0) / PAGE_LIMIT);
+  const properties: Property[] = propertiesData?.results ?? [];
+  const totalPages = Math.ceil((propertiesData?.count ?? 0) / PAGE_LIMIT);
 
   function handleFilterChange(tab: FilterTab) {
     setActiveFilter(tab);
@@ -182,11 +186,11 @@ const Properties: React.FC = () => {
             />
 
             <div className='flex items-center justify-between'>
-              {(data?.count ?? 0) > 0 && (
+              {(propertiesData?.count ?? 0) > 0 && (
                 <p className='text-muted-foreground text-sm whitespace-nowrap'>
                   Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}
-                  {Math.min(page * PAGE_LIMIT, data?.count ?? 0)} of{' '}
-                  {data?.count ?? 0} Properties
+                  {Math.min(page * PAGE_LIMIT, propertiesData?.count ?? 0)} of{' '}
+                  {propertiesData?.count ?? 0} Properties
                 </p>
               )}
               {totalPages > 1 && (

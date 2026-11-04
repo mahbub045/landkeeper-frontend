@@ -38,9 +38,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  MAINTENANCE_CATEGORY_OPTIONS,
-  MAINTENANCE_STATUS_OPTIONS,
-} from '@/data/common/ChoiceFieldOptions';
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   canEditMaintenanceStatus,
   CATEGORY_STYLES,
@@ -48,10 +49,9 @@ import {
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  MAINTENANCE_CATEGORY_OPTIONS,
+  MAINTENANCE_STATUS_OPTIONS,
+} from '@/data/common/ChoiceFieldOptions';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
@@ -140,7 +140,6 @@ const PropertyMaintenanceList: React.FC = () => {
 
   const {
     data: propertyMaintenanceData,
-    isLoading,
     isFetching,
     isError,
   } = useGetPropertyMaintenanceQuery({
@@ -191,10 +190,6 @@ const PropertyMaintenanceList: React.FC = () => {
 
   const activeFilterCount =
     statusFilter.length + categoryFilter.length + (emergencyFilter ? 1 : 0);
-
-  // Table rows show the skeleton on the first load and on any
-  // subsequent refetch (search or page change).
-  const showTableLoading = isLoading || isFetching;
 
   const totalCount = propertyMaintenanceData?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
@@ -400,7 +395,7 @@ const PropertyMaintenanceList: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {showTableLoading &&
+            {isFetching &&
               Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={i}>
                   {Array.from({ length: TABLE_COLUMNS.length }).map((__, j) => (
@@ -411,7 +406,7 @@ const PropertyMaintenanceList: React.FC = () => {
                 </TableRow>
               ))}
 
-            {!showTableLoading && isError && (
+            {!isFetching && isError && (
               <TableRow>
                 <TableCell
                   colSpan={TABLE_COLUMNS.length}
@@ -422,41 +417,36 @@ const PropertyMaintenanceList: React.FC = () => {
               </TableRow>
             )}
 
-            {!showTableLoading &&
-              !isError &&
-              maintenanceRequests.length === 0 && (
-                <TableRow className='hover:bg-transparent'>
-                  <TableCell
-                    colSpan={TABLE_COLUMNS.length}
-                    className='py-14'
-                  >
-                    <div className='flex flex-col items-center justify-center text-center'>
-                      <div className='relative mb-4'>
-                        <div className='absolute inset-0 rounded-full bg-gray-100 blur-md' />
-                        <div className='relative flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-linear-to-b from-white to-gray-50 shadow-sm'>
-                          {search ? (
-                            <SearchX className='h-6 w-6 text-gray-400' />
-                          ) : (
-                            <Wrench className='h-6 w-6 text-gray-400' />
-                          )}
-                        </div>
+            {!isFetching && !isError && maintenanceRequests.length === 0 && (
+              <TableRow className='hover:bg-transparent'>
+                <TableCell colSpan={TABLE_COLUMNS.length} className='py-14'>
+                  <div className='flex flex-col items-center justify-center text-center'>
+                    <div className='relative mb-4'>
+                      <div className='absolute inset-0 rounded-full bg-gray-100 blur-md' />
+                      <div className='relative flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-linear-to-b from-white to-gray-50 shadow-sm'>
+                        {search ? (
+                          <SearchX className='h-6 w-6 text-gray-400' />
+                        ) : (
+                          <Wrench className='h-6 w-6 text-gray-400' />
+                        )}
                       </div>
-                      <p className='text-base font-semibold text-gray-900'>
-                        {search
-                          ? 'No matching requests'
-                          : 'No maintenance requests yet'}
-                      </p>
-                      <p className='mt-1 max-w-xs text-sm text-gray-500'>
-                        {search
-                          ? 'Try a different search term or clear your filters.'
-                          : 'When something needs fixing, add a request here to track it from report to resolution.'}
-                      </p>
                     </div>
-                  </TableCell>
-                </TableRow>
-              )}
+                    <p className='text-base font-semibold text-gray-900'>
+                      {search
+                        ? 'No matching requests'
+                        : 'No maintenance requests yet'}
+                    </p>
+                    <p className='mt-1 max-w-xs text-sm text-gray-500'>
+                      {search
+                        ? 'Try a different search term or clear your filters.'
+                        : 'When something needs fixing, add a request here to track it from report to resolution.'}
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
 
-            {!showTableLoading &&
+            {!isFetching &&
               !isError &&
               maintenanceRequests.map((request) => (
                 <TableRow

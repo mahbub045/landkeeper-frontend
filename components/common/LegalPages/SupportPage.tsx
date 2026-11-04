@@ -8,7 +8,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   SUPPORT_CONTACT_CHANNELS,
   SUPPORT_EMAIL,
@@ -16,14 +15,12 @@ import {
 } from '@/data/common/LegalPages/LegalPagesData';
 import { SupportContactChannel } from '@/types/common/LegalPages/LegalPagesTypes';
 import { getSupportTicketsUrl } from '@/utils/redirectPath';
-import { ArrowRight, LifeBuoy, Mail, Search, SearchX, Ticket } from 'lucide-react';
+import { ArrowRight, LifeBuoy, Mail, Ticket } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
 
 const SupportPage: React.FC = () => {
   const { data: session } = useSession();
-  const [search, setSearch] = useState('');
   const supportTicketsUrl = getSupportTicketsUrl(session);
 
   const channels: SupportContactChannel[] = supportTicketsUrl
@@ -40,34 +37,14 @@ const SupportPage: React.FC = () => {
       ]
     : SUPPORT_CONTACT_CHANNELS;
 
-  const filteredFaqs = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) return SUPPORT_FAQS;
-    return SUPPORT_FAQS.filter(
-      (faq) =>
-        faq.question.toLowerCase().includes(term) ||
-        faq.answer.toLowerCase().includes(term),
-    );
-  }, [search]);
-
   return (
     <>
       <PublicPageHero
         icon={LifeBuoy}
         eyebrow='Help centre'
         title='How can we help?'
-        description='Search our frequently asked questions, or get in touch with the Landkeeper support team.'
-      >
-        <div className='relative mx-auto max-w-xl'>
-          <Search className='text-muted-foreground absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2' />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder='Search for answers...'
-            className='bg-background h-12 rounded-full pl-12 shadow-sm md:text-base'
-          />
-        </div>
-      </PublicPageHero>
+        description='Browse our frequently asked questions, or get in touch with the Landkeeper support team.'
+      />
 
       <div className='space-y-16 px-4 py-12 md:px-6 md:py-16 xl:px-12'>
         {/* Contact channels */}
@@ -80,11 +57,13 @@ const SupportPage: React.FC = () => {
               Choose the option that works best for you.
             </p>
           </div>
-          <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
+          <div
+            className={`grid gap-4 md:grid-cols-2 ${channels.length > 2 ? 'xl:grid-cols-3' : ''}`}
+          >
             {channels.map((channel) => {
               const content = (
                 <>
-                  <div className='bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground mb-5 flex h-12 w-12 items-center justify-center rounded-xl transition-colors'>
+                  <div className='bg-primary/10 text-primary mb-5 flex h-12 w-12 items-center justify-center rounded-xl'>
                     <channel.icon className='h-6 w-6' />
                   </div>
                   <h3 className='text-lg font-semibold'>{channel.title}</h3>
@@ -158,38 +137,18 @@ const SupportPage: React.FC = () => {
           </div>
 
           <div className='bg-card rounded-2xl border px-6 py-2'>
-            {filteredFaqs.length > 0 ? (
-              <Accordion type='single' collapsible>
-                {filteredFaqs.map((faq) => (
-                  <AccordionItem key={faq.question} value={faq.question}>
-                    <AccordionTrigger className='cursor-pointer py-5 text-base hover:no-underline'>
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className='text-muted-foreground pb-5 leading-relaxed'>
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            ) : (
-              <div className='flex flex-col items-center py-14 text-center'>
-                <div className='bg-muted mb-4 flex h-12 w-12 items-center justify-center rounded-full'>
-                  <SearchX className='text-muted-foreground h-6 w-6' />
-                </div>
-                <p className='font-medium'>No results for &ldquo;{search}&rdquo;</p>
-                <p className='text-muted-foreground mt-1 text-sm'>
-                  Try a different search, or contact our support team.
-                </p>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='mt-3'
-                  onClick={() => setSearch('')}
-                >
-                  Clear search
-                </Button>
-              </div>
-            )}
+            <Accordion type='single' collapsible>
+              {SUPPORT_FAQS.map((faq) => (
+                <AccordionItem key={faq.question} value={faq.question}>
+                  <AccordionTrigger className='cursor-pointer py-5 text-base hover:no-underline'>
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className='text-muted-foreground pb-5 leading-relaxed'>
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </section>
       </div>

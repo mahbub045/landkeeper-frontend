@@ -2,6 +2,8 @@
 import PropertyGallery from '@/components/client/Common/CommonComponents/Properties/PropertyDetails/PropertyGallery/PropertyGallery';
 import PropertyNotes from '@/components/client/Common/CommonComponents/Properties/PropertyDetails/Propertynotes/PropertyNotes';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsPageHeader from '@/components/common/DetailsPage/DetailsPageHeader';
 import { Badge } from '@/components/ui/badge';
 import { STATUS_STYLES } from '@/data/client/Common/Properties/PropertiesData';
 import { PROPERTY_STATUS_OPTIONS } from '@/data/common/ChoiceFieldOptions';
@@ -27,33 +29,36 @@ const PropertyDetails: React.FC = () => {
   return (
     <div className='space-y-6'>
       {/* ── Header ── */}
-      <div className='flex flex-wrap items-start justify-between gap-4'>
-        <div>
-          <p className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
-            Your Home
-          </p>
-          <h1 className='text-foreground flex items-center gap-2 truncate text-2xl leading-tight font-semibold'>
-            <MapPin className='text-primary size-3.5 shrink-0' />
+      <DetailsPageHeader
+        showBack={false}
+        eyebrow='Your Home'
+        title={
+          <span className='flex items-center gap-2'>
+            <MapPin className='text-primary size-5 shrink-0' />
             {property.address}
-          </h1>
-        </div>
-        <Badge
-          className={`gap-1.5 rounded-full text-xs font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
-        >
-          <span className='inline-block size-1.5 rounded-full bg-white' />
-          {PROPERTY_STATUS_OPTIONS.find((opt) => opt.value === property.status)
-            ?.label ?? property.status}
-        </Badge>
-      </div>
+          </span>
+        }
+        meta={
+          <Badge
+            className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLES[property.status] ?? 'bg-muted text-muted-foreground'}`}
+          >
+            <span className='inline-block size-1.5 rounded-full bg-white' />
+            {PROPERTY_STATUS_OPTIONS.find(
+              (opt) => opt.value === property.status,
+            )?.label ?? property.status}
+          </Badge>
+        }
+      />
 
       {/* ── Gallery ── */}
       {property.documents?.length ? (
         <PropertyGallery docs={property.documents} />
       ) : (
-        <div className='border-border text-muted-foreground flex h-40 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed'>
-          <ImageOff className='size-6' />
-          <span className='text-sm'>No images available for this property</span>
-        </div>
+        <DetailsEmptyState
+          icon={ImageOff}
+          message='No images available for this property'
+          className='h-48'
+        />
       )}
 
       {/* ── Overview + Landlord ── */}

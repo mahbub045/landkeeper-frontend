@@ -1,5 +1,6 @@
 'use client';
 
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import {
   getCertStatus,
   getCertStatusTone,
@@ -7,7 +8,7 @@ import {
 } from '@/data/client/Common/Compliance/ComplianceData';
 import { ComplianceExpiryTimelineProps } from '@/types/client/Common/Compliance/ComplianceTypes';
 import { formatDate } from '@/utils/formatters';
-import { CalendarCheck, CalendarX } from 'lucide-react';
+import { CalendarCheck, CalendarRange, CalendarX } from 'lucide-react';
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 // Matches the "Expiring Soon" threshold in getCertStatus
@@ -41,12 +42,11 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
 
   if (Number.isNaN(issueTime) || Number.isNaN(expiryTime)) {
     return (
-      <section className='rounded-xl border p-5 sm:p-6'>
-        <h2 className='mb-3 text-sm font-semibold'>Validity Timeline</h2>
+      <DetailsSection title='Validity Timeline' icon={CalendarRange}>
         <p className='text-muted-foreground text-sm'>
           Issue or expiry date is not available.
         </p>
-      </section>
+      </DetailsSection>
     );
   }
 
@@ -80,17 +80,18 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
   ];
 
   return (
-    <section className='rounded-xl border p-5 sm:p-6'>
-      <div className='mb-6 flex items-center justify-between gap-2'>
-        <h2 className='text-sm font-semibold'>Validity Timeline</h2>
+    <DetailsSection
+      title='Validity Timeline'
+      icon={CalendarRange}
+      action={
         <span
           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${tone.color}`}
         >
           <span className={`size-1.5 rounded-full ${tone.dot}`} />
           {status}
         </span>
-      </div>
-
+      }
+    >
       {/* Bar */}
       <div className='relative pt-8'>
         <div className='relative h-2 w-full overflow-hidden rounded-full bg-blue-100 dark:bg-blue-900/30'>
@@ -162,7 +163,7 @@ const ComplianceExpiryTimeline: React.FC<ComplianceExpiryTimelineProps> = ({
           </div>
         ))}
       </dl>
-    </section>
+    </DetailsSection>
   );
 };
 

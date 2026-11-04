@@ -26,7 +26,7 @@ const DocumentList: React.FC = () => {
 
   const {
     data: documents,
-    isLoading,
+    isFetching,
     isError,
   } = useGetTenantDocumentsQuery({ page, limit: PAGE_LIMIT });
 
@@ -72,7 +72,7 @@ const DocumentList: React.FC = () => {
 
   return (
     <div className='mt-8 w-full'>
-      {isLoading && (
+      {isFetching && (
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i} className='p-5'>
@@ -87,13 +87,13 @@ const DocumentList: React.FC = () => {
         </div>
       )}
 
-      {!isLoading && isError && (
+      {!isFetching && isError && (
         <Card className='py-10 text-center'>
           <CustomErrorMessage title='documents' />
         </Card>
       )}
 
-      {!isLoading && !isError && results.length === 0 && (
+      {!isFetching && !isError && results.length === 0 && (
         <Card className='py-10 text-center'>
           <p className='text-sm text-gray-900'>No documents yet</p>
           <p className='mt-1 text-sm text-gray-500'>
@@ -102,7 +102,7 @@ const DocumentList: React.FC = () => {
         </Card>
       )}
 
-      {!isLoading && !isError && results.length > 0 && (
+      {!isFetching && !isError && results.length > 0 && (
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {results.map((doc: CertificateDocument) => (
             <Card
@@ -198,7 +198,7 @@ const DocumentList: React.FC = () => {
       )}
 
       {/* Pagination footer */}
-      {!isLoading && !isError && results.length > 0 && (
+      {!isFetching && !isError && results.length > 0 && (
         <div className='mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <p className='text-muted-foreground text-sm whitespace-nowrap'>
             Showing {(page - 1) * PAGE_LIMIT + 1} to{' '}

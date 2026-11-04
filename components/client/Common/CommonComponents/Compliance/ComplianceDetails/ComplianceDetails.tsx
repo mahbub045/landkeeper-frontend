@@ -1,6 +1,13 @@
 'use client';
 
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import DetailsCopyId from '@/components/common/DetailsPage/DetailsCopyId';
+import DetailsDangerZone from '@/components/common/DetailsPage/DetailsDangerZone';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsInfoItem from '@/components/common/DetailsPage/DetailsInfoItem';
+import DetailsPageHeader from '@/components/common/DetailsPage/DetailsPageHeader';
+import DetailsRecordHistory from '@/components/common/DetailsPage/DetailsRecordHistory';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,23 +16,21 @@ import {
   getCertStatusTone,
   getDaysUntilExpiry,
 } from '@/data/client/Common/Compliance/ComplianceData';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useGetComplianceDetailsQuery } from '@/store/api/endpoints/client/Common/Compliance/ComplianceApi';
 import { useAppSelector } from '@/store/hooks';
 import { ApiCertificate } from '@/types/client/Common/Compliance/ComplianceTypes';
 import formatChoiceFieldValue, { formatDate } from '@/utils/formatters';
 import { getComplianceUrl, getPropertyDetailsUrl } from '@/utils/redirectPath';
 import {
-  ArrowLeft,
   Building2,
   CalendarCheck,
   CalendarX,
-  Check,
-  Copy,
   ExternalLink,
   FileText,
   FileX,
   Hash,
+  Info,
+  Paperclip,
   Pencil,
   UserCheck,
 } from 'lucide-react';
@@ -36,12 +41,10 @@ import { useState } from 'react';
 import { getCertificateLabel } from '../CertificateRegistry/CertificateRow/CertificateRow';
 import DeleteCertificateDialog from '../Dialogs/DeleteCertificateDialog';
 import UpdateCertificateDialog from '../Dialogs/UpdateCertificateDialog';
-import ComplianceDangerZone from './ComplianceDangerZone/ComplianceDangerZone';
 import ComplianceDetailsSkeleton from './ComplianceDetailsSkeleton';
 import ComplianceExpiryTimeline from './ComplianceExpiryTimeline/ComplianceExpiryTimeline';
 import ComplianceRenewNotice from './ComplianceRenewNotice/ComplianceRenewNotice';
 import ComplianceShareList from './ComplianceShareList/ComplianceShareList';
-import ComplianceTimestamps from './ComplianceTimestamps/ComplianceTimestamps';
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
 
@@ -64,7 +67,6 @@ const ComplianceDetails: React.FC = () => {
   const landlordAlias = useAppSelector(
     (state) => state.landlordAlias.landlordAlias,
   );
-  const { copy, isCopied } = useCopyToClipboard();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   // Stops the refetch of the deleted certificate (and its error screen)
@@ -102,6 +104,9 @@ const ComplianceDetails: React.FC = () => {
   const fileExtension = certificate.certificate_file
     ? getFileExtension(certificate.certificate_file)
     : '';
+  const certificateLabel = certificate.certificate_type
+    ? getCertificateLabel(certificate.certificate_type)
+    : 'Certificate';
 
   const infoItems = [
     {
@@ -146,27 +151,45 @@ const ComplianceDetails: React.FC = () => {
   ];
 
   return (
-    <div className='mx-auto'>
-      <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div>
-          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-            Certificate Details
-          </h1>
-          <p className='text-muted-foreground text-sm'>
-            View and manage this compliance certificate
-          </p>
-        </div>
-        <div className='flex flex-wrap gap-2'>
-          <Button variant='outline' onClick={() => window.history.back()}>
-            <ArrowLeft className='size-4' />
-            Back
-          </Button>
-          <Button variant='default' onClick={() => setEditOpen(true)}>
+    <div className='mx-auto space-y-6'>
+      <DetailsPageHeader
+        eyebrow='Compliance certificate'
+        title={certificateLabel}
+        description={expiryText}
+        meta={
+          <>
+            {certificate.certificate_number && (
+              <DetailsCopyId
+                copyKey={certificate.alias}
+                value={certificate.certificate_number}
+                label='Certificate number'
+              />
+            )}
+            <Badge
+              className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
+            >
+              <span className={`inline-block size-1.5 rounded-full ${dot}`} />
+              {status}
+            </Badge>
+            {certificate.certificate_type && (
+              <Badge
+                className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  CERTIFICATE_STYLES[certificate.certificate_type] ??
+                  'bg-gray-100 text-gray-800'
+                }`}
+              >
+                {formatChoiceFieldValue(certificate.certificate_type)}
+              </Badge>
+            )}
+          </>
+        }
+        actions={
+          <Button onClick={() => setEditOpen(true)}>
             <Pencil />
             Edit
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {certificate.expiry_date && status !== 'Valid' && (
         <ComplianceRenewNotice
@@ -177,156 +200,77 @@ const ComplianceDetails: React.FC = () => {
         />
       )}
 
-      {/* Header */}
-      <div className='mb-6 rounded-xl border p-5 sm:p-6'>
-        <div className='mb-2 flex flex-wrap items-center gap-2'>
-          <span className='font-mono text-lg font-medium tracking-wide'>
-            {certificate.certificate_number || 'No certificate number'}
-          </span>
-          {certificate.certificate_number && (
-            <button
-              onClick={() =>
-                copy(certificate.alias, certificate.certificate_number, {
-                  successMessage: 'Certificate number copied to clipboard.',
-                })
-              }
-              className='cursor-pointer rounded-md transition-colors'
-              aria-label='Copy certificate number'
-              title='Copy certificate number'
-            >
-              {isCopied(certificate.alias) ? (
-                <Check className='text-success size-4' />
-              ) : (
-                <Copy className='text-primary size-4' />
-              )}
-            </button>
-          )}
-        </div>
-        <h2 className='text-xl font-semibold sm:text-2xl'>
-          {certificate.certificate_type
-            ? getCertificateLabel(certificate.certificate_type)
-            : 'Certificate'}
-        </h2>
-        <div className='mt-2 flex flex-wrap items-center gap-2'>
-          <Badge
-            className={`gap-1.5 rounded-full px-3 py-1 text-xs font-semibold hover:bg-inherit ${color}`}
-          >
-            <span className={`inline-block size-1.5 rounded-full ${dot}`} />
-            {status}
-          </Badge>
-          {certificate.certificate_type && (
-            <Badge
-              className={`rounded-full px-3 py-1 text-xs font-medium ${
-                CERTIFICATE_STYLES[certificate.certificate_type] ??
-                'bg-gray-100 text-gray-800'
-              }`}
-            >
-              {formatChoiceFieldValue(certificate.certificate_type)}
-            </Badge>
-          )}
-          <span className='text-muted-foreground text-xs'>{expiryText}</span>
-        </div>
+      <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+        <DetailsSection title='Certificate Information' icon={Info}>
+          <dl className='grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2'>
+            {infoItems.map((item) => (
+              <DetailsInfoItem key={item.label} {...item} />
+            ))}
+          </dl>
+        </DetailsSection>
+
+        <ComplianceExpiryTimeline
+          issueDate={certificate.issue_date}
+          expiryDate={certificate.expiry_date}
+        />
       </div>
 
-      <div className='space-y-6'>
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          <section className='rounded-xl border p-5 sm:p-6'>
-            <h2 className='mb-5 text-sm font-semibold'>
-              Certificate Information
-            </h2>
-            <dl className='grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2'>
-              {infoItems.map(({ icon: Icon, label, value }) => (
-                <div key={label} className='flex items-start gap-3'>
-                  <span className='bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg'>
-                    <Icon className='size-4' />
-                  </span>
-                  <div className='min-w-0'>
-                    <dt className='text-muted-foreground text-xs'>{label}</dt>
-                    <dd className='text-sm font-medium wrap-break-word'>
-                      {value || (
-                        <span className='text-muted-foreground font-normal'>
-                          Not Available
-                        </span>
-                      )}
-                    </dd>
-                  </div>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          <ComplianceExpiryTimeline
-            issueDate={certificate.issue_date}
-            expiryDate={certificate.expiry_date}
+      <DetailsSection
+        title='Document'
+        icon={Paperclip}
+        action={
+          certificate.certificate_file && (
+            <Button variant='outline' size='sm' asChild>
+              <a
+                href={certificate.certificate_file}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <ExternalLink className='size-4' />
+                Open
+              </a>
+            </Button>
+          )
+        }
+      >
+        {!certificate.certificate_file ? (
+          <DetailsEmptyState icon={FileX} message='No document was uploaded' />
+        ) : IMAGE_EXTENSIONS.includes(fileExtension) ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={certificate.certificate_file}
+            alt={`Certificate document for ${certificate.certificate_number}`}
+            className='bg-muted/30 max-h-150 w-full rounded-xl border object-contain'
           />
-        </div>
+        ) : fileExtension === 'pdf' ? (
+          <iframe
+            src={certificate.certificate_file}
+            title='Certificate document'
+            className='h-150 w-full rounded-xl border'
+          />
+        ) : (
+          <DetailsEmptyState
+            icon={FileText}
+            message="Preview isn't available for this file type. Use Open to view it."
+          />
+        )}
+      </DetailsSection>
 
-        <section className='rounded-xl border p-5 sm:p-6'>
-          <div className='mb-4 flex items-center justify-between gap-2'>
-            <h2 className='text-sm font-semibold'>Document</h2>
-            {certificate.certificate_file && (
-              <Button variant='outline' size='sm' asChild>
-                <a
-                  href={certificate.certificate_file}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <ExternalLink className='size-4' />
-                  Open
-                </a>
-              </Button>
-            )}
-          </div>
-          {!certificate.certificate_file ? (
-            <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
-              <FileX className='text-muted-foreground size-6' />
-              <p className='text-muted-foreground text-sm'>
-                No document was uploaded
-              </p>
-            </div>
-          ) : IMAGE_EXTENSIONS.includes(fileExtension) ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={certificate.certificate_file}
-              alt={`Certificate document for ${certificate.certificate_number}`}
-              className='max-h-150 w-full rounded-lg border object-contain'
-            />
-          ) : fileExtension === 'pdf' ? (
-            <iframe
-              src={certificate.certificate_file}
-              title='Certificate document'
-              className='h-150 w-full rounded-lg border'
-            />
-          ) : (
-            <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10'>
-              <FileText className='text-muted-foreground size-6' />
-              <p className='text-muted-foreground text-sm'>
-                Preview isn&apos;t available for this file type. Use Open to
-                view it.
-              </p>
-            </div>
-          )}
-        </section>
+      <DetailsRecordHistory
+        createdAt={certificate.created_at}
+        updatedAt={certificate.updated_at}
+      />
 
-        {/* Record History */}
-        <ComplianceTimestamps
-          createdAt={certificate.created_at}
-          updatedAt={certificate.updated_at}
-        />
-      </div>
+      <ComplianceShareList
+        certificateAlias={certificate.alias}
+        propertyAlias={certificate.property?.alias || ''}
+      />
 
-      {/* Shares */}
-      <div className='mt-6'>
-        <ComplianceShareList
-          certificateAlias={certificate.alias}
-          propertyAlias={certificate.property?.alias || ''}
-        />
-      </div>
-
-      {/* Danger Zone */}
-      <div className='mt-6'>
-        <ComplianceDangerZone onDeleteClick={() => setDeleteOpen(true)} />
-      </div>
+      <DetailsDangerZone
+        title='Delete certificate'
+        description='Permanently removes this certificate and its compliance records. This cannot be undone.'
+        onDeleteClick={() => setDeleteOpen(true)}
+      />
 
       {/* Dialogs */}
 
@@ -343,11 +287,7 @@ const ComplianceDetails: React.FC = () => {
         onClose={() => setDeleteOpen(false)}
         onSuccess={handleDeleteSuccess}
         certificateAlias={certificate.alias}
-        certificateName={
-          certificate.certificate_type
-            ? getCertificateLabel(certificate.certificate_type)
-            : 'Certificate'
-        }
+        certificateName={certificateLabel}
         certificateNumber={certificate.certificate_number}
       />
     </div>

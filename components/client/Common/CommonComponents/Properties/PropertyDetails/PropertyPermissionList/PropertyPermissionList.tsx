@@ -1,4 +1,6 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +37,7 @@ import {
   Pencil,
   Phone,
   Plus,
+  ShieldCheck,
   Trash2,
 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -60,7 +63,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
 
   const {
     data: propertyPermissions,
-    isLoading,
+    isFetching,
     isError,
   } = useGetPropertyPermissionsQuery({
     property_alias: propertyAlias,
@@ -96,7 +99,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   const permissions = propertyPermissions?.results ?? [];
   const count = propertyPermissions?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(count / PAGE_LIMIT));
-  const isEmpty = !isLoading && !isError && permissions.length === 0;
+  const isEmpty = !isFetching && !isError && permissions.length === 0;
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -118,32 +121,25 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
   };
 
   return (
-    <div className='border-warning space-y-4 rounded-lg border border-dashed p-4'>
-      <div className='flex items-center justify-between'>
-        <div>
-          <h2 className='text-warning text-lg leading-none font-medium'>
-            Property access
-          </h2>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            Mortgage advisers with permission to view or edit this property.
-          </p>
-        </div>
-        <div>
-          <Button
-            variant='warning'
-            size='sm'
-            className='mt-2'
-            onClick={() => setIsAddUserDialogOpen(true)}
-          >
-            <Plus />
-            Add new User For Permission
-          </Button>
-        </div>
-      </div>
-
+    <DetailsSection
+      title='Property Access'
+      icon={ShieldCheck}
+      description='Mortgage advisers with permission to view or edit this property.'
+      contentClassName='space-y-4'
+      action={
+        <Button
+          variant='warning'
+          size='sm'
+          onClick={() => setIsAddUserDialogOpen(true)}
+        >
+          <Plus />
+          <span className='hidden sm:inline'>Add User</span>
+        </Button>
+      }
+    >
       {isError ? (
         <CustomErrorMessage title='property access' />
-      ) : isLoading ? (
+      ) : isFetching ? (
         <div className='grid gap-3 sm:grid-cols-2'>
           {Array.from({ length: 2 }).map((_, i) => (
             <Card key={i} className='shadow-sm'>
@@ -159,12 +155,10 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
           ))}
         </div>
       ) : isEmpty ? (
-        <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center'>
-          <Ban className='text-muted-foreground h-6 w-6' />
-          <p className='text-muted-foreground text-sm'>
-            No mortgage advisers have been given access to this property.
-          </p>
-        </div>
+        <DetailsEmptyState
+          icon={Ban}
+          message='No mortgage advisers have been given access to this property.'
+        />
       ) : (
         <>
           <div className='grid gap-3 sm:grid-cols-2'>
@@ -358,7 +352,7 @@ const PropertyPermissionList: React.FC<PropertyPermissionListProps> = ({
         onClose={() => setIsDeleteUserDialogOpen(false)}
         userToRemove={userToRemove}
       />
-    </div>
+    </DetailsSection>
   );
 };
 

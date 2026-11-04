@@ -21,11 +21,6 @@ export interface MortgagePropertyType {
   updated_at: string;
 }
 
-export interface MortgageTimestampsProps {
-  createdAt?: string;
-  updatedAt?: string;
-}
-
 interface UploadedDocument {
   id: number;
   file: string;
