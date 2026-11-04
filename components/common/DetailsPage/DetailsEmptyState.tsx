@@ -9,7 +9,7 @@ const DetailsEmptyState: React.FC<DetailsEmptyStateProps> = ({
   return (
     <div
       className={cn(
-        'bg-muted/20 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-10 text-center',
+        'bg-muted/20 border-warning/50 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-10 text-center',
         className,
       )}
     >
