@@ -1,4 +1,6 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,7 +22,7 @@ import {
 } from '@/types/client/Common/Compliance/CertificateSharesTypes';
 import { PAGE_LIMIT } from '@/utils/commonConstants.ts';
 import formatChoiceFieldValue, { getInitials } from '@/utils/formatters';
-import { Ban, Mail, Plus, Trash2 } from 'lucide-react';
+import { Ban, Mail, Plus, Share2, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import AddNewShareDialog from '../../CertificateRegistry/Dialogs/AddNewShareDialog';
 import DeleteShareDialog from '../../CertificateRegistry/Dialogs/DeleteShareDialog';
@@ -85,29 +87,22 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
   };
 
   return (
-    <div className='border-info space-y-4 rounded-lg border border-dashed p-4'>
-      <div className='flex items-center justify-between'>
-        <div>
-          <h2 className='text-info text-lg leading-none font-medium'>
-            Certificate shares
-          </h2>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            Tenants who can view this certificate.
-          </p>
-        </div>
-        <div>
-          <Button
-            variant='info'
-            size='sm'
-            className='mt-2'
-            onClick={() => setIsAddShareDialogOpen(true)}
-          >
-            <Plus />
-            Share with Tenant
-          </Button>
-        </div>
-      </div>
-
+    <DetailsSection
+      title='Certificate Shares'
+      icon={Share2}
+      description='Tenants who can view this certificate.'
+      contentClassName='space-y-4'
+      action={
+        <Button
+          variant='info'
+          size='sm'
+          onClick={() => setIsAddShareDialogOpen(true)}
+        >
+          <Plus />
+          <span className='hidden sm:inline'>Share with Tenant</span>
+        </Button>
+      }
+    >
       {isError ? (
         <CustomErrorMessage title='certificate shares' />
       ) : isFetching ? (
@@ -125,12 +120,10 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
           ))}
         </div>
       ) : isEmpty ? (
-        <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center'>
-          <Ban className='text-muted-foreground h-6 w-6' />
-          <p className='text-muted-foreground text-sm'>
-            This certificate hasn&apos;t been shared with any tenants.
-          </p>
-        </div>
+        <DetailsEmptyState
+          icon={Ban}
+          message="This certificate hasn't been shared with any tenants."
+        />
       ) : (
         <>
           <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
@@ -259,7 +252,7 @@ const ComplianceShareList: React.FC<ComplianceShareListProps> = ({
         tenantAliases={shareToRemove ? [shareToRemove] : []}
         onDeleted={handleShareRemoved}
       />
-    </div>
+    </DetailsSection>
   );
 };
 

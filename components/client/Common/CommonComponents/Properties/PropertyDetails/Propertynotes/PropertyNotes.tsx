@@ -1,22 +1,18 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { PropertyNotesProps } from '@/types/client/Common/Properties/PropertyDetailsTypes';
+import { StickyNote } from 'lucide-react';
 
 const PropertyNotes: React.FC<PropertyNotesProps> = ({ notes }) => {
   if (!notes) return null;
 
   return (
-    <Card className='border-border rounded-2xl shadow-sm'>
-      <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold'>Notes</CardTitle>
-      </CardHeader>
-      <CardContent className='px-5 pb-5'>
-        <p className='text-muted-foreground text-sm leading-relaxed whitespace-pre-line'>
-          {notes}
-        </p>
-      </CardContent>
-    </Card>
+    <DetailsSection title='Notes' icon={StickyNote}>
+      <p className='text-muted-foreground text-sm leading-relaxed whitespace-pre-line'>
+        {notes}
+      </p>
+    </DetailsSection>
   );
 };
 

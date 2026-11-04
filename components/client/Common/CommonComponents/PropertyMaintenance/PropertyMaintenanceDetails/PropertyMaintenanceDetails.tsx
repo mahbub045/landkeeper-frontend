@@ -1,6 +1,11 @@
 'use client';
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
 import Loading from '@/components/common/CustomLoader/Loading';
+import DetailsCopyId from '@/components/common/DetailsPage/DetailsCopyId';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsInfoItem from '@/components/common/DetailsPage/DetailsInfoItem';
+import DetailsPageHeader from '@/components/common/DetailsPage/DetailsPageHeader';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,7 +24,6 @@ import {
   STATUS_DOT,
   STATUS_STYLES,
 } from '@/data/client/Common/PropertyMaintenance/PropertyMaintenanceData';
-import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import {
   useEditPropertyMaintenanceMutation,
   useGetPropertyMaintenanceDetailsQuery,
@@ -27,16 +31,16 @@ import {
 import { MaintenanceRequest } from '@/types/client/Common/PropertyMaintenance/PropertyMaintenanceType';
 import formatChoiceFieldValue, { formatDateAndTime } from '@/utils/formatters';
 import {
-  ArrowLeft,
   Building2,
   Calendar,
-  Check,
   ChevronLeft,
   ChevronRight,
   Clock,
-  Copy,
   Edit,
+  History,
   ImageOff,
+  Images,
+  StickyNote,
   Trash,
   User,
   X,
@@ -64,7 +68,6 @@ const PropertyMaintenanceDetails: React.FC = () => {
   const [selectedRequestAlias, setSelectedRequestAlias] = useState<
     string | null
   >(null);
-  const { copy, isCopied } = useCopyToClipboard();
 
   const handleOpenEditDialog = (alias: string) => {
     setSelectedRequestAlias(alias);
@@ -151,30 +154,25 @@ const PropertyMaintenanceDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className='mx-auto'>
-        <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <Skeleton className='mb-2 h-7 w-72' />
-            <Skeleton className='h-4 w-56' />
-          </div>
-          <div className='flex flex-wrap gap-2'>
-            <Skeleton className='h-9 w-20' />
-            <Skeleton className='h-9 w-20' />
-            <Skeleton className='h-9 w-20' />
-          </div>
-        </div>
-
         {/* Header */}
-        <div className='mb-6 rounded-xl border p-5 sm:p-6'>
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-            <div className='min-w-0 flex-1'>
-              <Skeleton className='mb-2 h-3 w-24' />
-              <Skeleton className='mb-3 h-6 w-80 max-w-full' />
-              <div className='flex gap-2'>
-                <Skeleton className='h-5 w-20 rounded-full' />
-                <Skeleton className='h-5 w-24 rounded-full' />
+        <div className='mb-6 rounded-2xl border p-5 sm:p-6'>
+          <div className='flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
+            <div className='flex min-w-0 flex-1 items-start gap-4'>
+              <Skeleton className='size-9 shrink-0 rounded-full' />
+              <div className='min-w-0 flex-1'>
+                <Skeleton className='mb-2 h-3 w-32' />
+                <Skeleton className='mb-3 h-7 w-80 max-w-full' />
+                <div className='flex gap-2'>
+                  <Skeleton className='h-6 w-28 rounded-full' />
+                  <Skeleton className='h-6 w-20 rounded-full' />
+                  <Skeleton className='h-6 w-24 rounded-full' />
+                </div>
               </div>
             </div>
-            <Skeleton className='h-9 w-32 shrink-0' />
+            <div className='flex gap-2'>
+              <Skeleton className='h-9 w-20' />
+              <Skeleton className='h-9 w-20' />
+            </div>
           </div>
         </div>
 
@@ -261,186 +259,148 @@ const PropertyMaintenanceDetails: React.FC = () => {
   }
 
   return (
-    <div className='mx-auto'>
-      <div className='mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div>
-          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-            Property Maintenance{' '}
-            {session?.user?.role === 'TENANT' ? 'Requests' : ''} Details
-          </h1>
-          <p className='text-muted-foreground text-sm'>
-            Manage your property maintenance{' '}
-            {session?.user?.role === 'TENANT' ? 'requests' : ''} Details
-          </p>
-        </div>
-        <div className='flex flex-wrap gap-2'>
-          <Button variant='outline' onClick={() => window.history.back()}>
-            <ArrowLeft className='size-4' />
-            Back
-          </Button>
-
-          {session?.user?.role === 'TENANT' && (
+    <div className='mx-auto space-y-6'>
+      <DetailsPageHeader
+        eyebrow={
+          session?.user?.role === 'TENANT'
+            ? 'Maintenance request'
+            : 'Property maintenance'
+        }
+        title={maintenanceRequestDetails?.issue}
+        tone={maintenanceRequestDetails?.is_emergency ? 'danger' : 'default'}
+        actions={
+          <>
+            {session?.user?.role === 'TENANT' && (
+              <Button
+                variant='default'
+                onClick={() =>
+                  handleOpenEditDialog(maintenanceRequestDetails?.alias)
+                }
+              >
+                <Edit />
+                Edit
+              </Button>
+            )}
             <Button
-              variant='default'
+              variant='destructive'
               onClick={() =>
-                handleOpenEditDialog(maintenanceRequestDetails?.alias)
+                handleOpenDeleteDialog(maintenanceRequestDetails?.alias)
               }
             >
-              <Edit />
-              Edit
+              <Trash />
+              Delete
             </Button>
-          )}
-          <Button
-            variant='destructive'
-            onClick={() =>
-              handleOpenDeleteDialog(maintenanceRequestDetails?.alias)
-            }
-          >
-            <Trash />
-            Delete
-          </Button>
-        </div>
-      </div>
-
-      {/* Header */}
-      <div
-        className={`mb-6 rounded-xl border p-5 sm:p-6 ${
-          maintenanceRequestDetails?.is_emergency
-            ? 'border-rose-200 bg-rose-50/40 dark:border-rose-800 dark:bg-rose-900/20'
-            : ''
-        }`}
-      >
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-          <div className='min-w-0'>
-            <div className='mb-2 flex flex-wrap items-center gap-2'>
-              <span className='font-mono text-xl font-medium tracking-wide'>
-                {maintenanceRequestDetails?.request_id}
-              </span>
-              <button
-                onClick={() =>
-                  copy(
-                    maintenanceRequestDetails?.alias,
-                    maintenanceRequestDetails?.request_id,
-                    {
-                      successMessage: 'Maintenance ID copied to clipboard.',
-                    },
-                  )
-                }
-                className='cursor-pointer rounded-md transition-colors'
-                aria-label='Copy request ID'
-                title='Copy request ID'
-              >
-                {isCopied(maintenanceRequestDetails?.alias) ? (
-                  <Check className='text-success size-4' />
-                ) : (
-                  <Copy className='text-primary size-4' />
-                )}
-              </button>
-              {maintenanceRequestDetails?.is_emergency && (
-                <Badge className='gap-1 rounded-full bg-rose-600 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-rose-600'>
-                  <span className='relative flex size-1.5'>
-                    <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75' />
-                    <span className='relative inline-flex size-1.5 rounded-full bg-white' />
-                  </span>
-                  Emergency
-                </Badge>
-              )}
-            </div>
-            <h1 className='text-xl font-semibold sm:text-2xl'>
-              {maintenanceRequestDetails?.issue}
-            </h1>
-            <div className='mt-2 flex flex-wrap items-center gap-2'>
-              {canEditStatus ? (
-                <Select
-                  value={maintenanceRequestDetails?.current_status}
-                  onValueChange={handleStatusChange}
-                  disabled={isStatusUpdating}
-                >
-                  <SelectTrigger
-                    className={`h-5! w-fit gap-1.5 rounded-full border-none px-3 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent align='start'>
-                    {MAINTENANCE_STATUS_OPTIONS.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        <span className='flex items-center gap-1.5'>
-                          <span
-                            className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status.value]}`}
-                          />
-                          {status.label}
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Badge
-                  className={`gap-1.5 ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
-                >
-                  <span
-                    className={`size-1.5 rounded-full ${STATUS_DOT[maintenanceRequestDetails?.current_status]}`}
-                  />
-                  {formatChoiceFieldValue(
-                    maintenanceRequestDetails?.current_status,
-                  )}
-                </Badge>
-              )}
-              <Badge
-                className={`gap-1.5 ring-1 ring-inset ${CATEGORY_META[maintenanceRequestDetails?.category].classes}`}
-              >
-                {(() => {
-                  const CategoryIcon =
-                    CATEGORY_META[maintenanceRequestDetails?.category].icon;
-                  return <CategoryIcon className='size-3' />;
-                })()}
-                {formatChoiceFieldValue(maintenanceRequestDetails?.category)}
+          </>
+        }
+        meta={
+          <>
+            <DetailsCopyId
+              copyKey={maintenanceRequestDetails?.alias}
+              value={maintenanceRequestDetails?.request_id}
+              label='Maintenance ID'
+            />
+            {maintenanceRequestDetails?.is_emergency && (
+              <Badge className='gap-1 rounded-full bg-rose-600 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-rose-600'>
+                <span className='relative flex size-1.5'>
+                  <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75' />
+                  <span className='relative inline-flex size-1.5 rounded-full bg-white' />
+                </span>
+                Emergency
               </Badge>
-            </div>
-          </div>
-        </div>
-      </div>
+            )}
+            {canEditStatus ? (
+              <Select
+                value={maintenanceRequestDetails?.current_status}
+                onValueChange={handleStatusChange}
+                disabled={isStatusUpdating}
+              >
+                <SelectTrigger
+                  className={`h-5! w-fit gap-1.5 rounded-full border-none px-3 py-1 text-xs font-medium shadow-none ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent align='start'>
+                  {MAINTENANCE_STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      <span className='flex items-center gap-1.5'>
+                        <span
+                          className={`size-1.5 shrink-0 rounded-full ${STATUS_DOT[status.value]}`}
+                        />
+                        {status.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge
+                className={`gap-1.5 ${STATUS_STYLES[maintenanceRequestDetails?.current_status]}`}
+              >
+                <span
+                  className={`size-1.5 rounded-full ${STATUS_DOT[maintenanceRequestDetails?.current_status]}`}
+                />
+                {formatChoiceFieldValue(
+                  maintenanceRequestDetails?.current_status,
+                )}
+              </Badge>
+            )}
+            <Badge
+              className={`gap-1.5 ring-1 ring-inset ${CATEGORY_META[maintenanceRequestDetails?.category].classes}`}
+            >
+              {(() => {
+                const CategoryIcon =
+                  CATEGORY_META[maintenanceRequestDetails?.category].icon;
+                return <CategoryIcon className='size-3' />;
+              })()}
+              {formatChoiceFieldValue(maintenanceRequestDetails?.category)}
+            </Badge>
+          </>
+        }
+      />
 
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
         {/* Main column */}
         <div className='space-y-6 lg:col-span-2'>
           {/* Notes */}
-          <section className='rounded-xl border p-5 sm:p-6'>
-            <h2 className='mb-3 text-sm font-semibold'>Notes</h2>
+          <DetailsSection title='Notes' icon={StickyNote}>
             {maintenanceRequestDetails?.notes ? (
-              <p className='text-gray-600s text-sm leading-relaxed'>
+              <p className='text-foreground text-sm leading-relaxed whitespace-pre-line'>
                 {maintenanceRequestDetails?.notes}
               </p>
             ) : (
-              <p className='text-sm italic'>
+              <p className='text-muted-foreground text-sm italic'>
                 No additional notes were provided.
               </p>
             )}
-          </section>
+          </DetailsSection>
 
           {/* Photos */}
-          <section className='rounded-xl border p-5 sm:p-6'>
-            <h2 className='mb-3 text-sm font-semibold'>
-              Photos
-              {documents.length > 0 && (
-                <span className='ml-1.5 font-normal'>({documents.length})</span>
-              )}
-            </h2>
+          <DetailsSection
+            title='Photos'
+            icon={Images}
+            action={
+              documents.length > 0 && (
+                <span className='bg-muted text-muted-foreground rounded-full px-2.5 py-0.5 text-xs font-medium'>
+                  {documents.length}
+                </span>
+              )
+            }
+          >
             {documents.length === 0 ? (
-              <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-gray-200 py-10'>
-                <ImageOff className='size-6' />
-                <p className='text-sm'>No photos were attached</p>
-              </div>
+              <DetailsEmptyState
+                icon={ImageOff}
+                message='No photos were attached'
+              />
             ) : (
               <div className='grid grid-cols-2 gap-3 sm:grid-cols-3'>
                 {documents.map((doc, i) => (
                   <button
                     key={doc.id}
                     onClick={() => openLightbox(i)}
-                    className='group relative aspect-square overflow-hidden rounded-lg border border-gray-200 bg-gray-50'
+                    className='group bg-muted/40 relative aspect-square cursor-zoom-in overflow-hidden rounded-xl border'
                   >
                     {!loadedImages[String(doc.id)] && (
-                      <div className='absolute inset-0 z-10 flex items-center justify-center bg-gray-50'>
+                      <div className='bg-muted/40 absolute inset-0 z-10 flex items-center justify-center'>
                         <Loading />
                       </div>
                     )}
@@ -461,15 +421,14 @@ const PropertyMaintenanceDetails: React.FC = () => {
                 ))}
               </div>
             )}
-          </section>
+          </DetailsSection>
         </div>
 
         {/* Sidebar */}
 
         <div className='space-y-6'>
           {session?.user?.role !== 'TENANT' && (
-            <section className='rounded-xl border p-5'>
-              <h2 className='mb-4 text-sm font-semibold'>Requested by</h2>
+            <DetailsSection title='Requested by' icon={User}>
               <dl className='space-y-4'>
                 <div className='flex items-start gap-3'>
                   <Avatar className='size-9 shrink-0'>
@@ -485,7 +444,7 @@ const PropertyMaintenanceDetails: React.FC = () => {
                   </Avatar>
 
                   <div className='min-w-0'>
-                    <dt className='text-xs'>Tenant</dt>
+                    <dt className='text-muted-foreground text-xs'>Tenant</dt>
                     <dd className='truncate text-sm font-medium'>
                       {maintenanceRequestDetails?.tenant.name}
                     </dd>
@@ -497,60 +456,33 @@ const PropertyMaintenanceDetails: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div className='flex items-start gap-3'>
-                  <span className='bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full'>
-                    <Building2 className='mt-0.5 size-4 shrink-0' />
-                  </span>
-                  <div className='min-w-0'>
-                    <dt className='text-xs'>Property</dt>
-                    <dd className='text-sm font-medium'>
-                      {maintenanceRequestDetails?.property}
-                    </dd>
-                  </div>
-                </div>
+                <DetailsInfoItem
+                  icon={Building2}
+                  label='Property'
+                  value={maintenanceRequestDetails?.property}
+                />
               </dl>
-            </section>
+            </DetailsSection>
           )}
 
-          <section className='rounded-xl border p-5'>
-            <h2 className='mb-4 text-sm font-semibold'>Timeline</h2>
+          <DetailsSection title='Timeline' icon={History}>
             <dl className='space-y-4'>
-              <div className='flex items-start gap-3'>
-                <Calendar className='mt-0.5 size-4 shrink-0' />
-                <div className='min-w-0'>
-                  <dt className='text-xs'>Submitted</dt>
-                  <dd className='text-sm font-medium'>
-                    {formatDateAndTime(maintenanceRequestDetails?.created_at)}
-                  </dd>
-                  <dd className='text-xs'>
-                    {formatDateAndTime(maintenanceRequestDetails?.created_at)}
-                  </dd>
-                </div>
-              </div>
-              <div className='flex items-start gap-3'>
-                <Clock className='mt-0.5 size-4 shrink-0' />
-                <div className='min-w-0'>
-                  <dt className='text-xs'>Last updated</dt>
-                  <dd className='text-sm font-medium'>
-                    {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
-                  </dd>
-                  <dd className='text-xs'>
-                    {formatDateAndTime(maintenanceRequestDetails?.updated_at)}
-                  </dd>
-                </div>
-              </div>
+              <DetailsInfoItem
+                icon={Calendar}
+                label='Submitted'
+                value={formatDateAndTime(maintenanceRequestDetails?.created_at)}
+              />
+              <DetailsInfoItem
+                icon={Clock}
+                label='Last updated'
+                value={formatDateAndTime(maintenanceRequestDetails?.updated_at)}
+              />
             </dl>
-          </section>
+          </DetailsSection>
         </div>
       </div>
 
-      <hr className='my-6' />
-
-      <div>
-        <PropertyMaintenanceComments
-          pmAlias={maintenanceRequestDetails?.alias}
-        />
-      </div>
+      <PropertyMaintenanceComments pmAlias={maintenanceRequestDetails?.alias} />
 
       {/* Lightbox */}
       {lightboxIndex !== null && documents[lightboxIndex] && (

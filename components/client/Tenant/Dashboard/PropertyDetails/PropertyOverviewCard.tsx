@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import {
   OverviewStatProps,
   TenantPropertyOverviewCardProps,
@@ -12,6 +12,7 @@ import {
   Building2,
   CalendarDays,
   DoorOpen,
+  Home,
   ScrollText,
   Users,
   Wallet,
@@ -52,61 +53,51 @@ const PropertyOverviewCard: React.FC<TenantPropertyOverviewCardProps> = ({
   const rentalIncome = fmtMonthly(property.monthly_rental_income);
 
   return (
-    <Card className='border-border h-full rounded-2xl shadow-sm'>
-      <CardHeader className='pb-2'>
-        <CardTitle className='text-base font-semibold'>
-          Property Overview
-        </CardTitle>
-      </CardHeader>
-      <CardContent className='grid flex-1 auto-rows-fr grid-cols-2 gap-3 px-5 pb-5 sm:grid-cols-3'>
-        <OverviewStat
-          icon={Building2}
-          label='Type'
-          value={formatChoiceFieldValue(property.property_type)}
-        />
-        {!isHmo && (
-          <>
-            <OverviewStat
-              icon={Bed}
-              label='Bedrooms'
-              value={property.bedrooms}
-            />
-            <OverviewStat
-              icon={Bath}
-              label='Bathrooms'
-              value={property.bathrooms}
-            />
-          </>
-        )}
-        <OverviewStat
-          icon={ScrollText}
-          label='Tenure'
-          value={formatChoiceFieldValue(property.property_tenure) || null}
-        />
-        <OverviewStat
-          icon={CalendarDays}
-          label='Year Built'
-          value={property.year_built}
-        />
-        <OverviewStat icon={Users} label='Ownership' value={owner} />
-        {isHmo ? (
-          <>
-            <OverviewStat
-              icon={DoorOpen}
-              label='Your Room'
-              value={property.room_name || null}
-            />
-            <OverviewStat icon={Wallet} label='Room Rent' value={rent} />
-          </>
-        ) : (
+    <DetailsSection
+      title='Property Overview'
+      icon={Home}
+      className='h-full'
+      contentClassName='grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3'
+    >
+      <OverviewStat
+        icon={Building2}
+        label='Type'
+        value={formatChoiceFieldValue(property.property_type)}
+      />
+      {!isHmo && (
+        <>
+          <OverviewStat icon={Bed} label='Bedrooms' value={property.bedrooms} />
           <OverviewStat
-            icon={Wallet}
-            label='Monthly Rent'
-            value={rentalIncome}
+            icon={Bath}
+            label='Bathrooms'
+            value={property.bathrooms}
           />
-        )}
-      </CardContent>
-    </Card>
+        </>
+      )}
+      <OverviewStat
+        icon={ScrollText}
+        label='Tenure'
+        value={formatChoiceFieldValue(property.property_tenure) || null}
+      />
+      <OverviewStat
+        icon={CalendarDays}
+        label='Year Built'
+        value={property.year_built}
+      />
+      <OverviewStat icon={Users} label='Ownership' value={owner} />
+      {isHmo ? (
+        <>
+          <OverviewStat
+            icon={DoorOpen}
+            label='Your Room'
+            value={property.room_name || null}
+          />
+          <OverviewStat icon={Wallet} label='Room Rent' value={rent} />
+        </>
+      ) : (
+        <OverviewStat icon={Wallet} label='Monthly Rent' value={rentalIncome} />
+      )}
+    </DetailsSection>
   );
 };
 

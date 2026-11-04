@@ -1,4 +1,6 @@
 import CustomErrorMessage from '@/components/common/CustomErrorMessage/CustomErrorMessage';
+import DetailsEmptyState from '@/components/common/DetailsPage/DetailsEmptyState';
+import DetailsSection from '@/components/common/DetailsPage/DetailsSection';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +37,7 @@ import {
   Pencil,
   Phone,
   Plus,
+  ShieldCheck,
   Trash2,
 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -118,29 +121,22 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
   };
 
   return (
-    <div className='border-warning space-y-4 rounded-lg border border-dashed p-4'>
-      <div className='flex items-center justify-between'>
-        <div>
-          <h2 className='text-warning text-lg leading-none font-medium'>
-            Mortgage access
-          </h2>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            Mortgage advisers with permission to view or edit this mortgage.
-          </p>
-        </div>
-        <div>
-          <Button
-            variant='warning'
-            size='sm'
-            className='mt-2'
-            onClick={() => setIsAddUserDialogOpen(true)}
-          >
-            <Plus />
-            Add new User For Permission
-          </Button>
-        </div>
-      </div>
-
+    <DetailsSection
+      title='Mortgage Access'
+      icon={ShieldCheck}
+      description='Mortgage advisers with permission to view or edit this mortgage.'
+      contentClassName='space-y-4'
+      action={
+        <Button
+          variant='warning'
+          size='sm'
+          onClick={() => setIsAddUserDialogOpen(true)}
+        >
+          <Plus />
+          <span className='hidden sm:inline'>Add User</span>
+        </Button>
+      }
+    >
       {isError ? (
         <CustomErrorMessage title='mortgage access' />
       ) : isFetching ? (
@@ -159,12 +155,10 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
           ))}
         </div>
       ) : isEmpty ? (
-        <div className='flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center'>
-          <Ban className='text-muted-foreground h-6 w-6' />
-          <p className='text-muted-foreground text-sm'>
-            No mortgage advisers have been given access to this mortgage.
-          </p>
-        </div>
+        <DetailsEmptyState
+          icon={Ban}
+          message='No mortgage advisers have been given access to this mortgage.'
+        />
       ) : (
         <>
           <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3'>
@@ -358,7 +352,7 @@ const MortgagePermissionList: React.FC<MortgagePermissionListProps> = ({
         onClose={() => setIsDeleteUserDialogOpen(false)}
         userToRemove={userToRemove}
       />
-    </div>
+    </DetailsSection>
   );
 };
 
