@@ -114,7 +114,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
               <DocIcon category={doc.document_category} />
 
               <div className='min-w-0 flex-1'>
-                <p className='text-foreground truncate text-sm font-semibold'>
+                <p className='text-primary truncate text-sm font-semibold'>
                   {doc.document_name}
                 </p>
 

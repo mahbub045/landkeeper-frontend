@@ -491,7 +491,7 @@ const PropertyMaintenanceList: React.FC = () => {
                   {session?.user?.role !== 'TENANT' && (
                     <>
                       <TableCell className='text-sm'>
-                        <div className='flex items-center gap-3'>
+                        <div className='text-secondary flex items-center gap-3'>
                           <Avatar className='h-9 w-9'>
                             <AvatarImage
                               src={request?.tenant?.avatar ?? undefined}
@@ -502,14 +502,14 @@ const PropertyMaintenanceList: React.FC = () => {
                             </AvatarFallback>
                           </Avatar>
 
-                          <div className='flex flex-col gap-1'>
-                            <span className='font-medium'>
+                          <div className='flex flex-col leading-tight'>
+                            <span className='leading-tight font-medium'>
                               {request?.tenant?.name}
                             </span>
-                            <span className='text-muted-foreground text-xs'>
+                            <span className='text-muted-foreground text-xs leading-tight'>
                               {request?.tenant?.email}
                             </span>
-                            <span className='text-muted-foreground text-xs'>
+                            <span className='text-muted-foreground text-xs leading-tight'>
                               {request?.tenant?.phone}
                             </span>
                           </div>

@@ -85,7 +85,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         {/* Content */}
         <CardContent>
           <div className='flex justify-between gap-2'>
-            <h3 className='text-foreground truncate text-base font-bold'>
+            <h3 className='text-primary truncate text-base font-bold'>
               {property.property_name}
             </h3>
 
