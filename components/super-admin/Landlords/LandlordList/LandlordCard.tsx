@@ -63,9 +63,11 @@ const LandlordCard: React.FC<{ landlord: LandlordType }> = ({ landlord }) => {
             </div>
             <div className='text-muted-foreground flex items-center gap-2'>
               <Phone className='size-4 shrink-0' />
-              <span className='truncate'>
-                {landlord.phone || 'Not provided'}
-              </span>
+              {landlord.phone ? (
+                <span className='truncate'>{landlord.phone}</span>
+              ) : (
+                <span className='truncate text-xs italic'>Not provided</span>
+              )}
             </div>
             <div className='text-muted-foreground flex items-center gap-2'>
               <CalendarDays className='size-4 shrink-0' />

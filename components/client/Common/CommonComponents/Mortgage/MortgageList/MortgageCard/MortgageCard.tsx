@@ -27,7 +27,7 @@ const MortgageCard: React.FC<{ mortgage: Mortgage }> = ({ mortgage }) => {
             <p className='text-muted-foreground truncate text-sm'>
               {mortgage.property.property_name}
             </p>
-            <h2 className='mt-0.5 truncate text-lg font-bold'>
+            <h2 className='mt-0.5 truncate text-primary text-lg font-bold'>
               {mortgage.lender_name}
             </h2>
             <p className='text-muted-foreground mt-0.5 text-xs'>

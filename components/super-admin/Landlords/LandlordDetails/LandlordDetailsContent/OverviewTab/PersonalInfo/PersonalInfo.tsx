@@ -45,7 +45,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({
         <span
           className={cn(
             'truncate text-sm font-medium sm:text-right',
-            isEmpty && 'text-muted-foreground/70 font-normal italic',
+            isEmpty && 'text-muted-foreground/70 text-xs font-normal italic',
           )}
         >
           {isEmpty ? NOT_PROVIDED : value}
