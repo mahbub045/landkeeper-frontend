@@ -8,6 +8,7 @@ import {
   Landmark,
   LucideIcon,
   Receipt,
+  ShieldCheck,
   Wallet,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -123,14 +124,24 @@ const MakingTaxDigital: React.FC = () => {
 
   return (
     <div className='space-y-6'>
-      <div>
-        <h1 className='text-foreground text-2xl font-bold tracking-tight'>
-          Making Tax Digital (MTD)
-        </h1>
-        <p className='text-muted-foreground text-sm'>
-          Manage your quarterly updates and annual summary for Making Tax
-          Digital.
-        </p>
+      <div className='flex flex-wrap items-center justify-between gap-3'>
+        <div>
+          <h1 className='text-foreground text-2xl font-bold tracking-tight'>
+            Making Tax Digital (MTD)
+          </h1>
+          <p className='text-muted-foreground text-sm'>
+            Manage your quarterly updates and annual summary for Making Tax
+            Digital.
+          </p>
+        </div>
+        <span className='bg-warning inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] leading-tight font-bold tracking-wide text-slate-900 uppercase'>
+          <ShieldCheck className='size-5 shrink-0 fill-slate-900 text-warning' />
+          <span>
+            Bridging software
+            <br />
+            needed for submission
+          </span>
+        </span>
       </div>
 
       <ReportingPeriod
