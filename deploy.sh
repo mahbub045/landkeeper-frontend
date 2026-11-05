@@ -8,7 +8,7 @@ git pull origin main
 echo "Building new image (current containers keep serving)..."
 docker compose build
 
-for svc in frontend_a frontend_b; do
+for svc in landkeeper_frontend_a landkeeper_frontend_b; do
   echo "Updating $svc..."
   docker compose up -d --no-deps "$svc"
 
