@@ -22,7 +22,7 @@ const ContactRow: React.FC<ContactRowProps> = ({
           {value}
         </p>
       ) : (
-        <p className='text-muted-foreground text-sm italic'>Not provided</p>
+        <p className='text-muted-foreground text-xs italic'>Not provided</p>
       )}
     </div>
   </div>
