@@ -160,7 +160,7 @@ const MortgageDetails: React.FC = () => {
             <p className='text-muted-foreground text-xs'>{label}</p>
             <p className='text-foreground mt-1 font-mono text-xl font-semibold tracking-tight'>
               {value || (
-                <span className='text-muted-foreground text-sm font-normal'>
+                <span className='text-muted-foreground font-sans text-xs font-normal italic'>
                   Not provided
                 </span>
               )}
@@ -268,9 +268,15 @@ const MortgageDetails: React.FC = () => {
                 {label}
               </span>
               <span className='border-border flex-1 border-b border-dashed' />
-              <span className='text-foreground font-mono text-sm font-medium whitespace-nowrap'>
-                {value || 'Not provided'}
-              </span>
+              {value ? (
+                <span className='text-foreground font-mono text-sm font-medium whitespace-nowrap'>
+                  {value}
+                </span>
+              ) : (
+                <span className='text-muted-foreground text-xs whitespace-nowrap italic'>
+                  Not provided
+                </span>
+              )}
             </div>
           ))}
         </DetailsSection>
