@@ -77,7 +77,7 @@ const ProviderDetailsDialog: React.FC<ProviderDetailsDialogProps> = ({
               />
             )}
             <div className='min-w-0 text-left'>
-              <DialogTitle className='flex items-center gap-1.5'>
+              <DialogTitle className='mb-0.5 flex items-center gap-1.5 leading-tight'>
                 {provider.name}
                 {provider.is_verified && (
                   <BadgeCheck
