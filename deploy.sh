@@ -14,7 +14,7 @@ for svc in landkeeper_frontend_a landkeeper_frontend_b; do
 
   echo "Waiting for $svc to become healthy..."
   for i in $(seq 1 60); do
-    status=$(docker inspect -f '{{.State.Health.Status}}' "$svc")
+    status=$(docker inspect -f '{{.State.Health.Status}}' "$svc" 2>/dev/null || echo starting)
     [ "$status" = "healthy" ] && break
     if [ "$i" = 60 ]; then
       echo "$svc did not become healthy, aborting (other container still serving)."

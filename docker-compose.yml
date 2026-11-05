@@ -18,13 +18,13 @@ x-frontend: &frontend
     start_period: 10s
 
 services:
-  frontend_a:
+  landkeeper_frontend_a:
     <<: *frontend
     container_name: landkeeper_frontend_a
     ports:
       - "3000:3000"
 
-  frontend_b:
+  landkeeper_frontend_b:
     <<: *frontend
     container_name: landkeeper_frontend_b
     ports:
