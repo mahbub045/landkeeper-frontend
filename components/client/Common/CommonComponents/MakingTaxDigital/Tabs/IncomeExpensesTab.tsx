@@ -35,7 +35,7 @@ function TotalRow({ label, value }: { label: string; value: number }) {
   return (
     <div className='flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 dark:border-blue-900/40 dark:bg-blue-950/20'>
       <div className='flex items-center gap-3'>
-        <Calculator className='size-5 text-blue-600 dark:text-blue-400' />
+        <Calculator className='text-primary size-5' />
         <span className='text-foreground text-sm font-medium'>{label}</span>
       </div>
       <span className='text-lg font-bold text-emerald-600 tabular-nums dark:text-emerald-400'>
@@ -196,7 +196,7 @@ const IncomeExpensesTab: React.FC<MtdReportTabProps> = ({
             href='https://www.gov.uk/guidance/use-making-tax-digital-for-income-tax'
             target='_blank'
             rel='noopener noreferrer'
-            className='border-border bg-card hover:bg-accent/50 flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium text-blue-700 transition-colors dark:text-blue-400'
+            className='border-border bg-card hover:bg-accent/50 flex items-center gap-2 rounded-lg border px-3 py-2 text-primary text-xs font-medium transition-colors'
           >
             <Info className='size-4' />
             <span className='flex-1'>HMRC guidance on MTD for Income Tax</span>

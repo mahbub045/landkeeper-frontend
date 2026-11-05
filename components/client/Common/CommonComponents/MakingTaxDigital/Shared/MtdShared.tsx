@@ -18,7 +18,7 @@ export function IconBadge({
   return (
     <div
       className={cn(
-        'flex size-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+        'flex size-11 shrink-0 items-center justify-center bg-primary/10 text-primary rounded-full',
         className,
       )}
     >
@@ -125,10 +125,10 @@ export function HelpfulInfo({
   footer?: React.ReactNode;
 }) {
   return (
-    <Card className='rounded-2xl border-blue-100 bg-blue-50/40 shadow-md dark:border-blue-900/40 dark:bg-blue-950/20'>
+    <Card className='border-primary/20 bg-primary/5 rounded-2xl shadow-md'>
       <CardContent className='space-y-3 px-5 py-4'>
         <div className='flex items-center gap-2'>
-          <Info className='size-5 text-blue-600 dark:text-blue-400' />
+          <Info className='text-primary size-5' />
           <h2 className='text-foreground text-base font-semibold'>{title}</h2>
         </div>
         <ul className='space-y-2.5'>
@@ -137,7 +137,7 @@ export function HelpfulInfo({
               key={index}
               className='text-muted-foreground flex items-start gap-2 text-xs leading-relaxed'
             >
-              <CircleCheck className='mt-0.5 size-4 shrink-0 text-blue-600 dark:text-blue-400' />
+              <CircleCheck className='mt-0.5 size-4 shrink-0 text-primary' />
               <span>{item}</span>
             </li>
           ))}

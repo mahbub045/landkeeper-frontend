@@ -177,7 +177,7 @@ const MakingTaxDigital: React.FC = () => {
                 <TabsTrigger
                   key={t.value}
                   value={t.value}
-                  className='cursor-pointer gap-2 px-3 after:bg-blue-600 data-active:text-blue-700 dark:data-active:text-blue-400'
+                  className='cursor-pointer gap-2 px-3 after:bg-primary data-active:text-primary'
                 >
                   <t.icon className='size-4' />
                   {t.label}

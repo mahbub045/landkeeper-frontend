@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 import {
   Carousel,
@@ -102,7 +102,7 @@ const AuthPageLeftPanel: React.FC = () => {
   }, [api]);
 
   return (
-    <div className='relative hidden flex-col overflow-hidden bg-[linear-gradient(160deg,oklch(0.27_0.09_262),oklch(0.38_0.15_261)_55%,oklch(0.5_0.19_260))] p-12 lg:flex lg:w-1/2'>
+    <div className='relative hidden flex-col overflow-hidden bg-[linear-gradient(160deg,color-mix(in_oklch,var(--primary)_45%,black),color-mix(in_oklch,var(--primary)_75%,black)_55%,var(--primary))] p-12 lg:flex lg:w-1/2'>
       {/* Soft background glows */}
       <span
         className='absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/5'

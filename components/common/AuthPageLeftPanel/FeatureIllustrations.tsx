@@ -33,11 +33,11 @@ const CARD =
 // Coloured confetti shapes scattered around every stage.
 const Confetti: React.FC = () => (
   <>
-    <span className='feature-confetti absolute top-[8%] left-[6%] h-3 w-3 rounded-full bg-orange-400/90' />
-    <span className='feature-confetti absolute top-[2%] right-[10%] h-4 w-2 rotate-45 rounded-full bg-amber-300' />
+    <span className='feature-confetti bg-secondary/90 absolute top-[8%] left-[6%] h-3 w-3 rounded-full' />
+    <span className='feature-confetti bg-secondary/60 absolute top-[2%] right-[10%] h-4 w-2 rotate-45 rounded-full' />
     <span className='feature-confetti bg-secondary absolute right-[2%] bottom-[30%] h-3 w-5 -rotate-12 rounded-full' />
-    <span className='feature-confetti absolute bottom-[6%] left-[14%] h-2.5 w-2.5 rounded-full bg-fuchsia-400/90' />
-    <span className='feature-confetti absolute top-[40%] left-[0%] h-4 w-2 -rotate-30 rounded-full bg-emerald-300/90' />
+    <span className='feature-confetti absolute bottom-[6%] left-[14%] h-2.5 w-2.5 rounded-full bg-[color-mix(in_oklch,var(--primary)_40%,white)]' />
+    <span className='feature-confetti absolute top-[40%] left-[0%] h-4 w-2 -rotate-30 rounded-full bg-[color-mix(in_oklch,var(--primary)_25%,white)]' />
   </>
 );
 
@@ -85,12 +85,12 @@ export const PropertiesIllustration: React.FC = () => (
         <p className='text-[11px] font-semibold'>Tenants</p>
       </div>
       {[
-        ['JS', 'James Smith', 'bg-sky-500'],
-        ['AP', 'Aisha Patel', 'bg-violet-500'],
+        ['JS', 'James Smith', 'bg-primary text-white'],
+        ['AP', 'Aisha Patel', 'bg-secondary text-slate-900'],
       ].map(([initials, name, color]) => (
         <div key={name} className='flex items-center gap-2 py-1'>
           <span
-            className={`flex h-5 w-5 items-center justify-center rounded-full text-[7px] font-bold text-white ${color}`}
+            className={`flex h-5 w-5 items-center justify-center rounded-full text-[7px] font-bold ${color}`}
           >
             {initials}
           </span>
@@ -312,7 +312,7 @@ export const DashboardIllustration: React.FC = () => (
       <p className='mb-2 text-[11px] font-semibold'>Portfolio overview</p>
       <div className='grid grid-cols-3 gap-1.5'>
         {[
-          ['Properties', '12', 'bg-sky-50 text-sky-700'],
+          ['Properties', '12', 'bg-primary/10 text-primary'],
           ['Occupancy', '94%', 'bg-emerald-50 text-emerald-700'],
           ['Arrears', '£320', 'bg-rose-50 text-rose-600'],
         ].map(([label, value, tone]) => (
@@ -341,9 +341,9 @@ export const DashboardIllustration: React.FC = () => (
     <div className={`${CARD} bottom-[14%] left-[4%] w-[50%] p-3`}>
       <p className='mb-1.5 text-[11px] font-semibold'>Upcoming</p>
       {[
-        ['Rent due · Flat 2', 'bg-sky-500'],
-        ['Boiler service', 'bg-amber-500'],
-        ['Lease renewal', 'bg-violet-500'],
+        ['Rent due · Flat 2', 'bg-primary'],
+        ['Boiler service', 'bg-secondary'],
+        ['Lease renewal', 'bg-primary/50'],
       ].map(([label, dot]) => (
         <div key={label} className='flex items-center gap-2 py-1 text-[10px]'>
           <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
@@ -367,16 +367,21 @@ const EXPENSE_SEGMENTS = [
   {
     label: 'Insurance',
     pct: 25,
-    stroke: 'stroke-amber-400',
-    dot: 'bg-amber-400',
+    stroke: 'stroke-secondary',
+    dot: 'bg-secondary',
   },
   {
     label: 'Agent fees',
     pct: 20,
-    stroke: 'stroke-emerald-400',
-    dot: 'bg-emerald-400',
+    stroke: 'stroke-primary/45',
+    dot: 'bg-primary/45',
   },
-  { label: 'Other', pct: 15, stroke: 'stroke-rose-400', dot: 'bg-rose-400' },
+  {
+    label: 'Other',
+    pct: 15,
+    stroke: 'stroke-secondary/50',
+    dot: 'bg-secondary/50',
+  },
 ];
 
 export const ReportsIllustration: React.FC = () => (
@@ -466,21 +471,25 @@ export const MarketplaceIllustration: React.FC = () => (
       <p className='mb-2 text-[11px] font-semibold'>Categories</p>
       <div className='grid grid-cols-2 gap-2'>
         {[
-          { icon: Wrench, label: 'Plumbing', tone: 'bg-sky-100 text-sky-600' },
+          {
+            icon: Wrench,
+            label: 'Plumbing',
+            tone: 'bg-primary/10 text-primary',
+          },
           {
             icon: Zap,
             label: 'Electrical',
-            tone: 'bg-amber-100 text-amber-600',
+            tone: 'bg-secondary/25 text-[color-mix(in_oklch,var(--secondary)_55%,black)]',
           },
           {
             icon: Hammer,
             label: 'Repairs',
-            tone: 'bg-violet-100 text-violet-600',
+            tone: 'bg-primary/10 text-primary',
           },
           {
             icon: ShieldCheck,
             label: 'Insurance',
-            tone: 'bg-emerald-100 text-emerald-600',
+            tone: 'bg-secondary/25 text-[color-mix(in_oklch,var(--secondary)_55%,black)]',
           },
         ].map(({ icon: Icon, label, tone }) => (
           <div key={label} className='flex flex-col items-center gap-1'>
@@ -507,7 +516,7 @@ export const MarketplaceIllustration: React.FC = () => (
             <BadgeCheck className='text-primary h-3 w-3' />
           </p>
           <p className='flex items-center gap-0.5 text-[9px] text-slate-500'>
-            <Star className='h-2.5 w-2.5 fill-amber-400 text-amber-400' />
+            <Star className='fill-secondary text-secondary h-2.5 w-2.5' />
             4.9 · Gas Safe registered
           </p>
         </div>
