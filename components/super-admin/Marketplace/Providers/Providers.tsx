@@ -439,7 +439,7 @@ const Providers: React.FC = () => {
                         <TableCell className='pr-4 text-center'>
                           <div className='flex justify-center gap-1'>
                             <Button
-                              variant='outline'
+                              variant='default'
                               size='icon'
                               aria-label={`Edit ${provider.name}`}
                               onClick={() => openEdit(provider)}
@@ -447,7 +447,7 @@ const Providers: React.FC = () => {
                               <Pencil className='size-4' />
                             </Button>
                             <Button
-                              variant='destructive'
+                              variant='danger'
                               size='icon'
                               aria-label={`Delete ${provider.name}`}
                               onClick={() => setDeleteTarget(provider)}
