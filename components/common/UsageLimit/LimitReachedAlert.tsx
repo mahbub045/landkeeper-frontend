@@ -27,7 +27,11 @@ const LimitReachedAlert: React.FC<LimitReachedAlertProps> = ({
             You&rsquo;ve reached your {resource} limit
           </p>
           <p className='text-sm text-amber-800/80 dark:text-amber-200/70'>
-            Your current plan allows up to {max} {resource}.{' '}
+            {max !== null && (
+              <>
+                Your current plan allows up to {max} {resource}.{' '}
+              </>
+            )}
             {canUpgrade
               ? `Upgrade your plan to add more ${resource}.`
               : `Ask your landlord to upgrade the plan to add more ${resource}.`}
